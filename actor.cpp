@@ -1792,11 +1792,11 @@ void run_act(Actor& actor)
 											{
 												auto sizeA = actor._slicesSize[sliceB];
 												if (actor._sizeOverride)
-													scoresSlice.insert_or_assign(std::make_pair((double)sizeA, sliceB%127),sliceB);
+                                                    scoresSlice[std::make_pair((double)sizeA, sliceB%127)] = sliceB;
 												else
 												{
 													auto sizeB = actor._slicesSize[cv[sliceB]];
-													scoresSlice.insert_or_assign(std::make_pair((double)sizeA/(double)sizeB, sliceB%127),sliceB);
+                                                    scoresSlice[std::make_pair((double)sizeA/(double)sizeB, sliceB%127)] = sliceB;
 												}		
 												if (scoresSlice.size() > actor._scoresTop)
 													scoresSlice.erase(scoresSlice.begin());
@@ -2272,14 +2272,14 @@ void run_act(Actor& actor)
 											{
 												auto sizeA = sizes[sliceB];
 												if (actor._sizeOverride)
-													scoresSlice.insert_or_assign(std::make_pair((double)sizeA, sliceB%127),sliceB);
+                                                    scoresSlice[std::make_pair((double)sizeA, sliceB%127)] = sliceB;
 												else
 												{
 													auto sizeB = sizes[cv[sliceB]];
 													double ratio = (double)sizeA/(double)sizeB;
 													if (actor._unusual)
 														ratio *= -1.0;
-													scoresSlice.insert_or_assign(std::make_pair(ratio, sliceB%127),sliceB);
+                                                    scoresSlice[std::make_pair(ratio, sliceB%127)] = sliceB;
 												}		
 												if (scoresSlice.size() > actor._scoresTop)
 													scoresSlice.erase(scoresSlice.begin());
@@ -2706,14 +2706,14 @@ Actor::Actor(const std::string& args_filename, QWidget *parent) :
 	{
 		std::unique_ptr<HistoryRepa> hr;
 		{
-			SystemHistoryRepaTuple xx;
+            // SystemHistoryRepaTuple xx;
 			// if (_struct=="struct003")
 				// xx = posesScansHistoryRepa_2(_valencyScan, _valencyDirection, _pose, _scan);	
 			// else
 				// xx = posesScansHistoryRepa(_valencyScan, _pose, _scan);
-			_uu = std::move(std::get<0>(xx));
-			_ur = std::move(std::get<1>(xx));
-			hr = std::move(std::get<2>(xx));
+            // _uu = std::move(std::get<0>(xx));
+            // _ur = std::move(std::get<1>(xx));
+            // hr = std::move(std::get<2>(xx));
 		}
 		_system = std::make_shared<ActiveSystem>();
 		_threads.reserve(1+_level1Count+1+6);
@@ -3131,7 +3131,7 @@ Actor::Actor(const std::string& args_filename, QWidget *parent) :
 				for (auto& p : slicesSliceSetPrev)
 					if (p.first % nloc == locA)
 					{
-						slicesStepCount.insert_or_assign(p.first,steps);
+                        slicesStepCount[p.first] = steps;
 						sliceCurrents.insert(p.first);
 					}
 				while (sliceCurrents.size())
@@ -3146,7 +3146,7 @@ Actor::Actor(const std::string& args_filename, QWidget *parent) :
 							if (!slicesStepCount.count(sliceLocD))
 							{
 								sliceCurrentBs.push_back(sliceLocD);			
-								slicesStepCount.insert_or_assign(sliceLocD,steps);
+                                slicesStepCount[sliceLocD] = steps;
 							}
 						}
 					}	
@@ -3160,14 +3160,14 @@ Actor::Actor(const std::string& args_filename, QWidget *parent) :
 	{
 	// _publisherCmdVel = this->create_publisher<geometry_msgs::msg::Twist>("cmd_vel", rclcpp::QoS(rclcpp::KeepLast(10)));
 	
-	_subscriptionScan = this->create_subscription<sensor_msgs::msg::LaserScan>(
-		"scan", rclcpp::SensorDataQoS(), std::bind(&Actor::callbackScan, this, std::placeholders::_1));
+    // _subscriptionScan = this->create_subscription<sensor_msgs::msg::LaserScan>(
+        // "scan", rclcpp::SensorDataQoS(), std::bind(&Actor::callbackScan, this, std::placeholders::_1));
 	// _subscriptionOdom = this->create_subscription<nav_msgs::msg::Odometry>(
 		// "odom", rclcpp::QoS(rclcpp::KeepLast(10)), std::bind(&Actor::callbackOdom, this, std::placeholders::_1));
-	_subscriptionGoal = this->create_subscription<std_msgs::msg::String>(
-		"goal", 10, std::bind(&Actor::callbackGoal, this, std::placeholders::_1));
+    // _subscriptionGoal = this->create_subscription<std_msgs::msg::String>(
+        // "goal", 10, std::bind(&Actor::callbackGoal, this, std::placeholders::_1));
 
-	_timerUpdate = this->create_wall_timer(updateInterval, std::bind(&Actor::callbackUpdate, this));
+    // _timerUpdate = this->create_wall_timer(updateInterval, std::bind(&Actor::callbackUpdate, this));
 	}
 
 	LOG "actor\tSTART" UNLOG
