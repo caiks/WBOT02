@@ -38,12 +38,12 @@ FORMS += \
 
 INCLUDEPATH += $$PWD/../rapidjson/include
 
-unix:!macx: LIBS += -L$$PWD/../AlignmentC_build/ -lAlignmentC
+unix:!macx: LIBS += -L$$PWD/../AlignmentActive_build/ -lAlignmentActive
 
-INCLUDEPATH += $$PWD/../AlignmentC
-DEPENDPATH += $$PWD/../AlignmentC
+INCLUDEPATH += $$PWD/../AlignmentActive
+DEPENDPATH += $$PWD/../AlignmentActive
 
-unix:!macx: PRE_TARGETDEPS += $$PWD/../AlignmentC_build/libAlignmentC.a
+unix:!macx: PRE_TARGETDEPS += $$PWD/../AlignmentActive_build/libAlignmentActive.a
 
 unix:!macx: LIBS += -L$$PWD/../AlignmentRepaC_build/ -lAlignmentRepaC
 
@@ -52,9 +52,9 @@ DEPENDPATH += $$PWD/../AlignmentRepaC
 
 unix:!macx: PRE_TARGETDEPS += $$PWD/../AlignmentRepaC_build/libAlignmentRepaC.a
 
-unix:!macx: LIBS += -L$$PWD/../AlignmentActive_build/ -lAlignmentActive
+unix:!macx: LIBS += -L$$PWD/../AlignmentC_build/ -lAlignmentC
 
-INCLUDEPATH += $$PWD/../AlignmentActive
-DEPENDPATH += $$PWD/../AlignmentActive
+INCLUDEPATH += $$PWD/../AlignmentC
+DEPENDPATH += $$PWD/../AlignmentC
 
-unix:!macx: PRE_TARGETDEPS += $$PWD/../AlignmentActive_build/libAlignmentActive.a
+unix:!macx: PRE_TARGETDEPS += $$PWD/../AlignmentC_build/libAlignmentC.a
