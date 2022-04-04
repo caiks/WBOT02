@@ -1,6 +1,7 @@
 #include "dev.h"
 #include "win001.h"
 #include <QApplication>
+#include <QCameraInfo>
 #include <cmath>
 #include <cstring>
 
@@ -21,6 +22,8 @@ int main(int argc, char *argv[])
     QApplication a(argc, argv);
     Win001 w;
     w.show();
+
+    EVAL(QCameraInfo::availableCameras().count());
 	
     return a.exec();
 }
