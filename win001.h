@@ -1,22 +1,21 @@
 #ifndef WIN001_H
 #define WIN001_H
 
-#include <QWidget>
+#include <QDialog>
 
-namespace Ui {
-class Win001;
-}
+QT_BEGIN_NAMESPACE
+namespace Ui { class Win001; }
+QT_END_NAMESPACE
 
-class Win001 : public QWidget
+class Win001 : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit Win001(QWidget *parent = 0);
+    Win001(QWidget *parent = nullptr);
     ~Win001();
 
 private:
     Ui::Win001 *ui;
 };
-
 #endif // WIN001_H
