@@ -1,13 +1,13 @@
 #ifndef WIN001_H
 #define WIN001_H
 
-#include <QDialog>
+#include <QWidget>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Win001; }
 QT_END_NAMESPACE
 
-class Win001 : public QDialog
+class Win001 : public QWidget
 {
     Q_OBJECT
 
