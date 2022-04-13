@@ -1,5 +1,5 @@
 #include "win001.h"
-#include "ui_win001.h"
+#include "./ui_win001.h"
 
 Win001::Win001(QWidget *parent)
     : QWidget(parent)
