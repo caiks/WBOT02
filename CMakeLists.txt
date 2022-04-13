@@ -14,8 +14,16 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
 
+find_package (Threads)
+
+add_subdirectory(../AlignmentActive ../AlignmentActive_build)
+
+include_directories(../rapidjson/include ../AlignmentC ../AlignmentRepaC ../AlignmentActive)
+
 set(PROJECT_SOURCES
         main.cpp
+        actor.cpp
+        actor.h
         win001.cpp
         win001.h
         win001.ui
@@ -44,7 +52,7 @@ else()
     endif()
 endif()
 
-target_link_libraries(WBOT02 PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(WBOT02 PRIVATE Qt${QT_VERSION_MAJOR}::Widgets AlignmentActive AlignmentRepaC AlignmentC Threads::Threads)
 
 set_target_properties(WBOT02 PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
