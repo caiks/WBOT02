@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 7.0.0, 2022-04-20T17:09:25. -->
+<!-- Written by QtCreator 7.0.0, 2022-04-21T17:11:52. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -301,7 +301,7 @@
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">WBOT02</value>
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">CMakeProjectManager.CMakeRunConfiguration.WBOT02</value>
     <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">WBOT02</value>
-    <value type="QString" key="RunConfiguration.Arguments">hello</value>
+    <value type="QString" key="RunConfiguration.Arguments">image001 C:\caiks\WBOT02_ws\IMG-20191020-WA0000.jpg</value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
     <value type="bool" key="RunConfiguration.UseLibrarySearchPath">true</value>

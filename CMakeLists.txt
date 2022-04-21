@@ -21,6 +21,7 @@ add_subdirectory(../AlignmentActive ../AlignmentActive_build)
 include_directories(../rapidjson/include ../AlignmentC ../AlignmentRepaC ../AlignmentActive)
 
 set(PROJECT_SOURCES
+        dev.h
         main.cpp
         actor.cpp
         actor.h
