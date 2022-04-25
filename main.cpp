@@ -5,17 +5,14 @@
 #include <QApplication>
 #include <QLabel>
 #include <QScreen>
+#include <QMediaDevices>
+#include <QMediaCaptureSession>
+#include <QCamera>
+#include <QImageCapture>
 
 using namespace Alignment;
 using namespace WBOT02;
 using namespace std;
-
-#define ECHO(x) cout << #x << endl; x
-#define ECHOT(x) cout << #x ; mark = Clock::now(); x ; cout << "\t" << ((Sec)(Clock::now() - mark)).count() << "s" << endl
-#define EVAL(x) cout << #x << ": " << (x) << endl
-#define EVALH(x) cout << #x << ": " << hex << (x) << dec << endl
-#define EVALL(x) cout << #x << ": " << endl << (x) << endl
-#define TRUTH(x) cout << #x << ": " << ((x) ? "true" : "false") << endl
 
 int main(int argc, char *argv[])
 {
@@ -123,13 +120,25 @@ int main(int argc, char *argv[])
 			cout << "average per pixel:" << total << "\t" << ((Sec)(Clock::now() - mark)).count() << "s" << endl;
 		}
 	}
-	
-	if (argc >= 2 && std::string(argv[1]) == "win001")
+		
+    if (argc >= 2 && std::string(argv[1]) == "win001")
 	{
-		QApplication a(argc, argv);
-		Win001 w;
-		w.show();
-		EVAL(a.exec());
+        STARTT;
+        QApplication application(argc, argv);
+		EVAL(QMediaDevices::videoInputs().count());
+		QMediaCaptureSession captureSession;
+		QCamera camera;
+        captureSession.setCamera(&camera);
+		QImageCapture imageCapture;
+        captureSession.setImageCapture(&imageCapture);
+        Win001 win001;
+        Win001::connect(&imageCapture, SIGNAL(imageCaptured(int,QImage)),
+            &win001, SLOT(capture(int,QImage)));
+        win001.show();
+        ECHOT(camera.start());
+        ECHOT(imageCapture.capture());
+        EVAL(application.exec());
 	}
+	
 	return 0;
 }

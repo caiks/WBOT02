@@ -1,6 +1,7 @@
 #ifndef WIN001_H
 #define WIN001_H
 
+#include "dev.h"
 #include <QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -14,6 +15,12 @@ class Win001 : public QWidget
 public:
     Win001(QWidget *parent = nullptr);
     ~Win001();
+
+public Q_SLOTS:
+    void capture(int id, const QImage &preview);
+
+public:
+    QImage image;
 
 private:
     Ui::Win001 *ui;
