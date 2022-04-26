@@ -18,10 +18,11 @@ class Win001 : public QWidget
     Q_OBJECT
 
 public:
-    Win001(QWidget *parent = nullptr);
+    Win001(int interval = 1000, QWidget *parent = nullptr);
     ~Win001();
 
 public Q_SLOTS:
+	void start();
     void captureInit();
     void capture(int id, const QImage &preview);
 
@@ -33,6 +34,7 @@ private:
 	QImageCapture* imageCapture;
 	std::chrono::time_point<std::chrono::high_resolution_clock> mark;
 	bool first; 
+	int interval;
 	
 };
 #endif // WIN001_H

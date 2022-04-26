@@ -1,12 +1,23 @@
 #include "win001.h"
 #include "./ui_win001.h"
+#include <strstream>
 
-Win001::Win001(QWidget *parent)
+Win001::Win001(int intervalA, QWidget *parent)
     : QWidget(parent)
-    , ui(new Ui::Win001), first(true)
+    , ui(new Ui::Win001), first(true), interval(intervalA)
 {
     ui->setupUi(this);
 	
+	start();
+}
+
+Win001::~Win001()
+{
+    delete ui;
+}
+
+void Win001::start()
+{
 	EVAL(QMediaDevices::videoInputs().count());
 
 	QMediaCaptureSession* captureSession = new QMediaCaptureSession(this);
@@ -19,13 +30,9 @@ Win001::Win001(QWidget *parent)
 	
 	QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &Win001::captureInit);	
-    timer->start(1000);
+    timer->start(interval);
 }
 
-Win001::~Win001()
-{
-    delete ui;
-}
 
 void Win001::captureInit()
 {
@@ -33,11 +40,15 @@ void Win001::captureInit()
 	std::cout << "capturing ..." << std::endl;
 	imageCapture->capture();
 }
-
-
 void Win001::capture(int id, const QImage &image)
 {
-	std::cout << "captured\t" << ((Sec)(Clock::now() - mark)).count() << "s" << std::endl;
+	{
+		std::strstream string;
+		string << "captured\t" << ((Sec)(Clock::now() - mark)).count() << "s" << std::ends;
+		std::cout << string.str() << std::endl;
+		ui->labelCapturedTime->setText(string.str());		
+	}
+
 	if (first)
 	{
 		EVAL(image.format());
@@ -69,11 +80,22 @@ void Win001::capture(int id, const QImage &image)
         }
         total /= 3;
         total /= size;
-        std::cout << "average per pixel:" << total << "\t" << ((Sec)(Clock::now() - mark)).count() << "s" << std::endl;
+		{
+			std::strstream string;
+			string << "average:" << total << "\t" << ((Sec)(Clock::now() - mark)).count() << "s" << std::ends;
+			std::cout << string.str() << std::endl;
+			ui->labelAverage->setText(string.str());		
+		}
     }
-	mark = Clock::now(); 
-	QImage scaledImage = image.scaled(ui->label->size(),Qt::KeepAspectRatio,Qt::SmoothTransformation);
-    ui->label->setPixmap(QPixmap::fromImage(scaledImage));
-	std::cout << "label\t" << ((Sec)(Clock::now() - mark)).count() << "s" << std::endl;
+	
+	{
+		mark = Clock::now(); 
+		std::strstream string;
+		QImage scaledImage = image.scaled(ui->labelImage->size(),Qt::KeepAspectRatio,Qt::SmoothTransformation);
+		ui->labelImage->setPixmap(QPixmap::fromImage(scaledImage));
+		string << "imaged\t" << ((Sec)(Clock::now() - mark)).count() << "s" << std::ends;
+		std::cout << string.str() << std::endl;
+		ui->labelImagedTime->setText(string.str());
+	}
 }
 

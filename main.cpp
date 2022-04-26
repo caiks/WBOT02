@@ -122,7 +122,7 @@ int main(int argc, char *argv[])
 	{
         STARTT;
         QApplication application(argc, argv);
-        Win001 win001;
+        Win001 win001(argc >= 3 ? atoi(argv[2]) : 1000);
         win001.show();
         EVAL(application.exec());
 	}
