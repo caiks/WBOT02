@@ -5,10 +5,7 @@
 #include <QApplication>
 #include <QLabel>
 #include <QScreen>
-#include <QMediaDevices>
-#include <QMediaCaptureSession>
-#include <QCamera>
-#include <QImageCapture>
+
 
 using namespace Alignment;
 using namespace WBOT02;
@@ -125,18 +122,8 @@ int main(int argc, char *argv[])
 	{
         STARTT;
         QApplication application(argc, argv);
-		EVAL(QMediaDevices::videoInputs().count());
-		QMediaCaptureSession captureSession;
-		QCamera camera;
-        captureSession.setCamera(&camera);
-		QImageCapture imageCapture;
-        captureSession.setImageCapture(&imageCapture);
         Win001 win001;
-        Win001::connect(&imageCapture, SIGNAL(imageCaptured(int,QImage)),
-            &win001, SLOT(capture(int,QImage)));
         win001.show();
-        ECHOT(camera.start());
-        ECHOT(imageCapture.capture());
         EVAL(application.exec());
 	}
 	
