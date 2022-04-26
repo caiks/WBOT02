@@ -1,6 +1,7 @@
 #include "dev.h"
 
 #include "win001.h"
+#include "win002.h"
 
 #include <QApplication>
 #include <QLabel>
@@ -120,10 +121,17 @@ int main(int argc, char *argv[])
 		
     if (argc >= 2 && std::string(argv[1]) == "win001")
 	{
-        STARTT;
         QApplication application(argc, argv);
         Win001 win001(argc >= 3 ? atoi(argv[2]) : 1000);
         win001.show();
+        EVAL(application.exec());
+	}
+	
+    if (argc >= 2 && std::string(argv[1]) == "win002")
+	{
+        QApplication application(argc, argv);
+        Win002 win002(argc >= 3 ? atoi(argv[2]) : 1000);
+        win002.show();
         EVAL(application.exec());
 	}
 	

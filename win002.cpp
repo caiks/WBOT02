@@ -1,46 +1,34 @@
-#include "win001.h"
-#include "./ui_win001.h"
+#include "win002.h"
+#include "./ui_win002.h"
 
-Win001::Win001(int intervalA, QWidget *parent)
+Win002::Win002(int intervalA, QWidget *parent)
     : QWidget(parent)
-    , ui(new Ui::Win001), first(true), interval(intervalA)
+    , ui(new Ui::Win002), first(true), interval(intervalA)
 {
     ui->setupUi(this);
 	
 	start();
 }
 
-Win001::~Win001()
+Win002::~Win002()
 {
     delete ui;
 }
 
-void Win001::start()
+void Win002::start()
 {
-	EVAL(QMediaDevices::videoInputs().count());
-
-	QMediaCaptureSession* captureSession = new QMediaCaptureSession(this);
-	QCamera* camera = new QCamera(this);
-    captureSession->setCamera(camera);
-	imageCapture = new QImageCapture(this);
-    captureSession->setImageCapture(imageCapture);
-	connect(imageCapture, SIGNAL(imageCaptured(int,QImage)), this, SLOT(capture(int,QImage)));	
-    camera->start();
+	screen = QGuiApplication::primaryScreen();
 	
 	QTimer *timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, &Win001::captureInit);	
+    connect(timer, &QTimer::timeout, this, &Win002::capture);
     timer->start(interval);
 }
 
-
-void Win001::captureInit()
+void Win002::capture()
 {
-    mark = Clock::now();
-	std::cout << "capturing ..." << std::endl;
-	imageCapture->capture();
-}
-void Win001::capture(int id, const QImage &image)
-{
+	mark = Clock::now();
+	auto pixmap = screen->grabWindow(0);
+	auto image = pixmap.toImage();
 	{
         std::stringstream string;
         string << "captured\t" << ((Sec)(Clock::now() - mark)).count() << "s";
