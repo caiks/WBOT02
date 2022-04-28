@@ -119,7 +119,7 @@ int main(int argc, char *argv[])
 		}
 	}
 		
-    if (argc >= 2 && std::string(argv[1]) == "win001")
+    if (argc >= 2 && (std::string(argv[1]) == "image002" || std::string(argv[1]) == "win001"))
 	{
         QApplication application(argc, argv);
         Win001 win001(argc >= 3 ? atoi(argv[2]) : 1000);
@@ -127,10 +127,14 @@ int main(int argc, char *argv[])
         EVAL(application.exec());
 	}
 	
-    if (argc >= 2 && std::string(argv[1]) == "win002")
+    if (argc >= 2 && (std::string(argv[1]) == "screen002" || std::string(argv[1]) == "win002"))
 	{
         QApplication application(argc, argv);
-        Win002 win002(argc >= 3 ? atoi(argv[2]) : 1000);
+        Win002 win002(argc >= 3 ? atoi(argv[2]) : 1000,
+            argc >= 4 ? atoi(argv[3]) : 0,
+            argc >= 5 ? atoi(argv[4]) : 0,
+            argc >= 6 ? atoi(argv[5]) : -1,
+            argc >= 7 ? atoi(argv[6]) : -1);
         win002.show();
         EVAL(application.exec());
 	}

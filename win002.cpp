@@ -1,9 +1,19 @@
 #include "win002.h"
 #include "./ui_win002.h"
 
-Win002::Win002(int intervalA, QWidget *parent)
-    : QWidget(parent)
-    , ui(new Ui::Win002), first(true), interval(intervalA)
+Win002::Win002(int intervalA,
+               int xA,
+               int yA,
+               int widthA,
+               int heightA,
+               QWidget *parent)
+    : QWidget(parent),
+      ui(new Ui::Win002), first(true),
+      interval(intervalA),
+      x(xA),
+      y(yA),
+      width(widthA),
+      height(heightA)
 {
     ui->setupUi(this);
 	
@@ -27,7 +37,7 @@ void Win002::start()
 void Win002::capture()
 {
 	mark = Clock::now();
-	auto pixmap = screen->grabWindow(0);
+    auto pixmap = screen->grabWindow(0, x, y, width, height);
 	auto image = pixmap.toImage();
 	{
         std::stringstream string;

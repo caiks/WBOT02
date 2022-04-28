@@ -15,7 +15,12 @@ class Win002 : public QWidget
     Q_OBJECT
 
 public:
-    Win002(int interval = 1000, QWidget *parent = nullptr);
+    Win002(int interval = 1000,
+           int x = 0,
+           int y = 0,
+           int width = -1,
+           int height = -1,
+           QWidget *parent = nullptr);
     ~Win002();
 
 public Q_SLOTS:
@@ -27,7 +32,11 @@ private:
 	QScreen *screen;
 	std::chrono::time_point<std::chrono::high_resolution_clock> mark;
 	bool first; 
-	int interval;
-	
+    int interval;
+    int x;
+    int y;
+    int width;
+    int height;
+
 };
 #endif // WIN002_H
