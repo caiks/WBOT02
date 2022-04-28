@@ -38,6 +38,10 @@ void Win002::capture()
 {
 	mark = Clock::now();
     auto pixmap = screen->grabWindow(0, x, y, width, height);
+	if (first)
+	{
+		EVAL(pixmap.devicePixelRatio());
+	}
 	auto image = pixmap.toImage();
 	{
         std::stringstream string;
