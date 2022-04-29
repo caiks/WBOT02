@@ -1,15 +1,23 @@
 #include "win003.h"
 #include "./ui_win003.h"
+#include <QUrl>
+#include <QVideoSink>
+#include <QVideoFrame>
 
-Win003::Win003(int intervalA,
+Win003::Win003(QString file,
+               int interval,
                QWidget *parent)
     : QWidget(parent),
-      ui(new Ui::Win003), first(true),
-      interval(intervalA)
+      ui(new Ui::Win003), _first(true), _interval(interval), _position(0)
 {
     ui->setupUi(this);
 	
-	start();
+    _mediaPlayer = new QMediaPlayer(this);
+    connect(_mediaPlayer, &QMediaPlayer::errorChanged,this, &Win003::handleError);
+    _videoWidget = new QVideoWidget;
+    _mediaPlayer->setVideoOutput(_videoWidget);
+    _mediaPlayer->setSource(QUrl::fromLocalFile(file));
+    connect(_mediaPlayer, &::QMediaPlayer::mediaStatusChanged, this, &Win003::mediaStateChanged);
 }
 
 Win003::~Win003()
@@ -17,35 +25,62 @@ Win003::~Win003()
     delete ui;
 }
 
-void Win003::start()
+void Win003::mediaStateChanged(QMediaPlayer::MediaStatus state)
 {
-	screen = QGuiApplication::primaryScreen();
-	
-	QTimer *timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, &Win003::capture);
-    timer->start(interval);
+    if (state == QMediaPlayer::LoadedMedia)
+    {
+        TRUTH(_mediaPlayer->isSeekable());
+        EVAL(_mediaPlayer->duration());
+        connect(_mediaPlayer, &QMediaPlayer::positionChanged, this, &Win003::capture);
+        captureInit();
+        QTimer *timer = new QTimer(this);
+        connect(timer, &QTimer::timeout, this, &Win003::captureInit);
+        timer->start(_interval);
+    }
+}
+
+
+void Win003::captureInit()
+{
+    _mark = Clock::now();
+    if (!_first)
+        _position += _interval;
+    if (_position >= _mediaPlayer->duration())
+        _position = 0;
+    std::cout << "capturing " << _position << " ... " << std::endl;
+    _mediaPlayer->setPosition(_position);
+    _mediaPlayer->play();
 }
 
 void Win003::capture()
 {
-	mark = Clock::now();
-    auto pixmap = screen->grabWindow(0);
-	if (first)
-	{
-		EVAL(pixmap.devicePixelRatio());
-	}
-	auto image = pixmap.toImage();
-	{
+    _mediaPlayer->pause();
+    auto videoframe = _mediaPlayer->videoSink()->videoFrame();
+    auto image = videoframe.toImage();
+    {
         std::stringstream string;
-        string << "captured\t" << ((Sec)(Clock::now() - mark)).count() << "s";
-		std::cout << string.str() << std::endl;
+        string << "captured\t" << ((Sec)(Clock::now() - _mark)).count() << "s";
+        std::cout << string.str() << std::endl;
         ui->labelCapturedTime->setText(string.str().data());
-	}
-
-	if (first)
+    }
+    if (_first)
 	{
-		EVAL(image.format());
-		EVAL(image.depth());
+        EVAL(videoframe.planeCount());
+        EVAL(videoframe.mappedBytes(0));
+        EVAL(videoframe.bytesPerLine(0));
+        EVAL(videoframe.handleType());
+        TRUTH(videoframe.mirrored());
+        EVAL(videoframe.rotationAngle());
+        EVAL(videoframe.width());
+        EVAL(videoframe.height());
+        EVAL(videoframe.pixelFormat());
+        EVAL(videoframe.surfaceFormat().frameWidth());
+        EVAL(videoframe.surfaceFormat().frameHeight());
+        EVAL(videoframe.surfaceFormat().frameRate());
+        TRUTH(videoframe.surfaceFormat().isMirrored());
+
+        EVAL(image.format());
+        EVAL(image.depth());
 		EVAL(image.width());
 		EVAL(image.height());
 		EVAL(image.dotsPerMeterX());
@@ -58,11 +93,13 @@ void Win003::capture()
 		EVAL(qBlue(colour));
 		EVAL(qGray(colour));
 		EVAL((qRed(colour)+qGreen(colour)+qBlue(colour))/3);	
-		first = false;
+        _first = false;
 	}
+    EVAL(videoframe.startTime());
+    EVAL(videoframe.endTime());
 
     {
-        mark = Clock::now();
+        _mark = Clock::now();
         std::size_t total = 0;
         std::size_t size = image.sizeInBytes()/4;
         auto rgb = (QRgb*)image.constBits();
@@ -75,20 +112,35 @@ void Win003::capture()
         total /= size;
 		{
             std::stringstream string;
-            string << "average:" << total << "\t" << ((Sec)(Clock::now() - mark)).count() << "s";
+            string << "average:" << total << "\t" << ((Sec)(Clock::now() - _mark)).count() << "s";
 			std::cout << string.str() << std::endl;
             ui->labelAverage->setText(string.str().data());
 		}
     }
-	
+
 	{
-		mark = Clock::now(); 
+        _mark = Clock::now();
         std::stringstream string;
 		QImage scaledImage = image.scaled(ui->labelImage->size(),Qt::KeepAspectRatio,Qt::SmoothTransformation);
 		ui->labelImage->setPixmap(QPixmap::fromImage(scaledImage));
-        string << "imaged\t" << ((Sec)(Clock::now() - mark)).count() << "s";
+        string << "imaged\t" << ((Sec)(Clock::now() - _mark)).count() << "s";
 		std::cout << string.str() << std::endl;
         ui->labelImagedTime->setText(string.str().data());
 	}
+
+}
+
+void Win003::handleError()
+{
+    if (_mediaPlayer->error() == QMediaPlayer::NoError)
+        return;
+
+    const QString errorString = _mediaPlayer->errorString();
+    QString message = "Error: ";
+    if (errorString.isEmpty())
+        message += " #" + QString::number(int(_mediaPlayer->error()));
+    else
+        message += errorString;
+    std::cout << message.toStdString() << std::endl;
 }
 

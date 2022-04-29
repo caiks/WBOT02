@@ -4,7 +4,8 @@
 #include "dev.h"
 #include <QWidget>
 #include <QTimer>
-#include <QScreen>
+#include <QMediaPlayer>
+#include <QVideoWidget>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Win003; }
@@ -15,20 +16,24 @@ class Win003 : public QWidget
     Q_OBJECT
 
 public:
-    Win003(int interval = 1000,
+    Win003(QString file,
+           int interval = 1000,
            QWidget *parent = nullptr);
     ~Win003();
 
-public Q_SLOTS:
-	void start();
+private Q_SLOTS:
+    void mediaStateChanged(QMediaPlayer::MediaStatus state);
+    void captureInit();
     void capture();
+    void handleError();
 
 private:
     Ui::Win003 *ui;
-	QScreen *screen;
-	std::chrono::time_point<std::chrono::high_resolution_clock> mark;
-	bool first; 
-    int interval;
-
+    QMediaPlayer* _mediaPlayer;
+    QVideoWidget* _videoWidget;
+    std::chrono::time_point<std::chrono::high_resolution_clock> _mark;
+    bool _first;
+    int _interval;
+    qint64 _position;
 };
 #endif // WIN003_H

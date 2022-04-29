@@ -140,10 +140,12 @@ int main(int argc, char *argv[])
         EVAL(application.exec());
 	}
 	
-	if (argc >= 2 && (std::string(argv[1]) == "video001" || std::string(argv[1]) == "win003"))
+    if (argc >= 3 && (std::string(argv[1]) == "video001" || std::string(argv[1]) == "win003"))
 	{
         QApplication application(argc, argv);
-        Win003 win003(argc >= 3 ? atoi(argv[2]) : 1000);
+
+        Win003 win003(QString(argv[2]),
+                      argc >= 4 ? atoi(argv[3]) : 1000);
         win003.show();
         EVAL(application.exec());
 	}
