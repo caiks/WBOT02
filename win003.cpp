@@ -32,7 +32,6 @@ void Win003::mediaStateChanged(QMediaPlayer::MediaStatus state)
         TRUTH(_mediaPlayer->isSeekable());
         EVAL(_mediaPlayer->duration());
         connect(_mediaPlayer, &QMediaPlayer::positionChanged, this, &Win003::capture);
-        captureInit();
         QTimer *timer = new QTimer(this);
         connect(timer, &QTimer::timeout, this, &Win003::captureInit);
         timer->start(_interval);
@@ -54,6 +53,8 @@ void Win003::captureInit()
 
 void Win003::capture()
 {
+    if (_mediaPlayer->playbackState() != QMediaPlayer::PlayingState)
+        return;
     _mediaPlayer->pause();
     auto videoframe = _mediaPlayer->videoSink()->videoFrame();
     auto image = videoframe.toImage();
