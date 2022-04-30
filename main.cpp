@@ -3,6 +3,7 @@
 #include "win001.h"
 #include "win002.h"
 #include "win003.h"
+#include "win004.h"
 
 #include <QApplication>
 #include <QLabel>
@@ -149,6 +150,16 @@ int main(int argc, char *argv[])
         win003.show();
         EVAL(application.exec());
 	}
+
+    if (argc >= 3 && (std::string(argv[1]) == "video002" || std::string(argv[1]) == "win004"))
+    {
+        QApplication application(argc, argv);
+
+        Win004 win004(QString(argv[2]),
+                      argc >= 4 ? atoi(argv[3]) : 1000);
+        win004.show();
+        EVAL(application.exec());
+    }
 	
 	return 0;
 }
