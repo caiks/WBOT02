@@ -16,6 +16,7 @@ Win004::Win004(QString file,
     connect(_mediaPlayer, &QMediaPlayer::errorChanged,this, &Win004::handleError);
     _videoWidget = new QVideoWidget;
     _mediaPlayer->setVideoOutput(_videoWidget);
+    _mediaPlayer->setLoops(QMediaPlayer::Infinite);
     _mediaPlayer->setSource(QUrl::fromLocalFile(file));
     connect(_mediaPlayer, &::QMediaPlayer::mediaStatusChanged, this, &Win004::mediaStateChanged);
 }
@@ -39,8 +40,6 @@ void Win004::mediaStateChanged(QMediaPlayer::MediaStatus state)
 
 void Win004::capture()
 {
-    if (!_mediaPlayer->videoSink())
-        return;
     auto videoframe = _mediaPlayer->videoSink()->videoFrame();
     auto image = videoframe.toImage();
     {
@@ -49,6 +48,14 @@ void Win004::capture()
         std::cout << string.str() << std::endl;
         ui->labelCapturedTime->setText(string.str().data());
     }
+    EVAL(videoframe.startTime());
+    EVAL(videoframe.endTime());
+
+    if (videoframe.startTime() < 0)
+    {
+        return;
+    }
+
     if (_first)
 	{
         EVAL(videoframe.planeCount());
@@ -81,8 +88,6 @@ void Win004::capture()
 		EVAL((qRed(colour)+qGreen(colour)+qBlue(colour))/3);	
         _first = false;
 	}
-    EVAL(videoframe.startTime());
-    EVAL(videoframe.endTime());
 
     {
         _mark = Clock::now();
