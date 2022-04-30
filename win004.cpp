@@ -41,19 +41,22 @@ void Win004::mediaStateChanged(QMediaPlayer::MediaStatus state)
 void Win004::capture()
 {
     auto videoframe = _mediaPlayer->videoSink()->videoFrame();
+
+    EVAL(videoframe.startTime());
+    EVAL(videoframe.endTime());
+
+    if (videoframe.startTime() < 0 || (_interval && videoframe.startTime() < _position * 1000) )
+    {
+        return;
+    }
+
     auto image = videoframe.toImage();
+
     {
         std::stringstream string;
         string << "captured\t" << ((Sec)(Clock::now() - _mark)).count() << "s";
         std::cout << string.str() << std::endl;
         ui->labelCapturedTime->setText(string.str().data());
-    }
-    EVAL(videoframe.startTime());
-    EVAL(videoframe.endTime());
-
-    if (videoframe.startTime() < 0)
-    {
-        return;
     }
 
     if (_first)
@@ -118,7 +121,16 @@ void Win004::capture()
 		std::cout << string.str() << std::endl;
         ui->labelImagedTime->setText(string.str().data());
 	}
+
     _mark = Clock::now();
+
+    if (_interval)
+    {
+        _position += _interval;
+        if (_position >= _mediaPlayer->duration())
+            _position = 0;
+        _mediaPlayer->setPosition(_position);
+    }
 }
 
 void Win004::handleError()

@@ -17,7 +17,7 @@ class Win004 : public QWidget
 
 public:
     Win004(QString file,
-           int interval = 1000,
+           int interval = 0,
            QWidget *parent = nullptr);
     ~Win004();
 
