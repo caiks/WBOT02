@@ -6,9 +6,11 @@
 
 Win004::Win004(QString file,
                int interval,
+               int sleep,
+               int durationTrim,
                QWidget *parent)
     : QWidget(parent),
-      ui(new Ui::Win004), _first(true), _interval(interval), _position(0)
+      ui(new Ui::Win004), _first(true), _interval(interval), _sleep(sleep), _durationTrim(durationTrim), _position(0)
 {
     ui->setupUi(this);
 	
@@ -16,7 +18,7 @@ Win004::Win004(QString file,
     connect(_mediaPlayer, &QMediaPlayer::errorChanged,this, &Win004::handleError);
     _videoWidget = new QVideoWidget;
     _mediaPlayer->setVideoOutput(_videoWidget);
-    _mediaPlayer->setLoops(QMediaPlayer::Infinite);
+//    _mediaPlayer->setLoops(QMediaPlayer::Infinite);
     _mediaPlayer->setSource(QUrl::fromLocalFile(file));
     connect(_mediaPlayer, &::QMediaPlayer::mediaStatusChanged, this, &Win004::mediaStateChanged);
 }
@@ -34,6 +36,7 @@ void Win004::mediaStateChanged(QMediaPlayer::MediaStatus state)
         EVAL(_mediaPlayer->duration());
         connect(_mediaPlayer->videoSink(), &QVideoSink::videoFrameChanged, this, &Win004::capture);
         _mark = Clock::now();
+        _markPrev = Clock::now();
         _mediaPlayer->play();
     }
 }
@@ -122,14 +125,29 @@ void Win004::capture()
         ui->labelImagedTime->setText(string.str().data());
 	}
 
+    auto sleep = _sleep - ((Sec)(Clock::now() - _markPrev)).count()*1000;
+    if (sleep > 0)
+    {
+        _mediaPlayer->pause();
+        QTimer::singleShot(sleep, this, &Win004::next);
+    }
+    else
+        next();
+}
+
+
+void Win004::next()
+{
     _mark = Clock::now();
+    _markPrev = Clock::now();
 
     if (_interval)
     {
         _position += _interval;
-        if (_position >= _mediaPlayer->duration())
+        if (_position >= _mediaPlayer->duration() - _durationTrim)
             _position = 0;
         _mediaPlayer->setPosition(_position);
+        _mediaPlayer->play();
     }
 }
 

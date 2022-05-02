@@ -156,7 +156,8 @@ int main(int argc, char *argv[])
         QApplication application(argc, argv);
 
         Win004 win004(QString(argv[2]),
-                      argc >= 4 ? atoi(argv[3]) : 0);
+            argc >= 4 ? atoi(argv[3]) : 0,
+            argc >= 5 ? atoi(argv[4]) : 0);
         win004.show();
         EVAL(application.exec());
     }

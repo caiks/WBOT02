@@ -18,12 +18,15 @@ class Win004 : public QWidget
 public:
     Win004(QString file,
            int interval = 0,
+           int sleep = 0,
+           int durationTrim = 50,
            QWidget *parent = nullptr);
     ~Win004();
 
 private Q_SLOTS:
     void mediaStateChanged(QMediaPlayer::MediaStatus state);
     void capture();
+    void next();
     void handleError();
 
 private:
@@ -31,8 +34,11 @@ private:
     QMediaPlayer* _mediaPlayer;
     QVideoWidget* _videoWidget;
     std::chrono::time_point<std::chrono::high_resolution_clock> _mark;
+    std::chrono::time_point<std::chrono::high_resolution_clock> _markPrev;
     bool _first;
     int _interval;
+    int _sleep;
+    int _durationTrim;
     qint64 _position;
 };
 #endif // WIN004_H
