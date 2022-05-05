@@ -19,6 +19,7 @@ public:
     Win004(QString file,
            int interval = 0,
            int sleep = 0,
+           double playbackRate = 1.0,
            int durationTrim = 50,
            QWidget *parent = nullptr);
     ~Win004();

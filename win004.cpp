@@ -7,6 +7,7 @@
 Win004::Win004(QString file,
                int interval,
                int sleep,
+               double playbackRate,
                int durationTrim,
                QWidget *parent)
     : QWidget(parent),
@@ -15,6 +16,8 @@ Win004::Win004(QString file,
     ui->setupUi(this);
 	
     _mediaPlayer = new QMediaPlayer(this);
+    if (playbackRate != 1.0 && playbackRate > 0.0)
+        _mediaPlayer->setPlaybackRate(playbackRate);
     connect(_mediaPlayer, &QMediaPlayer::errorChanged,this, &Win004::handleError);
     _videoWidget = new QVideoWidget;
     _mediaPlayer->setVideoOutput(_videoWidget);
@@ -126,7 +129,7 @@ void Win004::capture()
 	}
 
     auto sleep = _sleep - ((Sec)(Clock::now() - _markPrev)).count()*1000;
-    if (sleep > 0)
+    if (_sleep > 0 && sleep > 0)
     {
         _mediaPlayer->pause();
         QTimer::singleShot(sleep, this, &Win004::next);
