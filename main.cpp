@@ -121,8 +121,8 @@ int main(int argc, char *argv[])
 		}
 	}
 		
-    if (argc >= 2 && (std::string(argv[1]) == "image002" || std::string(argv[1]) == "win001"))
-	{
+    if (argc >= 2 && (std::string(argv[1]) == "camera001" || std::string(argv[1]) == "image002" || std::string(argv[1]) == "win001"))
+    {
         QApplication application(argc, argv);
         Win001 win001(argc >= 3 ? atoi(argv[2]) : 1000);
         win001.show();
