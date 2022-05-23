@@ -21,6 +21,44 @@ int main(int argc, char *argv[])
 		cout << "hello" << endl;
 	}
 	
+	if (argc >= 2 && std::string(argv[1]) == "records")
+	{
+        RecordList rr {Record(0.9,0.8,0.7,0.6,3,2),Record(0.1,0.2,0.3,0.4,2,1)};
+		rr[0].arr = std::vector<unsigned char> {0,1,2,3,4,5};
+		rr[1].arr = std::vector<unsigned char> {6,7};
+
+		cout << "rr" << endl
+			<< rr << endl;
+
+		try 
+		{
+			std::ofstream out("test.bin", std::ios::binary);
+			ECHO(recordListsPersistent(rr, out));
+			out.close();
+		}
+		catch (const std::exception& e) 
+		{
+			cout << "recordListsPersistent dump failed" << endl;
+		}
+		std::unique_ptr<RecordList> rr2;
+		try 
+		{
+			std::ifstream in("test.bin", std::ios::binary);
+			ECHO(rr2 = persistentsRecordList(in));
+			in.close();
+		}
+		catch (const std::exception& e) 
+		{
+			cout << "recordListsPersistent load failed" << endl;
+		}
+		cout << "rr2" << endl
+			<< *rr2 << endl;
+
+		std::ifstream in2("test.bin", std::ios::binary);
+		cout << in2 << endl;
+		in2.close();
+	}
+	
 	if (argc >= 3 && std::string(argv[1]) == "image001")
 	{
 		auto mark = Clock::now();

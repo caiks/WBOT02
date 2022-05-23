@@ -39,10 +39,49 @@ using TimePoint = std::chrono::time_point<Clock>;
 #define EVALL(x) std::cout << #x << ": " << std::endl << (x) << std::endl
 #define TRUTH(x) std::cout << #x << ": " << ((x) ? "true" : "false") << std::endl
 
+
 namespace WBOT02
 {
+	struct Record
+	{
+		Record(double scaleX1 = 1.0, 
+				double scaleY1 = 1.0, 
+				double centreX1 = 0.5, 
+				double centreY1 = 0.5, 
+				std::size_t sizeX1 = 40, 
+				std::size_t sizeY1 = 30) {
+			scaleX = scaleX1;
+			scaleY = scaleY1;
+			centreX = centreX1;
+			centreY = centreY1;
+			sizeX = sizeX1;
+			sizeY = sizeY1;
+			arr.resize(sizeX*sizeY);
+		}
+		double scaleX;
+		double scaleY;
+		double centreX;
+		double centreY;
+		std::size_t sizeX;
+		std::size_t sizeY;
+		std::vector<unsigned char> arr;
+	};
+	typedef std::vector<Record> RecordList;
+	
+	void recordsPersistent(Record&, std::ostream&);
 
+	void recordListsPersistent(RecordList&, std::ostream&);
+
+	std::unique_ptr<RecordList> persistentsRecordList(std::istream&);
+
+	// typedef std::tuple<std::unique_ptr<Alignment::System>, std::unique_ptr<Alignment::SystemRepa>, std::unique_ptr<Alignment::HistoryRepa>> SystemHistoryRepaTuple;
+
+	// SystemHistoryRepaTuple posesScansHistoryRepa(int, const std::array<double,7>&, const std::array<double,360>&);
 }
+
+std::ostream& operator<<(std::ostream& out, const WBOT02::Record&);
+std::ostream& operator<<(std::ostream& out, const WBOT02::RecordList&);
+std::ostream& operator<<(std::ostream& out, std::istream&);
 
 
 

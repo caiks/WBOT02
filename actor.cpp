@@ -9,11 +9,6 @@ using namespace std;
 using namespace std::chrono_literals;
 namespace js = rapidjson;
 
-#define ECHO(x) cout << #x << endl; x
-#define EVAL(x) cout << #x << ": " << (x) << endl
-#define EVALL(x) cout << #x << ": " << endl << (x) << endl
-#define TRUTH(x) cout << #x << ": " << ((x) ? "true" : "false") << endl
-
 #define ARGS_STRING_DEF(x,y) args.HasMember(#x) && args[#x].IsString() ? args[#x].GetString() : y
 #define ARGS_STRING(x) ARGS_STRING_DEF(x,"")
 #define ARGS_INT_DEF(x,y) args.HasMember(#x) && args[#x].IsInt() ? args[#x].GetInt() : y
