@@ -12,6 +12,8 @@
 #include "AlignmentPracticableIORepa.h"
 #include "AlignmentActive.h"
 
+#include <QImage>
+
 #include <iomanip>
 #include <set>
 #include <unordered_set>
@@ -44,20 +46,17 @@ namespace WBOT02
 {
 	struct Record
 	{
-		Record(double scaleX1 = 1.0, 
-				double scaleY1 = 1.0, 
-				double centreX1 = 0.5, 
-				double centreY1 = 0.5, 
-				std::size_t sizeX1 = 40, 
-				std::size_t sizeY1 = 30) {
-			scaleX = scaleX1;
-			scaleY = scaleY1;
-			centreX = centreX1;
-			centreY = centreY1;
-			sizeX = sizeX1;
-			sizeY = sizeY1;
-			arr.resize(sizeX*sizeY);
-		}
+		Record(
+			double scaleX1 = 1.0, double scaleY1 = 1.0, 
+			double centreX1 = 0.5, double centreY1 = 0.5, 
+			std::size_t sizeX1 = 40, std::size_t sizeY1 = 30);
+			
+		Record(QImage image, 
+			double scaleX1 = 1.0, double scaleY1 = 1.0, 
+			double centreX1 = 0.5, double centreY1 = 0.5, 
+			std::size_t sizeX1 = 40, std::size_t sizeY1 = 30,
+			std::size_t valency = 0);
+			
 		double scaleX;
 		double scaleY;
 		double centreX;

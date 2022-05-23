@@ -7,6 +7,39 @@ using namespace Alignment;
 using namespace WBOT02;
 using namespace std;
 
+WBOT02::Record::Record(
+	double scaleX1, double scaleY1, 
+	double centreX1, double centreY1, 
+	std::size_t sizeX1, std::size_t sizeY1) :
+	scaleX(scaleX1), scaleY(scaleY1), 
+	centreX(centreX1), centreY(centreY1), 
+	sizeX(sizeX1), sizeY(sizeY1) 
+{
+	arr.resize(sizeX*sizeY);
+}
+
+WBOT02::Record::Record(QImage image, 
+	double scaleX1, double scaleY1, 
+	double centreX1, double centreY1, 
+	std::size_t sizeX1, std::size_t sizeY1,
+	std::size_t valency) :
+	scaleX(scaleX1), scaleY(scaleY1), 
+	centreX(centreX1), centreY(centreY1), 
+	sizeX(sizeX1), sizeY(sizeY1) 
+{
+	arr.resize(sizeX*sizeY);
+	auto w = image.width();
+	auto h = image.height();
+	std::size_t intervalX = (std::size_t)(w*scaleX/sizeX);
+	std::size_t intervalY = (std::size_t)(h*scaleY/sizeY);
+	if (intervalX * intervalY)
+	{
+		// for (int y = )
+		
+	}
+}
+
+
 void WBOT02::recordsPersistent(Record& r, std::ostream& out)
 {
 	out.write(reinterpret_cast<char*>(&r.scaleX), sizeof(double));
