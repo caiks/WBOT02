@@ -1,6 +1,7 @@
 ﻿#include "dev.h"
 
 #include <stdlib.h>
+#include <algorithm>
 #include <random>
 
 using namespace Alignment;
@@ -15,6 +16,8 @@ WBOT02::Record::Record(
 	centreX(centreX1), centreY(centreY1), 
 	sizeX(sizeX1), sizeY(sizeY1) 
 {
+	sizeX = sizeX ? sizeX : 1;
+	sizeY = sizeY ? sizeY : 1;
 	arr.resize(sizeX*sizeY);
 }
 
@@ -22,19 +25,46 @@ WBOT02::Record::Record(QImage image,
 	double scaleX1, double scaleY1, 
 	double centreX1, double centreY1, 
 	std::size_t sizeX1, std::size_t sizeY1,
-	std::size_t valency) :
+	std::size_t valency,
+	std::size_t divisorX, std::size_t divisorY) :
 	scaleX(scaleX1), scaleY(scaleY1), 
 	centreX(centreX1), centreY(centreY1), 
 	sizeX(sizeX1), sizeY(sizeY1) 
 {
+	sizeX = sizeX ? sizeX : 1;
+	sizeY = sizeY ? sizeY : 1;
 	arr.resize(sizeX*sizeY);
 	auto w = image.width();
 	auto h = image.height();
-	std::size_t intervalX = (std::size_t)(w*scaleX/sizeX);
-	std::size_t intervalY = (std::size_t)(h*scaleY/sizeY);
-	if (intervalX * intervalY)
+	double intervalX = scaleX * w / sizeX;
+	double intervalY = scaleY * h / sizeY;
+	int pixelsX = std::max((int)intervalX,1);
+	int pixelsY = std::max((int)intervalY,1);
+	int stepX = (int)(divisorX && (pixelsX >= divisorX) ? pixelsX / divisorX : 1);
+	int stepY = (int)(divisorY && (pixelsY >= divisorY) ? pixelsY / divisorY : 1);
+	double offsetX = (centreX - (scaleX / 2.0)) * w;
+	double offsetY = (centreY - (scaleY / 2.0)) * h;
+	for (std::size_t i = 0; i < sizeX; i++)
+		for (std::size_t j = 0; j < sizeY; j++)
+		{
+			auto x = (int)(intervalX * i + offsetX);
+			auto y = (int)(intervalY * j + offsetY);
+			if (x >= 0 && x < w && y >= 0 && y < h)
+			{
+				int count = 0;
+				int total = 0;
+				for (int dx = 0; dx < pixelsX; dx += stepX)
+					for (int dy = 0; dy < pixelsY; dy += stepY)
+					{
+						auto rgb = image.pixel(x+dx,y+dy);
+						total += std::max(std::max(qRed(rgb),qGreen(rgb)),qBlue(rgb));
+						count++;
+					}
+				arr[j*sizeX + i] = total/count;
+			}
+		}
+	if (valency)
 	{
-		// for (int y = )
 		
 	}
 }
