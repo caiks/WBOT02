@@ -53,14 +53,17 @@ WBOT02::Record::Record(QImage image,
 			{
 				int count = 0;
 				int total = 0;
-				for (int dx = 0; dx < pixelsX; dx += stepX)
-					for (int dy = 0; dy < pixelsY; dy += stepY)
+				auto xp = x + pixelsX;
+				auto yp = y + pixelsY;
+				for (int x1 = x; x1 < xp && x1 < w; x1 += stepX)
+					for (int y1 = y; y1 < yp && y1 < h; y1 += stepY)
 					{
-						auto rgb = image.pixel(x+dx,y+dy);
+						auto rgb = image.pixel(x1,y1);
 						total += std::max(std::max(qRed(rgb),qGreen(rgb)),qBlue(rgb));
 						count++;
 					}
-				arr[j*sizeX + i] = total/count;
+				if (count)
+					arr[j*sizeX + i] = total/count;
 			}
 		}
 	if (valency)
