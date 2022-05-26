@@ -102,6 +102,30 @@ Record WBOT02::Record::valent(std::size_t valency) const
 }
 
 
+QImage WBOT02::Record::image(std::size_t multiplier, std::size_t valency) const
+{
+	QImage image(sizeX*multiplier, sizeY*multiplier, QImage::Format_RGB32);
+	if (arr && multiplier)
+	{
+		auto& arr1 = *arr;
+		auto size = arr1.size();
+		std::size_t factor = valency ? 256/valency : 1;
+		std::size_t offset = factor/2 ;
+		for (std::size_t k = 0; k < size; k++)
+		{
+			auto v = arr1[k] * factor + offset;
+			auto i = (k % sizeX) * multiplier;
+			auto j = (k / sizeX) * multiplier;
+			auto rgb = qRgb(v,v,v);
+			for (std::size_t di = 0; di < multiplier; di++)
+				for (std::size_t dj = 0; dj < multiplier; dj++)
+					image.setPixel(i+di, j+dj, rgb);
+		}		
+	}
+	return image;
+}
+
+
 void WBOT02::recordsPersistent(Record& r, std::ostream& out)
 {
 	out.write(reinterpret_cast<char*>(&r.scaleX), sizeof(double));

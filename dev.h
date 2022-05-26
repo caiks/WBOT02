@@ -58,6 +58,7 @@ namespace WBOT02
 			std::size_t divisorX = 0, std::size_t divisorY = 0);
 			
 		Record valent(std::size_t valency) const;
+		QImage image(std::size_t multiplier = 1, std::size_t valency = 0) const;
 		
 		double scaleX;
 		double scaleY;

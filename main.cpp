@@ -121,21 +121,20 @@ int main(int argc, char *argv[])
 		EVAL(a.exec());
 	}
 	
-	if (argc >= 3 && std::string(argv[1]) == "image002")
+	if (argc >= 3 && std::string(argv[1]) == "image003")
 	{
 		auto mark = Clock::now();
 		QApplication a(argc, argv);
-		QImage image;
-		ECHOT(image.load(argv[2]));
-		{
-			mark = Clock::now();
-			ECHOT(Record recordA(image));
-			EVAL(recordA);
-			ECHOT(Record recordB = recordA.valent(16));
-			EVAL(recordB);
-		}
+		std::size_t valency = argc >= 4 ? atoi(argv[3]) : 0;
+		QImage imageA;
+		ECHOT(imageA.load(argv[2]));
+        ECHOT(Record recordA(imageA, 1.0 * imageA.height() / imageA.width(), 1.0, 0.5, 0.5, 40, 40));
+		EVAL(recordA);
+        ECHOT(Record recordB = recordA.valent(valency));
+		EVAL(recordB);
+        ECHOT(QImage imageB = recordB.image(10,valency));
 		QLabel myLabel;
-		ECHOT(auto pixmap = QPixmap::fromImage(image));
+		ECHOT(auto pixmap = QPixmap::fromImage(imageB));
 		ECHOT(myLabel.setPixmap(pixmap));
 		myLabel.show();
 		EVAL(a.exec());
