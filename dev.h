@@ -55,7 +55,6 @@ namespace WBOT02
 			double scaleX1 = 1.0, double scaleY1 = 1.0, 
 			double centreX1 = 0.5, double centreY1 = 0.5, 
 			std::size_t sizeX1 = 40, std::size_t sizeY1 = 30,
-			std::size_t valency = 0,
 			std::size_t divisorX = 0, std::size_t divisorY = 0);
 			
 		double scaleX;
@@ -64,7 +63,7 @@ namespace WBOT02
 		double centreY;
 		std::size_t sizeX;
 		std::size_t sizeY;
-		std::vector<unsigned char> arr;
+		std::shared_ptr<std::vector<unsigned char>> arr;
 	};
 	typedef std::vector<Record> RecordList;
 	

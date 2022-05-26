@@ -18,14 +18,13 @@ WBOT02::Record::Record(
 {
 	sizeX = sizeX ? sizeX : 1;
 	sizeY = sizeY ? sizeY : 1;
-	arr.resize(sizeX*sizeY);
+	arr = std::make_shared<std::vector<unsigned char>>(sizeX*sizeY);
 }
 
 WBOT02::Record::Record(QImage image, 
 	double scaleX1, double scaleY1, 
 	double centreX1, double centreY1, 
 	std::size_t sizeX1, std::size_t sizeY1,
-	std::size_t valency,
 	std::size_t divisorX, std::size_t divisorY) :
 	scaleX(scaleX1), scaleY(scaleY1), 
 	centreX(centreX1), centreY(centreY1), 
@@ -33,15 +32,17 @@ WBOT02::Record::Record(QImage image,
 {
 	sizeX = sizeX ? sizeX : 1;
 	sizeY = sizeY ? sizeY : 1;
-	arr.resize(sizeX*sizeY);
+	arr = std::make_shared<std::vector<unsigned char>>(sizeX*sizeY);
+	divisorX = divisorX ? divisorX : 1;
+	divisorY = divisorY ? divisorY : 1;
 	auto w = image.width();
 	auto h = image.height();
 	double intervalX = scaleX * w / sizeX;
 	double intervalY = scaleY * h / sizeY;
 	int pixelsX = std::max((int)intervalX,1);
 	int pixelsY = std::max((int)intervalY,1);
-	int stepX = (int)(divisorX && (pixelsX >= divisorX) ? pixelsX / divisorX : 1);
-	int stepY = (int)(divisorY && (pixelsY >= divisorY) ? pixelsY / divisorY : 1);
+	int stepX = (int)(pixelsX >= divisorX ? pixelsX / divisorX : 1);
+	int stepY = (int)(pixelsY >= divisorY ? pixelsY / divisorY : 1);
 	double offsetX = (centreX - (scaleX / 2.0)) * w;
 	double offsetY = (centreY - (scaleY / 2.0)) * h;
 	for (std::size_t i = 0; i < sizeX; i++)
@@ -53,8 +54,8 @@ WBOT02::Record::Record(QImage image,
 			{
 				int count = 0;
 				int total = 0;
-				auto xp = x + pixelsX;
-				auto yp = y + pixelsY;
+				auto xp = x + (stepX == 1 ? divisorX : pixelsX);
+				auto yp = y + (stepY == 1 ? divisorY : pixelsY);
 				for (int x1 = x; x1 < xp && x1 < w; x1 += stepX)
 					for (int y1 = y; y1 < yp && y1 < h; y1 += stepY)
 					{
@@ -63,13 +64,9 @@ WBOT02::Record::Record(QImage image,
 						count++;
 					}
 				if (count)
-					arr[j*sizeX + i] = total/count;
+					(*arr)[j*sizeX + i] = total/count;
 			}
 		}
-	if (valency)
-	{
-		
-	}
 }
 
 
@@ -81,7 +78,7 @@ void WBOT02::recordsPersistent(Record& r, std::ostream& out)
 	out.write(reinterpret_cast<char*>(&r.centreY), sizeof(double));
 	out.write(reinterpret_cast<char*>(&r.sizeX), sizeof(std::size_t));
 	out.write(reinterpret_cast<char*>(&r.sizeY), sizeof(std::size_t));
-	out.write(reinterpret_cast<char*>((char*)r.arr.data()), r.sizeX*r.sizeY);
+	out.write(reinterpret_cast<char*>((char*)r.arr->data()), r.sizeX*r.sizeY);
 }
 
 void WBOT02::recordListsPersistent(RecordList& rr, std::ostream& out)
@@ -104,8 +101,8 @@ std::unique_ptr<RecordList> WBOT02::persistentsRecordList(std::istream& in)
 		in.read(reinterpret_cast<char*>(&r.centreY), sizeof(double));
 		in.read(reinterpret_cast<char*>(&r.sizeX), sizeof(std::size_t));
 		in.read(reinterpret_cast<char*>(&r.sizeY), sizeof(std::size_t));
-		r.arr.resize(r.sizeX*r.sizeY);
-		in.read(reinterpret_cast<char*>((char*)r.arr.data()), r.sizeX*r.sizeY);
+		r.arr->resize(r.sizeX*r.sizeY);
+		in.read(reinterpret_cast<char*>((char*)r.arr->data()), r.sizeX*r.sizeY);
 		rr->push_back(r);
 	}
 	return rr;
@@ -118,7 +115,7 @@ std::ostream& operator<<(std::ostream& out, const Record& r)
 		<< r.centreX << "," << r.centreX  << "," 
 		<< r.sizeX << "," << r.sizeY  << ",";
 	for (std::size_t h = 0; h < r.sizeX*r.sizeY; h++)	
-		out << (h ? "," : "[") << (int)r.arr[h];
+		out << (h ? "," : "[") << (int)(*r.arr)[h];
 	out << "])";
 	return out;
 }

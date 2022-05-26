@@ -24,8 +24,8 @@ int main(int argc, char *argv[])
 	if (argc >= 2 && std::string(argv[1]) == "records")
 	{
         RecordList rr {Record(0.9,0.8,0.7,0.6,3,2),Record(0.1,0.2,0.3,0.4,2,1)};
-		rr[0].arr = std::vector<unsigned char> {0,1,2,3,4,5};
-		rr[1].arr = std::vector<unsigned char> {6,7};
+        *(rr[0].arr) = std::vector<unsigned char> {0,1,2,3,4,5};
+        *(rr[1].arr) = std::vector<unsigned char> {6,7};
 
 		cout << "rr" << endl
 			<< rr << endl;
