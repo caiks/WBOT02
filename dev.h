@@ -57,6 +57,8 @@ namespace WBOT02
 			std::size_t sizeX1 = 40, std::size_t sizeY1 = 30,
 			std::size_t divisorX = 0, std::size_t divisorY = 0);
 			
+		Record valent(std::size_t valency) const;
+		
 		double scaleX;
 		double scaleY;
 		double centreX;

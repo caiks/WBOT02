@@ -69,6 +69,38 @@ WBOT02::Record::Record(QImage image,
 		}
 }
 
+Record WBOT02::Record::valent(std::size_t valency) const
+{
+	Record record(*this);
+	if (valency && record.arr && record.arr->size()/valency)
+	{
+		auto& arr1 = *arr;
+		record.arr = std::make_shared<std::vector<unsigned char>>(arr1);
+		auto& arr2 = *record.arr;
+		std::sort(arr2.begin(), arr2.end());
+		std::vector<std::size_t> values(valency-1);	
+		auto sz = arr1.size();
+		std::size_t interval = sz/valency;
+		for (std::size_t i = 0; i < valency-1; i++)
+			values[i] = arr2[i*interval];
+		for (std::size_t j = 0; j < sz; j++)
+		{
+			auto v = arr1[j];
+			bool found = false;
+			for (std::size_t i = 0; i < valency-1; i++)	
+				if (v <= values[i])
+				{
+					arr2[j] = i;
+					found = true;
+					break;
+				}
+			if (!found)
+				arr2[j] = valency-1;
+		}
+	}
+	return record;
+}
+
 
 void WBOT02::recordsPersistent(Record& r, std::ostream& out)
 {

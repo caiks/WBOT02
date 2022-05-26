@@ -121,6 +121,26 @@ int main(int argc, char *argv[])
 		EVAL(a.exec());
 	}
 	
+	if (argc >= 3 && std::string(argv[1]) == "image002")
+	{
+		auto mark = Clock::now();
+		QApplication a(argc, argv);
+		QImage image;
+		ECHOT(image.load(argv[2]));
+		{
+			mark = Clock::now();
+			ECHOT(Record recordA(image));
+			EVAL(recordA);
+			ECHOT(Record recordB = recordA.valent(16));
+			EVAL(recordB);
+		}
+		QLabel myLabel;
+		ECHOT(auto pixmap = QPixmap::fromImage(image));
+		ECHOT(myLabel.setPixmap(pixmap));
+		myLabel.show();
+		EVAL(a.exec());
+	}
+	
 	if (argc >= 2 && std::string(argv[1]) == "screen001")
 	{
 		auto mark = Clock::now();
