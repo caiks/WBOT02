@@ -77,11 +77,23 @@ Record WBOT02::Record::valent(std::size_t valency) const
 		auto& arr2 = *record.arr;
 		std::sort(arr2.begin(), arr2.end());
 		std::vector<std::size_t> values(valency-1);	
-		auto sz = arr1.size();
-		std::size_t interval = sz/valency;
+		auto size = arr1.size();
+		std::size_t zeros = 0;
+		while (zeros < size && !arr2[zeros]) zeros++;
+		std::size_t interval = size/valency;
+		if (zeros == size)
+			return record;
+		if (zeros > interval)
+		{
+			interval = (size-zeros)/valency;
+			interval = interval ? interval : 1;
+			zeros--;
+		}
+		else 
+			zeros = 0;
 		for (std::size_t i = 0; i < valency-1; i++)
-			values[i] = arr2[i*interval];
-		for (std::size_t j = 0; j < sz; j++)
+			values[i] = arr2[std::min(i*interval+zeros, size-1)];
+		for (std::size_t j = 0; j < size; j++)
 		{
 			auto v = arr1[j];
 			bool found = false;
