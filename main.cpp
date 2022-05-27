@@ -130,13 +130,14 @@ int main(int argc, char *argv[])
 		double centreX = argc >= 6 ? atof(argv[5]) : 0.5;
 		double centreY = argc >= 7 ? atof(argv[6]) : 0.5;
 		std::size_t size = argc >= 8 ? atoi(argv[7]) : 40;
+		std::size_t divisor = argc >= 9 ? atoi(argv[8]) : 0;
 		QImage imageA;
 		ECHOT(imageA.load(argv[2]));
-        ECHOT(Record recordA(imageA, scale * imageA.height() / imageA.width(), scale, centreX, centreY, size, size));
+        ECHOT(Record recordA(imageA, scale * imageA.height() / imageA.width(), scale, centreX, centreY, size, size, divisor, divisor));
 		// EVAL(recordA);
         ECHOT(Record recordB = recordA.valent(valency));
 		// EVAL(recordB);
-        ECHOT(QImage imageB = recordB.image(400/size,valency));
+        ECHOT(QImage imageB = recordB.image(120/size,valency));
 		QLabel myLabel;
 		ECHOT(auto pixmap = QPixmap::fromImage(imageB));
 		ECHOT(myLabel.setPixmap(pixmap));

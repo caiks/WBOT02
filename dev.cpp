@@ -33,16 +33,14 @@ WBOT02::Record::Record(QImage image,
 	sizeX = sizeX ? sizeX : 1;
 	sizeY = sizeY ? sizeY : 1;
 	arr = std::make_shared<std::vector<unsigned char>>(sizeX*sizeY);
-	divisorX = divisorX ? divisorX : 1;
-	divisorY = divisorY ? divisorY : 1;
 	auto w = image.width();
 	auto h = image.height();
 	double intervalX = scaleX * w / sizeX;
 	double intervalY = scaleY * h / sizeY;
 	int pixelsX = std::max((int)intervalX,1);
 	int pixelsY = std::max((int)intervalY,1);
-	int stepX = (int)(pixelsX >= divisorX ? pixelsX / divisorX : 1);
-	int stepY = (int)(pixelsY >= divisorY ? pixelsY / divisorY : 1);
+	int stepX = (int)(divisorX && pixelsX >= divisorX ? pixelsX / divisorX : 1);
+	int stepY = (int)(divisorY && pixelsY >= divisorY ? pixelsY / divisorY : 1);
 	double offsetX = (centreX - (scaleX / 2.0)) * w;
 	double offsetY = (centreY - (scaleY / 2.0)) * h;
 	for (std::size_t i = 0; i < sizeX; i++)
@@ -54,8 +52,8 @@ WBOT02::Record::Record(QImage image,
 			{
 				int count = 0;
 				int total = 0;
-				auto xp = x + (stepX == 1 ? divisorX : pixelsX);
-				auto yp = y + (stepY == 1 ? divisorY : pixelsY);
+				auto xp = x + (divisorX && stepX == 1 ? divisorX : pixelsX);
+				auto yp = y + (divisorY && stepY == 1 ? divisorY : pixelsY);
 				for (int x1 = x; x1 < xp && x1 < w; x1 += stepX)
 					for (int y1 = y; y1 < yp && y1 < h; y1 += stepY)
 					{
