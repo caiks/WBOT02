@@ -4,6 +4,7 @@
 #include "win002.h"
 #include "win003.h"
 #include "win004.h"
+#include "win005.h"
 
 #include <QApplication>
 #include <QLabel>
@@ -226,5 +227,16 @@ int main(int argc, char *argv[])
         EVAL(application.exec());
     }
 	
+	if (argc >= 2 && (std::string(argv[1]) == "screen003" || std::string(argv[1]) == "win005"))
+	{
+        QApplication application(argc, argv);
+        Win005 win005(argc >= 3 ? atoi(argv[2]) : 1000,
+            argc >= 4 ? atoi(argv[3]) : 0,
+            argc >= 5 ? atoi(argv[4]) : 0,
+            argc >= 6 ? atoi(argv[5]) : -1,
+            argc >= 7 ? atoi(argv[6]) : -1);
+        win005.show();
+        EVAL(application.exec());
+	}
 	return 0;
 }
