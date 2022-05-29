@@ -119,7 +119,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="labelAverage">
+      <widget class="QLabel" name="labelRecordedTime">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
          <horstretch>0</horstretch>
@@ -127,7 +127,7 @@
         </sizepolicy>
        </property>
        <property name="text">
-        <string>average</string>
+        <string>recorded time</string>
        </property>
       </widget>
      </item>
