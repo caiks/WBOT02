@@ -235,6 +235,11 @@ int main(int argc, char *argv[])
             argc >= 5 ? atoi(argv[4]) : 0,
             argc >= 6 ? atoi(argv[5]) : -1,
             argc >= 7 ? atoi(argv[6]) : -1);
+
+        const auto screenSize = QGuiApplication::primaryScreen()->availableGeometry();
+        win005.resize(screenSize.width()/2, screenSize.height());
+        win005.move(screenSize.topLeft());
+
         win005.show();
         EVAL(application.exec());
 	}

@@ -17,6 +17,7 @@ Win005::Win005(int intervalA,
       width(widthA),
       height(heightA)
 {
+	setCursor(Qt::CrossCursor);
     ui->setupUi(this);
 	
 	start();
