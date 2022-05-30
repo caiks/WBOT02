@@ -37,7 +37,7 @@ int main(int argc, char *argv[])
 			ECHO(recordListsPersistent(rr, out));
 			out.close();
 		}
-		catch (const std::exception& e) 
+        catch (const std::exception&)
 		{
 			cout << "recordListsPersistent dump failed" << endl;
 		}
@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
 			ECHO(rr2 = persistentsRecordList(in));
 			in.close();
 		}
-		catch (const std::exception& e) 
+        catch (const std::exception&)
 		{
 			cout << "recordListsPersistent load failed" << endl;
 		}
@@ -235,6 +235,20 @@ int main(int argc, char *argv[])
             argc >= 5 ? atoi(argv[4]) : 0,
             argc >= 6 ? atoi(argv[5]) : -1,
             argc >= 7 ? atoi(argv[6]) : -1);
+
+        const auto screenSize = QGuiApplication::primaryScreen()->availableGeometry();
+        win005.resize(screenSize.width()/2, screenSize.height()*0.95);
+        win005.move(screenSize.topLeft());
+
+        win005.show();
+        EVAL(application.exec());
+	}
+	
+	if (argc >= 3 && std::string(argv[1]) == "screen004")
+	{
+        QApplication application(argc, argv);
+		std::string config(argv[3]);
+        Win005 win005(config);
 
         const auto screenSize = QGuiApplication::primaryScreen()->availableGeometry();
         win005.resize(screenSize.width()/2, screenSize.height()*0.95);

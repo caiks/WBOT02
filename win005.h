@@ -22,11 +22,14 @@ public:
            int width = -1,
            int height = -1,
            QWidget *parent = nullptr);
+	Win005(std::string config,
+           QWidget *parent = nullptr);
     ~Win005();
 
 public Q_SLOTS:
 	void start();
     void capture();
+	void configParse();
 	
 protected:
 	void mousePressEvent(QMouseEvent *event) override;
@@ -35,7 +38,7 @@ private:
     Ui::Win005 *ui;
 	QScreen *screen;
 	std::chrono::time_point<std::chrono::high_resolution_clock> mark;
-	bool first; 
+	std::string config;
     int interval;
     int x;
     int y;
