@@ -90,8 +90,7 @@ void Win005::capture()
 			labelRecordValents[k]->setPixmap(QPixmap::fromImage(recordValents[k].image(multiplier,valency)));
 		}			
 	    std::stringstream string;
-        QImage scaledImage = image.scaled(ui->labelImage->size(),Qt::KeepAspectRatio,Qt::SmoothTransformation);
-		ui->labelImage->setPixmap(QPixmap::fromImage(scaledImage));
+		ui->labelImage->setPixmap(QPixmap::fromImage(image));
         string << "imaged\t" << ((Sec)(Clock::now() - mark)).count() << "s";
 		// std::cout << string.str() << std::endl;
         ui->labelImagedTime->setText(string.str().data());	
