@@ -15,7 +15,9 @@ Win005::Win005(int intervalA,
       x(xA),
       y(yA),
       width(widthA),
-      height(heightA)
+      height(heightA),
+	  centreX(0.5),
+	  centreY(0.5)
 {
 	setCursor(Qt::CrossCursor);
     ui->setupUi(this);
@@ -55,8 +57,6 @@ void Win005::capture()
 	std::vector<Record> recordValents;
 	{
 		mark = Clock::now(); 
-		double centreX = 0.5;
-		double centreY = 0.5;
 		std::size_t size = 40;
 		std::size_t divisor = 4;
 		for (std::size_t k = 0; k < scaleSize; k++)	
@@ -77,7 +77,7 @@ void Win005::capture()
 	
 	{
 		mark = Clock::now(); 
-		std::size_t multiplier = 2;
+		std::size_t multiplier = 3;
 		std::vector<QLabel*> labelRecords{ 
 			ui->labelRecord0, ui->labelRecord1, ui->labelRecord2, 
 			ui->labelRecord3, ui->labelRecord4};
@@ -90,11 +90,32 @@ void Win005::capture()
 			labelRecordValents[k]->setPixmap(QPixmap::fromImage(recordValents[k].image(multiplier,valency)));
 		}			
 	    std::stringstream string;
-		QImage scaledImage = image.scaled(ui->labelImage->size(),Qt::KeepAspectRatio,Qt::SmoothTransformation);
+        QImage scaledImage = image.scaled(ui->labelImage->size(),Qt::KeepAspectRatio,Qt::SmoothTransformation);
 		ui->labelImage->setPixmap(QPixmap::fromImage(scaledImage));
         string << "imaged\t" << ((Sec)(Clock::now() - mark)).count() << "s";
 		// std::cout << string.str() << std::endl;
         ui->labelImagedTime->setText(string.str().data());	
 	}
+	
+	{
+        std::stringstream string;
+        string << "centre\t(" << std::setprecision(3) << centreX << "," << centreY << ")";
+		// std::cout << string.str() << std::endl;
+        ui->labelCentre->setText(string.str().data());
+	}
 }
 
+void Win005::mousePressEvent(QMouseEvent *event)
+{
+    auto geo = ui->labelImage->geometry();
+    auto point = event->position().toPoint() - geo.topLeft();
+    centreX = (double)point.x()/geo.size().width();
+    centreY = (double)point.y()/geo.size().height();
+	
+	{
+        std::stringstream string;
+        string << "centre\t(" << std::setprecision(3) << centreX << "," << centreY << ")";
+        // std::cout << string.str() << std::endl;
+        ui->labelCentre->setText(string.str().data());
+	}
+}

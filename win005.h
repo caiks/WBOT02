@@ -5,6 +5,7 @@
 #include <QWidget>
 #include <QTimer>
 #include <QScreen>
+#include <QMouseEvent>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Win005; }
@@ -26,6 +27,9 @@ public:
 public Q_SLOTS:
 	void start();
     void capture();
+	
+protected:
+	void mousePressEvent(QMouseEvent *event) override;
 
 private:
     Ui::Win005 *ui;
@@ -36,7 +40,8 @@ private:
     int x;
     int y;
     int width;
-    int height;
-
+    int height;	
+	double centreX;
+	double centreY;
 };
 #endif // WIN005_H
