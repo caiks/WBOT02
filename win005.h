@@ -22,7 +22,7 @@ public:
            int width = -1,
            int height = -1,
            QWidget *parent = nullptr);
-	Win005(std::string config,
+	Win005(const std::string& config,
            QWidget *parent = nullptr);
     ~Win005();
 
@@ -46,5 +46,10 @@ private:
     int height;	
 	double centreX;
 	double centreY;
+    std::vector<double> scales;
+	std::size_t valency;
+	std::size_t size;
+	std::size_t divisor;
+	std::size_t multiplier;
 };
 #endif // WIN005_H

@@ -247,8 +247,7 @@ int main(int argc, char *argv[])
 	if (argc >= 3 && std::string(argv[1]) == "screen004")
 	{
         QApplication application(argc, argv);
-		std::string config(argv[3]);
-        Win005 win005(config);
+        Win005 win005(std::string(argv[2]),nullptr);
 
         const auto screenSize = QGuiApplication::primaryScreen()->availableGeometry();
         win005.resize(screenSize.width()/2, screenSize.height()*0.95);

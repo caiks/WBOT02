@@ -31,18 +31,26 @@ Win005::Win005(int intervalA,
       width(widthA),
       height(heightA),
 	  centreX(0.5),
-	  centreY(0.5)
+	  centreY(0.5),
+	  valency(10),
+	  size(40),
+	  divisor(4),
+	  multiplier(3)
 {
 	setCursor(Qt::CrossCursor);
     ui->setupUi(this);
 	
+	for (std::size_t k = 0; k < 5; k++)	
+		scales.push_back(std::pow(0.5, k));
+	
 	start();
 }
 
-Win005::Win005(std::string config,
+Win005::Win005(const std::string& configA,
                QWidget *parent)
     : QWidget(parent),
-      ui(new Ui::Win005)
+      ui(new Ui::Win005),
+	  config(configA)
 {
 	setCursor(Qt::CrossCursor);
     ui->setupUi(this);
@@ -83,7 +91,25 @@ void Win005::configParse()
 		args.Parse("{}");
 	}
 	interval = ARGS_INT_DEF(interval,1000);	
-	
+	x = ARGS_INT_DEF(x,791);	
+	y = ARGS_INT_DEF(y,244);	
+	width = ARGS_INT_DEF(width,728);	
+	height = ARGS_INT_DEF(height,410);	
+	centreX = ARGS_DOUBLE_DEF(centreX,0.5);
+	centreY = ARGS_DOUBLE_DEF(centreY,0.5);
+	if (args.HasMember("scales") && args["scales"].IsArray())
+	{
+		auto& arr = args["scales"];
+		for (int k = 0; k < arr.Size(); k++)
+			scales.push_back(arr[k].GetDouble());	
+	}
+	if (!scales.size())
+		for (std::size_t k = 0; k < 5; k++)	
+			scales.push_back(std::pow(0.5, k));
+	valency = ARGS_INT_DEF(valency,10);	
+	size = ARGS_INT_DEF(size,40);	
+	divisor = ARGS_INT_DEF(divisor,4);	
+	multiplier = ARGS_INT_DEF(multiplier,3);	
 }
 
 void Win005::start()
@@ -107,19 +133,14 @@ void Win005::capture()
         ui->labelCapturedTime->setText(string.str().data());
 	}
 	
-	std::size_t scaleSize = 5;
-	std::size_t valency = 10;
 	std::vector<Record> records;
 	std::vector<Record> recordValents;
 	{
 		mark = Clock::now(); 
-		std::size_t size = 40;
-		std::size_t divisor = 4;
-		for (std::size_t k = 0; k < scaleSize; k++)	
+		for (std::size_t k = 0; k < scales.size(); k++)	
 		{
-			double scale = std::pow(0.5, k);
 			Record recordA(image, 
-				scale * image.height() / image.width(), scale, 
+                scales[k] * image.height() / image.width(), scales[k],
 				centreX, centreY, size, size, divisor, divisor);
 			records.push_back(recordA);
             Record recordB = recordA.valent(valency);
@@ -133,14 +154,13 @@ void Win005::capture()
 	
 	{
 		mark = Clock::now(); 
-		std::size_t multiplier = 3;
 		std::vector<QLabel*> labelRecords{ 
 			ui->labelRecord0, ui->labelRecord1, ui->labelRecord2, 
 			ui->labelRecord3, ui->labelRecord4};
 		std::vector<QLabel*> labelRecordValents{ 
 			ui->labelEvent0, ui->labelEvent1, ui->labelEvent2, 
 			ui->labelEvent3, ui->labelEvent4};
-		for (std::size_t k = 0; k < scaleSize; k++)	
+        for (std::size_t k = 0; k < scales.size() && k < 5; k++)
 		{			
 			labelRecords[k]->setPixmap(QPixmap::fromImage(records[k].image(multiplier,0)));
 			labelRecordValents[k]->setPixmap(QPixmap::fromImage(recordValents[k].image(multiplier,valency)));
