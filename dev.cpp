@@ -285,3 +285,51 @@ std::ostream& operator<<(std::ostream& out, std::istream& in)
 	// return SystemHistoryRepaTuple(move(uu), move(ur), move(hr));
 // }
 
+
+WBOT02::Representation::Representation(
+	double scaleX1, double scaleY1, 
+	std::size_t sizeX1, std::size_t sizeY1) :
+	scaleX(scaleX1), scaleY(scaleY1), 
+	sizeX(sizeX1), sizeY(sizeY1) 
+{
+	sizeX = sizeX ? sizeX : 1;
+	sizeY = sizeY ? sizeY : 1;
+	arr = std::make_shared<std::vector<std::size_t>>(sizeX*sizeY);
+}
+
+QImage WBOT02::Representation::image(std::size_t multiplier, std::size_t valency) const
+{
+	QImage image(sizeX*multiplier, sizeY*multiplier, QImage::Format_RGB32);
+	if (arr && count && multiplier)
+	{
+		auto& arr1 = *arr;
+		auto size = arr1.size();
+		std::size_t factor = valency ? 256/valency : 1;
+		std::size_t offset = factor/2 ;
+		for (std::size_t k = 0; k < size; k++)
+		{
+			auto v = arr1[k] * factor / count + offset;
+			auto i = (k % sizeX) * multiplier;
+			auto j = (k / sizeX) * multiplier;
+			auto rgb = qRgb(v,v,v);
+			for (std::size_t di = 0; di < multiplier; di++)
+				for (std::size_t dj = 0; dj < multiplier; dj++)
+					image.setPixel(i+di, j+dj, rgb);
+		}		
+	}
+	return image;
+}
+
+
+void WBOT02::Representation::add(const Record& record)
+{
+	if (arr && record.arr && arr->size() == record.arr->size())
+	{
+		auto& arr1 = *arr;
+		auto& arr2 = *record.arr;	
+		auto size = arr1.size();
+		for (std::size_t j = 0; j < size; j++)
+			arr1[j] += arr2[j];
+		count++;
+	}
+}

@@ -79,6 +79,23 @@ namespace WBOT02
 	// typedef std::tuple<std::unique_ptr<Alignment::System>, std::unique_ptr<Alignment::SystemRepa>, std::unique_ptr<Alignment::HistoryRepa>> SystemHistoryRepaTuple;
 
 	// SystemHistoryRepaTuple posesScansHistoryRepa(int, const std::array<double,7>&, const std::array<double,360>&);
+	
+	struct Representation
+	{
+		Representation(
+			double scaleX1 = 1.0, double scaleY1 = 1.0, 
+			std::size_t sizeX1 = 40, std::size_t sizeY1 = 30);
+			
+		QImage image(std::size_t multiplier = 1, std::size_t valency = 0) const;
+		void add(const Record& record);
+		
+		double scaleX;
+		double scaleY;
+		std::size_t sizeX;
+		std::size_t sizeY;
+		std::size_t count;
+		std::shared_ptr<std::vector<std::size_t>> arr;
+	};
 }
 
 std::ostream& operator<<(std::ostream& out, const WBOT02::Record&);
