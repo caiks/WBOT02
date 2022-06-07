@@ -24,24 +24,24 @@ Win006::Win006(int intervalA,
                int heightA,
                QWidget *parent)
     : QWidget(parent),
-      ui(new Ui::Win006), 
-      interval(intervalA),
-      x(xA),
-      y(yA),
-      width(widthA),
-      height(heightA),
-	  centreX(0.5),
-	  centreY(0.5),
-	  valency(10),
-	  size(40),
-	  divisor(4),
-	  multiplier(3)
+      _ui(new Ui::Win006), 
+      _interval(intervalA),
+      _x(xA),
+      _y(yA),
+      _width(widthA),
+      _height(heightA),
+	  _centreX(0.5),
+	  _centreY(0.5),
+	  _valency(10),
+	  _size(40),
+	  _divisor(4),
+	  _multiplier(3)
 {
 	setCursor(Qt::CrossCursor);
-    ui->setupUi(this);
+    _ui->setupUi(this);
 	
 	for (std::size_t k = 0; k < 5; k++)	
-		scales.push_back(std::pow(0.5, k));
+		_scales.push_back(std::pow(0.5, k));
 	
 	start();
 }
@@ -49,40 +49,40 @@ Win006::Win006(int intervalA,
 Win006::Win006(const std::string& configA,
                QWidget *parent)
     : QWidget(parent),
-      ui(new Ui::Win006),
-	  config(configA)
+      _ui(new Ui::Win006),
+	  _config(configA)
 {
 	setCursor(Qt::CrossCursor);
-    ui->setupUi(this);
+    _ui->setupUi(this);
 	configParse();
 	start();
 }
 
 Win006::~Win006()
 {
-    delete ui;
+    delete _ui;
 }
 
 void Win006::configParse()
 {
 	js::Document args;
-	if (!config.empty())
+	if (!_config.empty())
 	{
 		std::ifstream in;
 		try 
 		{
-			in.open(config);
+			in.open(_config);
 			js::IStreamWrapper isw(in);
 			args.ParseStream(isw);
 		}
 		catch (const std::exception&) 
 		{
-			std::cout << "Win006\terror: failed to open arguments file " << config << std::endl;
+            std::cout << "Win006\terror: failed to open arguments file " << _config << std::endl;
 			return;
 		}	
 		if (!args.IsObject())
 		{
-			std::cout << "Win006\terror: failed to read arguments file " << config << std::endl;
+            std::cout << "Win006\terror: failed to read arguments file " << _config << std::endl;
 			return;
 		}
 	}
@@ -90,107 +90,107 @@ void Win006::configParse()
 	{
 		args.Parse("{}");
 	}
-	interval = ARGS_INT_DEF(interval,1000);	
-	x = ARGS_INT_DEF(x,791);	
-	y = ARGS_INT_DEF(y,244);	
-	width = ARGS_INT_DEF(width,728);	
-	height = ARGS_INT_DEF(height,410);	
-	centreX = ARGS_DOUBLE_DEF(centreX,0.5);
-	centreY = ARGS_DOUBLE_DEF(centreY,0.5);
+	_interval = ARGS_INT_DEF(interval,1000);	
+	_x = ARGS_INT_DEF(x,791);	
+	_y = ARGS_INT_DEF(y,244);	
+	_width = ARGS_INT_DEF(width,728);	
+	_height = ARGS_INT_DEF(height,410);	
+	_centreX = ARGS_DOUBLE_DEF(centreX,0.5);
+	_centreY = ARGS_DOUBLE_DEF(centreY,0.5);
 	if (args.HasMember("scales") && args["scales"].IsArray())
 	{
 		auto& arr = args["scales"];
 		for (int k = 0; k < arr.Size(); k++)
-			scales.push_back(arr[k].GetDouble());	
+			_scales.push_back(arr[k].GetDouble());	
 	}
-	if (!scales.size())
+	if (!_scales.size())
 		for (std::size_t k = 0; k < 5; k++)	
-			scales.push_back(std::pow(0.5, k));
-	valency = ARGS_INT_DEF(valency,10);	
-	size = ARGS_INT_DEF(size,40);	
-	divisor = ARGS_INT_DEF(divisor,4);	
-	multiplier = ARGS_INT_DEF(multiplier,3);	
+			_scales.push_back(std::pow(0.5, k));
+	_valency = ARGS_INT_DEF(valency,10);	
+	_size = ARGS_INT_DEF(size,40);	
+	_divisor = ARGS_INT_DEF(divisor,4);	
+	_multiplier = ARGS_INT_DEF(multiplier,3);	
 }
 
 void Win006::start()
 {
-	screen = QGuiApplication::primaryScreen();
+	_screen = QGuiApplication::primaryScreen();
 	
 	QTimer *timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this, &Win006::capture);
-    timer->start(interval);
+    timer->start(_interval);
 }
 
 void Win006::capture()
 {
-	mark = Clock::now();
-    auto pixmap = screen->grabWindow(0, x, y, width, height);
+	_mark = Clock::now();
+    auto pixmap = _screen->grabWindow(0, _x, _y, _width, _height);
 	auto image = pixmap.toImage();
 	{
         std::stringstream string;
-        string << "captured\t" << ((Sec)(Clock::now() - mark)).count() << "s";
+        string << "captured\t" << ((Sec)(Clock::now() - _mark)).count() << "s";
 		// std::cout << string.str() << std::endl;
-        ui->labelCapturedTime->setText(string.str().data());
+        _ui->labelCapturedTime->setText(string.str().data());
 	}
 	
 	std::vector<Record> records;
 	std::vector<Record> recordValents;
 	{
-		mark = Clock::now(); 
-		for (std::size_t k = 0; k < scales.size(); k++)	
+		_mark = Clock::now(); 
+		for (std::size_t k = 0; k < _scales.size(); k++)	
 		{
 			Record recordA(image, 
-                scales[k] * image.height() / image.width(), scales[k],
-				centreX, centreY, size, size, divisor, divisor);
+                _scales[k] * image.height() / image.width(), _scales[k],
+				_centreX, _centreY, _size, _size, _divisor, _divisor);
 			records.push_back(recordA);
-            Record recordB = recordA.valent(valency);
+            Record recordB = recordA.valent(_valency);
 			recordValents.push_back(recordB);
 		}	
 		std::stringstream string;
-        string << "recorded\t" << ((Sec)(Clock::now() - mark)).count() << "s";
+        string << "recorded\t" << ((Sec)(Clock::now() - _mark)).count() << "s";
 		// std::cout << string.str() << std::endl;
-        ui->labelRecordedTime->setText(string.str().data());
+        _ui->labelRecordedTime->setText(string.str().data());
 	}
 	
 	{
-		mark = Clock::now(); 
+		_mark = Clock::now(); 
 		std::vector<QLabel*> labelRecords{ 
-			ui->labelRecord0, ui->labelRecord1, ui->labelRecord2, 
-			ui->labelRecord3, ui->labelRecord4};
+			_ui->labelRecord0, _ui->labelRecord1, _ui->labelRecord2, 
+			_ui->labelRecord3, _ui->labelRecord4};
 		std::vector<QLabel*> labelRecordValents{ 
-			ui->labelEvent0, ui->labelEvent1, ui->labelEvent2, 
-			ui->labelEvent3, ui->labelEvent4};
-        for (std::size_t k = 0; k < scales.size() && k < 5; k++)
+			_ui->labelEvent0, _ui->labelEvent1, _ui->labelEvent2, 
+			_ui->labelEvent3, _ui->labelEvent4};
+        for (std::size_t k = 0; k < _scales.size() && k < 5; k++)
 		{			
-			labelRecords[k]->setPixmap(QPixmap::fromImage(records[k].image(multiplier,0)));
-			labelRecordValents[k]->setPixmap(QPixmap::fromImage(recordValents[k].image(multiplier,valency)));
+			labelRecords[k]->setPixmap(QPixmap::fromImage(records[k].image(_multiplier,0)));
+			labelRecordValents[k]->setPixmap(QPixmap::fromImage(recordValents[k].image(_multiplier,_valency)));
 		}			
 	    std::stringstream string;
-		ui->labelImage->setPixmap(QPixmap::fromImage(image));
-        string << "imaged\t" << ((Sec)(Clock::now() - mark)).count() << "s";
+		_ui->labelImage->setPixmap(QPixmap::fromImage(image));
+        string << "imaged\t" << ((Sec)(Clock::now() - _mark)).count() << "s";
 		// std::cout << string.str() << std::endl;
-        ui->labelImagedTime->setText(string.str().data());	
+        _ui->labelImagedTime->setText(string.str().data());	
 	}
 	
 	{
         std::stringstream string;
-        string << "centre\t(" << std::setprecision(3) << centreX << "," << centreY << ")";
+        string << "centre\t(" << std::setprecision(3) << _centreX << "," << _centreY << ")";
 		// std::cout << string.str() << std::endl;
-        ui->labelCentre->setText(string.str().data());
+        _ui->labelCentre->setText(string.str().data());
 	}
 }
 
 void Win006::mousePressEvent(QMouseEvent *event)
 {
-    auto geo = ui->labelImage->geometry();
+    auto geo = _ui->labelImage->geometry();
     auto point = event->position().toPoint() - geo.topLeft();
-    centreX = (double)point.x()/geo.size().width();
-    centreY = (double)point.y()/geo.size().height();
+    _centreX = (double)point.x()/geo.size().width();
+    _centreY = (double)point.y()/geo.size().height();
 	
 	{
         std::stringstream string;
-        string << "centre\t(" << std::setprecision(3) << centreX << "," << centreY << ")";
+        string << "centre\t(" << std::setprecision(3) << _centreX << "," << _centreY << ")";
         // std::cout << string.str() << std::endl;
-        ui->labelCentre->setText(string.str().data());
+        _ui->labelCentre->setText(string.str().data());
 	}
 }
