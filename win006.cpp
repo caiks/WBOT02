@@ -109,7 +109,7 @@ void Win006::configParse()
 	_valency = ARGS_INT_DEF(valency,10);	
 	_size = ARGS_INT_DEF(size,40);	
 	_divisor = ARGS_INT_DEF(divisor,4);	
-	_multiplier = ARGS_INT_DEF(multiplier,3);	
+	_multiplier = ARGS_INT_DEF(multiplier,2);	
 }
 
 void Win006::start()
@@ -160,10 +160,14 @@ void Win006::capture()
 		std::vector<QLabel*> labelRecordValents{ 
 			_ui->labelEvent0, _ui->labelEvent1, _ui->labelEvent2, 
 			_ui->labelEvent3, _ui->labelEvent4};
+		std::vector<QLabel*> labelRecordSlices{ 
+			_ui->labelSlice0, _ui->labelSlice1, _ui->labelSlice2, 
+			_ui->labelSlice3, _ui->labelSlice4};
         for (std::size_t k = 0; k < _scales.size() && k < 5; k++)
 		{			
 			labelRecords[k]->setPixmap(QPixmap::fromImage(records[k].image(_multiplier,0)));
 			labelRecordValents[k]->setPixmap(QPixmap::fromImage(recordValents[k].image(_multiplier,_valency)));
+			labelRecordSlices[k]->setPixmap(QPixmap::fromImage(recordValents[k].image(_multiplier,_valency)));	// TODO point to slice rep
 		}			
 	    std::stringstream string;
 		_ui->labelImage->setPixmap(QPixmap::fromImage(image));
