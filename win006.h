@@ -28,7 +28,7 @@ public:
 
 public Q_SLOTS:
 	void start();
-    void capture();
+    void act();
 	void configParse();
 	
 protected:
@@ -38,8 +38,33 @@ private:
     Ui::Win006 *_ui;
 	QScreen *_screen;
 	std::chrono::time_point<std::chrono::high_resolution_clock> _mark;
+	
 	std::string _config;
-    int _interval;
+	bool _actLogging;
+	std::size_t _actLoggingFactor;
+    std::size_t _interval;
+	std::string _mode;
+	bool _modeLogging;
+	std::size_t _modeLoggingFactor;
+	bool _modeTracing;
+	
+	std::size_t _eventId;
+	std::size_t _eventIdMax;	
+	
+	std::string _model;
+	std::string _modelInitial;
+
+	bool _activeLogging;
+	bool _activeSummary;
+	std::size_t _activeSize;
+	Alignment::ActiveUpdateParameters _updateParameters;
+	Alignment::ActiveInduceParameters _induceParameters;
+	std::size_t _induceThreshold;
+	std::size_t _induceThresholdInitial;
+    std::size_t _induceInterval;
+	std::size_t _induceThreadCount;
+	bool _induceNot;	
+	
     int _x;
     int _y;
     int _width;

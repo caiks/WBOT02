@@ -55,6 +55,9 @@ Win006::Win006(const std::string& configA,
 	setCursor(Qt::CrossCursor);
     _ui->setupUi(this);
 	configParse();
+	{
+		
+	}
 	start();
 }
 
@@ -90,7 +93,50 @@ void Win006::configParse()
 	{
 		args.Parse("{}");
 	}
-	_interval = ARGS_INT_DEF(interval,1000);	
+	_actLogging = ARGS_BOOL(logging_action);
+	_actLoggingFactor = ARGS_INT(logging_action_factor);
+ 	_interval = ARGS_INT_DEF(interval,1000);	
+	_mode = ARGS_STRING_DEF(mode, "mode001");
+	_modeLogging = ARGS_BOOL(logging_mode);
+	_modeLoggingFactor = ARGS_INT(logging_mode_factor); 
+	_modeTracing = ARGS_BOOL(tracing_mode);
+	_eventId = 0;
+	_eventIdMax = ARGS_INT(event_maximum);
+	_model = ARGS_STRING(model);
+	_modelInitial = ARGS_STRING(model_initial);
+	_activeLogging = ARGS_BOOL(logging_active);
+	_activeSummary = ARGS_BOOL(summary_active);
+	_activeSize = ARGS_INT_DEF(activeSize,1000000);
+	_induceThreshold = ARGS_INT_DEF(induceThreshold,200);
+	_induceThresholdInitial = ARGS_INT_DEF(induceThresholdInitial,1000);
+	_induceInterval = ARGS_INT_DEF(induceInterval,10);	
+	_induceThreadCount = ARGS_INT_DEF(induceThreadCount,4);
+	_induceNot = ARGS_BOOL(no_induce);
+	_induceParameters.tint = _induceThreadCount;		
+	_induceParameters.wmax = ARGS_INT_DEF(induceParameters.wmax,18);
+	_induceParameters.lmax = ARGS_INT_DEF(induceParameters.lmax,8);
+	_induceParameters.xmax = ARGS_INT_DEF(induceParameters.xmax,128);
+	_induceParameters.znnmax = 200000.0 * 2.0 * 300.0 * 300.0 * _induceThreadCount;
+	_induceParameters.omax = ARGS_INT_DEF(induceParameters.omax,10);
+	_induceParameters.bmax = ARGS_INT_DEF(induceParameters.bmax,10*3);
+	_induceParameters.mmax = ARGS_INT_DEF(induceParameters.mmax,3);
+	_induceParameters.umax = ARGS_INT_DEF(induceParameters.umax,128);
+	_induceParameters.pmax = ARGS_INT_DEF(induceParameters.pmax,1);
+	_induceParameters.mult = ARGS_INT_DEF(induceParameters.mult,1);
+	_induceParameters.seed = ARGS_INT_DEF(induceParameters.seed,5);	
+	_induceParameters.diagonalMin = ARGS_DOUBLE_DEF(induceParameters.diagonalMin,6.0);
+	if (args.HasMember("induceParameters.induceThresholds"))
+	{
+		auto& a = args["induceParameters.induceThresholds"];
+		if (a.IsArray())
+			for (auto& v : a.GetArray())
+				if (v.IsInt())
+					_induceParameters.induceThresholds.insert(v.GetInt());
+	}
+	else
+	{
+		_induceParameters.induceThresholds = std::set<std::size_t>{110,120,150,180,200,300,400,500,800,1000};
+	}	
 	_x = ARGS_INT_DEF(x,791);	
 	_y = ARGS_INT_DEF(y,244);	
 	_width = ARGS_INT_DEF(width,728);	
@@ -117,18 +163,18 @@ void Win006::start()
 	_screen = QGuiApplication::primaryScreen();
 	
 	QTimer *timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, &Win006::capture);
+    connect(timer, &QTimer::timeout, this, &Win006::act);
     timer->start(_interval);
 }
 
-void Win006::capture()
+void Win006::act()
 {
 	_mark = Clock::now();
     auto pixmap = _screen->grabWindow(0, _x, _y, _width, _height);
 	auto image = pixmap.toImage();
 	{
         std::stringstream string;
-        string << "captured\t" << ((Sec)(Clock::now() - _mark)).count() << "s";
+        string << "actd\t" << ((Sec)(Clock::now() - _mark)).count() << "s";
 		// std::cout << string.str() << std::endl;
         _ui->labelCapturedTime->setText(string.str().data());
 	}
