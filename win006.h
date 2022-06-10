@@ -16,20 +16,15 @@ class Win006 : public QWidget
     Q_OBJECT
 
 public:
-    Win006(int interval = 1000,
-           int x = 0,
-           int y = 0,
-           int width = -1,
-           int height = -1,
-           QWidget *parent = nullptr);
 	Win006(const std::string& config,
            QWidget *parent = nullptr);
     ~Win006();
-
+		
+	bool terminate;
+	std::size_t eventId;
+	
 public Q_SLOTS:
-	void start();
     void act();
-	void configParse();
 	
 protected:
 	void mousePressEvent(QMouseEvent *event) override;
@@ -38,7 +33,8 @@ private:
     Ui::Win006 *_ui;
 	QScreen *_screen;
 	std::chrono::time_point<std::chrono::high_resolution_clock> _mark;
-	
+
+		
 	std::string _config;
 	bool _actLogging;
 	std::size_t _actLoggingFactor;
@@ -47,8 +43,15 @@ private:
 	bool _modeLogging;
 	std::size_t _modeLoggingFactor;
 	bool _modeTracing;
+
+	std::shared_ptr<Alignment::ActiveSystem> _system;
+	std::shared_ptr<Alignment::System> _uu;
+	std::shared_ptr<Alignment::SystemRepa> _ur;
 	
-	std::size_t _eventId;
+	std::shared_ptr<Alignment::ActiveEventsRepa> _events;
+	std::vector<std::thread> _threads;
+	std::shared_ptr<Alignment::Active> _active;
+	
 	std::size_t _eventIdMax;	
 	
 	std::string _model;

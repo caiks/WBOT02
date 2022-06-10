@@ -76,9 +76,14 @@ namespace WBOT02
 
 	std::unique_ptr<RecordList> persistentsRecordList(std::istream&);
 
-	// typedef std::tuple<std::unique_ptr<Alignment::System>, std::unique_ptr<Alignment::SystemRepa>, std::unique_ptr<Alignment::HistoryRepa>> SystemHistoryRepaTuple;
+	typedef std::tuple<std::unique_ptr<Alignment::System>, std::unique_ptr<Alignment::SystemRepa>> SystemSystemRepaTuple;
 
-	// SystemHistoryRepaTuple posesScansHistoryRepa(int, const std::array<double,7>&, const std::array<double,360>&);
+	SystemSystemRepaTuple recordsSystemSystemRepaTuple(std::size_t scaleValency, std::size_t recordValency, std::size_t recordSize);
+	
+	std::unique_ptr<Alignment::HistoryRepa> sizesHistoryRepa(std::size_t scaleValency, std::size_t recordValency, std::size_t recordSize, std::size_t size = 1);
+	
+	std::unique_ptr<Alignment::HistoryRepa> recordsHistoryRepa(std::size_t scaleValency, std::size_t scale, std::size_t recordValency, const Record& record);
+	
 	
 	struct Representation
 	{
