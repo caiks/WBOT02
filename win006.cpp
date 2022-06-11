@@ -213,8 +213,11 @@ Win006::Win006(const std::string& configA,
 				activeA.varSlice = activeA.system->next(activeA.bits);
 				activeA.historySize = _activeSize;
 				activeA.induceThreshold = _induceThreshold;
-				activeA.decomp = std::make_unique<DecompFudSlicedRepa>();				
-				activeA.underlyingHistoryRepa.push_back(sizesHistoryRepa(_scales.size(), _valency, _size*_size,activeA.historySize));	
+				activeA.decomp = std::make_unique<DecompFudSlicedRepa>();	
+				{
+					auto hr = sizesHistoryRepa(_scales.size(), _valency, _size*_size, activeA.historySize);
+					activeA.underlyingHistoryRepa.push_back(std::move(hr));
+				}				
 				{
 					auto hr = std::make_unique<HistorySparseArray>();
 					{

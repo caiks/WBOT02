@@ -239,15 +239,13 @@ std::unique_ptr<HistoryRepa> WBOT02::sizesHistoryRepa(std::size_t scaleValency, 
 	auto sh = hr->shape;
 	size_t z = size;
 	hr->size = z;
-	hr->evient = true;
+	hr->evient = false;
 	hr->arr = new unsigned char[z*n];
-	auto rr = hr->arr;
 	for (size_t i = 0; i < n; i++)
 		vv[i] = i;
-	for (size_t i = 0; i < n - 1; i++)
+	for (size_t i = 0; i < n-1; i++)
 		sh[i] = recordValency;
-	sh[n - 1] = scaleValency;
-	hr->transpose();
+	sh[n-1] = scaleValency;
 	return hr;
 }
 
@@ -256,12 +254,12 @@ std::unique_ptr<HistoryRepa> WBOT02::recordsHistoryRepa(std::size_t scaleValency
 	if (!scaleValency || !recordValency || !record.arr || !record.arr->size())
 		return std::unique_ptr<HistoryRepa>();
 	auto& arr1 = *record.arr;
-	auto hr = sizesHistoryRepa(scaleValency, scale, recordValency, arr1.size());
+	auto hr = sizesHistoryRepa(scaleValency, recordValency, arr1.size());
 	auto n = hr->dimension;
 	auto rr = hr->arr;
-	for (size_t i = 0; i < n - 1; i++)
+	for (size_t i = 0; i < n-1; i++)
 		rr[i] = arr1[i];
-	rr[n - 1] = (unsigned char)scale;
+	rr[n-1] = (unsigned char)scale;
 	return hr;
 }
 
