@@ -6,6 +6,7 @@
 #include <QTimer>
 #include <QScreen>
 #include <QMouseEvent>
+#include <QLabel>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Win006; }
@@ -32,9 +33,11 @@ protected:
 private:
     Ui::Win006 *_ui;
 	QScreen *_screen;
+	std::vector<QLabel*> _labelRecords;
+	std::vector<QLabel*> _labelRecordValents;
+	std::vector<QLabel*> _labelRecordSlices;
 	std::chrono::time_point<std::chrono::high_resolution_clock> _mark;
 
-		
 	std::string _config;
 	bool _actLogging;
 	std::size_t _actLoggingFactor;

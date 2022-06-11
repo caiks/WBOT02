@@ -51,6 +51,7 @@ Win006::Win006(const std::string& configA,
 {
 	setCursor(Qt::CrossCursor);
     _ui->setupUi(this);
+
 	// parse config
 	{
 		js::Document args;
@@ -132,7 +133,7 @@ Win006::Win006(const std::string& configA,
 		if (args.HasMember("scales") && args["scales"].IsArray())
 		{
 			auto& arr = args["scales"];
-			for (int k = 0; k < arr.Size() && k < 5; k++)
+			for (int k = 0; k < arr.Size(); k++)
 				_scales.push_back(arr[k].GetDouble());	
 		}
 		if (!_scales.size())
@@ -145,6 +146,21 @@ Win006::Win006(const std::string& configA,
 		
 		// EVAL(_model);
 		// EVAL(_mode);
+	}
+	// add dynamic GUI
+	{
+		for (std::size_t k = 0; k < _scales.size(); k++)
+		{
+			QLabel* labelRecord = new QLabel(this);
+			_ui->recordsLayout->addWidget(labelRecord);
+			_labelRecords.push_back(labelRecord);
+			QLabel* labelRecordValent = new QLabel(this);
+			_ui->eventsLayout->addWidget(labelRecordValent);
+			_labelRecordValents.push_back(labelRecordValent);
+			QLabel* labelRecordSlice = new QLabel(this);
+			_ui->slicesLayout->addWidget(labelRecordSlice);
+			_labelRecordSlices.push_back(labelRecordSlice);
+		}
 	}
 	// load slice representations if modelInitial TODO
 	/*
@@ -342,20 +358,11 @@ void Win006::act()
 	
 	{
 		_mark = Clock::now(); 
-		std::vector<QLabel*> labelRecords{ 
-			_ui->labelRecord0, _ui->labelRecord1, _ui->labelRecord2, 
-			_ui->labelRecord3, _ui->labelRecord4};
-		std::vector<QLabel*> labelRecordValents{ 
-			_ui->labelEvent0, _ui->labelEvent1, _ui->labelEvent2, 
-			_ui->labelEvent3, _ui->labelEvent4};
-		std::vector<QLabel*> labelRecordSlices{ 
-			_ui->labelSlice0, _ui->labelSlice1, _ui->labelSlice2, 
-			_ui->labelSlice3, _ui->labelSlice4};
-        for (std::size_t k = 0; k < _scales.size() && k < 5; k++)
+        for (std::size_t k = 0; k < _scales.size(); k++)
 		{			
-			labelRecords[k]->setPixmap(QPixmap::fromImage(records[k].image(_multiplier,0)));
-			labelRecordValents[k]->setPixmap(QPixmap::fromImage(recordValents[k].image(_multiplier,_valency)));
-			labelRecordSlices[k]->setPixmap(QPixmap::fromImage(recordValents[k].image(_multiplier,_valency)));	// TODO point to slice rep
+			_labelRecords[k]->setPixmap(QPixmap::fromImage(records[k].image(_multiplier,0)));
+			_labelRecordValents[k]->setPixmap(QPixmap::fromImage(recordValents[k].image(_multiplier,_valency)));
+			_labelRecordSlices[k]->setPixmap(QPixmap::fromImage(recordValents[k].image(_multiplier,_valency)));	// TODO point to slice rep
 		}			
 	    std::stringstream string;
 		_ui->labelImage->setPixmap(QPixmap::fromImage(image));
