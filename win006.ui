@@ -181,6 +181,13 @@
       </widget>
      </item>
      <item>
+      <widget class="QLabel" name="labelUpdatedTime">
+       <property name="text">
+        <string>updated time</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QLabel" name="labelImagedTime">
        <property name="text">
         <string>imaged time</string>

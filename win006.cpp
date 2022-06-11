@@ -95,7 +95,7 @@ Win006::Win006(const std::string& configA,
 		_activeSize = ARGS_INT_DEF(activeSize,1000000);
 		_induceThreshold = ARGS_INT_DEF(induceThreshold,200);
 		_induceThresholdInitial = ARGS_INT_DEF(induceThresholdInitial,1000);
-		_induceInterval = ARGS_INT_DEF(induceInterval,10);	
+		_induceInterval = ARGS_INT_DEF(induceInterval,_interval);	
 		_induceThreadCount = ARGS_INT_DEF(induceThreadCount,4);
 		_induceNot = ARGS_BOOL(no_induce);
 		_induceParameters.tint = _induceThreadCount;		
@@ -132,7 +132,7 @@ Win006::Win006(const std::string& configA,
 		if (args.HasMember("scales") && args["scales"].IsArray())
 		{
 			auto& arr = args["scales"];
-			for (int k = 0; k < arr.Size(); k++)
+			for (int k = 0; k < arr.Size() && k < 5; k++)
 				_scales.push_back(arr[k].GetDouble());	
 		}
 		if (!_scales.size())
@@ -294,11 +294,16 @@ Win006::~Win006()
 void Win006::act()
 {
 	_mark = Clock::now();
+	if (_eventIdMax && this->eventId >= _eventIdMax)
+	{
+		this->terminate = true;	
+		return;
+	}
     auto pixmap = _screen->grabWindow(0, _x, _y, _width, _height);
 	auto image = pixmap.toImage();
 	{
         std::stringstream string;
-        string << "actd\t" << ((Sec)(Clock::now() - _mark)).count() << "s";
+        string << "captured\t" << std::fixed << std::setprecision(6) << ((Sec)(Clock::now() - _mark)).count() << std::defaultfloat << "s";
 		// LOG string.str() UNLOG
         _ui->labelCapturedTime->setText(string.str().data());
 	}
@@ -317,9 +322,22 @@ void Win006::act()
 			recordValents.push_back(recordB);
 		}	
 		std::stringstream string;
-        string << "recorded\t" << ((Sec)(Clock::now() - _mark)).count() << "s";
+        string << "recorded\t" << std::fixed << std::setprecision(6) << ((Sec)(Clock::now() - _mark)).count() << std::defaultfloat << "s";
 		// LOG string.str() UNLOG
         _ui->labelRecordedTime->setText(string.str().data());
+	}
+	
+	{
+		_mark = Clock::now(); 
+		for (std::size_t k = 0; k < recordValents.size(); k++)	
+		{
+			auto& record = recordValents[k];
+			auto hr = recordsHistoryRepa(_scales.size(), k, _valency, record);
+		}	
+		std::stringstream string;
+        string << "updated\t" << std::fixed << std::setprecision(6) << ((Sec)(Clock::now() - _mark)).count() << std::defaultfloat << "s";
+		// LOG string.str() UNLOG
+        _ui->labelUpdatedTime->setText(string.str().data());
 	}
 	
 	{
@@ -341,7 +359,7 @@ void Win006::act()
 		}			
 	    std::stringstream string;
 		_ui->labelImage->setPixmap(QPixmap::fromImage(image));
-        string << "imaged\t" << ((Sec)(Clock::now() - _mark)).count() << "s";
+        string << "imaged\t" << std::fixed << std::setprecision(6) << ((Sec)(Clock::now() - _mark)).count() << std::defaultfloat << "s";
 		// LOG string.str() UNLOG
         _ui->labelImagedTime->setText(string.str().data());	
 	}
