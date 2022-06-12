@@ -32,13 +32,13 @@ static void layerer_actor_log(const std::string& str)
 	return;
 };
 
-void run_induce(Win006& actor, Active& active, ActiveInduceParameters& param, std::size_t induceThresholdInitial, std::size_t induceInterval)
+void run_induce(Win006& actor, Active& active, ActiveInduceParameters& param, std::size_t induceThresholdInitial, std::chrono::milliseconds induceInterval)
 {
 	while (!actor.terminate && !active.terminate)
 	{
 		if (actor.eventId >= induceThresholdInitial)
 			active.induce(param);
-		std::this_thread::sleep_for(std::chrono::milliseconds(induceInterval));
+		std::this_thread::sleep_for(induceInterval);
 	}	
 	return;
 };
@@ -51,7 +51,7 @@ Win006::Win006(const std::string& configA,
 {
 	setCursor(Qt::CrossCursor);
     _ui->setupUi(this);
-
+	this->terminate = true;
 	// parse config
 	{
 		js::Document args;
@@ -66,12 +66,12 @@ Win006::Win006(const std::string& configA,
 			}
 			catch (const std::exception&) 
 			{
-				LOG "Win006\terror: failed to open arguments file " << _config UNLOG
+				LOG "actor\terror: failed to open arguments file " << _config UNLOG
 				return;
 			}	
 			if (!args.IsObject())
 			{
-				LOG "Win006\terror: failed to read arguments file " << _config UNLOG
+				LOG "actor\terror: failed to read arguments file " << _config UNLOG
 				return;
 			}
 		}
@@ -79,11 +79,11 @@ Win006::Win006(const std::string& configA,
 		{
 			args.Parse("{}");
 		}
-		terminate = false;
-		eventId = 0;
+		this->eventId = 0;
 		_actLogging = ARGS_BOOL(logging_action);
 		_actLoggingFactor = ARGS_INT(logging_action_factor);
-		_interval = ARGS_INT_DEF(interval,1000);	
+		_interval = (std::chrono::milliseconds)(ARGS_INT_DEF(interval,1000));	
+		_actWarning = ARGS_BOOL(warning_action);
 		_mode = ARGS_STRING_DEF(mode, "mode001");
 		_modeLogging = ARGS_BOOL(logging_mode);
 		_modeLoggingFactor = ARGS_INT(logging_mode_factor); 
@@ -96,7 +96,7 @@ Win006::Win006(const std::string& configA,
 		_activeSize = ARGS_INT_DEF(activeSize,1000000);
 		_induceThreshold = ARGS_INT_DEF(induceThreshold,200);
 		_induceThresholdInitial = ARGS_INT_DEF(induceThresholdInitial,1000);
-		_induceInterval = ARGS_INT_DEF(induceInterval,_interval);	
+		_induceInterval = (std::chrono::milliseconds)(ARGS_INT_DEF(induceInterval,_interval.count()));	
 		_induceThreadCount = ARGS_INT_DEF(induceThreadCount,4);
 		_induceNot = ARGS_BOOL(no_induce);
 		_induceParameters.tint = _induceThreadCount;		
@@ -211,7 +211,7 @@ Win006::Win006(const std::string& configA,
 				activeA.logging = true;
 				if (!activeA.load(ppio))
 				{
-					LOG "actor\terror: failed to load model" << ppio.filename UNLOG				
+					LOG "actor\terror: failed to load model" << ppio.filename UNLOG
 					_system.reset();
 					return;
 				}								
@@ -260,14 +260,17 @@ Win006::Win006(const std::string& configA,
 		}
 	}
 	// start act timer
+	if (_system)
 	{
+		this->terminate = false;		
 		_screen = QGuiApplication::primaryScreen();
-		
-		QTimer *timer = new QTimer(this);
-		connect(timer, &QTimer::timeout, this, &Win006::act);
-		timer->start(_interval);
+		QTimer::singleShot(_interval.count(), this, &Win006::act);
+		LOG "actor\tstatus: started" UNLOG
 	}
-	LOG "actor\tSTART" UNLOG
+	else
+	{
+		LOG "actor\terror: failed to initialise" UNLOG
+	}
 }
 
 Win006::~Win006()
@@ -304,17 +307,21 @@ Win006::~Win006()
 
 	}
     delete _ui;
-	LOG "actor\tTERMINATE" UNLOG
+	LOG "actor\tstatus: finished" UNLOG
 }
 
 void Win006::act()
 {
-	_mark = Clock::now();
+	if (this->terminate)
+		return;
 	if (_eventIdMax && this->eventId >= _eventIdMax)
 	{
 		this->terminate = true;	
 		return;
 	}
+	auto actMark = Clock::now();
+	
+	_mark = Clock::now();
     auto pixmap = _screen->grabWindow(0, _x, _y, _width, _height);
 	auto image = pixmap.toImage();
 	{
@@ -377,6 +384,20 @@ void Win006::act()
 		// LOG string.str() UNLOG
         _ui->labelCentre->setText(string.str().data());
 	}
+    auto t = (Sec)(Clock::now() - actMark);
+	auto ti = (Sec)_interval;
+	if (ti > t)
+    {
+		QTimer::singleShot((int)((ti - t).count()*1000.0), this, &Win006::act);
+	}
+	else		
+	{
+		QTimer::singleShot(0, this, &Win006::act);
+		if (_actWarning)
+		{
+			LOG "actor\twarning: act time " << t.count() << "s" UNLOG
+		}
+	}	
 }
 
 void Win006::mousePressEvent(QMouseEvent *event)

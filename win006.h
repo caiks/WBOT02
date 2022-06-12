@@ -39,9 +39,10 @@ private:
 	std::chrono::time_point<std::chrono::high_resolution_clock> _mark;
 
 	std::string _config;
-	bool _actLogging;
+	bool _actLogging;	
 	std::size_t _actLoggingFactor;
-    std::size_t _interval;
+	bool _actWarning;
+    std::chrono::milliseconds _interval;
 	std::string _mode;
 	bool _modeLogging;
 	std::size_t _modeLoggingFactor;
@@ -67,7 +68,7 @@ private:
 	Alignment::ActiveInduceParameters _induceParameters;
 	std::size_t _induceThreshold;
 	std::size_t _induceThresholdInitial;
-    std::size_t _induceInterval;
+    std::chrono::milliseconds _induceInterval;
 	std::size_t _induceThreadCount;
 	bool _induceNot;	
 	
