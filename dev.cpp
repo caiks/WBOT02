@@ -268,7 +268,8 @@ WBOT02::Representation::Representation(
 	double scaleX1, double scaleY1, 
 	std::size_t sizeX1, std::size_t sizeY1) :
 	scaleX(scaleX1), scaleY(scaleY1), 
-	sizeX(sizeX1), sizeY(sizeY1) 
+	sizeX(sizeX1), sizeY(sizeY1),
+	count(0)
 {
 	sizeX = sizeX ? sizeX : 1;
 	sizeY = sizeY ? sizeY : 1;

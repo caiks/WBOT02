@@ -312,15 +312,14 @@ Win006::~Win006()
 
 void Win006::act()
 {
-	if (this->terminate)
+	if (this->terminate || (_active && _active->terminate))
 		return;
 	if (_eventIdMax && this->eventId >= _eventIdMax)
 	{
 		this->terminate = true;	
 		return;
 	}
-	auto actMark = Clock::now();
-	
+	auto actMark = Clock::now();	
 	_mark = Clock::now();
     auto pixmap = _screen->grabWindow(0, _x, _y, _width, _height);
 	auto image = pixmap.toImage();
@@ -330,7 +329,7 @@ void Win006::act()
 		// LOG string.str() UNLOG
         _ui->labelCapturedTime->setText(string.str().data());
 	}
-	
+	// records
 	std::vector<Record> records;
 	std::vector<Record> recordValents;
 	{
@@ -349,9 +348,11 @@ void Win006::act()
 		// LOG string.str() UNLOG
         _ui->labelRecordedTime->setText(string.str().data());
 	}
-	
+	// update
+	std::vector<std::size_t> slices;
 	{
 		_mark = Clock::now(); 
+		// check for new leaf slices and update representation map
 		for (std::size_t k = 0; k < recordValents.size(); k++)	
 		{
 			auto& record = recordValents[k];
@@ -362,7 +363,7 @@ void Win006::act()
 		// LOG string.str() UNLOG
         _ui->labelUpdatedTime->setText(string.str().data());
 	}
-	
+	// image	
 	{
 		_mark = Clock::now(); 
         for (std::size_t k = 0; k < _scales.size(); k++)
@@ -377,7 +378,7 @@ void Win006::act()
 		// LOG string.str() UNLOG
         _ui->labelImagedTime->setText(string.str().data());	
 	}
-	
+	// centre
 	{
         std::stringstream string;
         string << "centre\t(" << std::setprecision(3) << _centreX << "," << _centreY << ")";

@@ -71,6 +71,9 @@ private:
     std::chrono::milliseconds _induceInterval;
 	std::size_t _induceThreadCount;
 	bool _induceNot;	
+	std::size_t _fudsSize;
+
+	std::unordered_map<std::size_t, WBOT02::Representation>	_slicesRepresentation;
 	
     int _x;
     int _y;
