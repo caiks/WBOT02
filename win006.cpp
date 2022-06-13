@@ -349,7 +349,7 @@ void Win006::act()
         _ui->labelRecordedTime->setText(string.str().data());
 	}
 	// update
-	std::vector<std::size_t> slices;
+	std::vector<std::size_t> slicesA;
 	if (_system)
 	{
 		_mark = Clock::now(); 
@@ -368,8 +368,7 @@ void Win006::act()
 			std::lock_guard<std::mutex> guard(activeA.mutex);
 			std::shared_ptr<HistoryRepa> hr = activeA.underlyingHistoryRepa.front();
 			auto& hs = *activeA.historySparse;
-			auto& sl = activeA.historySlicesSetEvent;
-			auto over = activeA.historyOverflow;
+			auto& slices = activeA.historySlicesSetEvent;
 			auto n = hr->dimension;
 			auto z = hr->size;
 			auto y = activeA.historyEvent;
@@ -378,19 +377,41 @@ void Win006::act()
 			auto& dr = *activeA.decomp;		
 			for (std::size_t k = 0; k < _scales.size(); k++)	
 			{
-				auto j = (y + z - _scales.size() - k) % z;				
+				auto j = (y + z - _scales.size() + k) % z;				
 				auto slice = rs[j];
-				slices.push_back(slice);	
+				slicesA.push_back(slice);	
+				if (!_slicesRepresentation.count(slice))
+					_slicesRepresentation.insert_or_assign(slice, Representation(1.0,1.0,_size,_size));
 				auto& rep = _slicesRepresentation[slice];
 				auto& arr1 = *rep.arr;
 				auto jn = j*n;
 				for (size_t i = 0; i < n-1; i++)
-					arr1[jn + i] += rr[jn + i];
+					arr1[i] += rr[jn + i];
 				rep.count++;
 			}		
 			// check for new leaf slices and update representation map
             if (_fudsSize < dr.fuds.size())
 			{
+				for (std::size_t i = _fudsSize; i < dr.fuds.size(); i++)
+				{
+					auto sliceA = dr.fuds[i].parent;
+					Representation rep(1.0,1.0,_size,_size);
+					auto& arr1 = *rep.arr;
+					for (auto sliceB : dr.fuds[i].children)
+					{
+						if (slices.count(sliceB))
+							for (auto j : slices[sliceB])
+							{
+								auto jn = j*n;
+								for (size_t i = 0; i < n-1; i++)
+									arr1[i] += rr[jn + i];
+								rep.count++;
+							}									
+						_slicesRepresentation.insert_or_assign(sliceB, rep);
+					}
+					_slicesRepresentation.erase(sliceA);
+				}
+				_fudsSize = dr.fuds.size();
 			}
 		}
 		std::stringstream string;
@@ -405,7 +426,11 @@ void Win006::act()
 		{			
 			_labelRecords[k]->setPixmap(QPixmap::fromImage(records[k].image(_multiplier,0)));
 			_labelRecordValents[k]->setPixmap(QPixmap::fromImage(recordValents[k].image(_multiplier,_valency)));
-			_labelRecordSlices[k]->setPixmap(QPixmap::fromImage(recordValents[k].image(_multiplier,_valency)));	// TODO point to slice rep
+			auto slice = slicesA[k];
+			if (_slicesRepresentation.count(slice))
+				_labelRecordSlices[k]->setPixmap(QPixmap::fromImage(_slicesRepresentation[slice].image(_multiplier,_valency)));
+			else
+				_labelRecordSlices[k]->setPixmap(QPixmap::fromImage(QImage(_size*_multiplier, _size*_multiplier, QImage::Format_RGB32)));			
 		}			
 	    std::stringstream string;
 		_ui->labelImage->setPixmap(QPixmap::fromImage(image));

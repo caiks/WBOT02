@@ -239,7 +239,7 @@ std::unique_ptr<HistoryRepa> WBOT02::sizesHistoryRepa(std::size_t scaleValency, 
 	auto sh = hr->shape;
 	size_t z = size;
 	hr->size = z;
-	hr->evient = false;
+	hr->evient = true;
 	hr->arr = new unsigned char[z*n];
 	for (size_t i = 0; i < n; i++)
 		vv[i] = i;
