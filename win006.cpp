@@ -350,14 +350,49 @@ void Win006::act()
 	}
 	// update
 	std::vector<std::size_t> slices;
+	if (_system)
 	{
 		_mark = Clock::now(); 
-		// check for new leaf slices and update representation map
-		for (std::size_t k = 0; k < recordValents.size(); k++)	
+		// update events
+		for (std::size_t k = 0; k < _scales.size(); k++)	
 		{
 			auto& record = recordValents[k];
 			auto hr = recordsHistoryRepa(_scales.size(), k, _valency, record);
+			_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
+			_active->update(_updateParameters);
+			this->eventId++;
 		}	
+		// representations
+		{		
+			auto& activeA = *_active;
+			std::lock_guard<std::mutex> guard(activeA.mutex);
+			std::shared_ptr<HistoryRepa> hr = activeA.underlyingHistoryRepa.front();
+			auto& hs = *activeA.historySparse;
+			auto& sl = activeA.historySlicesSetEvent;
+			auto over = activeA.historyOverflow;
+			auto n = hr->dimension;
+			auto z = hr->size;
+			auto y = activeA.historyEvent;
+			auto rr = hr->arr;	
+			auto rs = hs.arr;
+			auto& dr = *activeA.decomp;		
+			for (std::size_t k = 0; k < _scales.size(); k++)	
+			{
+				auto j = (y + z - _scales.size() - k) % z;				
+				auto slice = rs[j];
+				slices.push_back(slice);	
+				auto& rep = _slicesRepresentation[slice];
+				auto& arr1 = *rep.arr;
+				auto jn = j*n;
+				for (size_t i = 0; i < n-1; i++)
+					arr1[jn + i] += rr[jn + i];
+				rep.count++;
+			}		
+			// check for new leaf slices and update representation map
+            if (_fudsSize < dr.fuds.size())
+			{
+			}
+		}
 		std::stringstream string;
         string << "updated\t" << std::fixed << std::setprecision(6) << ((Sec)(Clock::now() - _mark)).count() << std::defaultfloat << "s";
 		// LOG string.str() UNLOG
