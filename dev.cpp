@@ -283,10 +283,11 @@ QImage WBOT02::Representation::image(std::size_t multiplier, std::size_t valency
 	{
 		auto& arr1 = *arr;
 		auto size = arr1.size();
-		if (!valency) valency = 255;
+		std::size_t factor = valency ? 256/valency : 1;
+		std::size_t offset = factor/2 ;
 		for (std::size_t k = 0; k < size; k++)
 		{
-			auto v = arr1[k] * 255 / valency / count;
+			auto v = arr1[k] * factor / count + offset;
 			auto i = (k % sizeX) * multiplier;
 			auto j = (k / sizeX) * multiplier;
 			auto rgb = qRgb(v,v,v);

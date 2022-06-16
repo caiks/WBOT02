@@ -139,17 +139,15 @@ Win006::Win006(const std::string& configA,
 		if (!_scales.size())
 			for (std::size_t k = 0; k < 5; k++)	
 				_scales.push_back(std::pow(0.5, k));
-		if (args.HasMember("centres") && args["centres"].IsArray())
+		if (args.HasMember("offsets") && args["offsets"].IsArray())
 		{
-			auto& arr = args["centres"];
+			auto& arr = args["offsets"];
 			for (int k = 0; k < arr.Size(); k++)
 			{
 				if (arr[k].IsArray() && arr[k].Size() == 2)
-					_centres.push_back(std::pair(arr[k][0].GetDouble(),arr[k][1].GetDouble()));	
+					_offsets.push_back(std::pair(arr[k][0].GetDouble(),arr[k][1].GetDouble()));	
 			}
 		}	
-		while (_centres.size() < _scales.size())
-			_centres.push_back(std::pair(1.0,1.0));
 		_valency = ARGS_INT_DEF(valency,10);	
 		_size = ARGS_INT_DEF(size,40);	
 		_divisor = ARGS_INT_DEF(divisor,4);	
@@ -347,9 +345,11 @@ void Win006::act()
 		_mark = Clock::now(); 
 		for (std::size_t k = 0; k < _scales.size(); k++)	
 		{
+            auto centreX = _centreX + (k < _offsets.size() ? _offsets[k].first : 0.0);
+            auto centreY = _centreY + (k < _offsets.size() ? _offsets[k].second : 0.0);
 			Record recordA(image, 
                 _scales[k] * image.height() / image.width(), _scales[k],
-				_centreX, _centreY, _size, _size, _divisor, _divisor);
+				centreX, centreY, _size, _size, _divisor, _divisor);
 			records.push_back(recordA);
             Record recordB = recordA.valent(_valency);
 			recordValents.push_back(recordB);
