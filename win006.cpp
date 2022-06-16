@@ -171,31 +171,33 @@ Win006::Win006(const std::string& configA,
 			_labelRecordSlices.push_back(labelRecordSlice);
 		}
 	}
-	// load slice representations if modelInitial TODO
-	/*
+	// load slice representations if modelInitial 
+	if (_modelInitial.size())
 	{
 		try
 		{
-			std::ifstream in(modelInitial + ".rec", std::ios::binary);
+            std::ifstream in(_modelInitial + ".rep", std::ios::binary);
 			if (in.is_open())
 			{
-				_records = std::move(persistentsRecordList(in));
-				_records->push_back(Record());
+                _slicesRepresentation = persistentsSliceRepresentationUMap(in);
 				in.close();
 			}
 			else
 			{
-				LOG "actor\terror: failed to open records file" << modelInitial + ".rec" UNLOG
+                LOG "actor\terror: failed to open slice-representations file" << _modelInitial + ".rep" UNLOG
 				return;
 			}
 		}
-		catch (const exception&)
+		catch (const std::exception&)
 		{
-			LOG "actor\terror: failed to read records file" << modelInitial + ".rec" UNLOG
+            LOG "actor\terror: failed to read records file" << _modelInitial + ".rep" UNLOG
          return;
 		}		
 	}
-	*/
+	else
+	{
+		_slicesRepresentation = std::make_unique<SliceRepresentationUMap>();
+	}
 	// create active
 	{
 		{
@@ -285,21 +287,21 @@ Win006::Win006(const std::string& configA,
 Win006::~Win006()
 {
 	terminate = true;
-	// dump slice representations TODO
-/* 	if (_model.size())
+	// dump slice representations
+ 	if (_model.size())
 	{
 		try
 		{
-			std::ofstream out(_model + ".rec", std::ios::binary);
-			recordListsPersistent(*_records, out); 
+			std::ofstream out(_model + ".rep", std::ios::binary);
+			sliceRepresentationUMapsPersistent(*_slicesRepresentation, out); 
 			out.close();
-			LOG "actor\tdump\tfile name:" << _model + ".rec" UNLOG
+			LOG "actor\tdump\tfile name:" << _model + ".rep" UNLOG
 		}
-		catch (const exception&)
+		catch (const std::exception&)
 		{
-			LOG "actor\terror: failed to write records file" <<_model + ".rec" UNLOG
+			LOG "actor\terror: failed to write slice-representations file" <<_model + ".rep" UNLOG
 		}			
-	} */
+	}
 	if (_system)
 	{
 		_active->terminate = true;
@@ -374,6 +376,7 @@ void Win006::act()
 			this->eventId++;
 		}	
 		// representations
+		if (!_induceNot)
 		{		
 			auto& activeA = *_active;
 			std::lock_guard<std::mutex> guard(activeA.mutex);
@@ -386,14 +389,15 @@ void Win006::act()
 			auto rr = hr->arr;	
 			auto rs = hs.arr;
 			auto& dr = *activeA.decomp;		
+			auto& reps = *_slicesRepresentation;
 			for (std::size_t k = 0; k < _scales.size(); k++)	
 			{
 				auto j = (y + z - _scales.size() + k) % z;				
 				auto slice = rs[j];
 				slicesA.push_back(slice);	
-				if (!_slicesRepresentation.count(slice))
-					_slicesRepresentation.insert_or_assign(slice, Representation(1.0,1.0,_size,_size));
-				auto& rep = _slicesRepresentation[slice];
+				if (!reps.count(slice))
+					reps.insert_or_assign(slice, Representation(1.0,1.0,_size,_size));
+				auto& rep = reps[slice];
 				auto& arr1 = *rep.arr;
 				auto jn = j*n;
 				for (size_t i = 0; i < n-1; i++)
@@ -418,9 +422,9 @@ void Win006::act()
 									arr1[i] += rr[jn + i];
 								rep.count++;
 							}									
-						_slicesRepresentation.insert_or_assign(sliceB, rep);
+						reps.insert_or_assign(sliceB, rep);
 					}
-					_slicesRepresentation.erase(sliceA);
+					reps.erase(sliceA);
 				}
 				_fudsSize = dr.fuds.size();
 			}
@@ -431,15 +435,17 @@ void Win006::act()
         _ui->labelUpdatedTime->setText(string.str().data());
 	}
 	// image	
+	if (_system)
 	{
 		_mark = Clock::now(); 
+		auto& reps = *_slicesRepresentation;
         for (std::size_t k = 0; k < _scales.size(); k++)
 		{			
 			_labelRecords[k]->setPixmap(QPixmap::fromImage(records[k].image(_multiplier,0)));
 			_labelRecordValents[k]->setPixmap(QPixmap::fromImage(recordValents[k].image(_multiplier,_valency)));
 			auto slice = slicesA[k];
-			if (_slicesRepresentation.count(slice))
-				_labelRecordSlices[k]->setPixmap(QPixmap::fromImage(_slicesRepresentation[slice].image(_multiplier,_valency)));
+			if (reps.count(slice))
+				_labelRecordSlices[k]->setPixmap(QPixmap::fromImage(reps[slice].image(_multiplier,_valency)));
 			else
 				_labelRecordSlices[k]->setPixmap(QPixmap::fromImage(QImage(_size*_multiplier, _size*_multiplier, QImage::Format_RGB32)));			
 		}			

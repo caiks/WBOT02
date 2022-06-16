@@ -84,7 +84,6 @@ namespace WBOT02
 	
 	std::unique_ptr<Alignment::HistoryRepa> recordsHistoryRepa(std::size_t scaleValency, std::size_t scale, std::size_t recordValency, const Record& record);
 	
-	
 	struct Representation
 	{
 		Representation(
@@ -101,12 +100,23 @@ namespace WBOT02
 		std::size_t count;
 		std::shared_ptr<std::vector<std::size_t>> arr;
 	};
+	
+	void representationsPersistent(Representation&, std::ostream&);
+	Representation persistentsRepresentation(std::istream&);
+	
+	typedef std::unordered_map<std::size_t, WBOT02::Representation> SliceRepresentationUMap;
+	
+	void sliceRepresentationUMapsPersistent(SliceRepresentationUMap&, std::ostream&);
+	std::unique_ptr<SliceRepresentationUMap> persistentsSliceRepresentationUMap(std::istream&);
+
 }
 
 std::ostream& operator<<(std::ostream& out, const WBOT02::Record&);
 std::ostream& operator<<(std::ostream& out, const WBOT02::RecordList&);
 std::ostream& operator<<(std::ostream& out, std::istream&);
 
+std::ostream& operator<<(std::ostream& out, const WBOT02::Representation&);
+std::ostream& operator<<(std::ostream& out, const WBOT02::SliceRepresentationUMap&);
 
 
 #endif

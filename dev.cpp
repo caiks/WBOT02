@@ -312,3 +312,68 @@ void WBOT02::Representation::add(const Record& record)
 		count++;
 	}
 }
+
+void WBOT02::representationsPersistent(Representation& r, std::ostream& out)
+{
+	out.write(reinterpret_cast<char*>(&r.scaleX), sizeof(double));
+	out.write(reinterpret_cast<char*>(&r.scaleY), sizeof(double));
+	out.write(reinterpret_cast<char*>(&r.sizeX), sizeof(std::size_t));
+	out.write(reinterpret_cast<char*>(&r.sizeY), sizeof(std::size_t));
+	out.write(reinterpret_cast<char*>((char*)r.arr->data()), r.sizeX*r.sizeY*sizeof(std::size_t));
+}
+
+Representation WBOT02::persistentsRepresentation(std::istream& in)
+{
+    Representation r;
+    in.read(reinterpret_cast<char*>(&r.scaleX), sizeof(double));
+    in.read(reinterpret_cast<char*>(&r.scaleY), sizeof(double));
+    in.read(reinterpret_cast<char*>(&r.sizeX), sizeof(std::size_t));
+    in.read(reinterpret_cast<char*>(&r.sizeY), sizeof(std::size_t));
+    in.read(reinterpret_cast<char*>(&r.count), sizeof(std::size_t));
+	r.arr = std::make_shared<std::vector<std::size_t>>(r.sizeX*r.sizeY);
+	in.read(reinterpret_cast<char*>((char*)r.arr->data()), r.sizeX*r.sizeY*sizeof(std::size_t));
+    return r;
+}
+
+void WBOT02::sliceRepresentationUMapsPersistent(SliceRepresentationUMap& rr, std::ostream& out)
+{
+	for (auto& r : rr)
+	{
+		out.write(reinterpret_cast<char*>((std::size_t*)&r.first), sizeof(std::size_t));
+		representationsPersistent(r.second, out);
+	}
+}
+
+
+std::unique_ptr<SliceRepresentationUMap> WBOT02::persistentsSliceRepresentationUMap(std::istream& in)
+{
+	auto rr = std::make_unique<SliceRepresentationUMap>();
+	while (true)
+	{
+		std::size_t slice;
+		in.read(reinterpret_cast<char*>(&slice), sizeof(std::size_t));
+		if (in.eof())
+			break;
+		Representation rep = persistentsRepresentation(in);
+		rr->insert_or_assign(slice,rep);
+	}
+	return rr;
+}
+
+std::ostream& operator<<(std::ostream& out, const Representation& r)
+{
+	out << "(" 
+		<< r.scaleX << "," << r.scaleY << "," 
+		<< r.sizeX << "," << r.sizeY  << ",";
+	for (std::size_t h = 0; h < r.sizeX*r.sizeY; h++)	
+		out << (h ? "," : "[") << (int)(*r.arr)[h];
+	out << "])";
+	return out;
+}
+
+std::ostream& operator<<(std::ostream& out, const SliceRepresentationUMap& rr)
+{
+	for (auto& r : rr)
+		out << "(" << r.first  << ","  << r.second  << ")" << std::endl;
+	return out;
+}
