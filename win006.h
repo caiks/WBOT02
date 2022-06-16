@@ -82,6 +82,7 @@ private:
 	double _centreX;
 	double _centreY;
     std::vector<double> _scales;
+    std::vector<std::pair<double,double>> _centres;
 	std::size_t _valency;
 	std::size_t _size;
 	std::size_t _divisor;
