@@ -406,10 +406,10 @@ void Win006::act()
 				for (std::size_t i = _fudsSize; i < dr.fuds.size(); i++)
 				{
 					auto sliceA = dr.fuds[i].parent;
-					Representation rep(1.0,1.0,_size,_size);
-					auto& arr1 = *rep.arr;
 					for (auto sliceB : dr.fuds[i].children)
 					{
+						Representation rep(1.0,1.0,_size,_size);
+						auto& arr1 = *rep.arr;
 						if (slices.count(sliceB))
 							for (auto j : slices[sliceB])
 							{
