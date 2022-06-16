@@ -319,6 +319,7 @@ void WBOT02::representationsPersistent(Representation& r, std::ostream& out)
 	out.write(reinterpret_cast<char*>(&r.scaleY), sizeof(double));
 	out.write(reinterpret_cast<char*>(&r.sizeX), sizeof(std::size_t));
 	out.write(reinterpret_cast<char*>(&r.sizeY), sizeof(std::size_t));
+	out.write(reinterpret_cast<char*>(&r.count), sizeof(std::size_t));
 	out.write(reinterpret_cast<char*>((char*)r.arr->data()), r.sizeX*r.sizeY*sizeof(std::size_t));
 }
 

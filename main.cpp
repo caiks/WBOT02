@@ -61,6 +61,88 @@ int main(int argc, char *argv[])
 		in2.close();
 	}
 	
+	if (argc >= 2 && std::string(argv[1]) == "representations")
+	{
+        Representation r1(0.9,0.8,3,2), r2(0.1,0.2,2,1);
+        *(r1.arr) = std::vector<std::size_t> {0,1,2,3,4,5};
+        *(r2.arr) = std::vector<std::size_t> {6,7};
+
+		EVAL(r1);
+		EVAL(r2);
+		
+		SliceRepresentationUMap rr;
+		rr[1] = r1;
+		rr[2] = r2;
+		
+		cout << "rr" << endl
+			<< rr << endl;
+		
+		try 
+		{
+			std::ofstream out("test.bin", std::ios::binary);
+			ECHO(sliceRepresentationUMapsPersistent(rr, out));
+			out.close();
+		}
+        catch (const std::exception&)
+		{
+			cout << "sliceRepresentationUMapsPersistent dump failed" << endl;
+		}
+		std::unique_ptr<SliceRepresentationUMap> rr2;
+		try 
+		{
+			std::ifstream in("test.bin", std::ios::binary);
+			ECHO(rr2 = persistentsSliceRepresentationUMap(in));
+			in.close();
+		}
+        catch (const std::exception&)
+		{
+			cout << "persistentsSliceRepresentationUMap load failed" << endl;
+		}
+		cout << "rr2" << endl
+			<< *rr2 << endl;
+	}
+	
+	if (argc >= 2 && std::string(argv[1]) == "representations")
+	{
+        Representation r1(0.9,0.8,3,2), r2(0.1,0.2,2,1);
+        *(r1.arr) = std::vector<std::size_t> {0,1,2,3,4,5};
+        *(r2.arr) = std::vector<std::size_t> {6,7};
+
+		EVAL(r1);
+		EVAL(r2);
+		
+		SliceRepresentationUMap rr;
+		rr[1] = r1;
+		rr[2] = r2;
+		
+		cout << "rr" << endl
+			<< rr << endl;
+		
+		try 
+		{
+			std::ofstream out("test.bin", std::ios::binary);
+			ECHO(sliceRepresentationUMapsPersistent(rr, out));
+			out.close();
+		}
+        catch (const std::exception&)
+		{
+			cout << "sliceRepresentationUMapsPersistent dump failed" << endl;
+		}
+		std::unique_ptr<SliceRepresentationUMap> rr2;
+		try 
+		{
+			std::ifstream in("test.bin", std::ios::binary);
+			ECHO(rr2 = persistentsSliceRepresentationUMap(in));
+			in.close();
+		}
+        catch (const std::exception&)
+		{
+			cout << "persistentsSliceRepresentationUMap load failed" << endl;
+		}
+		cout << "rr2" << endl
+			<< *rr2 << endl;
+	}
+	
 	if (argc >= 3 && std::string(argv[1]) == "image001")
 	{
 		auto mark = Clock::now();

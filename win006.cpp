@@ -376,7 +376,6 @@ void Win006::act()
 			this->eventId++;
 		}	
 		// representations
-		if (!_induceNot)
 		{		
 			auto& activeA = *_active;
 			std::lock_guard<std::mutex> guard(activeA.mutex);
@@ -395,17 +394,20 @@ void Win006::act()
 				auto j = (y + z - _scales.size() + k) % z;				
 				auto slice = rs[j];
 				slicesA.push_back(slice);	
-				if (!reps.count(slice))
-					reps.insert_or_assign(slice, Representation(1.0,1.0,_size,_size));
-				auto& rep = reps[slice];
-				auto& arr1 = *rep.arr;
-				auto jn = j*n;
-				for (size_t i = 0; i < n-1; i++)
-					arr1[i] += rr[jn + i];
-				rep.count++;
+				if (!_induceNot)
+				{
+					if (!reps.count(slice))
+						reps.insert_or_assign(slice, Representation(1.0,1.0,_size,_size));
+					auto& rep = reps[slice];
+					auto& arr1 = *rep.arr;
+					auto jn = j*n;
+					for (size_t i = 0; i < n-1; i++)
+						arr1[i] += rr[jn + i];
+					rep.count++;					
+				}
 			}		
 			// check for new leaf slices and update representation map
-            if (_fudsSize < dr.fuds.size())
+            if (!_induceNot && _fudsSize < dr.fuds.size())
 			{
 				for (std::size_t i = _fudsSize; i < dr.fuds.size(); i++)
 				{
