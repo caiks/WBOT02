@@ -41,6 +41,9 @@
      <item>
       <layout class="QHBoxLayout" name="slicesLayout"/>
      </item>
+     <item>
+      <layout class="QHBoxLayout" name="likelihoodsLayout"/>
+     </item>
     </layout>
    </item>
    <item>

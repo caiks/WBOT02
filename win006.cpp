@@ -169,6 +169,9 @@ Win006::Win006(const std::string& configA,
 			QLabel* labelRecordSlice = new QLabel(this);
 			_ui->slicesLayout->addWidget(labelRecordSlice);
 			_labelRecordSlices.push_back(labelRecordSlice);
+			QLabel* labelLikelihoodSlice = new QLabel(this);
+			_ui->likelihoodsLayout->addWidget(labelLikelihoodSlice);
+			_labelRecordLikelihoods.push_back(labelLikelihoodSlice);
 		}
 	}
 	// load slice representations if modelInitial 
@@ -256,6 +259,7 @@ Win006::Win006(const std::string& configA,
 					activeA.historySparse = std::move(hr);			
 				}
 			}
+			activeA.historySliceCachingIs = !_induceNot;
 			activeA.name = (_model!="" ? _model : "model");			
 			activeA.logging = _activeLogging;
 			activeA.summary = _activeSummary;
@@ -362,7 +366,8 @@ void Win006::act()
         _ui->labelRecordedTime->setText(string.str().data());
 	}
 	// update
-	std::vector<std::size_t> slicesA;
+	std::vector<std::size_t> slices;
+	std::vector<double> likelihoods;
 	if (_system)
 	{
 		_mark = Clock::now(); 
@@ -381,19 +386,29 @@ void Win006::act()
 			std::lock_guard<std::mutex> guard(activeA.mutex);
 			std::shared_ptr<HistoryRepa> hr = activeA.underlyingHistoryRepa.front();
 			auto& hs = *activeA.historySparse;
-			auto& slices = activeA.historySlicesSetEvent;
+			auto& slev = activeA.historySlicesSetEvent;
 			auto n = hr->dimension;
 			auto z = hr->size;
 			auto y = activeA.historyEvent;
 			auto rr = hr->arr;	
 			auto rs = hs.arr;
+			auto& sizes = activeA.historySlicesSize;
 			auto& dr = *activeA.decomp;		
+			auto& cv = dr.mapVarParent();
 			auto& reps = *_slicesRepresentation;
 			for (std::size_t k = 0; k < _scales.size(); k++)	
 			{
 				auto j = (y + z - _scales.size() + k) % z;				
 				auto slice = rs[j];
-				slicesA.push_back(slice);	
+				slices.push_back(slice);	
+				if (slice)
+				{
+					auto sliceSize = sizes[slice];
+					std::size_t parentSize = sizes[cv[slice]];
+					double lnwmax = std::log(_induceParameters.wmax);
+					double likelihood = (std::log(sliceSize) - std::log(parentSize) + lnwmax)/lnwmax;
+					likelihoods.push_back(likelihood);
+				}
 				if (!_induceNot)
 				{
 					if (!reps.count(slice))
@@ -416,8 +431,8 @@ void Win006::act()
 					{
 						Representation rep(1.0,1.0,_size,_size);
 						auto& arr1 = *rep.arr;
-						if (slices.count(sliceB))
-							for (auto j : slices[sliceB])
+						if (slev.count(sliceB))
+							for (auto j : slev[sliceB])
 							{
 								auto jn = j*n;
 								for (size_t i = 0; i < n-1; i++)
@@ -445,11 +460,15 @@ void Win006::act()
 		{			
 			_labelRecords[k]->setPixmap(QPixmap::fromImage(records[k].image(_multiplier,0)));
 			_labelRecordValents[k]->setPixmap(QPixmap::fromImage(recordValents[k].image(_multiplier,_valency)));
-			auto slice = slicesA[k];
+			auto slice = slices[k];
 			if (reps.count(slice))
 				_labelRecordSlices[k]->setPixmap(QPixmap::fromImage(reps[slice].image(_multiplier,_valency)));
 			else
-				_labelRecordSlices[k]->setPixmap(QPixmap::fromImage(QImage(_size*_multiplier, _size*_multiplier, QImage::Format_RGB32)));			
+				_labelRecordSlices[k]->setPixmap(QPixmap::fromImage(QImage(_size*_multiplier, _size*_multiplier, QImage::Format_RGB32)));	
+			std::stringstream string;
+			if (k < likelihoods.size())
+				string << std::fixed << std::setprecision(3) << likelihoods[k] << std::defaultfloat;
+			_labelRecordLikelihoods[k]->setText(string.str().data());					
 		}			
 	    std::stringstream string;
 		_ui->labelImage->setPixmap(QPixmap::fromImage(image));

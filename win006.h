@@ -36,6 +36,7 @@ private:
 	std::vector<QLabel*> _labelRecords;
 	std::vector<QLabel*> _labelRecordValents;
 	std::vector<QLabel*> _labelRecordSlices;
+	std::vector<QLabel*> _labelRecordLikelihoods;
 	std::chrono::time_point<std::chrono::high_resolution_clock> _mark;
 
 	std::string _config;
