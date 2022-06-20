@@ -143,6 +143,102 @@ int main(int argc, char *argv[])
 			<< *rr2 << endl;
 	}
 	
+	if (argc >= 3 && (string(argv[1]) == "view_active" || string(argv[1]) == "view_active_concise"))
+	{
+		auto dfrer = decompFudSlicedRepasApplicationRepa_u;
+		bool ok = true;
+		string model = string(argv[2]);
+	
+		EVAL(model);
+		
+		bool concise = string(argv[1]) == "view_active_concise";
+		TRUTH(concise);
+
+		Active activeA;
+		activeA.logging = true;		
+		if (ok) 
+		{
+			activeA.historySliceCachingIs = true;
+			ActiveIOParameters ppio;
+			ppio.filename = model +".ac";
+			ok = ok && activeA.load(ppio);
+			TRUTH(ok);				
+		}		
+		if (ok)
+		{
+			EVAL(activeA.name);				
+			EVAL(activeA.underlyingEventUpdateds);		
+			std::size_t sizeA = activeA.historyOverflow ? activeA.historySize : activeA.historyEvent;				
+			EVAL(activeA.historySize);				
+			TRUTH(activeA.historyOverflow);				
+			EVAL(activeA.historyEvent);				
+			EVAL(sizeA);
+			EVAL(activeA.historyEvent);		
+			TRUTH(activeA.continousIs);				
+			EVAL(activeA.continousHistoryEventsEvent);	
+			TRUTH(activeA.historySliceCachingIs);				
+			TRUTH(activeA.historySliceCumulativeIs);				
+			EVAL(activeA.historySlicesSize.size());		
+			EVAL(activeA.historySlicesSlicesSizeNext.size());		
+			EVAL(activeA.historySlicesSliceSetPrev.size());				
+			for (auto& hr : activeA.underlyingHistoryRepa)
+			{
+				EVAL(hr->dimension);				
+				EVAL(hr->size);				
+				// EVAL(*hr);				
+			}
+			for (auto& hr : activeA.underlyingHistorySparse)
+			{
+				EVAL(hr->size);				
+				// EVAL(*hr);				
+			}			
+			if (!concise)
+			{
+				EVAL(sorted(activeA.underlyingSlicesParent));				
+			}
+			else 
+			{
+				EVAL(activeA.underlyingSlicesParent.size());				
+			}			
+			EVAL(activeA.bits);				
+			EVAL(activeA.var);				
+			EVAL(activeA.varSlice);				
+			EVAL(activeA.induceThreshold);				
+			EVAL(activeA.induceVarExclusions);				
+			if (activeA.historySparse) {EVAL(activeA.historySparse->size);}
+			if (!concise)
+			{
+				if (activeA.historySparse) {EVAL(*activeA.historySparse);}				
+				EVAL(activeA.historySlicesSetEvent);			
+			}	
+			else 
+			{
+				EVAL(activeA.underlyingSlicesParent.size());				
+			}			
+			EVAL(activeA.historySlicesSetEvent.size());				
+			EVAL(activeA.induceSlices);				
+			EVAL(activeA.induceSliceFailsSize);				
+			EVAL(activeA.frameUnderlyings);				
+			EVAL(activeA.frameHistorys);				
+			// EVAL(activeA.framesVarsOffset);				
+			if (activeA.decomp) {EVAL(activeA.decomp->fuds.size());}
+			if (activeA.decomp) {EVAL(activeA.decomp->fudRepasSize);}
+			if (activeA.decomp) {EVAL((double)activeA.decomp->fuds.size() * activeA.induceThreshold / sizeA);}
+			// if (activeA.decomp) 
+			// {
+				// auto er = dfrer(*activeA.decomp);
+				// EVAL(sorted(er->substrate));
+			// }
+			if (!concise)
+			{
+				if (activeA.decomp) {EVAL(*activeA.decomp);}
+			}	
+			else 
+			{
+				TRUTH(activeA.decomp);				
+			}
+		}
+	}
 	if (argc >= 3 && std::string(argv[1]) == "image001")
 	{
 		auto mark = Clock::now();

@@ -218,6 +218,8 @@ Win006::Win006(const std::string& configA,
 			activeA.layerer_log = layerer_actor_log;
 			activeA.system = _system;
 			activeA.continousIs = true;
+			activeA.historySliceCachingIs = true;
+			activeA.historySliceCumulativeIs = true;
             if (_modelInitial.size())
 			{
 				ActiveIOParameters ppio;
