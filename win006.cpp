@@ -238,6 +238,7 @@ Win006::Win006(const std::string& configA,
 					this->eventId = std::max(this->eventId,activeA.historySize);	
 				else					
 					this->eventId = std::max(this->eventId,activeA.historyEvent);	
+				this->eventId++;
 			}
 			else
 			{
