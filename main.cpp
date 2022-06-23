@@ -436,10 +436,10 @@ int main(int argc, char *argv[])
         EVAL(application.exec());
 	}
 	
-	if (argc >= 3 && (std::string(argv[1]) == "actor001" || std::string(argv[1]) == "win006"))
+	if (argc >= 2 && (std::string(argv[1]) == "actor001" || std::string(argv[1]) == "win006"))
 	{
         QApplication application(argc, argv);
-        Win006 win006(std::string(argv[2]),nullptr);
+        Win006 win006(std::string(argc >= 3 ? argv[2] : ""),nullptr);
 
         const auto screenSize = QGuiApplication::primaryScreen()->availableGeometry();
         win006.resize(screenSize.width()/2, screenSize.height()*0.95);
