@@ -130,6 +130,8 @@ Win006::Win006(const std::string& configA,
 		_height = ARGS_INT_DEF(height,410);	
 		_centreX = ARGS_DOUBLE_DEF(centreX,0.5);
 		_centreY = ARGS_DOUBLE_DEF(centreY,0.5);
+		_centreRandomX = ARGS_DOUBLE_DEF(random_centreX,0.0);
+		_centreRandomY = ARGS_DOUBLE_DEF(random_centreY,0.0);
 		if (args.HasMember("scales") && args["scales"].IsArray())
 		{
 			auto& arr = args["scales"];
@@ -352,10 +354,14 @@ void Win006::act()
 	std::vector<Record> recordValents;
 	{
 		_mark = Clock::now(); 
+		auto centreRandomX = _centreRandomX > 0.0 ? ((double) rand() / (RAND_MAX)) *_centreRandomX * 2.0 - _centreRandomX : 0.0;
+		auto centreRandomY = _centreRandomY > 0.0 ? ((double) rand() / (RAND_MAX)) *_centreRandomY * 2.0 - _centreRandomY : 0.0;
 		for (std::size_t k = 0; k < _scales.size(); k++)	
 		{
-            auto centreX = _centreX + (k < _offsets.size() ? _offsets[k].first : 0.0);
-            auto centreY = _centreY + (k < _offsets.size() ? _offsets[k].second : 0.0);
+            auto centreX = _centreX + centreRandomX
+				+ (k < _offsets.size() ? _offsets[k].first : 0.0);
+            auto centreY = _centreY + centreRandomY 
+				+ (k < _offsets.size() ? _offsets[k].second : 0.0);
 			Record recordA(image, 
                 _scales[k] * image.height() / image.width(), _scales[k],
 				centreX, centreY, _size, _size, _divisor, _divisor);

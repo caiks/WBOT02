@@ -82,6 +82,8 @@ private:
     int _height;	
 	double _centreX;
 	double _centreY;
+	double _centreRandomX;
+	double _centreRandomY;
     std::vector<double> _scales;
     std::vector<std::pair<double,double>> _offsets;
 	std::size_t _valency;
