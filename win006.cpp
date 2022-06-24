@@ -453,6 +453,10 @@ void Win006::act()
         string << "updated\t" << std::fixed << std::setprecision(6) << ((Sec)(Clock::now() - _mark)).count() << std::defaultfloat << "s";
 		// LOG string.str() UNLOG
         _ui->labelUpdatedTime->setText(string.str().data());
+        if (_actLogging && (_actLoggingFactor <= 1 || this->eventId % _actLoggingFactor == 0))
+		{
+            LOG "actor\tevent id: " << this->eventId << "\ttime " << ((Sec)(Clock::now() - _mark)).count() << "s" UNLOG
+		}
 	}
 	// image	
 	if (_system)
