@@ -79,7 +79,13 @@ Now let us investigate various wotbot *slice* topologies and goals.
 
 ### Actor node
 
-
+model|scales|frame position|events|fuds|fuds/sz/thrshld|median diagonal|max diagonal|lagging fuds
+---|---|---|---|---|---|---|---|---
+model001|1.0, 0.5, 0.25, 0.125|centred|720,000|2823|0.784167|31.5714|41.1581|11
+model002|0.25|1 centred, 4 offset|720,000|2799|0.7775|31.2526|41.5411|489
+model003|0.5|1 centred, 4 offset|720,000|2735|0.759722|31.4093|41.8025|599
+model006|0.5|1 centred|180,000|697|0.775099|31.6855|41.1768|0
+model007|0.25|1 centred|180,000|698|0.776233|31.458|40.8568|0
 
 <a name = "Conclusion"></a>
 
