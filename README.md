@@ -1,6 +1,23 @@
 # WBOT02 - Qt WOTBOT 
 
+In [TBOT01](https://github.com/caiks/TBOT01#readme), [TBOT02](https://github.com/caiks/TBOT02#readme) and [TBOT03](https://github.com/caiks/TBOT03#readme) we investigated dynamic *modelling* of a turtlebot, a small wheeled robot with a lidar. We experimented with it by running various controllers in the [turtlebot3 house](http://emanual.robotis.com/docs/en/platform/turtlebot3/simulation/#3-turtlebot3-house) simulated in the [Gazebo](http://gazebosim.org/) virtual environment.
+
+`TBOT01` was the preparatory step - it (1) acquired experience, (2) modelled, and (3) acted in three different stages. The *model* is trained using the *inducers* and *conditioners* implemented in the [AlignmentRepaC repository](https://github.com/caiks/AlignmentRepaC). The AlignmentRepaC repository is a fast C++ implementation of some of the *practicable inducers* described in the paper *The Theory and Practice of Induction by Alignment* at https://greenlake.co.uk/. The AlignmentRepaC repository was tested on the MNIST handwritten digits dataset in  [NISTC](https://github.com/caiks/NISTC#readme).
+
+In `TBOT02` we implemented fully dynamic *modelling* in the [AlignmentActive repository](https://github.com/caiks/AlignmentActive), which depends on the [AlignmentRepaC repository](https://github.com/caiks/AlignmentRepaC).
+
+In `TBOT03` we sought to improve *modelling* performance by searching for *model likelihood* in the *slice* topology as an indicator of potential new *model*. We were able to demonstrate that this strategy accelerates *model* growth, at least in the case of limited active *history size*.
+
+The turtlebot house and other simulated environments are hugely simplified models of the real world, however accurate the physics. A more complex robot with arms and legs and stereoscopic vision would probably not have a rich enough sensory path to real world embodiment, especially in regards to vision. Real world robots are a very difficult technical challenge, quite apart from developing its active *model*. So, in order to take advantage of the key idea of *likelihood*-accelerated *model* growth, we move to the real world initially without locomotion or manipulation. 
+
+That is, Wotbot will be an actor that has only vision and sound to begin with. Later on we aim to add speech
+
 WOTBOT actor
+
+Qt replaces ROS 2
+
+Grab screen and camera ie vision 
+
 
 ## Sections
 
@@ -79,11 +96,28 @@ Now let us investigate various wotbot *slice* topologies and goals.
 
 ### Actor node
 
+Fireman Sam videos 
+
+Non likely versus likely modes
+
+Valency and bucketing
+
+Describe act for actor 1
+
+Describe GUI
+
+Describe FPS and logging
+
+Compare non likely models esp random versus fixed. Use screenshots comparing fixed and random for repeated scenes, learned scenes and new scenes. Draw conclusions regarding scanning and likelihood search.
+
+
 model|scales|frame position|events|fuds|fuds/sz/thrshld|median diagonal|max diagonal|lagging fuds
 ---|---|---|---|---|---|---|---|---
 model001|1.0, 0.5, 0.25, 0.125|centred|720,000|2823|0.784167|31.5714|41.1581|11
 model002|0.25|1 centred, 4 offset|720,000|2799|0.7775|31.2526|41.5411|489
 model003|0.5|1 centred, 4 offset|720,000|2735|0.759722|31.4093|41.8025|599
+model004|0.5|1 centred, 4 offset, randomised|720,000|2955|0.820833|25.5135|40.332|221
+model005|1.0|1 centred|180,000|684|0.761591|33.4245|41.2544|0
 model006|0.5|1 centred|180,000|697|0.775099|31.6855|41.1768|0
 model007|0.25|1 centred|180,000|698|0.776233|31.458|40.8568|0
 
