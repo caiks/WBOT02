@@ -526,3 +526,35 @@ void Win006::mousePressEvent(QMouseEvent *event)
         _ui->labelCentre->setText(string.str().data());
 	}
 }
+
+void Win006::keyPressEvent(QKeyEvent *event)
+{
+    if(event->key() == Qt::Key_Left)
+    {
+        _centreX -= 0.25/40.0;
+    }
+	else if(event->key() == Qt::Key_Up)
+    {
+        _centreY -= 0.25/40.0;
+    }
+	else if(event->key() == Qt::Key_Down)
+    {
+        _centreY += 0.25/40.0;
+    }
+	else if(event->key() == Qt::Key_Right)
+    {
+        _centreX += 0.25/40.0;
+    }
+	else if(event->key() == Qt::Key_Space)
+    {
+        _centreX = 0.5;
+        _centreY = 0.5;
+    }
+	
+	{
+        std::stringstream string;
+        string << "centre\t(" << std::setprecision(3) << _centreX << "," << _centreY << ")";
+        // LOG string.str() UNLOG
+        _ui->labelCentre->setText(string.str().data());
+	}
+}

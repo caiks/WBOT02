@@ -29,6 +29,7 @@ public Q_SLOTS:
 	
 protected:
 	void mousePressEvent(QMouseEvent *event) override;
+	void keyPressEvent(QKeyEvent *event);
 
 private:
     Ui::Win006 *_ui;
