@@ -104,19 +104,307 @@ Now let us investigate various wotbot *slice* topologies and goals.
 
 ### Actor node
 
-cf CAIKS4 202204201555
+cf CAIKS4 202205211600
 
-Fireman Sam videos 
 
-Non likely versus likely modes
+It looks like we can grab the screen and process it in < 50ms. So that is ok. Perhaps grabbing a window or rectangle might be quicker.
 
-Valency and bucketing
+```
+14:30:21: Starting C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe screen001...
+auto pixmap = screen->grabWindow(0)	0.0333489s
+auto image = pixmap.toImage()	6e-07s
+image.format(): 4
+image.depth(): 32
+image.width(): 1920
+image.height(): 1080
+image.dotsPerMeterX(): 3780
+image.dotsPerMeterY(): 3780
+auto colour = image.pixel(QPoint(0,0))
+colour: ffd4d0c8
+qAlpha(colour): 255
+qRed(colour): 212
+qGreen(colour): 208
+qBlue(colour): 200
+qGray(colour): 208
+(qRed(colour)+qGreen(colour)+qBlue(colour))/3: 206
+total: 1173563400
+average per pixel:188	0.0014799s
+14:30:21: C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe exited with code 0
 
-Describe act for actor 1
+```
+
+```
+10:35:37: Starting C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe screen002 250 700 50 800 600...
+application.exec(): pixmap.devicePixelRatio(): 1.25
+captured	0.0598737s
+image.format(): 4
+image.depth(): 32
+image.width(): 1000
+image.height(): 750
+image.dotsPerMeterX(): 3780
+image.dotsPerMeterY(): 3780
+auto colour = image.pixel(QPoint(0,0))
+colour: ff034abf
+qAlpha(colour): 255
+qRed(colour): 3
+qGreen(colour): 74
+qBlue(colour): 191
+qGray(colour): 67
+(qRed(colour)+qGreen(colour)+qBlue(colour))/3: 89
+average:220	0.0015486s
+imaged	0.0063075s
+captured	0.0337352s
+average:212	0.0014052s
+imaged	0.0023709s
+captured	0.0215182s
+average:212	0.00143s
+imaged	0.0023704s
+captured	0.0215584s
+average:212	0.0011383s
+imaged	0.0022505s
+captured	0.0223344s
+average:212	0.001267s
+imaged	0.0022439s
+captured	0.0212759s
+average:212	0.000848s
+imaged	0.0019804s
+captured	0.026578s
+average:217	0.0009464s
+imaged	0.0020459s
+captured	0.0220192s
+average:213	0.0008962s
+imaged	0.0020124s
+captured	0.0284716s
+average:213	0.001252s
+imaged	0.0018642s
+captured	0.0309914s
+average:213	0.0012326s
+imaged	0.001643s
+captured	0.0198982s
+average:213	0.000812s
+imaged	0.0016847s
+captured	0.0211162s
+average:213	0.0011648s
+imaged	0.001562s
+captured	0.0206715s
+average:213	0.0007356s
+imaged	0.0017114s
+captured	0.0280161s
+average:213	0.0012565s
+imaged	0.0017583s
+captured	0.0269995s
+average:214	0.0010688s
+imaged	0.0018502s
+captured	0.0276867s
+average:214	0.0009094s
+imaged	0.0016557s
+captured	0.017807s
+average:214	0.000755s
+imaged	0.0015162s
+captured	0.0190813s
+average:214	0.0006288s
+imaged	0.0015041s
+captured	0.0207753s
+average:214	0.0007273s
+imaged	0.0014228s
+captured	0.0158939s
+average:214	0.0010257s
+imaged	0.0014778s
+captured	0.0242938s
+average:239	0.0010869s
+imaged	0.0016831s
+captured	0.0205101s
+average:239	0.000622s
+imaged	0.0014604s
+captured	0.0206853s
+average:239	0.0006039s
+imaged	0.0014262s
+captured	0.0237186s
+average:239	0.000648s
+imaged	0.0014651s
+captured	0.0258457s
+average:239	0.000669s
+imaged	0.0014597s
+captured	0.02065s
+average:239	0.000608s
+imaged	0.0014745s
+captured	0.0210374s
+average:239	0.0006042s
+imaged	0.0014543s
+captured	0.0211638s
+average:239	0.0006258s
+imaged	0.0014284s
+captured	0.0227177s
+average:239	0.0006039s
+imaged	0.001501s
+captured	0.0230847s
+average:239	0.0006488s
+imaged	0.0014856s
+captured	0.0278173s
+average:239	0.000598s
+imaged	0.0014387s
+captured	0.0207356s
+average:239	0.0006431s
+imaged	0.0014289s
+captured	0.0258562s
+average:244	0.0006275s
+imaged	0.0014949s
+captured	0.020267s
+average:244	0.0006455s
+imaged	0.001486s
+captured	0.0281004s
+average:244	0.0006316s
+imaged	0.0015098s
+captured	0.0279223s
+average:246	0.0008471s
+imaged	0.0024594s
+0
+10:35:47: C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe exited with code 0
+```
+
+Smaller image is proportionally quicker.
+
+
+camera
+
+```
+09:10:56: Starting C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe camera001 250...
+QMediaDevices::videoInputs().count(): 1
+application.exec(): capturing ...
+captured	0.0100075s
+image.format(): 4
+image.depth(): 32
+image.width(): 1280
+image.height(): 720
+image.dotsPerMeterX(): 3780
+image.dotsPerMeterY(): 3780
+auto colour = image.pixel(QPoint(0,0))
+colour: ffa6a6a2
+qAlpha(colour): 255
+qRed(colour): 166
+qGreen(colour): 166
+qBlue(colour): 162
+qGray(colour): 165
+(qRed(colour)+qGreen(colour)+qBlue(colour))/3: 164
+average:148	0.0012667s
+imaged	0.0047368s
+capturing ...
+captured	0.023265s
+average:147	0.0008s
+imaged	0.0008467s
+capturing ...
+captured	0.0116363s
+average:154	0.000817s
+imaged	0.0007428s
+capturing ...
+captured	0.0165489s
+average:161	0.0007532s
+imaged	0.0007316s
+capturing ...
+captured	0.0084141s
+average:161	0.0007234s
+imaged	0.0006741s
+capturing ...
+captured	0.0310597s
+average:161	0.0007395s
+imaged	0.0008216s
+capturing ...
+captured	0.0539563s
+average:155	0.0013482s
+imaged	0.0008147s
+capturing ...
+captured	0.0224035s
+average:149	0.0009107s
+imaged	0.0008514s
+capturing ...
+captured	0.0298221s
+average:149	0.0009187s
+imaged	0.0009286s
+capturing ...
+captured	0.0133719s
+average:150	0.0010288s
+imaged	0.0012024s
+capturing ...
+captured	0.0268962s
+average:150	0.0009516s
+imaged	0.0011918s
+capturing ...
+captured	0.0191822s
+average:150	0.0015772s
+imaged	0.0008754s
+capturing ...
+captured	0.0403106s
+average:150	0.0008824s
+imaged	0.0008671s
+capturing ...
+captured	0.0239956s
+average:115	0.0009308s
+imaged	0.0008935s
+capturing ...
+captured	0.0136166s
+average:65	0.0008409s
+imaged	0.0007644s
+capturing ...
+captured	0.0375077s
+average:46	0.000794s
+imaged	0.0009946s
+capturing ...
+captured	0.0159682s
+average:39	0.0009064s
+imaged	0.0007973s
+capturing ...
+captured	0.0057775s
+average:42	0.0007792s
+imaged	0.0007765s
+capturing ...
+captured	0.0226217s
+average:120	0.0014673s
+imaged	0.0009071s
+capturing ...
+captured	0.0303326s
+average:138	0.0009923s
+imaged	0.0008847s
+capturing ...
+captured	0.0125567s
+average:149	0.0008022s
+imaged	0.0007797s
+capturing ...
+captured	0.0282709s
+average:149	0.0007797s
+imaged	0.0007121s
+capturing ...
+captured	0.0148663s
+average:149	0.0007767s
+imaged	0.000695s
+capturing ...
+captured	0.012549s
+average:149	0.0007616s
+imaged	0.0006978s
+capturing ...
+captured	0.0283564s
+average:162	0.000711s
+imaged	0.000911s
+0
+09:11:03: C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe exited with code 0
+```
+
+Runs in < 50ms at 4 FPS no problem.
+
+Mention video and kinetics https://www.deepmind.com/open-source/kinetics Problem with quality of the videos and difficult to capture a playlist. Mention different formats and resolutions. Easiest to grab a rectangle from the screen, although the process requires a user to start and end, so cannot be easily automated. Ok for the moment.
 
 Describe GUI
 
-Describe FPS and logging
+Fireman Sam videos 
+
+Describe act for actor 1. Describe FPS and logging
+
+records and representations
+
+RGB to HSV https://www.rapidtables.com/convert/color/rgb-to-hsv.html - value is the max of R, G or B
+
+Valency and bucketing
+
+Non likely versus likely modes
 
 Compare non likely models esp random versus fixed. Use screenshots comparing fixed and random for repeated scenes, learned scenes and new scenes. Draw conclusions regarding scanning and likelihood search. Compare the random models to the fixed models for large likelihoods around faces, etc. Expect the likely models > fixed models > random models in hot spots near faces in credits, but likely models > random models > fixed models otherwise. Key thing is to position the focus on the hot spots (and hot scales) in order to avoid the need for convolving models over many positions. Can we conclude anything about likelihoods from navigating manually? don't seem to be able to show anything convincing by browsing, but the likelihoods of the randomised model around faces seem to be higher than in non-decript areas in general e.g. FS1_1_1m40s_008_1.png. Could do a likelihood map of an image by scanning and colouring each pixel according to its likelihood, but manual navigation suggests that this would be a very jagged landscape - which poses a question mark over the golf ball approach to scanning. Is a gentle pressure enough to demonstrate intelligence - an ineffable quality which is considerably harder to show than faster model growth?
 
