@@ -104,14 +104,14 @@ Now let us investigate various wotbot *slice* topologies and goals.
 
 ### Actor node
 
-cf CAIKS4 202205211600
+`WBOT02` has a `main` routine that examines the first command line argument and chooses its procedure accordingly.
 
+#### screen001 and screen002
 
-It looks like we can grab the screen and process it in < 50ms. So that is ok. Perhaps grabbing a window or rectangle might be quicker.
-
+In `screen001` we test the screen grab functionality. We check to see how long it takes to grab the pixmap, convert it to an image and read every pixel of the image. This is the typical output -
 ```
-14:30:21: Starting C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe screen001...
-auto pixmap = screen->grabWindow(0)	0.0333489s
+09:05:05: Starting C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe screen001...
+auto pixmap = screen->grabWindow(0)	0.0549396s
 auto image = pixmap.toImage()	6e-07s
 image.format(): 4
 image.depth(): 32
@@ -120,19 +120,24 @@ image.height(): 1080
 image.dotsPerMeterX(): 3780
 image.dotsPerMeterY(): 3780
 auto colour = image.pixel(QPoint(0,0))
-colour: ffd4d0c8
+colour: ff033db8
 qAlpha(colour): 255
-qRed(colour): 212
-qGreen(colour): 208
-qBlue(colour): 200
-qGray(colour): 208
-(qRed(colour)+qGreen(colour)+qBlue(colour))/3: 206
-total: 1173563400
-average per pixel:188	0.0014799s
-14:30:21: C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe exited with code 0
-
+qRed(colour): 3
+qGreen(colour): 61
+qBlue(colour): 184
+qGray(colour): 60
+(qRed(colour)+qGreen(colour)+qBlue(colour))/3: 82
+total: 1214020541
+average per pixel:195	0.0014735s
+09:05:05: C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe exited with code 0
 ```
+On a Windows 11 laptop, the grab of the entire screen typically takes 30-50 ms, which limits the FPS to a maximum of 20. The processing of the image is much faster, around 1-2 ms.
 
+In `screen002` we demonstrate that grabbing a rectangle rather than the entire screen is quicker. Here we open a Qt window, `Win002`. At a fixed interval the window grabs a rectangle, displays the captured imaged, calculates the average intensity, `(R + G + B)/3`, and produces some statistics -  
+
+![screen002](images/screen002.png)
+
+The command line is parsed as `screen002 <interval in ms> <x coord> <y coord> <width> <height>`. This example has a rectangle of `800x600` -
 ```
 10:35:37: Starting C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe screen002 250 700 50 800 600...
 application.exec(): pixmap.devicePixelRatio(): 1.25
@@ -162,108 +167,14 @@ imaged	0.0023704s
 captured	0.0215584s
 average:212	0.0011383s
 imaged	0.0022505s
-captured	0.0223344s
-average:212	0.001267s
-imaged	0.0022439s
-captured	0.0212759s
-average:212	0.000848s
-imaged	0.0019804s
-captured	0.026578s
-average:217	0.0009464s
-imaged	0.0020459s
-captured	0.0220192s
-average:213	0.0008962s
-imaged	0.0020124s
-captured	0.0284716s
-average:213	0.001252s
-imaged	0.0018642s
-captured	0.0309914s
-average:213	0.0012326s
-imaged	0.001643s
-captured	0.0198982s
-average:213	0.000812s
-imaged	0.0016847s
-captured	0.0211162s
-average:213	0.0011648s
-imaged	0.001562s
-captured	0.0206715s
-average:213	0.0007356s
-imaged	0.0017114s
-captured	0.0280161s
-average:213	0.0012565s
-imaged	0.0017583s
-captured	0.0269995s
-average:214	0.0010688s
-imaged	0.0018502s
-captured	0.0276867s
-average:214	0.0009094s
-imaged	0.0016557s
-captured	0.017807s
-average:214	0.000755s
-imaged	0.0015162s
-captured	0.0190813s
-average:214	0.0006288s
-imaged	0.0015041s
-captured	0.0207753s
-average:214	0.0007273s
-imaged	0.0014228s
-captured	0.0158939s
-average:214	0.0010257s
-imaged	0.0014778s
-captured	0.0242938s
-average:239	0.0010869s
-imaged	0.0016831s
-captured	0.0205101s
-average:239	0.000622s
-imaged	0.0014604s
-captured	0.0206853s
-average:239	0.0006039s
-imaged	0.0014262s
-captured	0.0237186s
-average:239	0.000648s
-imaged	0.0014651s
-captured	0.0258457s
-average:239	0.000669s
-imaged	0.0014597s
-captured	0.02065s
-average:239	0.000608s
-imaged	0.0014745s
-captured	0.0210374s
-average:239	0.0006042s
-imaged	0.0014543s
-captured	0.0211638s
-average:239	0.0006258s
-imaged	0.0014284s
-captured	0.0227177s
-average:239	0.0006039s
-imaged	0.001501s
-captured	0.0230847s
-average:239	0.0006488s
-imaged	0.0014856s
-captured	0.0278173s
-average:239	0.000598s
-imaged	0.0014387s
-captured	0.0207356s
-average:239	0.0006431s
-imaged	0.0014289s
-captured	0.0258562s
-average:244	0.0006275s
-imaged	0.0014949s
-captured	0.020267s
-average:244	0.0006455s
-imaged	0.001486s
-captured	0.0281004s
-average:244	0.0006316s
-imaged	0.0015098s
+...
 captured	0.0279223s
 average:246	0.0008471s
 imaged	0.0024594s
 0
 10:35:47: C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe exited with code 0
 ```
-
-Smaller image is proportionally quicker.
-
+Capturing the smaller image of around a quarter of the area takes around half of the time, around 20 -25 ms.
 
 camera
 
@@ -391,6 +302,12 @@ imaged	0.000911s
 Runs in < 50ms at 4 FPS no problem.
 
 Mention video and kinetics https://www.deepmind.com/open-source/kinetics Problem with quality of the videos and difficult to capture a playlist. Mention different formats and resolutions. Easiest to grab a rectangle from the screen, although the process requires a user to start and end, so cannot be easily automated. Ok for the moment.
+
+
+
+cf CAIKS4 202205211600
+
+
 
 Describe GUI
 
