@@ -176,7 +176,11 @@ imaged	0.0024594s
 ```
 Capturing the smaller image of around a quarter of the area takes around half of the time, around 20 -25 ms.
 
-camera
+#### camera001
+
+`camera001` is similar to `screen002`, except that a camera image is captured instead of a rectangle of the screen. Also the process is asynchronous - the `capture` method of a `QImageCapture` is called and when the image is available the `imageCaptured` callback processes the image -
+
+![camera001](images/camera001.png)
 
 ```
 09:10:56: Starting C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe camera001 250...
@@ -211,82 +215,7 @@ capturing ...
 captured	0.0165489s
 average:161	0.0007532s
 imaged	0.0007316s
-capturing ...
-captured	0.0084141s
-average:161	0.0007234s
-imaged	0.0006741s
-capturing ...
-captured	0.0310597s
-average:161	0.0007395s
-imaged	0.0008216s
-capturing ...
-captured	0.0539563s
-average:155	0.0013482s
-imaged	0.0008147s
-capturing ...
-captured	0.0224035s
-average:149	0.0009107s
-imaged	0.0008514s
-capturing ...
-captured	0.0298221s
-average:149	0.0009187s
-imaged	0.0009286s
-capturing ...
-captured	0.0133719s
-average:150	0.0010288s
-imaged	0.0012024s
-capturing ...
-captured	0.0268962s
-average:150	0.0009516s
-imaged	0.0011918s
-capturing ...
-captured	0.0191822s
-average:150	0.0015772s
-imaged	0.0008754s
-capturing ...
-captured	0.0403106s
-average:150	0.0008824s
-imaged	0.0008671s
-capturing ...
-captured	0.0239956s
-average:115	0.0009308s
-imaged	0.0008935s
-capturing ...
-captured	0.0136166s
-average:65	0.0008409s
-imaged	0.0007644s
-capturing ...
-captured	0.0375077s
-average:46	0.000794s
-imaged	0.0009946s
-capturing ...
-captured	0.0159682s
-average:39	0.0009064s
-imaged	0.0007973s
-capturing ...
-captured	0.0057775s
-average:42	0.0007792s
-imaged	0.0007765s
-capturing ...
-captured	0.0226217s
-average:120	0.0014673s
-imaged	0.0009071s
-capturing ...
-captured	0.0303326s
-average:138	0.0009923s
-imaged	0.0008847s
-capturing ...
-captured	0.0125567s
-average:149	0.0008022s
-imaged	0.0007797s
-capturing ...
-captured	0.0282709s
-average:149	0.0007797s
-imaged	0.0007121s
-capturing ...
-captured	0.0148663s
-average:149	0.0007767s
-imaged	0.000695s
+...
 capturing ...
 captured	0.012549s
 average:149	0.0007616s
@@ -298,10 +227,13 @@ imaged	0.000911s
 0
 09:11:03: C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe exited with code 0
 ```
+In this case the capture takes around 10 -30 ms.
 
-Runs in < 50ms at 4 FPS no problem.
+#### video001 and video002
 
-Mention video and kinetics https://www.deepmind.com/open-source/kinetics Problem with quality of the videos and difficult to capture a playlist. Mention different formats and resolutions. Easiest to grab a rectangle from the screen, although the process requires a user to start and end, so cannot be easily automated. Ok for the moment.
+We made a couple of experiments with capturing frames from videos, `video001` and `video002`. The intention was to use the playlist of youtube videos from the [Kinetics dataset](https://www.deepmind.com/open-source/kinetics), which are a set of categorised videos of activities. 
+
+Problem with quality of the videos and difficult to capture a playlist. Mention different formats and resolutions. Easiest to grab a rectangle from the screen, although the process requires a user to start and end, so cannot be easily automated. Ok for the moment.
 
 
 
