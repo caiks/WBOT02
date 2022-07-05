@@ -104,11 +104,11 @@ Now let us investigate various wotbot *slice* topologies and goals.
 
 ### Actor node
 
-`WBOT02` has a `main` routine that examines the first command line argument and chooses its procedure accordingly.
+`WBOT02` has a `main` routine that examines the first command line argument and chooses its procedure accordingly. We discuss each of the procedures in the sections below -
 
 #### screen001 and screen002
 
-In `screen001` we test the screen grab functionality. We check to see how long it takes to grab the pixmap, convert it to an image and read every pixel of the image. This is the typical output -
+In `screen001` we test the screen grab functionality. We check to see how long it takes to (i) grab the pixmap, (ii) convert it to an image and (iii) read every pixel of the image. This is the typical output -
 ```
 09:05:05: Starting C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe screen001...
 auto pixmap = screen->grabWindow(0)	0.0549396s
@@ -231,10 +231,15 @@ In this case the capture takes around 10 -30 ms.
 
 #### video001 and video002
 
-We made a couple of experiments with capturing frames from videos, `video001` and `video002`. The intention was to use the playlist of youtube videos from the [Kinetics dataset](https://www.deepmind.com/open-source/kinetics), which are a set of categorised videos of activities. 
+We made a couple of experiments with capturing frames from videos, `video001` and `video002`. The intention was to use the playlist of youtube videos from the [Kinetics dataset](https://www.deepmind.com/open-source/kinetics), which are a set of categorised videos of activities. Many of the videos, however, were filmed with quite a low resolution and so it is difficult to ensure that low scale frames are such that the cells are not all highly interpolated in any particular video. That is, many of the videos are very blurry at smaller scales. The capture process itself and automating a playlist were both difficult tasks too. For the moment we will concentrate on grabbing videos from the screen and obtaining the videos from high quality sources, taking care not to infringe copyrights.
 
-Problem with quality of the videos and difficult to capture a playlist. Mention different formats and resolutions. Easiest to grab a rectangle from the screen, although the process requires a user to start and end, so cannot be easily automated. Ok for the moment.
+#### Records and representations
 
+Now let us create scaled and centered average brightness records and their representations. The `Record` class is defined in the common `dev.h/cpp`. It represents snapshot of a frame of given horizontal and vertical lengths or scales (fractions of 1) and a centre coordinate (a pair of fractions of 1) divided into `sizeX` by `sizeY` cells of integral value between 0 (dark) and 255 (light). It has persistence methods and a method to convert it to an *event*, i.e. a `HistoryRepa` of *size* 1 of a *substrate* consisting of *variables* for each cell of a given cell *valency* plus a scale *variable* of a given scale *valency*. `Record` has a constructor that creates a black array of cells. Another constructor creates a greyscale array of cells from a rectangular frame within a given image. Where a cell corresponds to a rectangle of pixels, an average pixel value is calculated. The `valent` method reduces the *valency* of a record by sorting the *values* and calculating percentiles, with special handling of 0 (black) to deal with the case of a frame that overlaps with the boundaries of the given image. The `image` method converts the record to an image
+
+
+
+#### screen003
 
 
 cf CAIKS4 202205211600
