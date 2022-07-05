@@ -235,14 +235,88 @@ We made a couple of experiments with capturing frames from videos, `video001` an
 
 #### Records and representations
 
-Now let us create scaled and centered average brightness records and their representations. The `Record` class is defined in the common `dev.h/cpp`. It represents snapshot of a frame of given horizontal and vertical lengths or scales (fractions of 1) and a centre coordinate (a pair of fractions of 1) divided into `sizeX` by `sizeY` cells of integral value between 0 (dark) and 255 (light). It has persistence methods and a method to convert it to an *event*, i.e. a `HistoryRepa` of *size* 1 of a *substrate* consisting of *variables* for each cell of a given cell *valency* plus a scale *variable* of a given scale *valency*. `Record` has a constructor that creates a black array of cells. Another constructor creates a greyscale array of cells from a rectangular frame within a given image. Where a cell corresponds to a rectangle of pixels, an average pixel value is calculated. The `valent` method reduces the *valency* of a record by sorting the *values* and calculating percentiles, with special handling of 0 (black) to deal with the case of a frame that overlaps with the boundaries of the given image. The `image` method converts the record to an image
+Now let us consider scaled and centered average brightness records and their representations. The `Record` class is defined in `dev.h`. It represents a rectangular frame of a part or the whole of an image. It is defined by horizontal and vertical lengths or scales (fractions of 1) and a centre coordinate (a pair of fractions of 1). It consists of a two dimensional array of cells of integral value between 0 (dark) and 255 (light). It has persistence methods and a method to convert it to an *event*, i.e. an `HistoryRepa` of *size* 1 of a *substrate* consisting of (i) *variables* for each cell of a given cell *valency*, plus (ii) a scale *variable* of a given scale *valency*. 
 
+`Record` has a constructor that creates a zeroed (black) array of cells. Another constructor creates a greyscale array of cells from a rectangular frame within a given image. Where an individual cell corresponds to a rectangle of pixels, an average pixel value is calculated. The value of the cell is the Hue-Saturation-Value calculation of lightness, i.e. the maximum of the red, green and blue values. 
 
+The `valent` method reduces the *valency* of a record by sorting the *values* and calculating quantiles, with special handling of 0 (black) to deal with the case of a frame that overlaps with the boundaries of the given image. 
 
-#### screen003
+The `image` method converts the record to an image with each cell generating a square of `multiplier` times `multiplier` pixels in the resultant image. The pixels are coloured grey with a lightness that depends on the cell's *value* as a proportion of the *valency*.
 
+The following is a test of the `Record` persistence -
+```
+09:25:52: Starting C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe records...
+rr
+(0.9,0.8,0.7,0.7,3,2,[0,1,2,3,4,5])
+(0.1,0.2,0.3,0.3,2,1,[6,7])
 
-cf CAIKS4 202205211600
+recordListsPersistent(rr, out)
+rr2 = persistentsRecordList(in)
+rr2
+(0.9,0.8,0.7,0.7,3,2,[0,1,2,3,4,5])
+(0.1,0.2,0.3,0.3,2,1,[6,7])
+
+(0.9,0.8,0.7,0.7,3,2,[0,1,2,3,4,5])
+(0.1,0.2,0.3,0.3,2,1,[6,7])
+
+09:25:52: C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe exited with code 0
+```
+
+The `Representation` class is also defined in `dev.h`. It represents the summation of a number of records, so, along with the array of integral cells, it has a count of the number of records added. It also has an `image` method which converts the representation to an image with each cell generating a square of `multiplier` times `multiplier` pixels in the resultant image. This time the pixels are coloured grey with a lightness that depends on the average *value* as a proportion of the *valency*. So a representation can image a *slice* of *events*.
+
+`Representation` also has persistence methods. These are needed to persist the map between *slices* and representations that is needed to visualise a *model*. The following is a test of the `Representation` persistence -
+```
+15:46:25: Starting C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe representations...
+r1: (0.9,0.8,3,2,[0,1,2,3,4,5])
+r2: (0.1,0.2,2,1,[6,7])
+rr
+(1,(0.9,0.8,3,2,[0,1,2,3,4,5]))
+(2,(0.1,0.2,2,1,[6,7]))
+
+sliceRepresentationUMapsPersistent(rr, out)
+rr2 = persistentsSliceRepresentationUMap(in)
+rr2
+(1,(0.9,0.8,3,2,[0,1,2,3,4,5]))
+(2,(0.1,0.2,2,1,[6,7]))
+
+15:46:25: C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe exited with code 0
+```
+
+#### screen003 and screen004
+
+`screen003` takes `screen002` and adds records. TODO
+
+```
+15:51:41: Starting C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe screen003 250 791 244 728 410...
+application.exec(): 0
+15:58:51: C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe exited with code 0
+```
+
+![screen003](images/screen003_001.png)
+
+The user can use the mouse to change the centre -
+
+![screen003](images/screen003_002.png)
+
+Notice that frames that exceed the grabbed images boundary are filled in with black. This can be seen in the full scale image on the left.
+
+`screen003` and `screen004` differ merely in how they are parameterised. Underneath they both use `Win005`. `screen003` expects its arguments on the command line, e.g.
+```
+screen003 250 791 244 728 410
+```
+`screen004` parses a JSON file in the manner of `TBOT03`, e.g.
+```
+screen004 actor.json
+```
+where actor.json is
+```
+{
+	"interval" : 250,
+	"scales" : [1.0, 0.5, 0.25, 0.125]
+}
+```
+
+cf CAIKS4 202205310940
 
 
 
