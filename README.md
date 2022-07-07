@@ -133,7 +133,7 @@ average per pixel:195	0.0014735s
 ```
 On a Windows 11 laptop, the grab of the entire screen typically takes 30-50 ms, which limits the FPS to a maximum of 20. The processing of the image is much faster, around 1-2 ms.
 
-In `screen002` we demonstrate that grabbing a rectangle rather than the entire screen is quicker. Here we open a Qt window, `Win002`. At a fixed interval the window grabs a rectangle, displays the captured imaged, calculates the average intensity, `(R + G + B)/3`, and produces some statistics -  
+In `screen002` we demonstrate that grabbing a rectangle rather than the entire screen is quicker. Here we open a Qt application, `Win002`. At fixed intervals the application grabs a rectangle, displays the captured imaged, calculates the average intensity, `(R + G + B)/3`, and produces some statistics -  
 
 ![screen002](images/screen002.png)
 
@@ -231,17 +231,17 @@ In this case the capture takes around 10 -30 ms.
 
 #### video001 and video002
 
-We made a couple of experiments with capturing frames from videos, `video001` and `video002`. The intention was to use the playlist of youtube videos from the [Kinetics dataset](https://www.deepmind.com/open-source/kinetics), which are a set of categorised videos of activities. Many of the videos, however, were filmed with quite a low resolution and so it is difficult to ensure that low scale frames are such that the cells are not all highly interpolated in any particular video. That is, many of the videos are very blurry at smaller scales. The capture process itself and automating a playlist were both difficult tasks too. For the moment we will concentrate on grabbing videos from the screen and obtaining the videos from high quality sources, taking care not to infringe copyrights.
+We made a couple of experiments with capturing frames from videos, `video001` and `video002`. The intention was to use the playlist of youtube videos from the [Kinetics dataset](https://www.deepmind.com/open-source/kinetics), which are a set of categorised videos of activities. Many of the videos, however, were filmed with quite a low resolution and so it is difficult to ensure that low scale frames are such that the cells are not all highly interpolated in any particular video. That is, many of the videos are very blurry at smaller scales. The capture process itself and automating a playlist were both difficult tasks too. For the moment we will concentrate on grabbing videos from the screen and obtaining the videos from high resolution sources.
 
 #### Records and representations
 
-Now let us consider scaled and centered average brightness records and their representations. The `Record` class is defined in `dev.h`. It represents a rectangular frame of a part or the whole of an image. It is defined by horizontal and vertical lengths or scales (fractions of 1) and a centre coordinate (a pair of fractions of 1). It consists of a two dimensional array of cells of integral value between 0 (dark) and 255 (light). It has persistence methods and a method to convert it to an *event*, i.e. an `HistoryRepa` of *size* 1 of a *substrate* consisting of (i) *variables* for each cell of a given cell *valency*, plus (ii) a scale *variable* of a given scale *valency*. 
+Now let us consider scaled and centered average brightness records and their representations. The `Record` class is defined in `dev.h`. It represents a rectangular frame of a part or the whole of an image. It is defined by horizontal and vertical lengths or scales (fractions of 1) and a centre coordinate (a pair of fractions of 1). It consists of a two dimensional array of cells of integral value between 0 (dark) and 255 (light). It has persistence methods and a method to convert it to an *event*, i.e. a `HistoryRepa` of *size* 1 of a *substrate* consisting of (i) *variables* for each cell of a given cell *valency*, plus (ii) a scale *variable* of a given scale *valency*. 
 
 `Record` has a constructor that creates a zeroed (black) array of cells. Another constructor creates a greyscale array of cells from a rectangular frame within a given image. Where an individual cell corresponds to a rectangle of pixels, an average pixel value is calculated. The value of the cell is the Hue-Saturation-Value calculation of lightness, i.e. the maximum of the red, green and blue values. 
 
 The `valent` method reduces the *valency* of a record by sorting the *values* and calculating quantiles, with special handling of 0 (black) to deal with the case of a frame that overlaps with the boundaries of the given image. 
 
-The `image` method converts the record to an image with each cell generating a square of `multiplier` times `multiplier` pixels in the resultant image. The pixels are coloured grey with a lightness that depends on the cell's *value* as a proportion of the *valency*.
+The `image` method converts the record to an image with each cell generating a square of size `multiplier` pixels in the resultant image. The pixels are coloured grey with a lightness that depends on the cell's *value* as a proportion of the *valency*.
 
 The following is a test of the `Record` persistence -
 ```
@@ -262,7 +262,7 @@ rr2
 09:25:52: C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe exited with code 0
 ```
 
-The `Representation` class is also defined in `dev.h`. It represents the summation of a number of records, so, along with the array of integral cells, it has a count of the number of records added. It also has an `image` method which converts the representation to an image with each cell generating a square of `multiplier` times `multiplier` pixels in the resultant image. This time the pixels are coloured grey with a lightness that depends on the average *value* as a proportion of the *valency*. So a representation can image a *slice* of *events*.
+The `Representation` class is also defined in `dev.h`. It represents the summation of a number of records, so it has a count of the number of records added, along with the array of integral cells. It also has an `image` method which converts the representation to an image with each cell generating a square of size `multiplier` pixels in the resultant image. This time the pixels are coloured grey with a lightness that depends on the average *value* as a proportion of the *valency*. So a representation can image a *slice* of *events*.
 
 `Representation` also has persistence methods. These are needed to persist the map between *slices* and representations that is needed to visualise a *model*. The following is a test of the `Representation` persistence -
 ```
@@ -292,13 +292,13 @@ application.exec(): 0
 15:58:51: C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe exited with code 0
 ```
 
-![screen003](images/screen003_001.png)
+![screen003_001](images/screen003_001.png)
 
 The user can use the mouse to change the centre -
 
-![screen003](images/screen003_002.png)
+![screen003_002](images/screen003_002.png)
 
-Notice that frames that exceed the grabbed images boundary are filled in with black. This can be seen in the full scale image on the left.
+Notice that frames that exceed the grabbed image's boundary are filled in with black. This can be seen in the full scale image on the left.
 
 `screen003` and `screen004` differ merely in how they are parameterised. Underneath they both use `Win005`. `screen003` expects its arguments on the command line, e.g.
 ```
@@ -308,7 +308,7 @@ screen003 250 791 244 728 410
 ```
 screen004 actor.json
 ```
-where actor.json is
+where actor.json is, for example,
 ```
 {
 	"interval" : 250,
@@ -316,26 +316,114 @@ where actor.json is
 }
 ```
 
+<a name = "actor001"></a>
+
+#### actor001
+
+`actor001` is the first version of the wotbot that does dynamic *modelling* using the [active framework](https://github.com/caiks/AlignmentActive). Initially the focus is at fixed positions within the image; later we add a certain amount of randomisation. These experiments are similar to those of the random modes of [`TBOT03`](https://github.com/caiks/TBOT03#Random_modes_10_12).
+
+`actor001` is implemented in `Win006`. The GUI is similar to `Win006`, except that there is now an additional row of images at the bottom. These are the representations of the *slices* to which the records of the second row belong. The *slices* *likelihoods* are shown below the *slice* representations. For example, `model001`, which has scales `[1.0, 0.5, 0.25, 0.125]`, produces the following -
+
+![actor001_001](images/actor001_001.png)
+
+The user can use the mouse to change the centre or use the arrow keys (and space to return to the middle) -
+
+![actor001_002](images/actor001_002.png)
+
+```
+actor001 actor.json
+```
+
+actor.json -
+```
+{
+	"model_initial" : "model001",
+	"interval" : 100,
+	"scales" : [1.0, 0.5, 0.25, 0.125],
+	"no_induce" : true
+}
+```
+
 cf CAIKS4 202205310940
-
-
-
-Describe GUI
 
 Fireman Sam videos 
 
 Describe act for actor 1. Describe FPS and logging
 
-records and representations
 
-RGB to HSV https://www.rapidtables.com/convert/color/rgb-to-hsv.html - value is the max of R, G or B
+first 2 hours of 
+https://www.bbc.co.uk/iplayer/episode/p08phyzv/fireman-sam-series-1-1-kite?seriesId=b00kr5w3
 
-Valency and bucketing
+model001.json -
+```
+{
+	"model" : "model001",
+	"interval" : 40,
+	"scales" : [1.0, 0.5, 0.25, 0.125],
+	"event_maximum" : 720000,
+	"logging_action" : true,
+	"logging_action_factor" : 1000,
+	"warning_action" : true,
+	"summary_active" : true
+}
+```
 
-Non likely versus likely modes
+```
+cd /d C:\caiks\WBOT02_ws
+"C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe" actor001 model001.json > model001.log
 
-Compare non likely models esp random versus fixed. Use screenshots comparing fixed and random for repeated scenes, learned scenes and new scenes. Draw conclusions regarding scanning and likelihood search. Compare the random models to the fixed models for large likelihoods around faces, etc. Expect the likely models > fixed models > random models in hot spots near faces in credits, but likely models > random models > fixed models otherwise. Key thing is to position the focus on the hot spots (and hot scales) in order to avoid the need for convolving models over many positions. Can we conclude anything about likelihoods from navigating manually? don't seem to be able to show anything convincing by browsing, but the likelihoods of the randomised model around faces seem to be higher than in non-decript areas in general e.g. FS1_1_1m40s_008_1.png. Could do a likelihood map of an image by scanning and colouring each pixel according to its likelihood, but manual navigation suggests that this would be a very jagged landscape - which poses a question mark over the golf ball approach to scanning. Is a gentle pressure enough to demonstrate intelligence - an ineffable quality which is considerably harder to show than faster model growth?
+```
 
+first 2 hours of 
+https://www.bbc.co.uk/iplayer/episode/p08phyzv/fireman-sam-series-1-1-kite?seriesId=b00kr5w3
+
+model008.json -
+```
+{
+	"model" : "model008",
+	"interval" : 40,
+	"scales" : [0.25, 0.25, 0.25, 0.25, 0.25],
+	"offsets" : [[-0.125,0.0],[0.0,-0.125],[0.0,0.0],[0.0,0.125],[0.125,0.0]],
+	"random_centreX" : 0.0625,
+	"random_centreY" : 0.0625,
+	"event_maximum" : 720000,
+	"logging_action" : true,
+	"logging_action_factor" : 1000,
+	"warning_action" : true,
+	"summary_active" : true
+}
+```
+
+```
+cd /d C:\caiks\WBOT02_ws
+"C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe" actor001 model008.json > model008.log
+
+```
+
+
+first 2 hours of 
+https://www.bbc.co.uk/iplayer/episode/p08phyzv/fireman-sam-series-1-1-kite?seriesId=b00kr5w3
+
+model002.json -
+```
+{
+	"model" : "model002",
+	"interval" : 40,
+	"scales" : [0.25, 0.25, 0.25, 0.25, 0.25],
+	"offsets" : [[-0.125,0.0],[0.0,-0.125],[0.0,0.0],[0.0,0.125],[0.125,0.0]],
+	"event_maximum" : 720000,
+	"logging_action" : true,
+	"logging_action_factor" : 1000,
+	"warning_action" : true,
+	"summary_active" : true
+}
+```
+
+```
+cd /d C:\caiks\WBOT02_ws
+"C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe" actor001 model002.json > model002.log
+
+```
 
 model|scales|frame position|events|fuds|fuds/sz/thrshld|median diagonal|max diagonal|lagging fuds
 ---|---|---|---|---|---|---|---|---
@@ -347,6 +435,43 @@ model004|0.5|1 centred, 4 offset, randomised|720,000|2955|0.820833|25.5135|40.33
 model005|1.0|1 centred|180,000|684|0.761591|33.4245|41.2544|0
 model006|0.5|1 centred|180,000|697|0.775099|31.6855|41.1768|0
 model007|0.25|1 centred|180,000|698|0.776233|31.458|40.8568|0
+
+
+actor.json -
+```
+{
+	"model_initial" : "model002",
+	"interval" : 100,
+	"scales" : [0.25, 0.25, 0.25, 0.25, 0.25],
+	"offsets" : [[-0.125,0.0],[0.0,-0.125],[0.0,0.0],[0.0,0.125],[0.125,0.0]],
+	"no_induce" : true
+}
+```
+
+```
+{
+	"model_initial" : "model008",
+	"interval" : 100,
+	"scales" : [0.25, 0.25, 0.25, 0.25, 0.25],
+	"offsets" : [[-0.125,0.0],[0.0,-0.125],[0.0,0.0],[0.0,0.125],[0.125,0.0]],
+	"no_induce" : true
+}
+```
+
+
+Scenes from the credits have nearly uniformly high likelihoods (> 0.5) and the slice is usually right. Scenes from the first series have variable results. The slices are wrong quite frequently, although perhaps show a scene which is one of the stock backgrounds but does not have the object in the foreground, such as a bus moving along a road. Scenes from other series usually have low likelihoods and often the slices are only approximate or completely wrong.  
+
+This behaviour is excellent in the sense that likelihood is a good indicator for future potential, but shows that we need less cluttered frames - the model is quite poor for new scenes. Wotbot needs to be able to be able to identify the different objects independently at smaller scales, while having the overall scene at larger scales too. Should we extend the substrate to allow one full scale frame plus a dynamic variable scale frame? Or should that be arranged in levels, i.e. the higher level has temporal and two underlyings - the full scale scene and the scanned variable scale frame.
+
+don't seem to be able to show anything convincing by browsing, but the likelihoods of the randomised model around faces seem to be higher than in non-decript areas in general e.g. FS1_1_1m40s_008_1.png
+
+
+#### actor002
+
+Non likely versus likely modes
+
+Compare non likely models esp random versus fixed. Use screenshots comparing fixed and random for repeated scenes, learned scenes and new scenes. Draw conclusions regarding scanning and likelihood search. Compare the random models to the fixed models for large likelihoods around faces, etc. Expect the likely models > fixed models > random models in hot spots near faces in credits, but likely models > random models > fixed models otherwise. Key thing is to position the focus on the hot spots (and hot scales) in order to avoid the need for convolving models over many positions. Can we conclude anything about likelihoods from navigating manually? don't seem to be able to show anything convincing by browsing, but the likelihoods of the randomised model around faces seem to be higher than in non-decript areas in general e.g. FS1_1_1m40s_008_1.png. Could do a likelihood map of an image by scanning and colouring each pixel according to its likelihood, but manual navigation suggests that this would be a very jagged landscape - which poses a question mark over the golf ball approach to scanning. Is a gentle pressure enough to demonstrate intelligence - an ineffable quality which is considerably harder to show than faster model growth?
+
 
 <a name = "Conclusion"></a>
 
