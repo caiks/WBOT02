@@ -320,15 +320,25 @@ where actor.json is, for example,
 
 #### actor001
 
-`actor001` is the first version of the wotbot that does dynamic *modelling* using the [active framework](https://github.com/caiks/AlignmentActive). Initially the focus is at fixed positions within the image; later we add a certain amount of randomisation. These experiments are similar to those of the random modes of [`TBOT03`](https://github.com/caiks/TBOT03#Random_modes_10_12).
+`actor001` is the first version of the wotbot that uses the [active framework](https://github.com/caiks/AlignmentActive) to do dynamic *modelling*. Initially the focus is at fixed positions within the image; later we add a certain amount of randomisation. These experiments are similar to those of the random modes of [`TBOT03`](https://github.com/caiks/TBOT03#Random_modes_10_12).
 
-`actor001` is implemented in `Win006`. The GUI is similar to `Win006`, except that there is now an additional row of images at the bottom. These are the representations of the *slices* to which the records of the second row belong. The *slices* *likelihoods* are shown below the *slice* representations. For example, `model001`, which has scales `[1.0, 0.5, 0.25, 0.125]`, produces the following -
+`actor001` is implemented in `Win006`. The GUI is similar to `Win005`, except that there is now an additional row of images at the bottom. These are the representations of the *slices* to which the records of the second row belong. The *slices* *likelihoods* are shown below the *slice* representations. For example, `model001`, which has scales `[1.0, 0.5, 0.25, 0.125]`, produces the following -
 
 ![actor001_001](images/actor001_001.png)
 
-The user can use the mouse to change the centre or use the arrow keys (and space to return to the middle) -
+The user can use the mouse to change the centre, or use the arrow keys (and space to return to the middle) -
 
 ![actor001_002](images/actor001_002.png)
+
+The actor constructor begins by parsing the given JSON file. Most of the parameters configure the active structure or logging, and are copied from turtlebot. The rest are specific to the wotbot. 
+
+The constructor then creates the dynamic parts of the GUI. There are a four `QLabel` object for each scale/offset - three are for the images of the *event* records and *slice* representations, and the fourth is for the *likelihood* statistic.
+
+The constructor then creates the active structure. In this case, the structure consists of a single active with cumulative *slice size* and topology. The underlying consists of a single `HistoryRepa` generates from a `Record`. That is, the *substrate* is just the record cells and a scale *variable*.
+
+Having constructed the actor 
+
+Describe act for actor 1. Describe FPS and logging
 
 ```
 actor001 actor.json
@@ -347,9 +357,6 @@ actor.json -
 cf CAIKS4 202205310940
 
 Fireman Sam videos 
-
-Describe act for actor 1. Describe FPS and logging
-
 
 first 2 hours of 
 https://www.bbc.co.uk/iplayer/episode/p08phyzv/fireman-sam-series-1-1-kite?seriesId=b00kr5w3
@@ -457,6 +464,8 @@ actor.json -
 	"no_induce" : true
 }
 ```
+
+The fixed models will have many identical events in a slice from the credits. So some slices are identical to the event. Really need to see the ancestors and siblings to see how generic the model is - actor 2. Of course we don't want it to be too generic - the model would have to be far too large, so we need hotspots rather like the fixed points but smart.
 
 
 Scenes from the credits have nearly uniformly high likelihoods (> 0.5) and the slice is usually right. Scenes from the first series have variable results. The slices are wrong quite frequently, although perhaps show a scene which is one of the stock backgrounds but does not have the object in the foreground, such as a bus moving along a road. Scenes from other series usually have low likelihoods and often the slices are only approximate or completely wrong.  
