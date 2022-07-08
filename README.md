@@ -330,15 +330,25 @@ The user can use the mouse to change the centre, or use the arrow keys (and spac
 
 ![actor001_002](images/actor001_002.png)
 
-The actor constructor begins by parsing the given JSON file. Most of the parameters configure the active structure or logging, and are copied from turtlebot. The rest are specific to the wotbot. 
+The actor constructor begins by parsing the given JSON file. Most of the parameters configure the active structure or logging; these are copied from turtlebot. The rest are specific to wotbot. In addition to the interval, screen grab, centre and scale list parameters of `screen004`, there is an offset list. These are relative offsets from the centre applied to each frame. We can then take multiple frames of the same scale from each act cycle image. In this example we have five quarter scale frames, one at the centre and the others arranged at the points of the compass -
+```
+{
+...
+	"scales" : [0.25, 0.25, 0.25, 0.25, 0.25],
+	"offsets" : [[-0.125,0.0],[0.0,-0.125],[0.0,0.0],[0.0,0.125],[0.125,0.0]],
+...
+}
+```
 
-The constructor then creates the dynamic parts of the GUI. There are a four `QLabel` object for each scale/offset - three are for the images of the *event* records and *slice* representations, and the fourth is for the *likelihood* statistic.
+The constructor then creates the dynamic parts of the GUI. There are four `QLabel`s for each scale/offset - three are for the images of the *event* records and *slice* representations, and the fourth is for the *likelihood* statistic.
 
-The constructor then creates the active structure. In this case, the structure consists of a single active with cumulative *slice size* and topology. The underlying consists of a single `HistoryRepa` generates from a `Record`. That is, the *substrate* is just the record cells and a scale *variable*.
+The constructor then creates the active structure. In this case, the structure consists of a single active with cumulative *slice size* and topology. The active has a single underlying `HistoryRepa`, which is updated by *events* generated from the frame records. That is, the *substrate* is just the record cells and a scale *variable*.
 
-Having constructed the actor 
+Having constructed the actor a separate thread is started to run the active *induce* at regular intervals. Lastly, the constructor starts a `QTimer` to run the `Win006::act` callback.
 
-Describe act for actor 1. Describe FPS and logging
+`Win006::act` is called at regular intervals according to the `interval` parameter. In the example *models* below, the interval is usually 40 ms, or 25 FPS. The act time is calculated and substracted from the next pause so that there are regular intervals; the actors can then be considered continuous when we later come to consider temporal *levels* and *slice* topologies. If the act time exceeds the interval, the act is run again immediately with an optional warning. If the number of records taken (the length of the scale list) is four or more, i.e. over 100 records per second, then we often see act warnings and lagging *induce*, depending on the available compute. So, to prevent the *induce* lags, later versions of the actor will have to consider either having fewer *events* per second, or introducing discontinuities, i.e. having occasional large pauses between consecutive acts.
+
+Likelihood calculation. Persistence of representation map
 
 ```
 actor001 actor.json
