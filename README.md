@@ -424,7 +424,30 @@ model	induce summary	slice: 131073	diagonal: 39.875	fud cardinality: 3	model car
 actor	status: finished
 05:31:00: C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe exited with code 0
 ```
+If we set the `induceThresholdInitial` to 200 and increase the `interval`, we can snapshot the intermediate *models*, 
+```
+{
+	"interval" : 1000,
+	"induceThresholdInitial" : 200,
+	"scales" : [1.0, 0.5, 0.25, 0.125],
+	"summary_active" : true
+}
+```
+For example, after one *fud* the two largest scale frames and the two smallest scale frames have been separated into two *slices* -
 
+![actor001_005](images/actor001_005.png)
+
+Clearly the *induction* has correctly grouped the frames together in two pairs according to similarity.
+
+The *diagonal* of the first *fud* is a little lower (38.0 instead of 40.4) because of the smaller initial *slice* -
+```
+16:08:22: Starting C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe actor001 actor.json...
+actor	status: started
+application.exec(): model	induce summary	slice: 0	diagonal: 38.0308	fud cardinality: 1	model cardinality: 10	fuds per threshold: 0.980392
+0
+actor	status: finished
+16:09:35: C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe exited with code 0
+```
 
 model001.json -
 ```
