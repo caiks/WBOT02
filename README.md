@@ -377,14 +377,54 @@ The remainder of `Win006::act` is as for `Win005::act` - the labels are updated 
 
 #### actor001 models
 
-Now let us consider some of the *models* obtained by `actor001`. In order to make them comparable, we have 
+Now let us consider some of the *models* obtained by `actor001`. In order to make them comparable, we have trained them on the first two hours of the [Fireman Sam videos](https://www.bbc.co.uk/iplayer/episode/p08phyzv/fireman-sam-series-1-1-kite?seriesId=b00kr5w3). The default coordinates and rectangle for the screen grab may be checked by running with the following command line arguments and `actor.json` file -
+```
+actor001 actor.json
+```
+where actor.json is, for example,
+```
+{
+	"interval" : 250,
+	"scales" : [1.0, 0.5, 0.25, 0.125],
+	"summary_active" : true
+}
+```
+The browser's position should be arranged on the right hand side of the screen so that, for example, if the actor is started with the first film paused at 20 seconds, the capture looks like this - 
 
-cf CAIKS4 202205310940
+![actor001_003](images/actor001_003.png)
 
-Fireman Sam videos 
+We can observe the *induction* taking place in real-time by restarting the actor and then watching the representations in the third row. The four frames of  different scales are recorded from same image at a constant fixed point `(0.5,0.5)`. So there are only four unique *events* during the whole session.
 
-first 2 hours of 
-https://www.bbc.co.uk/iplayer/episode/p08phyzv/fireman-sam-series-1-1-kite?seriesId=b00kr5w3
+Initially, all *events* are in *slice* 0 and so there is no *likelihood*. The *slice* 0 representation is just an average of the four scales, showing part of the mirror on the left and a faint image of part of Sam on the right from the full scale frame. The `induceThresholdInitial` defaults to 1000 *events*. In this example there are 16 *events* per second, so the first *fud* is *induced* after around a minute, followed shortly after by two or three more. We observe the representations change as the new leaf *slices* are created for each *fud*. This is the screenshot afterwards -
+
+![actor001_004](images/actor001_004.png)
+
+We can see that now the representations are identical to the *event* records for each scale and each has the same high *likelihood* of 0.76. This is because the *model* is complete - it now has each scale in four separate leaf *slices* of exactly the same *size*. These leaf *slices* will not produce children *fuds* because all of their *histograms* are *singletons* and there are no *alignments*. 
+
+If we examine the logs we can see that the evolution of the *model* is not always exactly the same. In this example there are four *fuds* -
+```
+05:24:08: Starting C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe actor001 actor.json...
+actor	status: started
+application.exec(): model	induce summary	slice: 0	diagonal: 40.4438	fud cardinality: 1	model cardinality: 7	fuds per threshold: 0.189394
+model	induce summary	slice: 131072	diagonal: 39.8886	fud cardinality: 2	model cardinality: 41	fuds per threshold: 0.359712
+model	induce summary	slice: 131073	diagonal: 39.9336	fud cardinality: 3	model cardinality: 62	fuds per threshold: 0.520833
+model	induce summary	slice: 131075	diagonal: 10.2801	fud cardinality: 4	model cardinality: 74	fuds per threshold: 0.671141
+0
+actor	status: finished
+05:25:27: C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe exited with code 0
+```
+In this, there are only three *fuds* -
+```
+05:29:28: Starting C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe actor001 actor.json...
+actor	status: started
+application.exec(): model	induce summary	slice: 0	diagonal: 40.4874	fud cardinality: 1	model cardinality: 25	fuds per threshold: 0.185874
+model	induce summary	slice: 131072	diagonal: 39.838	fud cardinality: 2	model cardinality: 32	fuds per threshold: 0.364964
+model	induce summary	slice: 131073	diagonal: 39.875	fud cardinality: 3	model cardinality: 39	fuds per threshold: 0.535714
+0
+actor	status: finished
+05:31:00: C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe exited with code 0
+```
+
 
 model001.json -
 ```
@@ -514,6 +554,8 @@ Scenes from the credits have nearly uniformly high likelihoods (> 0.5) and the s
 This behaviour is excellent in the sense that likelihood is a good indicator for future potential, but shows that we need less cluttered frames - the model is quite poor for new scenes. Wotbot needs to be able to be able to identify the different objects independently at smaller scales, while having the overall scene at larger scales too. Should we extend the substrate to allow one full scale frame plus a dynamic variable scale frame? Or should that be arranged in levels, i.e. the higher level has temporal and two underlyings - the full scale scene and the scanned variable scale frame.
 
 don't seem to be able to show anything convincing by browsing, but the likelihoods of the randomised model around faces seem to be higher than in non-decript areas in general e.g. FS1_1_1m40s_008_1.png
+
+cf CAIKS4 202205310940
 
 
 #### actor002
