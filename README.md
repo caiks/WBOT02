@@ -393,13 +393,13 @@ The browser's position should be arranged on the right hand side of the screen s
 
 ![actor001_003](images/actor001_003.png)
 
-We can observe the *induction* taking place in real-time by restarting the actor and then watching the representations in the third row. The four frames of  different scales are recorded from same image at a constant fixed point `(0.5,0.5)`. So there are only four unique *events* during the whole session.
+We can observe *induction* taking place in real-time by restarting the actor and then watching the representations in the third row. The four frames of different scales are recorded from a constant image centered at a single fixed point `(0.5,0.5)`. So there are only four unique *events* during the whole session.
 
 Initially, all *events* are in *slice* 0 and so there is no *likelihood*. The *slice* 0 representation is just an average of the four scales, showing part of the mirror on the left and a faint image of part of Sam on the right from the full scale frame. The `induceThresholdInitial` defaults to 1000 *events*. In this example there are 16 *events* per second, so the first *fud* is *induced* after around a minute, followed shortly after by two or three more. We observe the representations change as the new leaf *slices* are created for each *fud*. This is the screenshot afterwards -
 
 ![actor001_004](images/actor001_004.png)
 
-We can see that now the representations are identical to the *event* records for each scale and each has the same high *likelihood* of 0.76. This is because the *model* is complete - it now has each scale in four separate leaf *slices* of exactly the same *size*. These leaf *slices* will not produce children *fuds* because all of their *histograms* are *singletons* and there are no *alignments*. 
+We can see that the representations are now identical to the *event* records for each scale, and each has the same *likelihood* of 0.76. This is because the *model* is complete - each scale is now in a separate leaf *slice*. Although the *likelihood* is high, these leaf *slices* will not produce children *fuds* because all of their *histograms* are *singletons* which have no *alignments*. 
 
 If we examine the logs we can see that the evolution of the *model* is not always exactly the same. In this example there are four *fuds* -
 ```
@@ -437,7 +437,7 @@ For example, after one *fud* the two largest scale frames and the two smallest s
 
 ![actor001_005](images/actor001_005.png)
 
-Clearly the *induction* has correctly grouped the frames together in two pairs according to similarity.
+Clearly the *induction* has correctly grouped the frames together in two pairs by similarity.
 
 The *diagonal* of the first *fud* is a little lower (38.0 instead of 40.4) because of the smaller initial *slice* -
 ```
@@ -448,6 +448,7 @@ application.exec(): model	induce summary	slice: 0	diagonal: 38.0308	fud cardinal
 actor	status: finished
 16:09:35: C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe exited with code 0
 ```
+Now let us *model* from first two hours of the Fireman Sam videos. In *model* 1 we will run with the same four scales at the centre at a rate of 25 FPS -
 
 model001.json -
 ```
@@ -462,31 +463,39 @@ model001.json -
 	"summary_active" : true
 }
 ```
-
+Start the films from the beginning of the first episode and run the following -
 ```
 cd /d C:\caiks\WBOT02_ws
 "C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe" actor001 model001.json > model001.log
 
 ```
+The active will stop updating after 720,000 *events*, or approximately 2 hours. Note that the induce may be lagging, so wait until there are no more *fuds* being added by checking the log before quitting the application. When the application closes there are two files written to the `WBOT02_ws` directory - the active file, `model001.ac`, and the *slice*-representation map file, `model001.rep`. Both files will be large.
 
-
-```
-actor001 actor.json
-```
+Now we can browse *model* 1 by setting the `no_induce` flag -
 
 actor.json -
 ```
 {
 	"model_initial" : "model001",
-	"interval" : 100,
+	"interval" : 250,
 	"scales" : [1.0, 0.5, 0.25, 0.125],
 	"no_induce" : true
 }
 ```
+and running the following command line arguments -
+```
+actor001 actor.json
+```
+If we pause at 20 seconds of the first film as above, we can see four different representations -
 
+![actor001_006](images/actor001_006.png)
 
-first 2 hours of 
-https://www.bbc.co.uk/iplayer/episode/p08phyzv/fireman-sam-series-1-1-kite?seriesId=b00kr5w3
+The half scale representation appears to be the closest, with the others roughly matching the areas of light and dark. All have high *likelihoods*. 
+
+We can navigate around using the mouse or the arrow keys. The space bar will centre the focus. We can easily navigate to areas of low *likelihoods*, for example if we hit the up arrow several times we have -
+
+![actor001_007](images/actor001_007.png)
+
 
 model008.json -
 ```
