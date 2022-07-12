@@ -467,7 +467,7 @@ cd /d C:\caiks\WBOT02_ws
 "C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe" actor001 model001.json > model001.log
 
 ```
-An example of the log is [model001.log](https://github.com/caiks/WBOT02_ws/blob/main/model001.log). The active will stop updating after 720,000 *events*, or approximately 2 hours. Note that the induce may be lagging, so wait until there are no more *fuds* being added by checking the log before quitting the application. When the application closes there are two files written to the `WBOT02_ws` directory - the active file, `model001.ac`, and the *slice*-representation map file, `model001.rep`. Both files will be large, which is why we have not added them to the `WBOT02_ws` repository.
+An example of the log is [model001.log](https://github.com/caiks/WBOT02_ws/blob/main/model001.log). The active will stop updating after 720,000 *events*, or approximately 2 hours. Note that the induce may be lagging, so wait until there are no more *fuds* being added by checking the log before quitting the application. When the application closes there are two files written to the `WBOT02_ws` directory - the active file, `model001.ac`, and the *slice*-representation map file, `model001.rep`. Both files are large, which is why we have not added them to the `WBOT02_ws` repository.
 
 Now we can browse *model* 1 by setting the `no_induce` flag in `actor.json` -
 ```
@@ -482,19 +482,21 @@ and then running with the following command line arguments -
 ```
 actor001 actor.json
 ```
-If we pause at 20 seconds of the first film as above, we now see four different representations -
+If we pause at 20 seconds of the first film as before, we see that the four representations are no longer exact copies of the records -
 
 ![actor001_006](images/actor001_006.png)
 
 The second (half scale) representation appears to be the closest, with the others roughly matching the areas of light and dark. All have high *likelihoods*. 
 
-We can navigate around using the mouse or the arrow keys. The space bar will centre the focus. We can easily navigate to areas of low *likelihoods*, for example if we hit the up arrow several times we have -
+We can navigate around using the mouse or the arrow keys. The space bar will re-center the focus. We can easily navigate to areas of low *likelihoods*, for example if we hit the up arrow several times we have -
 
 ![actor001_007](images/actor001_007.png)
 
-Of course, having a low *likelihood*, by the measure given above, does not mean that a *slice's fud* is *unlikely* - the representations still show the areas of light and dark reasonably well - but only that the *slice* has perhaps less potential for future *model* than *on-diagonal slices*.
+Of course, having a low *likelihood*, by the measure given above, does not mean that a *slice's fud* is *unlikely* - the representations still show the areas of light and dark to some degree - but only that the *slice* has perhaps less potential for future *model* than *on-diagonal slices*.
 
-We may wonder why a small shift to the focus pushes us off the *diagonal*. The reason is probably that the place where we paused is in the opening sequence of the Fireman Sam episodes, at least in the first series, so the *events* obtained are duplicated ten or so times. In addition, the scene pauses briefly while Sam looks at himself in the mirror, increasing the number of identical *events*. The frames that we have manually selected just a few pixels away from the fixed point of `(0.5,0.5)` are unlikely to have occurred at any other time during the two hours of running, and so their *slices* consist of just a few similar *events*. The smaller *counts* decrease chance of the *slices* being on the *diagonal*. This reminds us of the vastness of the *volume* of the *substrate* compared to compute resources available - we will have to manage our focus to go to exactly the same few hotspots relative to common scenes such as, say, faces or hands. By scanning or searching the *slice* topology for the most *likely* foci and scales, we can accelerate *model* growth. The aim of the remaining `actor001` *models* is to examine the difference between fixed points of view and randomised points of view, for various scales, before we go on to consider *likelihood* based searches in `actor002`.
+We may wonder why a small shift to the focus pushes us off the *diagonal*. The reason is probably that the place where we stopped is in the opening sequence of the Fireman Sam episodes, at least in the first series, so the *events* obtained are duplicated ten or so times. In addition, the scene pauses briefly while Sam looks at himself in the mirror, increasing the number of identical *events*. The frames that we have manually selected just a few pixels away from the fixed point of `(0.5,0.5)` are unlikely to have occurred at any other time during the two hours of running, and so their *slices* consist of just a few similar, but not identical, *events*. The smaller *counts* decrease the chance of the *slices* being on the *diagonal*. Although the scenes are only slightly translated, the *events* are completely different. This is because there is no notion of locality or convolution in the *substrate* - the 'distance' between any two *variables* has no meaning except to our eyes.
+
+This reminds us of the vastness of the *volume* of the *substrate* compared to compute resources available - we will have to manage our focus to go to exactly the same few hotspots relative to common scenes such as, say, faces or hands. By scanning or searching the *slice* topology for the most *likely* foci and scales, we can accelerate *model* growth. The aim of the remaining `actor001` *models* is to examine the difference between fixed points of view and randomised points of view, for various scales, before we go on to consider *likelihood* based searches in `actor002`.
 
 This table summarises the results from the `actor001` *models* -
 
