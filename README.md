@@ -393,7 +393,7 @@ The browser's position should be arranged on the right hand side of the screen s
 
 ![actor001_003](images/actor001_003.png)
 
-We can observe *induction* taking place in real-time by restarting the actor and then watching the representations in the third row. The four frames of different scales are recorded from a constant image centered at a single fixed point `(0.5,0.5)`. So there are only four unique *events* during the whole session.
+We can observe *induction* taking place in real-time by restarting the actor and then watching the representations in the third row. The four frames of different scales are recorded from a constant image centered at a single fixed point (0.5,0.5). So there are only four unique *events* during the whole session.
 
 Initially, all *events* are in *slice* 0 and so there is no *likelihood*. The *slice* 0 representation is just an average of the four scales, showing part of the mirror on the left and a faint image of part of Sam on the right from the full scale frame. The `induceThresholdInitial` defaults to 1000 *events*. In this example there are 16 *events* per second, so the first *fud* is *induced* after around a minute, followed shortly after by two or three more. We observe the representations change as the new leaf *slices* are created for each *fud*. This is the screenshot afterwards -
 
@@ -448,7 +448,7 @@ application.exec(): model	induce summary	slice: 0	diagonal: 38.0308	fud cardinal
 actor	status: finished
 16:09:35: C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe exited with code 0
 ```
-Now let us consider *models* created from first two hours of the Fireman Sam videos. In *model* 1 we will run with the same four scales centered at the same fixed point `(0.5,0.5)`, and grabbed at a rate of 25 FPS. This is the definition of [`model001.json`](https://github.com/caiks/WBOT02_ws/blob/main/model001.json) -
+Now let us consider *models* created from first two hours of the Fireman Sam videos. In *model* 1 we will run with the same four scales centered at the same fixed point (0.5,0.5), and grabbed at a rate of 25 FPS. This is the definition of [`model001.json`](https://github.com/caiks/WBOT02_ws/blob/main/model001.json) -
 ```
 {
 	"model" : "model001",
@@ -488,30 +488,143 @@ If we pause at 20 seconds of the first film as before, we see that the four repr
 
 The second (half scale) representation appears to be the closest, with the others roughly matching the areas of light and dark. All have high *likelihoods*. 
 
-We can navigate around using the mouse or the arrow keys. The space bar will re-center the focus. We can easily navigate to areas of low *likelihoods*, for example if we hit the up arrow several times we have -
+We can navigate around using the mouse or the arrow keys. The space bar will re-center the focus. We can easily navigate to areas of low *likelihoods*, for example if we hit the up arrow several times to (0.5,0.463) we have -
 
 ![actor001_007](images/actor001_007.png)
 
 Of course, having a low *likelihood*, by the measure given above, does not mean that a *slice's fud* is *unlikely* - the representations still show the areas of light and dark to some degree - but only that the *slice* has perhaps less potential for future *model* than *on-diagonal slices*.
 
-We may wonder why a small shift to the focus pushes us off the *diagonal*. The reason is probably that the place where we stopped is in the opening sequence of the Fireman Sam episodes, at least in the first series, so the *events* obtained are duplicated ten or so times. In addition, the scene pauses briefly while Sam looks at himself in the mirror, increasing the number of identical *events*. The frames that we have manually selected just a few pixels away from the fixed point of `(0.5,0.5)` are unlikely to have occurred at any other time during the two hours of running, and so their *slices* consist of just a few similar, but not identical, *events*. The smaller *counts* decrease the chance of the *slices* being on the *diagonal*. Although the scenes are only slightly translated, the *events* are completely different. This is because there is no notion of locality or convolution in the *substrate* - the 'distance' between any two *variables* has no meaning except to our eyes.
+We may wonder why a small shift to the focus pushes us off the *diagonal*. The reason is probably that the place where we stopped is in the opening sequence of the Fireman Sam episodes, at least in the first series, so the *events* obtained are duplicated ten or so times. In addition, the scene pauses briefly while Sam looks at himself in the mirror, increasing the number of identical *events*. The frames that we have manually selected just a few pixels away from the fixed point of (0.5,0.5) are unlikely to have occurred at any other time during the two hours of running, and so their *slices* consist of just a few similar, but not identical, *events*. The smaller *counts* decrease the chance of the *slices* being on the *diagonal*. Although the scenes are only slightly translated, the *events* are completely different. This is because there is no notion of locality or convolution in the *substrate* - the 'distance' between any two *variables* has no meaning except to our eyes.
 
-This reminds us of the vastness of the *volume* of the *substrate* compared to compute resources available - we will have to manage our focus to go to exactly the same few hotspots relative to common scenes such as, say, faces or hands. By scanning or searching the *slice* topology for the most *likely* foci and scales, we can accelerate *model* growth. The aim of the remaining `actor001` *models* is to examine the difference between fixed points of view and randomised points of view, for various scales, before we go on to consider *likelihood* based searches in `actor002`.
+This reminds us of the vastness of the *volume* of the *substrate* compared to the compute resources available - we will have to manage the focus to go to exactly the same few hotspots relative to common scenes such as, say, faces or hands. We will also have to find the correct scale so that the object in question is always seen such that the *alignments* are maximised. That is, we must adjust for the  perspectival projection of a three dimensional object onto a plane. By scanning the image or searching the *slice* topology for the most *likely* foci and scales, we can accelerate *model* growth. The aim of the remaining `actor001` *models* is to examine the difference between fixed points of view and randomised points of view, for various scales, before we go on to consider *likelihood* based searches in `actor002`.
 
 This table summarises the results from the `actor001` *models* -
 
 model|scales|frame position|events|fuds|fuds/sz/thrshld|median diagonal|max diagonal|lagging fuds
 ---|---|---|---|---|---|---|---|---
 model001|1.0, 0.5, 0.25, 0.125|centred|720,000|2823|0.784167|31.5714|41.1581|11
-model002|0.25|1 centred, 4 offset|720,000|2799|0.7775|31.2526|41.5411|489
-model008|0.25|1 centred, 4 offset, randomised|720,000|2705|0.751389|25.904|39.3218|387
-model003|0.5|1 centred, 4 offset|720,000|2735|0.759722|31.4093|41.8025|599
-model004|0.5|1 centred, 4 offset, randomised|720,000|2955|0.820833|25.5135|40.332|221
 model005|1.0|1 centred|180,000|684|0.761591|33.4245|41.2544|0
 model006|0.5|1 centred|180,000|697|0.775099|31.6855|41.1768|0
 model007|0.25|1 centred|180,000|698|0.776233|31.458|40.8568|0
+model003|0.5|1 centred, 4 offset|720,000|2735|0.759722|31.4093|41.8025|599
+model004|0.5|1 centred, 4 offset, randomised|720,000|2955|0.820833|25.5135|40.332|221
+model002|0.25|1 centred, 4 offset|720,000|2799|0.7775|31.2526|41.5411|489
+model008|0.25|1 centred, 4 offset, randomised|720,000|2705|0.751389|25.904|39.3218|387
 
+*Model* 1 is the only *model* with varying scales. In order to determine which scale had the most *alignments* we ran the first three scales separately, in *models* 5, 6 and 7. We can see that no scale has any noticeable advantage, with the *fuds* per *size* per threshold fairly constant amongst all of them at around 0.77. The median and maximum *diagonals* is similar too. 
 
+This is the configuration for these three *models* is very similar. For example, `model005.json` -
+```
+{
+	"model" : "model005",
+	"interval" : 40,
+	"scales" : [1.0],
+	"event_maximum" : 180000,
+	"logging_action" : true,
+	"logging_action_factor" : 1000,
+	"warning_action" : true,
+	"summary_active" : true
+}
+```
+And -
+```
+cd /d C:\caiks\WBOT02_ws
+"C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe" actor001 model005.json > model005.log
+
+```
+The remaining *models* have five frames, all with the same scale - a central frame and four frames at the points of the compass. In *models* 3 and 4 we compare the effect of fixed centres to randomised ones, for half scale frames. In *models* 2 and 8, we do the same for quarter scale frames. We can see that for half scale randomisation appears to increase the *model* a little (0.82 versus 0.76), but for quarter scale randomisation appears to decrease the *model* a little (0.75 versus 0.78). There does not seem to be any very large quantitative differences.
+
+Let us consider if there are qualitative differences between fixed and randomised for the half scale by comparing *models* 3 and 4. This is the configuration of `model003.json` -
+```
+{
+	"model" : "model003",
+	"interval" : 40,
+	"scales" : [0.5, 0.5, 0.5, 0.5, 0.5],
+	"offsets" : [[-0.25,0.0],[0.0,-0.25],[0.0,0.0],[0.0,0.25],[0.25,0.0]],
+	"event_maximum" : 720000,
+	"logging_action" : true,
+	"logging_action_factor" : 1000,
+	"warning_action" : true,
+	"summary_active" : true
+}
+```
+And -
+```
+cd /d C:\caiks\WBOT02_ws
+"C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe" actor001 model003.json > model003.log
+
+```
+We can browse the *model* by pausing the first film at 20 seconds and running `actor001 actor.json` with `actor.json` -
+```
+{
+	"model_initial" : "model003",
+	"interval" : 100,
+	"scales" : [0.5],
+	"no_induce" : true
+}
+```
+At the centre we see an image very similar to that of the half scale frame from *model* 1, as we would expect -
+
+![actor001_008](images/actor001_008.png)
+
+If we display *model* 3 and 1 side by side, we have -
+
+![actor001_008](images/actor001_008.png) ![actor001_010](images/actor001_010.png) 
+
+The *likelihood* is smaller (0.511 versus 0.694), but still fairly high. The *slice* representations themselves are very similar. The differing *likelihood* is possibly because the frame at (0.5,0.5) only sees one fifth of the *events* in *model* 3, instead of one quarter of the *events* in *model* 1, and so the *slice* is probably has fewer ancestors on its *decomposition* path. 
+
+If we move upwards by the same short distance as before to (0.5,0.463) we obtain the following -
+
+![actor001_009](images/actor001_009.png) ![actor001_011](images/actor001_011.png) 
+
+Again, the *likelihood* is off the *diagonal* at only -0.629, although this is slightly higher than before at -0.666. The *slice* representations, however, are quite different. This is because both *slices* are small samples, and so the representations are likely to deviate more from each other than with the *on-diagonal* case.
+
+This is the configuration of `model004.json` -
+```
+{
+	"model" : "model004",
+	"interval" : 40,
+	"scales" : [0.5, 0.5, 0.5, 0.5, 0.5],
+	"offsets" : [[-0.25,0.0],[0.0,-0.25],[0.0,0.0],[0.0,0.25],[0.25,0.0]],
+	"random_centreX" : 0.125,
+	"random_centreY" : 0.125,
+	"event_maximum" : 720000,
+	"logging_action" : true,
+	"logging_action_factor" : 1000,
+	"warning_action" : true,
+	"summary_active" : true
+}
+```
+And -
+```
+cd /d C:\caiks\WBOT02_ws
+"C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe" actor001 model004.json > model004.log
+
+```
+Now let us browse *model* 4 with `actor.json` -
+```
+{
+	"model_initial" : "model004",
+	"interval" : 100,
+	"scales" : [0.5],
+	"no_induce" : true
+}
+```
+Let us compare all three *models* at (0.5,0.5) -
+
+![actor001_012](images/actor001_012.png) ![actor001_008](images/actor001_008.png) ![actor001_010](images/actor001_010.png) 
+
+The randomised case has higher *likelihood* at 0.607 when compared to the fixed case, but the *slice* representation is much blurrier and so is probably not nearly so far down the *decomposition* path. This is as we would expect since there will be few, if any, identical *events* in the randomised case. 
+
+Compare the randomised case to the fixed for the translated centre (0.5,0.463) -
+
+![actor001_013](images/actor001_013.png)![actor001_009](images/actor001_009.png) ![actor001_011](images/actor001_011.png) 
+
+The randomised *likelihood* is higher at -0.238, but it is still very low. This is as we would expect - there will be more *events* from that location or for similar locations. The representation is still blurry - the *slice* will have a very short path.
+
+TODO compare for Sam's face.
+
+None of the *models* with only one frame (5, 6 and 7) have induce lags. There is a small lag in *model* 1 with four frames, and large lags in *models* 3, 4, 2 and 8 with five frames. Of course, the lagging is merely a question of compute resources, not *model* quality, but it will be important to avoid it when we come to *likelihood* search in `actor002`.
 
 model008.json -
 ```
@@ -561,17 +674,6 @@ cd /d C:\caiks\WBOT02_ws
 
 ```
 
-
-actor.json -
-```
-{
-	"model_initial" : "model002",
-	"interval" : 100,
-	"scales" : [0.25, 0.25, 0.25, 0.25, 0.25],
-	"offsets" : [[-0.125,0.0],[0.0,-0.125],[0.0,0.0],[0.0,0.125],[0.125,0.0]],
-	"no_induce" : true
-}
-```
 
 ```
 {
