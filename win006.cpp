@@ -319,12 +319,41 @@ Win006::~Win006()
 		if ( _model!="")
 		{
 			auto& activeA = *_active;
+			std::shared_ptr<HistoryRepa> hr = activeA.underlyingHistoryRepa.front();
+			auto& slev = activeA.historySlicesSetEvent;
+			auto& dr = *activeA.decomp;		
+			auto n = hr->dimension;
+			auto rr = hr->arr;	
+			auto& reps = *_slicesRepresentation;
+			// check for new leaf slices and update representation map
+            if (!_induceNot && _fudsSize < dr.fuds.size())
+			{
+				for (std::size_t i = _fudsSize; i < dr.fuds.size(); i++)
+				{
+					auto sliceA = dr.fuds[i].parent;
+					for (auto sliceB : dr.fuds[i].children)
+					{
+						Representation rep(1.0,1.0,_size,_size);
+						auto& arr1 = *rep.arr;
+						if (slev.count(sliceB))
+							for (auto j : slev[sliceB])
+							{
+								auto jn = j*n;
+								for (size_t i = 0; i < n-1; i++)
+									arr1[i] += rr[jn + i];
+								rep.count++;
+							}									
+						reps.insert_or_assign(sliceB, rep);
+					}
+					reps.erase(sliceA);
+				}
+				_fudsSize = dr.fuds.size();
+			}
 			ActiveIOParameters ppio;
 			ppio.filename = activeA.name+".ac";
 			activeA.logging = true;
 			activeA.dump(ppio);		
 		}			
-
 	}
     delete _ui;
 	LOG "actor\tstatus: finished" UNLOG
@@ -417,6 +446,10 @@ void Win006::act()
 					double lnwmax = std::log(_induceParameters.wmax);
 					double likelihood = (std::log(sliceSize) - std::log(parentSize) + lnwmax)/lnwmax;
 					likelihoods.push_back(likelihood);
+					// if (_actLogging)
+					// {
+						// LOG "actor\tslice: " << std::hex << slice << "\tsize: "  << std::dec << sliceSize << "\tparent: " << parentSize << "\tlikelihood: " << std::fixed << std::setprecision(6) << likelihood << std::defaultfloat << "\trep size: " << (reps.count(slice) ? reps[slice].count : 0) UNLOG
+					// }
 				}
 				if (!_induceNot)
 				{
@@ -428,7 +461,7 @@ void Win006::act()
 					for (size_t i = 0; i < n-1; i++)
 						arr1[i] += rr[jn + i];
 					rep.count++;					
-				}
+				}			
 			}		
 			// check for new leaf slices and update representation map
             if (!_induceNot && _fudsSize < dr.fuds.size())
@@ -475,9 +508,13 @@ void Win006::act()
 			_labelRecordValents[k]->setPixmap(QPixmap::fromImage(recordValents[k].image(_multiplier,_valency)));
 			auto slice = slices[k];
 			if (reps.count(slice))
-				_labelRecordSlices[k]->setPixmap(QPixmap::fromImage(reps[slice].image(_multiplier,_valency)));
+				_labelRecordSlices[k]->setPixmap(QPixmap::fromImage(reps[slice].image(_multiplier,_valency)));	
 			else
-				_labelRecordSlices[k]->setPixmap(QPixmap::fromImage(QImage(_size*_multiplier, _size*_multiplier, QImage::Format_RGB32)));	
+			{
+				QImage image(_size*_multiplier, _size*_multiplier, QImage::Format_RGB32);
+				image.fill(0);
+				_labelRecordSlices[k]->setPixmap(QPixmap::fromImage(image));	
+			}
 			std::stringstream string;
 			if (k < likelihoods.size())
 				string << std::fixed << std::setprecision(3) << likelihoods[k] << std::defaultfloat;
