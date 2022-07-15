@@ -44,6 +44,7 @@ private:
 	bool _actLogging;	
 	std::size_t _actLoggingFactor;
 	bool _actWarning;
+	bool _actLoggingSlice;	
     std::chrono::milliseconds _interval;
 	std::string _mode;
 	bool _modeLogging;

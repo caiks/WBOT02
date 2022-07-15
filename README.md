@@ -473,9 +473,10 @@ Now we can browse *model* 1 by setting the `no_induce` flag in `actor.json` -
 ```
 {
 	"model_initial" : "model001",
-	"interval" : 250,
+	"interval" : 1000,
 	"scales" : [1.0, 0.5, 0.25, 0.125],
-	"no_induce" : true
+	"no_induce" : true,
+	"logging_action_slice" : true
 }
 ```
 and then running with the following command line arguments -
@@ -486,9 +487,9 @@ If we pause at 20 seconds of the first film as before, we see that the four repr
 
 ![actor001_006](images/actor001_006.png)
 
-The second (half scale) representation appears to be the closest, with the others roughly matching the areas of light and dark. All have high *likelihoods*. 
+The first three representations are close to their corresponding records. These three have high *likelihoods*. 
 
-We can navigate around using the mouse or the arrow keys. The space bar will re-center the focus. We can easily navigate to areas of low *likelihoods*, for example if we hit the up arrow several times to (0.5,0.463) we have -
+We can navigate around using the mouse or the arrow keys. The space bar will re-center the focus. We can easily navigate to areas of low *likelihoods*, for example if we hit the right arrow several times to (0.531,0.5) we have -
 
 ![actor001_007](images/actor001_007.png)
 
@@ -500,9 +501,11 @@ This reminds us of the vastness of the *volume* of the *substrate* compared to t
 
 This table summarises the results from the `actor001` *models* -
 
+TODO
+
 model|scales|frame position|events|fuds|fuds/sz/thrshld|median diagonal|max diagonal|lagging fuds
 ---|---|---|---|---|---|---|---|---
-model001|1.0, 0.5, 0.25, 0.125|centred|720,000|2823|0.784167|31.5714|41.1581|11
+model001|1.0, 0.5, 0.25, 0.125|centred|720,000|2781|0.7725|31.7208|41.5523|7
 model005|1.0|1 centred|180,000|684|0.761591|33.4245|41.2544|0
 model006|0.5|1 centred|180,000|697|0.775099|31.6855|41.1768|0
 model007|0.25|1 centred|180,000|698|0.776233|31.458|40.8568|0

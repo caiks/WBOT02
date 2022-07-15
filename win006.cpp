@@ -84,6 +84,7 @@ Win006::Win006(const std::string& configA,
 		_actLoggingFactor = ARGS_INT(logging_action_factor);
 		_interval = (std::chrono::milliseconds)(ARGS_INT_DEF(interval,1000));	
 		_actWarning = ARGS_BOOL(warning_action);
+		_actLoggingSlice = ARGS_BOOL(logging_action_slice);
 		_mode = ARGS_STRING_DEF(mode, "mode001");
 		_modeLogging = ARGS_BOOL(logging_mode);
 		_modeLoggingFactor = ARGS_INT(logging_mode_factor); 
@@ -446,10 +447,10 @@ void Win006::act()
 					double lnwmax = std::log(_induceParameters.wmax);
 					double likelihood = (std::log(sliceSize) - std::log(parentSize) + lnwmax)/lnwmax;
 					likelihoods.push_back(likelihood);
-					// if (_actLogging)
-					// {
-						// LOG "actor\tslice: " << std::hex << slice << "\tsize: "  << std::dec << sliceSize << "\tparent: " << parentSize << "\tlikelihood: " << std::fixed << std::setprecision(6) << likelihood << std::defaultfloat << "\trep size: " << (reps.count(slice) ? reps[slice].count : 0) UNLOG
-					// }
+					if (_actLoggingSlice)
+					{
+						LOG "actor\tslice: " << std::hex << slice << "\tsize: "  << std::dec << sliceSize << "\tparent: " << parentSize << "\tlikelihood: " << std::fixed << std::setprecision(6) << likelihood << std::defaultfloat /* << "\trep size: " << (reps.count(slice) ? reps[slice].count : 0) */ UNLOG
+					}
 				}
 				if (!_induceNot)
 				{
