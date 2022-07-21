@@ -297,21 +297,6 @@ Win006::Win006(const std::string& configA,
 Win006::~Win006()
 {
 	terminate = true;
-	// dump slice representations
- 	if (_model.size())
-	{
-		try
-		{
-			std::ofstream out(_model + ".rep", std::ios::binary);
-			sliceRepresentationUMapsPersistent(*_slicesRepresentation, out); 
-			out.close();
-			LOG "actor\tdump\tfile name:" << _model + ".rep" UNLOG
-		}
-		catch (const std::exception&)
-		{
-			LOG "actor\terror: failed to write slice-representations file" <<_model + ".rep" UNLOG
-		}			
-	}
 	if (_system)
 	{
 		_active->terminate = true;
@@ -354,6 +339,18 @@ Win006::~Win006()
 			ppio.filename = activeA.name+".ac";
 			activeA.logging = true;
 			activeA.dump(ppio);		
+			// dump slice representations
+			try
+			{
+				std::ofstream out(_model + ".rep", std::ios::binary);
+				sliceRepresentationUMapsPersistent(*_slicesRepresentation, out); 
+				out.close();
+				LOG "actor\tdump\tfile name:" << _model + ".rep" UNLOG
+			}
+			catch (const std::exception&)
+			{
+				LOG "actor\terror: failed to write slice-representations file" <<_model + ".rep" UNLOG
+			}	
 		}			
 	}
     delete _ui;
@@ -449,7 +446,7 @@ void Win006::act()
 					likelihoods.push_back(likelihood);
 					if (_actLoggingSlice)
 					{
-						LOG "actor\tslice: " << std::hex << slice << "\tsize: "  << std::dec << sliceSize << "\tparent: " << parentSize << "\tlikelihood: " << std::fixed << std::setprecision(6) << likelihood << std::defaultfloat /* << "\trep size: " << (reps.count(slice) ? reps[slice].count : 0) */ UNLOG
+						LOG "actor\tslice: " << std::hex << slice << "\tsize: "  << std::dec << sliceSize << "\tparent: " << parentSize << "\tlikelihood: " << std::fixed << std::setprecision(6) << likelihood << std::defaultfloat << "\trep size: " << (reps.count(slice) ? reps[slice].count : 0) UNLOG
 					}
 				}
 				if (!_induceNot)
