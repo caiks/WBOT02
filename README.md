@@ -487,9 +487,9 @@ If we pause at 20 seconds of the first film as before, we see that the four repr
 
 ![actor001_006](images/actor001_006.png)
 
-The first three representations are close to their corresponding records. These three have high *likelihoods*. 
+The first three representations are close to their corresponding records. All have high *likelihoods*. 
 
-We can navigate around using the mouse or the arrow keys. The space bar will re-center the focus. We can easily navigate to areas of low *likelihoods*, for example if we hit the right arrow several times to (0.531,0.5) we have -
+We can navigate around using the mouse or the arrow keys. The space bar will re-center the focus. We can easily navigate to areas of low *likelihoods*, for example if we hit the up arrow several times to (0.5,0.425) we have -
 
 ![actor001_007](images/actor001_007.png)
 
@@ -501,17 +501,17 @@ This reminds us of the vastness of the *volume* of the *substrate* compared to t
 
 This table summarises the results from the `actor001` *models* -
 
-TODO models 2 and 8
+TODO model 8
 
 model|scales|frame position|events|fuds|fuds/sz/thrshld|median diagonal|max diagonal|lagging fuds
 ---|---|---|---|---|---|---|---|---
-model001|1.0, 0.5, 0.25, 0.125|centred|720,000|2781|0.7725|31.7208|41.5523|7
+model001|1.0, 0.5, 0.25, 0.125|centred|720,000|2817|0.7825|31.8063|41.4185|66
 model005|1.0|1 centred|180,000|684|0.761591|33.4245|41.2544|0
 model006|0.5|1 centred|180,000|697|0.775099|31.6855|41.1768|0
 model007|0.25|1 centred|180,000|698|0.776233|31.458|40.8568|0
-model003|0.5|1 centred, 4 offset|720,000|2726|0.757222|31.4333|42.0312|1114
-model004|0.5|1 centred, 4 offset, randomised|720,000|2899|0.805278|25.5097|40.5724|485
-model002|0.25|1 centred, 4 offset|720,000|2799|0.7775|31.2526|41.5411|489
+model003|0.5|1 centred, 4 offset|720,000|2762|0.767222|31.5374|41.7331|602
+model004|0.5|1 centred, 4 offset, randomised|720,000|2951|0.819722|25.9151|41.3706|413
+model002|0.25|1 centred, 4 offset|720,000|2807|0.779722|30.9492|41.6394|630
 model008|0.25|1 centred, 4 offset, randomised|720,000|2705|0.751389|25.904|39.3218|387
 
 *Model* 1 is the only *model* with varying scales. In order to determine which scale had the most *alignments* we ran the first three scales separately, in *models* 5, 6 and 7. We can see that no scale has any noticeable advantage, with the *fuds* per *size* per threshold fairly constant amongst all of them at around 0.77. The median and maximum *diagonals* is similar too. 
@@ -535,7 +535,7 @@ cd /d C:\caiks\WBOT02_ws
 "C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe" actor001 model005.json > model005.log
 
 ```
-The remaining *models* have five frames, each with the same scale - a central frame and four frames at the points of the compass. In *models* 3 and 4 we compare the effect of fixed centres to randomised ones for half scale frames. In *models* 2 and 8 we do the same for quarter scale frames. We can see that for half scale  randomisation appears to increase the *model* a little (0.81 versus 0.76), but for quarter scale randomisation appears to decrease the *model* a little (0.75 versus 0.78). There does not seem to be any very large quantitative differences.
+The remaining *models* have five frames, each with the same scale - a central frame and four frames at the points of the compass. In *models* 3 and 4 we compare the effect of fixed centres to randomised ones for half scale frames. In *models* 2 and 8 we do the same for quarter scale frames. We can see that for half scale the randomisation appears to increase the *model* a little (0.82 versus 0.77), but for quarter scale the randomisation appears to decrease the *model* a little (0.75 TODO versus 0.78). There does not seem to be any very large quantitative differences.
 
 Let us consider if there are qualitative differences between fixed and randomised for the half scale by comparing *models* 3 and 4. This is the configuration of `model003.json` -
 ```
@@ -574,13 +574,13 @@ If we display *model* 3 and *model* 1 side by side, we can easily see this -
 
 ![actor001_008](images/actor001_008.png) ![actor001_010](images/actor001_010.png) 
 
-The *likelihoods* are similar (0.752 versus 0.591). The *slice* representations are similar too. 
+The *likelihoods* are both high as we would expect. 
 
-If we move rightwards by the same short distance as before to (0.531,0.5) we obtain the following -
+If we move upwards by the same short distance as before to (0.5,0.425) we obtain the following -
 
 ![actor001_009](images/actor001_009.png) ![actor001_011](images/actor001_011.png) 
 
-Here *model* 3 has a high *likelihood* at 0.739 in contrast to *model* 1, which was far off the *diagonal* at only -0.662. The *slice* representations, however, are both quite different from the current record. In the case of *model* 3 this is because we have moved away from the fixed point and the most similar *slice* happens to resemble only only a small part of the image, probably because it is not very far down the *decompostion* path. *Model* 1, on the other hand, is a small *slice* and so the representation are is likely to deviate a long way from the record in any case.
+Here both *model* 3 and *model* 1 have low *likelihoods*. They are both far *off-diagonal* because they have seen few similar *events* at their fixed points.
 
 The configuration of *model* 4 is very similar to *model* 3, but additionally has the random parameters; `model004.json` -
 ```
@@ -617,34 +617,37 @@ Let us compare all three *models* at (0.5,0.5) -
 
 ![actor001_012](images/actor001_012.png) ![actor001_008](images/actor001_008.png) ![actor001_010](images/actor001_010.png) 
 
-The randomised case has a very low *likelihood* at -0.697 when compared to the fixed cases. This is as we would expect since there will be few, if any, identical *events* in the randomised case. 
+The randomised case has a very low *likelihood* when compared to the fixed cases. This is as we would expect since there will be few, if any, identical *events* in the randomised case where the centre is not a fixed point.
 
-Compare the randomised case to the fixed for the translated centre (0.531,0.5) -
+Compare the randomised case to the fixed for the translated centre (0.5,0.425) -
 
 ![actor001_013](images/actor001_013.png) ![actor001_009](images/actor001_009.png) ![actor001_011](images/actor001_011.png) 
 
-The randomised *likelihood* is higher at -0.359, but it is still very low. This is also as we would expect - there will generally be more *events* from that location or for similar locations in the randomised case. 
+In this case it so happens that the randomised *likelihood* is very high. The representation is blurry, but the light and dark areas resemble the record fairly closely. Note that it is just chance that this happens to be a hotspot in the randomised *model* - if we navigate elsewhere, there are plenty of low  *likelihood* places nearby.
 
 Neither the randomised nor the fixed methods perform very well where the frame is rarely seen. Let us see if frequently seen objects, such as Sam's face, improve things.
 
-If we pause the first episode at 4 minutes 20 seconds, long after the opening sequence, *model* 4 has a high *likelihood*, but a blurry representation, at (0.5,0.5) -
+If we pause the first episode at 4 minutes 20 seconds, long after the opening sequence, *model* 4 does not have a hotspot at (0.5,0.5) -
 
 ![actor001_014](images/actor001_014.png) 
 
-If we navigate around Sam's face with *model* 4 we find that all of the representations consist of blurry areas of light and dark when they have high *likelihoods*. None of the representations look very much like his face. This suggests that randomised *modelling* would need much longer runs to attain, say, two darker areas for the pupils of the eyes. A limited active *history* is likely to preclude ever obtaining even a basic *model* of faces.
+If we navigate around Sam's face with *model* 4 we find that all of the representations consist of blurry areas of light and dark when they have high *likelihoods*. For example,
+
+![actor001_015](images/actor001_015.png) 
+
+None of the representations look very much like his face. This suggests that randomised *modelling* would need much longer runs to attain, say, two darker areas for the pupils of the eyes. A limited active *history* is likely to preclude ever obtaining even a basic *model* of faces.
 
 If we repeat for *model* 3 we have a high *likelihood* hotspot at (0.5,0.5) -
 
 ![actor001_016](images/actor001_016.png) 
 
-The representation is possibly less blurry than for *model* 4, but it seems to be classified along with other images containing the buttons on Sam's coat, rather than on Sam's face.
+The representation is possibly less blurry than for the *model* 4 hotspot, but still does not look like a face.
 
 We can perhaps tentatively conclude that frequently seen frames are more likely to have high *likelihood* hotspots nearby, in varying degrees of *decomposition*, than frames containing the intervals between objects (such as the edge of the mirror above), or with jumbles of rarely seen objects. To find out, `actor002` will actively scan for hotspots and will show the siblings and ancestor *slice* representations. 
 
-None of the *models* with only one frame (5, 6 and 7) have induce lags. There is a small lag in *model* 1 with four frames, and large lags in *models* 3, 4, 2 and 8 with five frames. The *models* that lagged the most may have slightly better *models* because of the larger *slices*. The lagging is mainly a problem, however, because the *model* is out of date, and so it will be important to avoid it when we come to *likelihood* search in `actor002`.
+None of the *models* with only one frame (5, 6 and 7) have induce lags. There is a small lag in *model* 1 with four frames, and large lags in *models* 3, 4, 2 and 8 with five frames. The *models* that lagged the most may have slightly better *models* because of the larger *slices*. The lagging is mainly a problem, however, because the *model* is out of date, and so it will be important to avoid lags when we come to *likelihood* search in `actor002`.
 
 TODO -
-
 
 The fixed models will have many identical events in a slice from the credits. So some slices are identical to the event. Really need to see the ancestors and siblings to see how generic the model is - actor 2. Of course we don't want it to be too generic - the model would have to be far too large, so we need hotspots rather like the fixed points but smart.
 
