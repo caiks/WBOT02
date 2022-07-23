@@ -647,6 +647,8 @@ None of the *models* with only one frame (5, 6 and 7) have induce lags. There is
 
 TODO -
 
+For model 8 there are 20/28 hotspots > 0.5 every 20s of the first episode at (0.5,0.5) and 10/28 in episode 2. At (0.562,0.562) there are 14/28 hotspots and 10/28 in episode 2. So pretty random. Do the same for fixed - model 2 at (0.5,0.5) has 19/28 episode 1 and 18/28 episode 2. So there probably is an advantage for the fixed. However, even for random there is at least a 50% chance a location is a hotspot.
+
 The fixed models will have many identical events in a slice from the credits. So some slices are identical to the event. Really need to see the ancestors and siblings to see how generic the model is - actor 2. Of course we don't want it to be too generic - the model would have to be far too large, so we need hotspots rather like the fixed points but smart.
 
 
