@@ -6,6 +6,7 @@
 #include "win004.h"
 #include "win005.h"
 #include "win006.h"
+#include "win007.h"
 
 #include <QApplication>
 #include <QLabel>
@@ -408,6 +409,18 @@ int main(int argc, char *argv[])
         EVAL(application.exec());
 	}
 	
-	
+	if (argc >= 2 && (std::string(argv[1]) == "actor002" || std::string(argv[1]) == "win007"))
+	{
+        QApplication application(argc, argv);
+        Win007 win007(std::string(argc >= 3 ? argv[2] : ""),nullptr);
+
+        const auto screenSize = QGuiApplication::primaryScreen()->availableGeometry();
+        win007.resize(screenSize.width()/2, screenSize.height()*0.95);
+        win007.move(screenSize.topLeft());
+
+        win007.show();
+        EVAL(application.exec());
+	}
+		
 	return 0;
 }
