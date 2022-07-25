@@ -15,7 +15,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout_2">
+    <layout class="QVBoxLayout" name="layout00">
      <item>
       <widget class="QLabel" name="labelImage">
        <property name="sizePolicy">

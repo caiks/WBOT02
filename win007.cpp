@@ -80,8 +80,10 @@ Win007::Win007(const std::string& configA,
 			args.Parse("{}");
 		}
 		this->eventId = 0;
+		_labelSize = ARGS_INT_DEF(label_size,8);
 		_actLogging = ARGS_BOOL(logging_action);
 		_actLoggingFactor = ARGS_INT(logging_action_factor);
+		_actCount = 0;
 		_interval = (std::chrono::milliseconds)(ARGS_INT_DEF(interval,1000));	
 		_actWarning = ARGS_BOOL(warning_action);
 		_actLoggingSlice = ARGS_BOOL(logging_action_slice);
@@ -123,74 +125,59 @@ Win007::Win007(const std::string& configA,
 		}
 		else
 		{
-			_induceParameters.induceThresholds = std::set<std::size_t>{110,120,150,180,200,300,400,500,800,1000};
+			_induceParameters.induceThresholds = std::set<std::size_t>{200,225,250,300,400,500,800,1000,2000,3000};
 		}	
-		_x = ARGS_INT_DEF(x,791);	
-		_y = ARGS_INT_DEF(y,244);	
-		_width = ARGS_INT_DEF(width,728);	
-		_height = ARGS_INT_DEF(height,410);	
+		_captureX = ARGS_INT_DEF(x,791);	
+		_captureY = ARGS_INT_DEF(y,244);	
+		_captureWidth = ARGS_INT_DEF(width,728);	
+		_captureHeight = ARGS_INT_DEF(height,410);	
 		_centreX = ARGS_DOUBLE_DEF(centreX,0.5);
 		_centreY = ARGS_DOUBLE_DEF(centreY,0.5);
 		_centreRandomX = ARGS_DOUBLE_DEF(random_centreX,0.0);
 		_centreRandomY = ARGS_DOUBLE_DEF(random_centreY,0.0);
-		if (args.HasMember("scales") && args["scales"].IsArray())
-		{
-			auto& arr = args["scales"];
-			for (int k = 0; k < arr.Size(); k++)
-				_scales.push_back(arr[k].GetDouble());	
-		}
-		if (!_scales.size())
-			for (std::size_t k = 0; k < 5; k++)	
-				_scales.push_back(std::pow(0.5, k));
-		if (args.HasMember("offsets") && args["offsets"].IsArray())
-		{
-			auto& arr = args["offsets"];
-			for (int k = 0; k < arr.Size(); k++)
-			{
-				if (arr[k].IsArray() && arr[k].Size() == 2)
-					_offsets.push_back(std::pair(arr[k][0].GetDouble(),arr[k][1].GetDouble()));	
-			}
-		}	
+		_scale = ARGS_DOUBLE_DEF(scale,0.5);
+		_scaleValency = ARGS_INT_DEF(scale_valency,4);	
 		_valency = ARGS_INT_DEF(valency,10);	
 		_size = ARGS_INT_DEF(size,40);	
 		_divisor = ARGS_INT_DEF(divisor,4);	
 		_multiplier = ARGS_INT_DEF(multiplier,2);	
-		
-		// EVAL(_model);
-		// EVAL(_mode);
 	}
 	// add dynamic GUI
 	{
-			for (std::size_t k = 0; k < 3; k++)
+		for (std::size_t k = 0; k < 3; k++)
 		{
-			QLabel* labelRecord = new QLabel(this);
-			_ui->layout01->addWidget(labelRecord);
-			_labelRecords.push_back(labelRecord);
-			QLabel* labelRecordValent = new QLabel(this);
-			_ui->layout02->addWidget(labelRecordValent);
-			_labelRecordValents.push_back(labelRecordValent);
-			QLabel* labelRecordSlice = new QLabel(this);
-			_ui->layout03->addWidget(labelRecordSlice);
-			_labelRecordSlices.push_back(labelRecordSlice);
-			QLabel* labelLikelihoodSlice = new QLabel(this);
-			_ui->likelihoodsLayout->addWidget(labelLikelihoodSlice);
-			_labelRecordLikelihoods.push_back(labelLikelihoodSlice);
+			QVBoxLayout* verticalLayout = new QVBoxLayout();
+			_ui->layout01->addLayout(verticalLayout);
+			QLabel* label1 = new QLabel(this);
+			_labelRecords.push_back(label1);
+			verticalLayout->addWidget(label1);
+			QLabel* label2 = new QLabel(this);
+			verticalLayout->addWidget(label2);
+			if (!k)
+				_labelRecordLikelihood = label2;
 		}
-		for (std::size_t k = 0; k < _scales.size(); k++)
+		for (std::size_t k = 0; k < _labelSize; k++)
 		{
-			QLabel* labelRecord = new QLabel(this);
-			_ui->layout01->addWidget(labelRecord);
-			_labelRecords.push_back(labelRecord);
-			QLabel* labelRecordValent = new QLabel(this);
-			_ui->layout02->addWidget(labelRecordValent);
-			_labelRecordValents.push_back(labelRecordValent);
-			QLabel* labelRecordSlice = new QLabel(this);
-			_ui->layout03->addWidget(labelRecordSlice);
-			_labelRecordSlices.push_back(labelRecordSlice);
-			QLabel* labelLikelihoodSlice = new QLabel(this);
-			_ui->likelihoodsLayout->addWidget(labelLikelihoodSlice);
-			_labelRecordLikelihoods.push_back(labelLikelihoodSlice);
+			QVBoxLayout* verticalLayout = new QVBoxLayout();
+			_ui->layout02->addLayout(verticalLayout);
+			QLabel* label1 = new QLabel(this);
+			_labelRecordSiblings.push_back(label1);
+			verticalLayout->addWidget(label1);
+			QLabel* label2 = new QLabel(this);
+			verticalLayout->addWidget(label2);
+			_labelRecordSiblingLikelihoods.push_back(label2);
 		}
+		for (std::size_t k = 0; k < _labelSize; k++)
+		{
+			QVBoxLayout* verticalLayout = new QVBoxLayout();
+			_ui->layout03->addLayout(verticalLayout);
+			QLabel* label1 = new QLabel(this);
+			_labelRecordAncestors.push_back(label1);
+			verticalLayout->addWidget(label1);
+			QLabel* label2 = new QLabel(this);
+			verticalLayout->addWidget(label2);
+			_labelRecordAncestorLikelihoods.push_back(label2);
+		}			
 	}
 	// load slice representations if modelInitial 
 	if (_modelInitial.size())
@@ -222,7 +209,7 @@ Win007::Win007(const std::string& configA,
 	// create active
 	{
 		{
-            SystemSystemRepaTuple xx(recordsSystemSystemRepaTuple(_scales.size(), _valency, _size*_size));
+            SystemSystemRepaTuple xx(recordsSystemSystemRepaTuple(_scaleValency, _valency, _size*_size));
             _uu = std::move(std::get<0>(xx));
             _ur = std::move(std::get<1>(xx));
 		}
@@ -383,13 +370,13 @@ void Win007::act()
 	}
 	auto actMark = Clock::now();	
 	_mark = Clock::now();
-    auto pixmap = _screen->grabWindow(0, _x, _y, _width, _height);
+    auto pixmap = _screen->grabWindow(0, _captureX, _captureY, _captureWidth, _captureHeight);
 	auto image = pixmap.toImage();
+	if (_actLogging && (_actLoggingFactor <= 1 || _actCount % _actLoggingFactor == 0))	
 	{
         std::stringstream string;
         string << "captured\t" << std::fixed << std::setprecision(6) << ((Sec)(Clock::now() - _mark)).count() << std::defaultfloat << "s";
-		// LOG string.str() UNLOG
-        _ui->labelCapturedTime->setText(string.str().data());
+		LOG string.str() UNLOG
 	}
 	// records
 	std::vector<Record> records;
@@ -466,14 +453,21 @@ void Win007::act()
 				}
 				if (!_induceNot)
 				{
-					if (!reps.count(slice))
-						reps.insert_or_assign(slice, Representation(1.0,1.0,_size,_size));
-					auto& rep = reps[slice];
-					auto& arr1 = *rep.arr;
-					auto jn = j*n;
-					for (size_t i = 0; i < n-1; i++)
-						arr1[i] += rr[jn + i];
-					rep.count++;					
+					std::size_t sliceA = slice;
+					while (true)
+					{
+						if (!reps.count(sliceA))
+							reps.insert_or_assign(sliceA, Representation(1.0,1.0,_size,_size));						
+						auto& rep = reps[sliceA];
+						auto& arr1 = *rep.arr;
+						auto jn = j*n;
+						for (size_t i = 0; i < n-1; i++)
+							arr1[i] += rr[jn + i];
+						rep.count++;
+						if (!sliceA)
+							break;
+						sliceA = cv[sliceA];
+					}
 				}			
 			}		
 			// check for new leaf slices and update representation map
@@ -560,6 +554,7 @@ void Win007::act()
 			LOG "actor\twarning: act time " << t.count() << "s" UNLOG
 		}
 	}	
+	_actCount++;
 }
 
 void Win007::mousePressEvent(QMouseEvent *event)

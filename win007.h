@@ -46,6 +46,7 @@ private:
 	std::string _config;
 	bool _actLogging;	
 	std::size_t _actLoggingFactor;
+	std::size_t _actCount;
 	bool _actWarning;
 	bool _actLoggingSlice;	
     std::chrono::milliseconds _interval;
@@ -81,16 +82,16 @@ private:
 
     std::unique_ptr<WBOT02::SliceRepresentationUMap> _slicesRepresentation;
 	
-    int _x;
-    int _y;
-    int _width;
-    int _height;	
+    int _captureX;
+    int _captureY;
+    int _captureWidth;
+    int _captureHeight;	
 	double _centreX;
 	double _centreY;
 	double _centreRandomX;
 	double _centreRandomY;
-    std::vector<double> _scales;
-    std::vector<std::pair<double,double>> _offsets;
+    double _scale;
+	std::size_t _scaleValency;
 	std::size_t _valency;
 	std::size_t _size;
 	std::size_t _divisor;
