@@ -41,9 +41,12 @@ private:
 	std::vector<QLabel*> _labelRecordSiblingLikelihoods;
 	std::vector<QLabel*> _labelRecordAncestors;
 	std::vector<QLabel*> _labelRecordAncestorLikelihoods;
+	QLabel* _labelCentre;
 	std::chrono::time_point<std::chrono::high_resolution_clock> _mark;
 
 	std::string _config;
+	bool _eventLogging;	
+	std::size_t _eventLoggingFactor;
 	bool _actLogging;	
 	std::size_t _actLoggingFactor;
 	std::size_t _actCount;
@@ -88,8 +91,6 @@ private:
     int _captureHeight;	
 	double _centreX;
 	double _centreY;
-	double _centreRandomX;
-	double _centreRandomY;
     double _scale;
 	std::size_t _scaleValency;
 	std::size_t _valency;

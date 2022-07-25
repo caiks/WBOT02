@@ -81,6 +81,8 @@ Win007::Win007(const std::string& configA,
 		}
 		this->eventId = 0;
 		_labelSize = ARGS_INT_DEF(label_size,8);
+		_eventLogging = ARGS_BOOL(logging_event);
+		_eventLoggingFactor = ARGS_INT(logging_event_factor);
 		_actLogging = ARGS_BOOL(logging_action);
 		_actLoggingFactor = ARGS_INT(logging_action_factor);
 		_actCount = 0;
@@ -133,8 +135,6 @@ Win007::Win007(const std::string& configA,
 		_captureHeight = ARGS_INT_DEF(height,410);	
 		_centreX = ARGS_DOUBLE_DEF(centreX,0.5);
 		_centreY = ARGS_DOUBLE_DEF(centreY,0.5);
-		_centreRandomX = ARGS_DOUBLE_DEF(random_centreX,0.0);
-		_centreRandomY = ARGS_DOUBLE_DEF(random_centreY,0.0);
 		_scale = ARGS_DOUBLE_DEF(scale,0.5);
 		_scaleValency = ARGS_INT_DEF(scale_valency,4);	
 		_valency = ARGS_INT_DEF(valency,10);	
@@ -177,7 +177,11 @@ Win007::Win007(const std::string& configA,
 			QLabel* label2 = new QLabel(this);
 			verticalLayout->addWidget(label2);
 			_labelRecordAncestorLikelihoods.push_back(label2);
-		}			
+		}		
+		{
+			_labelCentre = new QLabel(this); 
+			_ui->layout04->addWidget(_labelCentre);
+		}		
 	}
 	// load slice representations if modelInitial 
 	if (_modelInitial.size())
@@ -253,7 +257,7 @@ Win007::Win007(const std::string& configA,
 				activeA.induceThreshold = _induceThreshold;
 				activeA.decomp = std::make_unique<DecompFudSlicedRepa>();	
 				{
-					auto hr = sizesHistoryRepa(_scales.size(), _valency, _size*_size, activeA.historySize);
+                    auto hr = sizesHistoryRepa(_scaleValency, _valency, _size*_size, activeA.historySize);
 					activeA.underlyingHistoryRepa.push_back(std::move(hr));
 				}				
 				{
@@ -318,7 +322,6 @@ Win007::~Win007()
 			{
 				for (std::size_t i = _fudsSize; i < dr.fuds.size(); i++)
 				{
-					auto sliceA = dr.fuds[i].parent;
 					for (auto sliceB : dr.fuds[i].children)
 					{
 						Representation rep(1.0,1.0,_size,_size);
@@ -333,7 +336,6 @@ Win007::~Win007()
 							}									
 						reps.insert_or_assign(sliceB, rep);
 					}
-					reps.erase(sliceA);
 				}
 				_fudsSize = dr.fuds.size();
 			}
@@ -369,55 +371,43 @@ void Win007::act()
 		return;
 	}
 	auto actMark = Clock::now();	
+	// capture
 	_mark = Clock::now();
     auto pixmap = _screen->grabWindow(0, _captureX, _captureY, _captureWidth, _captureHeight);
 	auto image = pixmap.toImage();
 	if (_actLogging && (_actLoggingFactor <= 1 || _actCount % _actLoggingFactor == 0))	
 	{
         std::stringstream string;
-        string << "captured\t" << std::fixed << std::setprecision(6) << ((Sec)(Clock::now() - _mark)).count() << std::defaultfloat << "s";
+        string << "actor\tcaptured\t" << std::fixed << std::setprecision(6) << ((Sec)(Clock::now() - _mark)).count() << std::defaultfloat << "s";
 		LOG string.str() UNLOG
 	}
-	// records
-	std::vector<Record> records;
-	std::vector<Record> recordValents;
+	// record
+	_mark = Clock::now(); 
+	Record record(image, 
+		_scale * image.height() / image.width(), _scale,
+		_centreX, _centreY, _size, _size, _divisor, _divisor);
+	Record recordValent = record.valent(_valency);
+	if (_actLogging && (_actLoggingFactor <= 1 || _actCount % _actLoggingFactor == 0))	
 	{
-		_mark = Clock::now(); 
-		auto centreRandomX = _centreRandomX > 0.0 ? ((double) rand() / (RAND_MAX)) *_centreRandomX * 2.0 - _centreRandomX : 0.0;
-		auto centreRandomY = _centreRandomY > 0.0 ? ((double) rand() / (RAND_MAX)) *_centreRandomY * 2.0 - _centreRandomY : 0.0;
-		for (std::size_t k = 0; k < _scales.size(); k++)	
-		{
-            auto centreX = _centreX + centreRandomX
-				+ (k < _offsets.size() ? _offsets[k].first : 0.0);
-            auto centreY = _centreY + centreRandomY 
-				+ (k < _offsets.size() ? _offsets[k].second : 0.0);
-			Record recordA(image, 
-                _scales[k] * image.height() / image.width(), _scales[k],
-				centreX, centreY, _size, _size, _divisor, _divisor);
-			records.push_back(recordA);
-            Record recordB = recordA.valent(_valency);
-			recordValents.push_back(recordB);
-		}	
 		std::stringstream string;
-        string << "recorded\t" << std::fixed << std::setprecision(6) << ((Sec)(Clock::now() - _mark)).count() << std::defaultfloat << "s";
-		// LOG string.str() UNLOG
-        _ui->labelRecordedTime->setText(string.str().data());
+        string << "actor\trecorded\t" << std::fixed << std::setprecision(6) << ((Sec)(Clock::now() - _mark)).count() << std::defaultfloat << "s";
+		LOG string.str() UNLOG
 	}
 	// update
+	_mark = Clock::now(); 
 	std::vector<std::size_t> slices;
 	std::vector<double> likelihoods;
 	if (_system)
 	{
-		_mark = Clock::now(); 
 		// update events
-		for (std::size_t k = 0; k < _scales.size(); k++)	
+		std::size_t eventCount = 0;
 		{
-			auto& record = recordValents[k];
-			auto hr = recordsHistoryRepa(_scales.size(), k, _valency, record);
+            auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
 			_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
 			_active->update(_updateParameters);
-			this->eventId++;
-		}	
+			this->eventId++;		
+			eventCount++;		
+		}
 		// representations
 		{		
 			auto& activeA = *_active;
@@ -434,9 +424,9 @@ void Win007::act()
 			auto& dr = *activeA.decomp;		
 			auto& cv = dr.mapVarParent();
 			auto& reps = *_slicesRepresentation;
-			for (std::size_t k = 0; k < _scales.size(); k++)	
+			for (std::size_t k = 0; k < eventCount; k++)	
 			{
-				auto j = (y + z - _scales.size() + k) % z;				
+                auto j = (y + z - eventCount + k) % z;
 				auto slice = rs[j];
 				slices.push_back(slice);	
 				if (slice)
@@ -490,55 +480,54 @@ void Win007::act()
 							}									
 						reps.insert_or_assign(sliceB, rep);
 					}
-					reps.erase(sliceA);
 				}
 				_fudsSize = dr.fuds.size();
 			}
 		}
-		std::stringstream string;
-        string << "updated\t" << std::fixed << std::setprecision(6) << ((Sec)(Clock::now() - _mark)).count() << std::defaultfloat << "s";
-		// LOG string.str() UNLOG
-        _ui->labelUpdatedTime->setText(string.str().data());
-        if (_actLogging && (_actLoggingFactor <= 1 || this->eventId % _actLoggingFactor == 0))
+        if (_eventLogging && (_eventLoggingFactor <= 1 || this->eventId % _eventLoggingFactor == 0))
 		{
             LOG "actor\tevent id: " << this->eventId << "\ttime " << ((Sec)(Clock::now() - _mark)).count() << "s" UNLOG
 		}
 	}
+	if (_actLogging && (_actLoggingFactor <= 1 || _actCount % _actLoggingFactor == 0))	
+	{
+		std::stringstream string;
+        string << "actor\tupdated\t" << std::fixed << std::setprecision(6) << ((Sec)(Clock::now() - _mark)).count() << std::defaultfloat << "s";
+		LOG string.str() UNLOG
+	}
 	// image	
+	_mark = Clock::now(); 
 	if (_system)
 	{
-		_mark = Clock::now(); 
-		auto& reps = *_slicesRepresentation;
-        for (std::size_t k = 0; k < _scales.size(); k++)
-		{			
-			_labelRecords[k]->setPixmap(QPixmap::fromImage(records[k].image(_multiplier,0)));
-			_labelRecordValents[k]->setPixmap(QPixmap::fromImage(recordValents[k].image(_multiplier,_valency)));
-			auto slice = slices[k];
-			if (reps.count(slice))
-				_labelRecordSlices[k]->setPixmap(QPixmap::fromImage(reps[slice].image(_multiplier,_valency)));	
-			else
-			{
-				QImage image(_size*_multiplier, _size*_multiplier, QImage::Format_RGB32);
-				image.fill(0);
-				_labelRecordSlices[k]->setPixmap(QPixmap::fromImage(image));	
-			}
-			std::stringstream string;
-			if (k < likelihoods.size())
-				string << std::fixed << std::setprecision(3) << likelihoods[k] << std::defaultfloat;
-			_labelRecordLikelihoods[k]->setText(string.str().data());					
-		}			
-	    std::stringstream string;
 		_ui->labelImage->setPixmap(QPixmap::fromImage(image));
-        string << "imaged\t" << std::fixed << std::setprecision(6) << ((Sec)(Clock::now() - _mark)).count() << std::defaultfloat << "s";
-		// LOG string.str() UNLOG
-        _ui->labelImagedTime->setText(string.str().data());	
+		auto& reps = *_slicesRepresentation;	
+		_labelRecords[2]->setPixmap(QPixmap::fromImage(record.image(_multiplier,0)));
+		_labelRecords[1]->setPixmap(QPixmap::fromImage(recordValent.image(_multiplier,_valency)));
+		auto slice = slices[0];
+		if (reps.count(slice))
+			_labelRecords[0]->setPixmap(QPixmap::fromImage(reps[slice].image(_multiplier,_valency)));	
+		else
+		{
+			QImage image(_size*_multiplier, _size*_multiplier, QImage::Format_RGB32);
+			image.fill(0);
+			_labelRecords[0]->setPixmap(QPixmap::fromImage(image));	
+		}
+		std::stringstream string;
+		if (0 < likelihoods.size())
+			string << std::fixed << std::setprecision(3) << likelihoods[0] << std::defaultfloat;
+		_labelRecordLikelihood->setText(string.str().data());							
+	}
+	if (_actLogging && (_actLoggingFactor <= 1 || _actCount % _actLoggingFactor == 0))	
+	{
+		std::stringstream string;
+        string << "actor\timaged\t" << std::fixed << std::setprecision(6) << ((Sec)(Clock::now() - _mark)).count() << std::defaultfloat << "s";
+		LOG string.str() UNLOG
 	}
 	// centre
 	{
         std::stringstream string;
         string << "centre\t(" << std::setprecision(3) << _centreX << "," << _centreY << ")";
-		// LOG string.str() UNLOG
-        _ui->labelCentre->setText(string.str().data());
+        _labelCentre->setText(string.str().data());
 	}
     auto t = (Sec)(Clock::now() - actMark);
 	auto ti = (Sec)_interval;
@@ -568,7 +557,7 @@ void Win007::mousePressEvent(QMouseEvent *event)
         std::stringstream string;
         string << "centre\t(" << std::setprecision(3) << _centreX << "," << _centreY << ")";
         // LOG string.str() UNLOG
-        _ui->labelCentre->setText(string.str().data());
+        _labelCentre->setText(string.str().data());
 	}
 }
 
@@ -600,6 +589,6 @@ void Win007::keyPressEvent(QKeyEvent *event)
         std::stringstream string;
         string << "centre\t(" << std::setprecision(3) << _centreX << "," << _centreY << ")";
         // LOG string.str() UNLOG
-        _ui->labelCentre->setText(string.str().data());
+        _labelCentre->setText(string.str().data());
 	}
 }
