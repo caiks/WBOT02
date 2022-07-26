@@ -89,13 +89,14 @@ Win007::Win007(const std::string& configA,
 		_interval = (std::chrono::milliseconds)(ARGS_INT_DEF(interval,1000));	
 		_actWarning = ARGS_BOOL(warning_action);
 		_actLoggingSlice = ARGS_BOOL(logging_action_slice);
-		_mode = ARGS_STRING_DEF(mode, "mode001");
+		_mode = ARGS_STRING(mode);
 		_modeLogging = ARGS_BOOL(logging_mode);
 		_modeLoggingFactor = ARGS_INT(logging_mode_factor); 
 		_modeTracing = ARGS_BOOL(tracing_mode);
 		_eventIdMax = ARGS_INT(event_maximum);
 		_model = ARGS_STRING(model);
 		_modelInitial = ARGS_STRING(model_initial);
+		_interactive = ARGS_BOOL(interactive);
 		_activeLogging = ARGS_BOOL(logging_active);
 		_activeSummary = ARGS_BOOL(summary_active);
 		_activeSize = ARGS_INT_DEF(activeSize,1000000);
@@ -103,7 +104,6 @@ Win007::Win007(const std::string& configA,
 		_induceThresholdInitial = ARGS_INT_DEF(induceThresholdInitial,1000);
 		_induceInterval = (std::chrono::milliseconds)(ARGS_INT_DEF(induceInterval,_interval.count()));	
 		_induceThreadCount = ARGS_INT_DEF(induceThreadCount,4);
-		_induceNot = ARGS_BOOL(no_induce);
 		_induceParameters.tint = _induceThreadCount;		
 		_induceParameters.wmax = ARGS_INT_DEF(induceParameters.wmax,18);
 		_induceParameters.lmax = ARGS_INT_DEF(induceParameters.lmax,8);
@@ -143,6 +143,7 @@ Win007::Win007(const std::string& configA,
 		_multiplier = ARGS_INT_DEF(multiplier,2);	
 	}
 	// add dynamic GUI
+	if (_interactive)
 	{
 		for (std::size_t k = 0; k < 3; k++)
 		{
@@ -182,6 +183,12 @@ Win007::Win007(const std::string& configA,
 			_labelCentre = new QLabel(this); 
 			_ui->layout04->addWidget(_labelCentre);
 		}		
+	}
+	{
+		{
+			_labelEvent = new QLabel(this); 
+			_ui->layout04->addWidget(_labelEvent);
+		}			
 	}
 	// load slice representations if modelInitial 
 	if (_modelInitial.size())
@@ -271,7 +278,7 @@ Win007::Win007(const std::string& configA,
 					activeA.historySparse = std::move(hr);			
 				}
 			}
-			activeA.historySliceCachingIs = !_induceNot;
+			activeA.historySliceCachingIs = true;
 			activeA.name = (_model!="" ? _model : "model");			
 			activeA.logging = _activeLogging;
 			activeA.summary = _activeSummary;
@@ -282,7 +289,7 @@ Win007::Win007(const std::string& configA,
 			{
 				LOG activeA.name << "\tfuds cardinality: " << activeA.decomp->fuds.size() << "\tmodel cardinality: " << activeA.decomp->fudRepasSize << "\tactive size: " << sizeA << "\tfuds per threshold: " << (double)activeA.decomp->fuds.size() * activeA.induceThreshold / sizeA UNLOG				
 			}
-			if (!_induceNot)
+			if (_mode.size())
 				_threads.push_back(std::thread(run_induce, std::ref(*this), std::ref(activeA), std::ref(_induceParameters), _induceThresholdInitial, _induceInterval));
 		}
 	}
@@ -318,7 +325,7 @@ Win007::~Win007()
 			auto rr = hr->arr;	
 			auto& reps = *_slicesRepresentation;
 			// check for new leaf slices and update representation map
-            if (!_induceNot && _fudsSize < dr.fuds.size())
+            if (_mode.size() && _fudsSize < dr.fuds.size())
 			{
 				for (std::size_t i = _fudsSize; i < dr.fuds.size(); i++)
 				{
@@ -375,29 +382,111 @@ void Win007::act()
 	_mark = Clock::now();
     auto pixmap = _screen->grabWindow(0, _captureX, _captureY, _captureWidth, _captureHeight);
 	auto image = pixmap.toImage();
+	_ui->labelImage->setPixmap(QPixmap::fromImage(image));
 	if (_actLogging && (_actLoggingFactor <= 1 || _actCount % _actLoggingFactor == 0))	
 	{
         std::stringstream string;
         string << "actor\tcaptured\t" << std::fixed << std::setprecision(6) << ((Sec)(Clock::now() - _mark)).count() << std::defaultfloat << "s";
 		LOG string.str() UNLOG
 	}
-	// record
-	_mark = Clock::now(); 
-	Record record(image, 
-		_scale * image.height() / image.width(), _scale,
-		_centreX, _centreY, _size, _size, _divisor, _divisor);
-	Record recordValent = record.valent(_valency);
-	if (_actLogging && (_actLoggingFactor <= 1 || _actCount % _actLoggingFactor == 0))	
-	{
-		std::stringstream string;
-        string << "actor\trecorded\t" << std::fixed << std::setprecision(6) << ((Sec)(Clock::now() - _mark)).count() << std::defaultfloat << "s";
-		LOG string.str() UNLOG
-	}
 	// update
 	_mark = Clock::now(); 
-	std::vector<std::size_t> slices;
-	std::vector<double> likelihoods;
 	if (_system)
+	{
+		// update events
+		std::size_t eventCount = 0;
+		if (_mode == "mode001")
+		{
+			Record record(image, 
+				_scale * image.height() / image.width(), _scale,
+				_centreX, _centreY, _size, _size, _divisor, _divisor);
+			Record recordValent = record.valent(_valency);
+            auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
+			_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
+			_active->update(_updateParameters);
+			this->eventId++;		
+			eventCount++;		
+		}
+		// representations
+		if (_mode.size() && eventCount)
+		{		
+			auto& activeA = *_active;
+			std::lock_guard<std::mutex> guard(activeA.mutex);
+			std::shared_ptr<HistoryRepa> hr = activeA.underlyingHistoryRepa.front();
+			auto& hs = *activeA.historySparse;
+			auto& slev = activeA.historySlicesSetEvent;
+			auto n = hr->dimension;
+			auto z = hr->size;
+			auto y = activeA.historyEvent;
+			auto rr = hr->arr;	
+			auto rs = hs.arr;
+			auto& sizes = activeA.historySlicesSize;
+			auto& dr = *activeA.decomp;		
+			auto& cv = dr.mapVarParent();
+			auto& reps = *_slicesRepresentation;
+			for (std::size_t k = 0; k < eventCount; k++)	
+			{
+                auto j = (y + z - eventCount + k) % z;
+				auto slice = rs[j];
+				while (true)
+				{
+					if (!reps.count(slice))
+						reps.insert_or_assign(slice, Representation(1.0,1.0,_size,_size));
+					auto& rep = reps[slice];
+					auto& arr1 = *rep.arr;
+					auto jn = j*n;
+					for (size_t i = 0; i < n-1; i++)
+						arr1[i] += rr[jn + i];
+					rep.count++;
+					if (!slice)
+						break;
+					slice = cv[slice];
+				}		
+			}		
+			// check for new leaf slices and update representation map
+            if (_fudsSize < dr.fuds.size())
+			{
+				for (std::size_t i = _fudsSize; i < dr.fuds.size(); i++)
+				{
+					auto sliceA = dr.fuds[i].parent;
+					for (auto sliceB : dr.fuds[i].children)
+					{
+						Representation rep(1.0,1.0,_size,_size);
+						auto& arr1 = *rep.arr;
+						if (slev.count(sliceB))
+							for (auto j : slev[sliceB])
+							{
+								auto jn = j*n;
+								for (size_t i = 0; i < n-1; i++)
+									arr1[i] += rr[jn + i];
+								rep.count++;
+							}									
+						reps.insert_or_assign(sliceB, rep);
+					}
+				}
+				_fudsSize = dr.fuds.size();
+			}
+			// determine if a lagging pause is needed TODO
+		}
+        // event label
+		{
+			std::stringstream string;
+			string << "event\t(" << std::fixed << this->eventId;
+			_labelEvent->setText(string.str().data());
+		}
+		if (_eventLogging && (_eventLoggingFactor <= 1 || this->eventId % _eventLoggingFactor == 0))
+		{
+            LOG "actor\tevent id: " << this->eventId << "\ttime " << ((Sec)(Clock::now() - _mark)).count() << "s" UNLOG
+		}
+	}
+	if (_system && _actLogging && (_actLoggingFactor <= 1 || _actCount % _actLoggingFactor == 0))	
+	{
+		std::stringstream string;
+        string << "actor\tupdated\t" << std::fixed << std::setprecision(6) << ((Sec)(Clock::now() - _mark)).count() << std::defaultfloat << "s";
+		LOG string.str() UNLOG
+	}
+	_mark = Clock::now(); 
+	if (_system && _interactive)
 	{
 		// update events
 		std::size_t eventCount = 0;
@@ -484,50 +573,46 @@ void Win007::act()
 				_fudsSize = dr.fuds.size();
 			}
 		}
-        if (_eventLogging && (_eventLoggingFactor <= 1 || this->eventId % _eventLoggingFactor == 0))
 		{
-            LOG "actor\tevent id: " << this->eventId << "\ttime " << ((Sec)(Clock::now() - _mark)).count() << "s" UNLOG
+			auto& reps = *_slicesRepresentation;	
+			_labelRecords[2]->setPixmap(QPixmap::fromImage(record.image(_multiplier,0)));
+			_labelRecords[1]->setPixmap(QPixmap::fromImage(recordValent.image(_multiplier,_valency)));
+			auto slice = slices[0];
+			if (reps.count(slice))
+				_labelRecords[0]->setPixmap(QPixmap::fromImage(reps[slice].image(_multiplier,_valency)));	
+			else
+			{
+				QImage image(_size*_multiplier, _size*_multiplier, QImage::Format_RGB32);
+				image.fill(0);
+				_labelRecords[0]->setPixmap(QPixmap::fromImage(image));	
+			}
+			std::stringstream string;
+			if (0 < likelihoods.size())
+				string << std::fixed << std::setprecision(3) << likelihoods[0] << std::defaultfloat;
+			_labelRecordLikelihood->setText(string.str().data());							
+		}
+		// centre label
+		{
+			std::stringstream string;
+			string << "centre\t(" << std::setprecision(3) << _centreX << "," << _centreY << ")";
+			_labelCentre->setText(string.str().data());
 		}
 	}
-	if (_actLogging && (_actLoggingFactor <= 1 || _actCount % _actLoggingFactor == 0))	
+	if (_system && _interactive && _actLogging && (_actLoggingFactor <= 1 || _actCount % _actLoggingFactor == 0))	
 	{
 		std::stringstream string;
-        string << "actor\tupdated\t" << std::fixed << std::setprecision(6) << ((Sec)(Clock::now() - _mark)).count() << std::defaultfloat << "s";
+        string << "actor\tinteractive\t" << std::fixed << std::setprecision(6) << ((Sec)(Clock::now() - _mark)).count() << std::defaultfloat << "s";
 		LOG string.str() UNLOG
 	}
 	// image	
 	_mark = Clock::now(); 
 	if (_system)
-	{
-		_ui->labelImage->setPixmap(QPixmap::fromImage(image));
-		auto& reps = *_slicesRepresentation;	
-		_labelRecords[2]->setPixmap(QPixmap::fromImage(record.image(_multiplier,0)));
-		_labelRecords[1]->setPixmap(QPixmap::fromImage(recordValent.image(_multiplier,_valency)));
-		auto slice = slices[0];
-		if (reps.count(slice))
-			_labelRecords[0]->setPixmap(QPixmap::fromImage(reps[slice].image(_multiplier,_valency)));	
-		else
-		{
-			QImage image(_size*_multiplier, _size*_multiplier, QImage::Format_RGB32);
-			image.fill(0);
-			_labelRecords[0]->setPixmap(QPixmap::fromImage(image));	
-		}
-		std::stringstream string;
-		if (0 < likelihoods.size())
-			string << std::fixed << std::setprecision(3) << likelihoods[0] << std::defaultfloat;
-		_labelRecordLikelihood->setText(string.str().data());							
-	}
+
 	if (_actLogging && (_actLoggingFactor <= 1 || _actCount % _actLoggingFactor == 0))	
 	{
 		std::stringstream string;
         string << "actor\timaged\t" << std::fixed << std::setprecision(6) << ((Sec)(Clock::now() - _mark)).count() << std::defaultfloat << "s";
 		LOG string.str() UNLOG
-	}
-	// centre
-	{
-        std::stringstream string;
-        string << "centre\t(" << std::setprecision(3) << _centreX << "," << _centreY << ")";
-        _labelCentre->setText(string.str().data());
 	}
     auto t = (Sec)(Clock::now() - actMark);
 	auto ti = (Sec)_interval;
@@ -552,7 +637,7 @@ void Win007::mousePressEvent(QMouseEvent *event)
     auto point = event->position().toPoint() - geo.topLeft();
     _centreX = (double)point.x()/geo.size().width();
     _centreY = (double)point.y()/geo.size().height();
-	
+	if (_interactive)	
 	{
         std::stringstream string;
         string << "centre\t(" << std::setprecision(3) << _centreX << "," << _centreY << ")";
@@ -584,7 +669,7 @@ void Win007::keyPressEvent(QKeyEvent *event)
         _centreX = 0.5;
         _centreY = 0.5;
     }
-	
+	if (_interactive)	
 	{
         std::stringstream string;
         string << "centre\t(" << std::setprecision(3) << _centreX << "," << _centreY << ")";

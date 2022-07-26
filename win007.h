@@ -42,6 +42,7 @@ private:
 	std::vector<QLabel*> _labelRecordAncestors;
 	std::vector<QLabel*> _labelRecordAncestorLikelihoods;
 	QLabel* _labelCentre;
+	QLabel* _labelEvent;
 	std::chrono::time_point<std::chrono::high_resolution_clock> _mark;
 
 	std::string _config;
@@ -57,6 +58,7 @@ private:
 	bool _modeLogging;
 	std::size_t _modeLoggingFactor;
 	bool _modeTracing;
+	bool _interactive;
 
 	std::shared_ptr<Alignment::ActiveSystem> _system;
 	std::shared_ptr<Alignment::System> _uu;
