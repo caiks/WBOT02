@@ -32,14 +32,10 @@ static void layerer_actor_log(const std::string& str)
 	return;
 };
 
-void run_induce(Win007& actor, Active& active, ActiveInduceParameters& param, std::size_t induceThresholdInitial, std::chrono::milliseconds induceInterval)
+void run_induce(Win007& actor, Active& active, ActiveInduceParameters& param, std::chrono::milliseconds induceInterval)
 {
-	while (!actor.terminate && !active.terminate)
-	{
-		if (actor.eventId >= induceThresholdInitial)
-			active.induce(param);
+	while (!actor.terminate && !active.terminate && active.induce(param))
 		std::this_thread::sleep_for(induceInterval);
-	}	
 	return;
 };
 
@@ -87,6 +83,8 @@ Win007::Win007(const std::string& configA,
 		_actLoggingFactor = ARGS_INT(logging_action_factor);
 		_actCount = 0;
 		_interval = (std::chrono::milliseconds)(ARGS_INT_DEF(interval,1000));	
+		_intervalLagging = (std::chrono::milliseconds)(ARGS_INT(interval_lagging));	
+		_intervalLaggingThreshold = ARGS_INT(interval_lagging_threshold);	
 		_actWarning = ARGS_BOOL(warning_action);
 		_actLoggingSlice = ARGS_BOOL(logging_action_slice);
 		_mode = ARGS_STRING(mode);
@@ -101,7 +99,6 @@ Win007::Win007(const std::string& configA,
 		_activeSummary = ARGS_BOOL(summary_active);
 		_activeSize = ARGS_INT_DEF(activeSize,1000000);
 		_induceThreshold = ARGS_INT_DEF(induceThreshold,200);
-		_induceThresholdInitial = ARGS_INT_DEF(induceThresholdInitial,1000);
 		_induceInterval = (std::chrono::milliseconds)(ARGS_INT_DEF(induceInterval,_interval.count()));	
 		_induceThreadCount = ARGS_INT_DEF(induceThreadCount,4);
 		_induceParameters.tint = _induceThreadCount;		
@@ -185,9 +182,15 @@ Win007::Win007(const std::string& configA,
 		}		
 	}
 	{
+		if (_mode.size())
 		{
 			_labelEvent = new QLabel(this); 
 			_ui->layout04->addWidget(_labelEvent);
+		}	
+        if (_intervalLagging.count())
+		{
+			_labelLag = new QLabel(this); 
+			_ui->layout04->addWidget(_labelLag);
 		}			
 	}
 	// load slice representations if modelInitial 
@@ -290,7 +293,7 @@ Win007::Win007(const std::string& configA,
 				LOG activeA.name << "\tfuds cardinality: " << activeA.decomp->fuds.size() << "\tmodel cardinality: " << activeA.decomp->fudRepasSize << "\tactive size: " << sizeA << "\tfuds per threshold: " << (double)activeA.decomp->fuds.size() * activeA.induceThreshold / sizeA UNLOG				
 			}
 			if (_mode.size())
-				_threads.push_back(std::thread(run_induce, std::ref(*this), std::ref(activeA), std::ref(_induceParameters), _induceThresholdInitial, _induceInterval));
+				_threads.push_back(std::thread(run_induce, std::ref(*this), std::ref(activeA), std::ref(_induceParameters), _induceInterval));
 		}
 	}
 	// start act timer
@@ -391,6 +394,7 @@ void Win007::act()
 	}
 	// update
 	_mark = Clock::now(); 
+	std::size_t lag = 0;
 	if (_system)
 	{
 		// update events
@@ -403,7 +407,11 @@ void Win007::act()
 			Record recordValent = record.valent(_valency);
             auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
 			_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
-			_active->update(_updateParameters);
+			if (!_active->update(_updateParameters))
+			{
+				this->terminate = true;	
+				return;
+			}
 			this->eventId++;		
 			eventCount++;		
 		}
@@ -466,13 +474,38 @@ void Win007::act()
 				}
 				_fudsSize = dr.fuds.size();
 			}
-			// determine if a lagging pause is needed TODO
+			// determine if a lagging pause is needed
+            if (_intervalLagging.count())
+			{
+				auto& thresholds = _induceParameters.induceThresholds;
+				for (auto slice : activeA.induceSlices)
+				{
+					auto it = activeA.induceSliceFailsSize.find(slice);
+					if (it != activeA.induceSliceFailsSize.end())
+					{
+						auto sliceSize = slev[slice].size();
+						if (it->second < sliceSize 
+							&& (!thresholds.size() || thresholds.count(sliceSize)))			
+							lag++;							
+					}
+					else 
+						lag++;
+				}					
+			}
 		}
         // event label
+		if (_mode.size())
 		{
 			std::stringstream string;
-			string << "event\t(" << std::fixed << this->eventId;
+			string << "event: " << std::fixed << this->eventId;
 			_labelEvent->setText(string.str().data());
+		}
+		// lagging label
+        if (_intervalLagging.count())
+		{
+			std::stringstream string;
+			string << "lag: " << std::fixed << lag;
+			_labelLag->setText(string.str().data());
 		}
 		if (_eventLogging && (_eventLoggingFactor <= 1 || this->eventId % _eventLoggingFactor == 0))
 		{
@@ -488,113 +521,113 @@ void Win007::act()
 	_mark = Clock::now(); 
 	if (_system && _interactive)
 	{
-		// update events
-		std::size_t eventCount = 0;
-		{
-            auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
-			_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
-			_active->update(_updateParameters);
-			this->eventId++;		
-			eventCount++;		
-		}
-		// representations
-		{		
-			auto& activeA = *_active;
-			std::lock_guard<std::mutex> guard(activeA.mutex);
-			std::shared_ptr<HistoryRepa> hr = activeA.underlyingHistoryRepa.front();
-			auto& hs = *activeA.historySparse;
-			auto& slev = activeA.historySlicesSetEvent;
-			auto n = hr->dimension;
-			auto z = hr->size;
-			auto y = activeA.historyEvent;
-			auto rr = hr->arr;	
-			auto rs = hs.arr;
-			auto& sizes = activeA.historySlicesSize;
-			auto& dr = *activeA.decomp;		
-			auto& cv = dr.mapVarParent();
-			auto& reps = *_slicesRepresentation;
-			for (std::size_t k = 0; k < eventCount; k++)	
-			{
-                auto j = (y + z - eventCount + k) % z;
-				auto slice = rs[j];
-				slices.push_back(slice);	
-				if (slice)
-				{
-					auto sliceSize = sizes[slice];
-					std::size_t parentSize = sizes[cv[slice]];
-					double lnwmax = std::log(_induceParameters.wmax);
-					double likelihood = (std::log(sliceSize) - std::log(parentSize) + lnwmax)/lnwmax;
-					likelihoods.push_back(likelihood);
-					if (_actLoggingSlice)
-					{
-						LOG "actor\tslice: " << std::hex << slice << "\tsize: "  << std::dec << sliceSize << "\tparent: " << parentSize << "\tlikelihood: " << std::fixed << std::setprecision(6) << likelihood << std::defaultfloat << "\trep size: " << (reps.count(slice) ? reps[slice].count : 0) UNLOG
-					}
-				}
-				if (!_induceNot)
-				{
-					std::size_t sliceA = slice;
-					while (true)
-					{
-						if (!reps.count(sliceA))
-							reps.insert_or_assign(sliceA, Representation(1.0,1.0,_size,_size));						
-						auto& rep = reps[sliceA];
-						auto& arr1 = *rep.arr;
-						auto jn = j*n;
-						for (size_t i = 0; i < n-1; i++)
-							arr1[i] += rr[jn + i];
-						rep.count++;
-						if (!sliceA)
-							break;
-						sliceA = cv[sliceA];
-					}
-				}			
-			}		
-			// check for new leaf slices and update representation map
-            if (!_induceNot && _fudsSize < dr.fuds.size())
-			{
-				for (std::size_t i = _fudsSize; i < dr.fuds.size(); i++)
-				{
-					auto sliceA = dr.fuds[i].parent;
-					for (auto sliceB : dr.fuds[i].children)
-					{
-						Representation rep(1.0,1.0,_size,_size);
-						auto& arr1 = *rep.arr;
-						if (slev.count(sliceB))
-							for (auto j : slev[sliceB])
-							{
-								auto jn = j*n;
-								for (size_t i = 0; i < n-1; i++)
-									arr1[i] += rr[jn + i];
-								rep.count++;
-							}									
-						reps.insert_or_assign(sliceB, rep);
-					}
-				}
-				_fudsSize = dr.fuds.size();
-			}
-		}
-		{
-			auto& reps = *_slicesRepresentation;	
-			_labelRecords[2]->setPixmap(QPixmap::fromImage(record.image(_multiplier,0)));
-			_labelRecords[1]->setPixmap(QPixmap::fromImage(recordValent.image(_multiplier,_valency)));
-			auto slice = slices[0];
-			if (reps.count(slice))
-				_labelRecords[0]->setPixmap(QPixmap::fromImage(reps[slice].image(_multiplier,_valency)));	
-			else
-			{
-				QImage image(_size*_multiplier, _size*_multiplier, QImage::Format_RGB32);
-				image.fill(0);
-				_labelRecords[0]->setPixmap(QPixmap::fromImage(image));	
-			}
-			std::stringstream string;
-			if (0 < likelihoods.size())
-				string << std::fixed << std::setprecision(3) << likelihoods[0] << std::defaultfloat;
-			_labelRecordLikelihood->setText(string.str().data());							
-		}
+		// // update events
+		// std::size_t eventCount = 0;
+		// {
+            // auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
+			// _events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
+			// _active->update(_updateParameters);
+			// this->eventId++;		
+			// eventCount++;		
+		// }
+		// // representations
+		// {		
+			// auto& activeA = *_active;
+			// std::lock_guard<std::mutex> guard(activeA.mutex);
+			// std::shared_ptr<HistoryRepa> hr = activeA.underlyingHistoryRepa.front();
+			// auto& hs = *activeA.historySparse;
+			// auto& slev = activeA.historySlicesSetEvent;
+			// auto n = hr->dimension;
+			// auto z = hr->size;
+			// auto y = activeA.historyEvent;
+			// auto rr = hr->arr;	
+			// auto rs = hs.arr;
+			// auto& sizes = activeA.historySlicesSize;
+			// auto& dr = *activeA.decomp;		
+			// auto& cv = dr.mapVarParent();
+			// auto& reps = *_slicesRepresentation;
+			// for (std::size_t k = 0; k < eventCount; k++)	
+			// {
+                // auto j = (y + z - eventCount + k) % z;
+				// auto slice = rs[j];
+				// slices.push_back(slice);	
+				// if (slice)
+				// {
+					// auto sliceSize = sizes[slice];
+					// std::size_t parentSize = sizes[cv[slice]];
+					// double lnwmax = std::log(_induceParameters.wmax);
+					// double likelihood = (std::log(sliceSize) - std::log(parentSize) + lnwmax)/lnwmax;
+					// likelihoods.push_back(likelihood);
+					// if (_actLoggingSlice)
+					// {
+						// LOG "actor\tslice: " << std::hex << slice << "\tsize: "  << std::dec << sliceSize << "\tparent: " << parentSize << "\tlikelihood: " << std::fixed << std::setprecision(6) << likelihood << std::defaultfloat << "\trep size: " << (reps.count(slice) ? reps[slice].count : 0) UNLOG
+					// }
+				// }
+				// if (!_induceNot)
+				// {
+					// std::size_t sliceA = slice;
+					// while (true)
+					// {
+						// if (!reps.count(sliceA))
+							// reps.insert_or_assign(sliceA, Representation(1.0,1.0,_size,_size));						
+						// auto& rep = reps[sliceA];
+						// auto& arr1 = *rep.arr;
+						// auto jn = j*n;
+						// for (size_t i = 0; i < n-1; i++)
+							// arr1[i] += rr[jn + i];
+						// rep.count++;
+						// if (!sliceA)
+							// break;
+						// sliceA = cv[sliceA];
+					// }
+				// }			
+			// }		
+			// // check for new leaf slices and update representation map
+            // if (!_induceNot && _fudsSize < dr.fuds.size())
+			// {
+				// for (std::size_t i = _fudsSize; i < dr.fuds.size(); i++)
+				// {
+					// auto sliceA = dr.fuds[i].parent;
+					// for (auto sliceB : dr.fuds[i].children)
+					// {
+						// Representation rep(1.0,1.0,_size,_size);
+						// auto& arr1 = *rep.arr;
+						// if (slev.count(sliceB))
+							// for (auto j : slev[sliceB])
+							// {
+								// auto jn = j*n;
+								// for (size_t i = 0; i < n-1; i++)
+									// arr1[i] += rr[jn + i];
+								// rep.count++;
+							// }									
+						// reps.insert_or_assign(sliceB, rep);
+					// }
+				// }
+				// _fudsSize = dr.fuds.size();
+			// }
+		// }
+		// {
+			// auto& reps = *_slicesRepresentation;	
+			// _labelRecords[2]->setPixmap(QPixmap::fromImage(record.image(_multiplier,0)));
+			// _labelRecords[1]->setPixmap(QPixmap::fromImage(recordValent.image(_multiplier,_valency)));
+			// auto slice = slices[0];
+			// if (reps.count(slice))
+				// _labelRecords[0]->setPixmap(QPixmap::fromImage(reps[slice].image(_multiplier,_valency)));	
+			// else
+			// {
+				// QImage image(_size*_multiplier, _size*_multiplier, QImage::Format_RGB32);
+				// image.fill(0);
+				// _labelRecords[0]->setPixmap(QPixmap::fromImage(image));	
+			// }
+			// std::stringstream string;
+			// if (0 < likelihoods.size())
+				// string << std::fixed << std::setprecision(3) << likelihoods[0] << std::defaultfloat;
+			// _labelRecordLikelihood->setText(string.str().data());							
+		// }
 		// centre label
 		{
 			std::stringstream string;
-			string << "centre\t(" << std::setprecision(3) << _centreX << "," << _centreY << ")";
+			string << "centre: (" << std::setprecision(3) << _centreX << "," << _centreY << ")";
 			_labelCentre->setText(string.str().data());
 		}
 	}
@@ -604,19 +637,15 @@ void Win007::act()
         string << "actor\tinteractive\t" << std::fixed << std::setprecision(6) << ((Sec)(Clock::now() - _mark)).count() << std::defaultfloat << "s";
 		LOG string.str() UNLOG
 	}
-	// image	
-	_mark = Clock::now(); 
-	if (_system)
-
-	if (_actLogging && (_actLoggingFactor <= 1 || _actCount % _actLoggingFactor == 0))	
-	{
-		std::stringstream string;
-        string << "actor\timaged\t" << std::fixed << std::setprecision(6) << ((Sec)(Clock::now() - _mark)).count() << std::defaultfloat << "s";
-		LOG string.str() UNLOG
-	}
     auto t = (Sec)(Clock::now() - actMark);
 	auto ti = (Sec)_interval;
-	if (ti > t)
+    if (_intervalLagging.count() && lag > _intervalLaggingThreshold)
+	{
+		this->eventId += lag;
+		auto tl = (Sec)_intervalLagging;
+		QTimer::singleShot((int)(tl.count()*1000.0)*lag, this, &Win007::act);		
+	}
+	else if (ti > t)
     {
 		QTimer::singleShot((int)((ti - t).count()*1000.0), this, &Win007::act);
 	}
@@ -640,7 +669,7 @@ void Win007::mousePressEvent(QMouseEvent *event)
 	if (_interactive)	
 	{
         std::stringstream string;
-        string << "centre\t(" << std::setprecision(3) << _centreX << "," << _centreY << ")";
+        string << "centre: (" << std::setprecision(3) << _centreX << "," << _centreY << ")";
         // LOG string.str() UNLOG
         _labelCentre->setText(string.str().data());
 	}
@@ -672,7 +701,7 @@ void Win007::keyPressEvent(QKeyEvent *event)
 	if (_interactive)	
 	{
         std::stringstream string;
-        string << "centre\t(" << std::setprecision(3) << _centreX << "," << _centreY << ")";
+        string << "centre: (" << std::setprecision(3) << _centreX << "," << _centreY << ")";
         // LOG string.str() UNLOG
         _labelCentre->setText(string.str().data());
 	}

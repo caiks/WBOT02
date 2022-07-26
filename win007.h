@@ -43,6 +43,7 @@ private:
 	std::vector<QLabel*> _labelRecordAncestorLikelihoods;
 	QLabel* _labelCentre;
 	QLabel* _labelEvent;
+	QLabel* _labelLag;
 	std::chrono::time_point<std::chrono::high_resolution_clock> _mark;
 
 	std::string _config;
@@ -54,6 +55,8 @@ private:
 	bool _actWarning;
 	bool _actLoggingSlice;	
     std::chrono::milliseconds _interval;
+    std::chrono::milliseconds _intervalLagging;
+	std::size_t _intervalLaggingThreshold;
 	std::string _mode;
 	bool _modeLogging;
 	std::size_t _modeLoggingFactor;
@@ -79,10 +82,8 @@ private:
 	Alignment::ActiveUpdateParameters _updateParameters;
 	Alignment::ActiveInduceParameters _induceParameters;
 	std::size_t _induceThreshold;
-	std::size_t _induceThresholdInitial;
     std::chrono::milliseconds _induceInterval;
 	std::size_t _induceThreadCount;
-	bool _induceNot;	
 	std::size_t _fudsSize;
 
     std::unique_ptr<WBOT02::SliceRepresentationUMap> _slicesRepresentation;
