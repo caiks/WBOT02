@@ -86,7 +86,6 @@ Win007::Win007(const std::string& configA,
 		_lagThreshold = ARGS_INT(lag_threshold);	
 		_lagWaiting = false;
         _motionThreshold = ARGS_INT(motion_detection_threshold);
-		EVAL(_motionThreshold);
 		_motionCount = 0;
         _motionHashStep = ARGS_INT_DEF(motion_detection_hash_step,17);
 		_motionHash = 0; 
@@ -429,8 +428,6 @@ void Win007::act()
 				_motionCount = 0;
 			}
 			_motionHash = hash;		
-			EVAL(_motionHash);
-			EVAL(_motionCount);
 			{
 				std::stringstream string;
 				string << "still: " << std::fixed << _motionCount;
@@ -582,31 +579,41 @@ void Win007::act()
 	_mark = Clock::now(); 
 	if (_system && _interactive)
 	{
-		// // update events
-		// std::size_t eventCount = 0;
-		// {
-            // auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
-			// _events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
-			// _active->update(_updateParameters);
-			// this->eventId++;		
-			// eventCount++;		
-		// }
-		// // representations
-		// {		
-			// auto& activeA = *_active;
-			// std::lock_guard<std::mutex> guard(activeA.mutex);
-			// std::shared_ptr<HistoryRepa> hr = activeA.underlyingHistoryRepa.front();
-			// auto& hs = *activeA.historySparse;
-			// auto& slev = activeA.historySlicesSetEvent;
-			// auto n = hr->dimension;
-			// auto z = hr->size;
-			// auto y = activeA.historyEvent;
-			// auto rr = hr->arr;	
-			// auto rs = hs.arr;
-			// auto& sizes = activeA.historySlicesSize;
-			// auto& dr = *activeA.decomp;		
-			// auto& cv = dr.mapVarParent();
-			// auto& reps = *_slicesRepresentation;
+		// update events
+		Record record(image, 
+			_scale * image.height() / image.width(), _scale,
+			_centreX, _centreY, _size, _size, _divisor, _divisor);
+		Record recordValent = record.valent(_valency);
+		auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);	
+		// representations
+		std::size_t slice = 0;
+		{		
+			auto drmul = listVarValuesDecompFudSlicedRepasPathSlice_u;
+			auto cap = (unsigned char)(_updateParameters.mapCapacity);
+			auto& activeA = *_active;
+			std::lock_guard<std::mutex> guard(activeA.mutex);
+			auto& slev = activeA.historySlicesSetEvent;
+			auto n = hr->dimension;
+			auto vv = hr->vectorVar;
+			auto rr = hr->arr;	
+			auto& sizes = activeA.historySlicesSize;
+			auto& dr = *activeA.decomp;		
+			auto& cv = dr.mapVarParent();
+			auto& reps = *_slicesRepresentation;
+			SizeUCharStructList jj;
+			jj.reserve(n);
+			for (std::size_t i = 0; i < n; i++)
+			{
+				SizeUCharStruct qq;
+				qq.uchar = rr[i];	
+				qq.size = vv[i];
+				jj.push_back(qq);
+			}									
+			auto ll = drmul(jj,dr,cap);	
+			if (ll && ll->size())
+				slice = ll->back();
+
+			// TODO check if slice exists in sizes and reps - maybe no model
 			// for (std::size_t k = 0; k < eventCount; k++)	
 			// {
                 // auto j = (y + z - eventCount + k) % z;
@@ -624,49 +631,9 @@ void Win007::act()
 						// LOG "actor\tslice: " << std::hex << slice << "\tsize: "  << std::dec << sliceSize << "\tparent: " << parentSize << "\tlikelihood: " << std::fixed << std::setprecision(6) << likelihood << std::defaultfloat << "\trep size: " << (reps.count(slice) ? reps[slice].count : 0) UNLOG
 					// }
 				// }
-				// if (!_induceNot)
-				// {
-					// std::size_t sliceA = slice;
-					// while (true)
-					// {
-						// if (!reps.count(sliceA))
-							// reps.insert_or_assign(sliceA, Representation(1.0,1.0,_size,_size));						
-						// auto& rep = reps[sliceA];
-						// auto& arr1 = *rep.arr;
-						// auto jn = j*n;
-						// for (size_t i = 0; i < n-1; i++)
-							// arr1[i] += rr[jn + i];
-						// rep.count++;
-						// if (!sliceA)
-							// break;
-						// sliceA = cv[sliceA];
-					// }
-				// }			
-			// }		
-			// // check for new leaf slices and update representation map
-            // if (!_induceNot && _fudsSize < dr.fuds.size())
-			// {
-				// for (std::size_t i = _fudsSize; i < dr.fuds.size(); i++)
-				// {
-					// auto sliceA = dr.fuds[i].parent;
-					// for (auto sliceB : dr.fuds[i].children)
-					// {
-						// Representation rep(1.0,1.0,_size,_size);
-						// auto& arr1 = *rep.arr;
-						// if (slev.count(sliceB))
-							// for (auto j : slev[sliceB])
-							// {
-								// auto jn = j*n;
-								// for (size_t i = 0; i < n-1; i++)
-									// arr1[i] += rr[jn + i];
-								// rep.count++;
-							// }									
-						// reps.insert_or_assign(sliceB, rep);
-					// }
-				// }
-				// _fudsSize = dr.fuds.size();
 			// }
-		// }
+
+		}
 		// {
 			// auto& reps = *_slicesRepresentation;	
 			// _labelRecords[2]->setPixmap(QPixmap::fromImage(record.image(_multiplier,0)));

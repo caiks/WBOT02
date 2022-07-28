@@ -105,7 +105,6 @@ int main(int argc, char *argv[])
 	
 	if (argc >= 3 && (string(argv[1]) == "view_active" || string(argv[1]) == "view_active_concise"))
 	{
-		auto dfrer = decompFudSlicedRepasApplicationRepa_u;
 		bool ok = true;
 		string model = string(argv[2]);
 	
