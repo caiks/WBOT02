@@ -44,6 +44,7 @@ private:
 	QLabel* _labelCentre;
 	QLabel* _labelEvent;
 	QLabel* _labelLag;
+	QLabel* _labelMotion;
 	std::chrono::time_point<std::chrono::high_resolution_clock> _mark;
 
 	std::string _config;
@@ -57,6 +58,11 @@ private:
     std::chrono::milliseconds _interval;
 	std::size_t _lagThreshold;
 	bool _lagWaiting;
+	std::size_t _motionThreshold;
+	std::size_t _motionCount;
+	std::size_t _motionHashStep;
+	std::size_t _motionHash;	
+	bool _motionWaiting;
 	std::string _mode;
 	bool _modeLogging;
 	std::size_t _modeLoggingFactor;

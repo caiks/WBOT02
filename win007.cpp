@@ -82,9 +82,15 @@ Win007::Win007(const std::string& configA,
 		_actLogging = ARGS_BOOL(logging_action);
 		_actLoggingFactor = ARGS_INT(logging_action_factor);
 		_actCount = 0;
-		_interval = (std::chrono::milliseconds)(ARGS_INT_DEF(interval,1000));	
+		_interval = (std::chrono::milliseconds)(ARGS_INT_DEF(interval,1000));
 		_lagThreshold = ARGS_INT(lag_threshold);	
 		_lagWaiting = false;
+        _motionThreshold = ARGS_INT(motion_detection_threshold);
+		EVAL(_motionThreshold);
+		_motionCount = 0;
+        _motionHashStep = ARGS_INT_DEF(motion_detection_hash_step,17);
+		_motionHash = 0; 
+		_motionWaiting = false;
 		_actWarning = ARGS_BOOL(warning_action);
 		_actLoggingSlice = ARGS_BOOL(logging_action_slice);
 		_mode = ARGS_STRING(mode);
@@ -192,6 +198,11 @@ Win007::Win007(const std::string& configA,
 			_labelLag = new QLabel(this); 
 			_ui->layout04->addWidget(_labelLag);
 		}			
+		if (_motionThreshold)
+		{
+			_labelMotion = new QLabel(this); 
+			_ui->layout04->addWidget(_labelMotion);
+		}
 	}
 	// load slice representations if modelInitial 
 	if (_modelInitial.size())
@@ -388,7 +399,45 @@ void Win007::act()
 	{
 		auto pixmap = _screen->grabWindow(0, _captureX, _captureY, _captureWidth, _captureHeight);
 		image = pixmap.toImage();
-		_ui->labelImage->setPixmap(QPixmap::fromImage(image));		
+		_ui->labelImage->setPixmap(QPixmap::fromImage(image));	
+		if (_motionThreshold)
+		{
+			std::size_t hash = 0;
+			std::size_t size = image.sizeInBytes()/4;
+			auto rgb = (QRgb*)image.constBits();
+			for (std::size_t x = 0; x < size; x += _motionHashStep) 
+			{
+				hash = hash * 257 + qRed(*rgb);
+				hash = hash * 257 + qGreen(*rgb);
+				hash = hash * 257 + qBlue(*rgb);
+				rgb += _motionHashStep;
+			}
+			if (hash == _motionHash)
+			{
+				if (!_motionWaiting)
+				{
+					_motionCount++;
+					if (_motionCount >= _motionThreshold)
+					{
+						this->eventId ++;	
+						_motionWaiting = true;
+					}					
+				}
+			}
+			else
+			{
+				_motionWaiting = false;				
+				_motionCount = 0;
+			}
+			_motionHash = hash;		
+			EVAL(_motionHash);
+			EVAL(_motionCount);
+			{
+				std::stringstream string;
+				string << "motion: " << std::fixed << _motionCount;
+				_labelMotion->setText(string.str().data());
+			}			
+		}
 	}
 	if (_actLogging && (_actLoggingFactor <= 1 || _actCount % _actLoggingFactor == 0))	
 	{
@@ -403,21 +452,24 @@ void Win007::act()
 	{
 		// update events
 		std::size_t eventCount = 0;
-		if (_mode == "mode001" && !_lagWaiting)
+		if (!_motionWaiting && !_lagWaiting)
 		{
-			Record record(image, 
-				_scale * image.height() / image.width(), _scale,
-				_centreX, _centreY, _size, _size, _divisor, _divisor);
-			Record recordValent = record.valent(_valency);
-            auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
-			_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
-			if (!_active->update(_updateParameters))
+			if (_mode == "mode001")
 			{
-				this->terminate = true;	
-				return;
+				Record record(image, 
+					_scale * image.height() / image.width(), _scale,
+					_centreX, _centreY, _size, _size, _divisor, _divisor);
+				Record recordValent = record.valent(_valency);
+				auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
+				_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
+				if (!_active->update(_updateParameters))
+				{
+					this->terminate = true;	
+					return;
+				}
+				this->eventId++;		
+				eventCount++;		
 			}
-			this->eventId++;		
-			eventCount++;		
 		}
 		// representations
 		{		
