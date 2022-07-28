@@ -395,7 +395,6 @@ void Win007::act()
 	// capture
 	_mark = Clock::now();
 	QImage image;
-	if (!_lagWaiting)
 	{
 		auto pixmap = _screen->grabWindow(0, _captureX, _captureY, _captureWidth, _captureHeight);
 		image = pixmap.toImage();
