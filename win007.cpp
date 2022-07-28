@@ -414,9 +414,9 @@ void Win007::act()
 			}
 			if (hash == _motionHash)
 			{
+				_motionCount++;
 				if (!_motionWaiting)
 				{
-					_motionCount++;
 					if (_motionCount >= _motionThreshold)
 					{
 						this->eventId ++;	
@@ -434,7 +434,7 @@ void Win007::act()
 			EVAL(_motionCount);
 			{
 				std::stringstream string;
-				string << "motion: " << std::fixed << _motionCount;
+				string << "still: " << std::fixed << _motionCount;
 				_labelMotion->setText(string.str().data());
 			}			
 		}
