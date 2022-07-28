@@ -83,8 +83,8 @@ Win007::Win007(const std::string& configA,
 		_actLoggingFactor = ARGS_INT(logging_action_factor);
 		_actCount = 0;
 		_interval = (std::chrono::milliseconds)(ARGS_INT_DEF(interval,1000));	
-		_intervalLagging = (std::chrono::milliseconds)(ARGS_INT(interval_lagging));	
-		_intervalLaggingThreshold = ARGS_INT(interval_lagging_threshold);	
+		_lagThreshold = ARGS_INT(interval_lagging_threshold);	
+		_lagWaiting = false;
 		_actWarning = ARGS_BOOL(warning_action);
 		_actLoggingSlice = ARGS_BOOL(logging_action_slice);
 		_mode = ARGS_STRING(mode);
@@ -187,7 +187,7 @@ Win007::Win007(const std::string& configA,
 			_labelEvent = new QLabel(this); 
 			_ui->layout04->addWidget(_labelEvent);
 		}	
-        if (_intervalLagging.count())
+        if (_lagThreshold)
 		{
 			_labelLag = new QLabel(this); 
 			_ui->layout04->addWidget(_labelLag);
@@ -383,9 +383,13 @@ void Win007::act()
 	auto actMark = Clock::now();	
 	// capture
 	_mark = Clock::now();
-    auto pixmap = _screen->grabWindow(0, _captureX, _captureY, _captureWidth, _captureHeight);
-	auto image = pixmap.toImage();
-	_ui->labelImage->setPixmap(QPixmap::fromImage(image));
+	QImage image;
+	if (!_lagWaiting)
+	{
+		auto pixmap = _screen->grabWindow(0, _captureX, _captureY, _captureWidth, _captureHeight);
+		image = pixmap.toImage();
+		_ui->labelImage->setPixmap(QPixmap::fromImage(image));		
+	}
 	if (_actLogging && (_actLoggingFactor <= 1 || _actCount % _actLoggingFactor == 0))	
 	{
         std::stringstream string;
@@ -399,7 +403,7 @@ void Win007::act()
 	{
 		// update events
 		std::size_t eventCount = 0;
-		if (_mode == "mode001")
+		if (_mode == "mode001" && !_lagWaiting)
 		{
 			Record record(image, 
 				_scale * image.height() / image.width(), _scale,
@@ -416,7 +420,6 @@ void Win007::act()
 			eventCount++;		
 		}
 		// representations
-		if (_mode.size() && eventCount)
 		{		
 			auto& activeA = *_active;
 			std::lock_guard<std::mutex> guard(activeA.mutex);
@@ -475,7 +478,7 @@ void Win007::act()
 				_fudsSize = dr.fuds.size();
 			}
 			// determine if a lagging pause is needed
-            if (_intervalLagging.count())
+            if (_lagThreshold)
 			{
 				auto& thresholds = _induceParameters.induceThresholds;
 				for (auto slice : activeA.induceSlices)
@@ -490,8 +493,15 @@ void Win007::act()
 					}
 					else 
 						lag++;
-				}					
-			}
+				}	
+				if (lag >= _lagThreshold)
+				{
+					this->eventId ++;	
+					_lagWaiting = true;		
+				}
+				else if (!lag)
+					_lagWaiting = false;	
+			
 		}
         // event label
 		if (_mode.size())
@@ -501,7 +511,7 @@ void Win007::act()
 			_labelEvent->setText(string.str().data());
 		}
 		// lagging label
-        if (_intervalLagging.count())
+        if (_lagThreshold)
 		{
 			std::stringstream string;
 			string << "lag: " << std::fixed << lag;
@@ -639,7 +649,7 @@ void Win007::act()
 	}
     auto t = (Sec)(Clock::now() - actMark);
 	auto ti = (Sec)_interval;
-    if (_intervalLagging.count() && lag > _intervalLaggingThreshold)
+    if (_intervalLagging.count() && lag > _lagThreshold)
 	{
 		this->eventId += lag;
 		auto tl = (Sec)_intervalLagging;

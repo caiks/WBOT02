@@ -55,8 +55,8 @@ private:
 	bool _actWarning;
 	bool _actLoggingSlice;	
     std::chrono::milliseconds _interval;
-    std::chrono::milliseconds _intervalLagging;
-	std::size_t _intervalLaggingThreshold;
+	std::size_t _lagThreshold;
+	bool _lagWaiting;
 	std::string _mode;
 	bool _modeLogging;
 	std::size_t _modeLoggingFactor;
