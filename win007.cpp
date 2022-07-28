@@ -83,7 +83,7 @@ Win007::Win007(const std::string& configA,
 		_actLoggingFactor = ARGS_INT(logging_action_factor);
 		_actCount = 0;
 		_interval = (std::chrono::milliseconds)(ARGS_INT_DEF(interval,1000));	
-		_lagThreshold = ARGS_INT(interval_lagging_threshold);	
+		_lagThreshold = ARGS_INT(lag_threshold);	
 		_lagWaiting = false;
 		_actWarning = ARGS_BOOL(warning_action);
 		_actLoggingSlice = ARGS_BOOL(logging_action_slice);
@@ -494,14 +494,14 @@ void Win007::act()
 					else 
 						lag++;
 				}	
-				if (lag >= _lagThreshold)
+				if (lag >= _lagThreshold && !_lagWaiting)
 				{
 					this->eventId ++;	
 					_lagWaiting = true;		
 				}
 				else if (!lag)
 					_lagWaiting = false;	
-			
+			}
 		}
         // event label
 		if (_mode.size())
@@ -649,13 +649,7 @@ void Win007::act()
 	}
     auto t = (Sec)(Clock::now() - actMark);
 	auto ti = (Sec)_interval;
-    if (_intervalLagging.count() && lag > _lagThreshold)
-	{
-		this->eventId += lag;
-		auto tl = (Sec)_intervalLagging;
-		QTimer::singleShot((int)(tl.count()*1000.0)*lag, this, &Win007::act);		
-	}
-	else if (ti > t)
+    if (ti > t)
     {
 		QTimer::singleShot((int)((ti - t).count()*1000.0), this, &Win007::act);
 	}
