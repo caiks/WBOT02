@@ -152,6 +152,9 @@ Win007::Win007(const std::string& configA,
 			image.fill(0);			
 			_pixmapBlank.fromImage(image);
 		}
+		_ui->layout01->setAlignment(Qt::AlignLeft);
+		_ui->layout02->setAlignment(Qt::AlignLeft);
+		_ui->layout03->setAlignment(Qt::AlignLeft);
 		for (std::size_t k = 0; k < 3; k++)
 		{
 			QVBoxLayout* verticalLayout = new QVBoxLayout();
