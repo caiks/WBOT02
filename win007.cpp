@@ -401,14 +401,15 @@ void Win007::act()
 		if (_motionThreshold)
 		{
 			std::size_t hash = 0;
-			std::size_t size = image.sizeInBytes()/4;
-			auto rgb = (QRgb*)image.constBits();
-			for (std::size_t x = 0; x < size; x += _motionHashStep) 
+			for (int y = 0; y < image.height(); y += _motionHashStep) 
 			{
-				hash = hash * 257 + qRed(*rgb);
-				hash = hash * 257 + qGreen(*rgb);
-				hash = hash * 257 + qBlue(*rgb);
-				rgb += _motionHashStep;
+				for (int x = 0; x < image.width(); x += _motionHashStep) 
+				{
+					auto rgb = image.pixel(x,y);
+					hash = hash * 13 + (hash >> 60) + qRed(*rgb);
+					hash = hash * 13 + (hash >> 60) + qGreen(*rgb);
+					hash = hash * 13 + (hash >> 60) + qBlue(*rgb);
+				}
 			}
 			if (hash == _motionHash)
 			{
