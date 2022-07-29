@@ -393,11 +393,6 @@ void Win007::act()
 {
 	if (this->terminate || (_active && _active->terminate))
 		return;
-	if (_eventIdMax && this->eventId >= _eventIdMax)
-	{
-		this->terminate = true;	
-		return;
-	}
 	auto actMark = Clock::now();	
 	// capture
 	_mark = Clock::now();
@@ -457,7 +452,7 @@ void Win007::act()
 	{
 		// update events
 		std::size_t eventCount = 0;
-		if (!_motionWaiting && !_lagWaiting)
+		if (!_motionWaiting && !_lagWaiting && (!_eventIdMax || this->eventId < _eventIdMax))
 		{
 			if (_mode == "mode001")
 			{
