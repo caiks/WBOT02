@@ -160,9 +160,11 @@ Win007::Win007(const std::string& configA,
 			QVBoxLayout* verticalLayout = new QVBoxLayout();
 			_ui->layout01->addLayout(verticalLayout);
 			QLabel* label1 = new QLabel(this);
+			label1->setPixmap(_pixmapBlank);	
 			_labelRecords.push_back(label1);
 			verticalLayout->addWidget(label1);
 			QLabel* label2 = new QLabel(this);
+			label2->setText("");	
 			verticalLayout->addWidget(label2);
 			if (!k)
 				_labelRecordLikelihood = label2;
@@ -172,9 +174,11 @@ Win007::Win007(const std::string& configA,
 			QVBoxLayout* verticalLayout = new QVBoxLayout();
 			_ui->layout02->addLayout(verticalLayout);
 			QLabel* label1 = new QLabel(this);
+			label1->setPixmap(_pixmapBlank);	
 			_labelRecordSiblings.push_back(label1);
 			verticalLayout->addWidget(label1);
 			QLabel* label2 = new QLabel(this);
+			label2->setText("");				
 			verticalLayout->addWidget(label2);
 			_labelRecordSiblingLikelihoods.push_back(label2);
 		}
@@ -183,9 +187,11 @@ Win007::Win007(const std::string& configA,
 			QVBoxLayout* verticalLayout = new QVBoxLayout();
 			_ui->layout03->addLayout(verticalLayout);
 			QLabel* label1 = new QLabel(this);
+			label1->setPixmap(_pixmapBlank);				
 			_labelRecordAncestors.push_back(label1);
 			verticalLayout->addWidget(label1);
 			QLabel* label2 = new QLabel(this);
+			label2->setText("");				
 			verticalLayout->addWidget(label2);
 			_labelRecordAncestorLikelihoods.push_back(label2);
 		}		
@@ -591,6 +597,8 @@ void Win007::act()
 		auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);	
 		// representations
 		std::size_t slice = 0;
+		std::vector<std::pair<double,std::size_t>> ancestors;
+		std::vector<std::pair<double,std::size_t>> siblings;
 		{		
 			auto drmul = listVarValuesDecompFudSlicedRepasPathSlice_u;
 			auto cap = (unsigned char)(_updateParameters.mapCapacity);
@@ -603,6 +611,7 @@ void Win007::act()
 			auto& sizes = activeA.historySlicesSize;
 			auto& dr = *activeA.decomp;		
 			auto& cv = dr.mapVarParent();
+			auto& vi = dr.mapVarInt();
 			auto& reps = *_slicesRepresentation;
 			SizeUCharStructList jj;
 			jj.reserve(n);
@@ -616,29 +625,35 @@ void Win007::act()
 			auto ll = drmul(jj,dr,cap);	
 			if (ll && ll->size())
 				slice = ll->back();
-
-			// TODO check if slice exists in sizes and reps - maybe no model
-			// for (std::size_t k = 0; k < eventCount; k++)	
-			// {
-                // auto j = (y + z - eventCount + k) % z;
-				// auto slice = rs[j];
-				// slices.push_back(slice);	
-				// if (slice)
-				// {
-					// auto sliceSize = sizes[slice];
-					// std::size_t parentSize = sizes[cv[slice]];
-					// double lnwmax = std::log(_induceParameters.wmax);
-					// double likelihood = (std::log(sliceSize) - std::log(parentSize) + lnwmax)/lnwmax;
-					// likelihoods.push_back(likelihood);
-					// if (_actLoggingSlice)
-					// {
-						// LOG "actor\tslice: " << std::hex << slice << "\tsize: "  << std::dec << sliceSize << "\tparent: " << parentSize << "\tlikelihood: " << std::fixed << std::setprecision(6) << likelihood << std::defaultfloat << "\trep size: " << (reps.count(slice) ? reps[slice].count : 0) UNLOG
-					// }
-				// }
-			// }
-
+			// ancestors
+			if (cv.count(slice) && sizes.count(slice))
+			{
+				double lnwmax = std::log(_induceParameters.wmax);
+				std::size_t sliceA = slice;
+				while (true)
+				{
+					auto sliceSize = sizes[sliceA];
+					std::size_t parentSize = sizes[cv[sliceA]];
+					double likelihood = (std::log(sliceSize) - std::log(parentSize) + lnwmax)/lnwmax;
+					ancestors.push_back(std::make_pair(likelihood, sliceA));
+					if (!sliceA)
+						break;
+					sliceA = cv[sliceA];					
+				}
+				sliceA = cv[slice];	
+				{
+					std::size_t parentSize = sizes[sliceA];
+					for (auto sliceB : dr.fuds[vi[sliceA]].children)
+					{
+						auto sliceSize = sizes[sliceB];
+						double likelihood = (std::log(sliceSize) - std::log(parentSize) + lnwmax)/lnwmax;
+						siblings.push_back(std::make_pair(likelihood, sliceB));
+					}
+				}
+			}
 		}
 		{
+			std::sort(siblings.rbegin(), siblings.rend());
 			auto& reps = *_slicesRepresentation;	
 			_labelRecords[2]->setPixmap(QPixmap::fromImage(record.image(_multiplier,0)));
 			_labelRecords[1]->setPixmap(QPixmap::fromImage(recordValent.image(_multiplier,_valency)));
@@ -646,11 +661,41 @@ void Win007::act()
 				_labelRecords[0]->setPixmap(QPixmap::fromImage(reps[slice].image(_multiplier,_valency)));	
 			else
 				_labelRecords[0]->setPixmap(_pixmapBlank);	
-			
-			// std::stringstream string;
-			// if (0 < likelihoods.size())
-				// string << std::fixed << std::setprecision(3) << likelihoods[0] << std::defaultfloat;
-			// _labelRecordLikelihood->setText(string.str().data());							
+			if (reps.count(slice) && ancestors.size())
+			{
+				std::stringstream string;
+				string << std::fixed << std::setprecision(3) << ancestors[0].first << std::defaultfloat;
+				_labelRecordLikelihood->setText(string.str().data());				
+			}
+			else
+				_labelRecordLikelihood->setText("");			
+			for (std::size_t k = 0; k < _labelSize; k++)	
+			{
+				if (k < siblings.size() && reps.count(siblings[k].second))
+				{
+					_labelRecordSiblings[k]->setPixmap(QPixmap::fromImage(reps[siblings[k].second].image(_multiplier,_valency)));					
+					std::stringstream string;
+					string << std::fixed << std::setprecision(3) << siblings[k].first << std::defaultfloat;
+					_labelRecordSiblingLikelihoods[k]->setText(string.str().data());
+				}
+				else
+				{
+					_labelRecordSiblings[k]->setPixmap(_pixmapBlank);
+					_labelRecordSiblingLikelihoods[k]->setText("");
+				}
+				if (k < ancestors.size() && reps.count(ancestors[k].second))
+				{
+					_labelRecordAncestors[k]->setPixmap(QPixmap::fromImage(reps[ancestors[k].second].image(_multiplier,_valency)));					
+					std::stringstream string;
+					string << std::fixed << std::setprecision(3) << ancestors[k].first << std::defaultfloat;
+					_labelRecordAncestorLikelihoods[k]->setText(string.str().data());
+				}
+				else
+				{
+					_labelRecordAncestors[k]->setPixmap(_pixmapBlank);
+					_labelRecordAncestorLikelihoods[k]->setText("");
+				}
+			}					
 		}
 		// centre label
 		{
