@@ -147,6 +147,11 @@ Win007::Win007(const std::string& configA,
 	// add dynamic GUI
 	if (_interactive)
 	{
+		{
+			QImage image(_size*_multiplier, _size*_multiplier, QImage::Format_RGB32);
+			image.fill(0);			
+			_pixmapBlank.fromImage(image);
+		}
 		for (std::size_t k = 0; k < 3; k++)
 		{
 			QVBoxLayout* verticalLayout = new QVBoxLayout();
@@ -406,9 +411,9 @@ void Win007::act()
 				for (int x = 0; x < image.width(); x += _motionHashStep) 
 				{
 					auto rgb = image.pixel(x,y);
-					hash = hash * 13 + (hash >> 60) + qRed(*rgb);
-					hash = hash * 13 + (hash >> 60) + qGreen(*rgb);
-					hash = hash * 13 + (hash >> 60) + qBlue(*rgb);
+					hash = hash * 13 + (hash >> 60) + qRed(rgb);
+					hash = hash * 13 + (hash >> 60) + qGreen(rgb);
+					hash = hash * 13 + (hash >> 60) + qBlue(rgb);
 				}
 			}
 			if (hash == _motionHash)
@@ -635,24 +640,20 @@ void Win007::act()
 			// }
 
 		}
-		// {
-			// auto& reps = *_slicesRepresentation;	
-			// _labelRecords[2]->setPixmap(QPixmap::fromImage(record.image(_multiplier,0)));
-			// _labelRecords[1]->setPixmap(QPixmap::fromImage(recordValent.image(_multiplier,_valency)));
-			// auto slice = slices[0];
-			// if (reps.count(slice))
-				// _labelRecords[0]->setPixmap(QPixmap::fromImage(reps[slice].image(_multiplier,_valency)));	
-			// else
-			// {
-				// QImage image(_size*_multiplier, _size*_multiplier, QImage::Format_RGB32);
-				// image.fill(0);
-				// _labelRecords[0]->setPixmap(QPixmap::fromImage(image));	
-			// }
+		{
+			auto& reps = *_slicesRepresentation;	
+			_labelRecords[2]->setPixmap(QPixmap::fromImage(record.image(_multiplier,0)));
+			_labelRecords[1]->setPixmap(QPixmap::fromImage(recordValent.image(_multiplier,_valency)));
+			if (reps.count(slice))
+				_labelRecords[0]->setPixmap(QPixmap::fromImage(reps[slice].image(_multiplier,_valency)));	
+			else
+				_labelRecords[0]->setPixmap(_pixmapBlank);	
+			
 			// std::stringstream string;
 			// if (0 < likelihoods.size())
 				// string << std::fixed << std::setprecision(3) << likelihoods[0] << std::defaultfloat;
 			// _labelRecordLikelihood->setText(string.str().data());							
-		// }
+		}
 		// centre label
 		{
 			std::stringstream string;

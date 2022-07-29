@@ -45,6 +45,7 @@ private:
 	QLabel* _labelEvent;
 	QLabel* _labelLag;
 	QLabel* _labelMotion;
+	QPixmap _pixmapBlank;
 	std::chrono::time_point<std::chrono::high_resolution_clock> _mark;
 
 	std::string _config;
