@@ -131,6 +131,7 @@ Win007::Win007(const std::string& configA,
 		{
 			_induceParameters.induceThresholds = std::set<std::size_t>{200,225,250,300,400,500,800,1000,2000,3000};
 		}	
+		_fudsSize = 0;
 		_captureX = ARGS_INT_DEF(x,791);	
 		_captureY = ARGS_INT_DEF(y,244);	
 		_captureWidth = ARGS_INT_DEF(width,728);	
@@ -205,6 +206,8 @@ Win007::Win007(const std::string& configA,
 		{
 			_labelEvent = new QLabel(this); 
 			_ui->layout04->addWidget(_labelEvent);
+			_labelFuds = new QLabel(this); 
+			_ui->layout04->addWidget(_labelFuds);
 		}	
         if (_lagThreshold)
 		{
@@ -282,6 +285,7 @@ Win007::Win007(const std::string& configA,
 				else					
 					this->eventId = std::max(this->eventId,activeA.historyEvent);	
 				this->eventId++;
+				_fudsSize = activeA.decomp->fuds.size();
 			}
 			else
 			{
@@ -567,6 +571,12 @@ void Win007::act()
 			std::stringstream string;
 			string << "event: " << std::fixed << this->eventId;
 			_labelEvent->setText(string.str().data());
+		}
+		if (_mode.size())
+		{
+			std::stringstream string;
+			string << "fuds: " << std::fixed << _fudsSize;
+			_labelFuds->setText(string.str().data());
 		}
 		// lagging label
         if (_lagThreshold)

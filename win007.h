@@ -43,6 +43,7 @@ private:
 	std::vector<QLabel*> _labelRecordAncestorLikelihoods;
 	QLabel* _labelCentre;
 	QLabel* _labelEvent;
+	QLabel* _labelFuds;
 	QLabel* _labelLag;
 	QLabel* _labelMotion;
 	QPixmap _pixmapBlank;
