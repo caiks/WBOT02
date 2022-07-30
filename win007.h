@@ -102,6 +102,9 @@ private:
     int _captureHeight;	
 	double _centreX;
 	double _centreY;
+	int _eventSize;	
+	double _centreRandomX;
+	double _centreRandomY;
     double _scale;
 	std::size_t _scaleValency;
 	std::size_t _valency;

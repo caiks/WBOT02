@@ -138,12 +138,15 @@ Win007::Win007(const std::string& configA,
 		_captureHeight = ARGS_INT_DEF(height,410);	
 		_centreX = ARGS_DOUBLE_DEF(centreX,0.5);
 		_centreY = ARGS_DOUBLE_DEF(centreY,0.5);
+		_centreRandomX = ARGS_DOUBLE_DEF(random_centreX,0.0);
+		_centreRandomY = ARGS_DOUBLE_DEF(random_centreY,0.0);
 		_scale = ARGS_DOUBLE_DEF(scale,0.5);
 		_scaleValency = ARGS_INT_DEF(scale_valency,4);	
 		_valency = ARGS_INT_DEF(valency,10);	
 		_size = ARGS_INT_DEF(size,40);	
 		_divisor = ARGS_INT_DEF(divisor,4);	
 		_multiplier = ARGS_INT_DEF(multiplier,2);	
+		_eventSize = ARGS_INT_DEF(event_size,1);	
 	}
 	// add dynamic GUI
 	if (_interactive)
@@ -468,19 +471,26 @@ void Win007::act()
 		{
 			if (_mode == "mode001")
 			{
-				Record record(image, 
-					_scale * image.height() / image.width(), _scale,
-					_centreX, _centreY, _size, _size, _divisor, _divisor);
-				Record recordValent = record.valent(_valency);
-				auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
-				_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
+				for (std::size_t k = 0; k < _eventSize; k++)	
+				{
+					auto centreRandomX = _centreRandomX > 0.0 ? ((double) rand() / (RAND_MAX)) *_centreRandomX * 2.0 - _centreRandomX : 0.0;
+					auto centreRandomY = _centreRandomY > 0.0 ? ((double) rand() / (RAND_MAX)) *_centreRandomY * 2.0 - _centreRandomY : 0.0;
+					Record record(image, 
+						_scale * image.height() / image.width(), _scale,
+						_centreX + centreRandomX, 
+						_centreY + centreRandomY, 
+						_size, _size, _divisor, _divisor);
+					Record recordValent = record.valent(_valency);
+					auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
+					_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
+					this->eventId++;		
+					eventCount++;		
+				}
 				if (!_active->update(_updateParameters))
 				{
 					this->terminate = true;	
 					return;
 				}
-				this->eventId++;		
-				eventCount++;		
 			}
 		}
 		// representations
@@ -743,12 +753,12 @@ void Win007::act()
 
 void Win007::mousePressEvent(QMouseEvent *event)
 {
-    auto geo = _ui->labelImage->geometry();
-    auto point = event->position().toPoint() - geo.topLeft();
-    _centreX = (double)point.x()/geo.size().width();
-    _centreY = (double)point.y()/geo.size().height();
 	if (_interactive)	
 	{
+		auto geo = _ui->labelImage->geometry();
+		auto point = event->position().toPoint() - geo.topLeft();
+		_centreX = (double)point.x()/geo.size().width();
+		_centreY = (double)point.y()/geo.size().height();
         std::stringstream string;
         string << "centre: (" << std::setprecision(3) << _centreX << "," << _centreY << ")";
         // LOG string.str() UNLOG
@@ -758,29 +768,29 @@ void Win007::mousePressEvent(QMouseEvent *event)
 
 void Win007::keyPressEvent(QKeyEvent *event)
 {
-    if(event->key() == Qt::Key_Left)
-    {
-        _centreX -= 0.25/40.0;
-    }
-	else if(event->key() == Qt::Key_Up)
-    {
-        _centreY -= 0.25/40.0;
-    }
-	else if(event->key() == Qt::Key_Down)
-    {
-        _centreY += 0.25/40.0;
-    }
-	else if(event->key() == Qt::Key_Right)
-    {
-        _centreX += 0.25/40.0;
-    }
-	else if(event->key() == Qt::Key_Space)
-    {
-        _centreX = 0.5;
-        _centreY = 0.5;
-    }
 	if (_interactive)	
 	{
+		if(event->key() == Qt::Key_Left)
+		{
+			_centreX -= 0.25/40.0;
+		}
+		else if(event->key() == Qt::Key_Up)
+		{
+			_centreY -= 0.25/40.0;
+		}
+		else if(event->key() == Qt::Key_Down)
+		{
+			_centreY += 0.25/40.0;
+		}
+		else if(event->key() == Qt::Key_Right)
+		{
+			_centreX += 0.25/40.0;
+		}
+		else if(event->key() == Qt::Key_Space)
+		{
+			_centreX = 0.5;
+			_centreY = 0.5;
+		}
         std::stringstream string;
         string << "centre: (" << std::setprecision(3) << _centreX << "," << _centreY << ")";
         // LOG string.str() UNLOG
