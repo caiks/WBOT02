@@ -125,6 +125,7 @@ Win006::Win006(const std::string& configA,
 		{
 			_induceParameters.induceThresholds = std::set<std::size_t>{110,120,150,180,200,300,400,500,800,1000};
 		}	
+		_fudsSize = 0;
 		_x = ARGS_INT_DEF(x,791);	
 		_y = ARGS_INT_DEF(y,244);	
 		_width = ARGS_INT_DEF(width,728);	
@@ -242,6 +243,7 @@ Win006::Win006(const std::string& configA,
 				else					
 					this->eventId = std::max(this->eventId,activeA.historyEvent);	
 				this->eventId++;
+				_fudsSize = activeA.decomp->fuds.size();
 			}
 			else
 			{
@@ -322,6 +324,7 @@ Win006::~Win006()
 						Representation rep(1.0,1.0,_size,_size);
 						auto& arr1 = *rep.arr;
 						if (slev.count(sliceB))
+						{
 							for (auto j : slev[sliceB])
 							{
 								auto jn = j*n;
@@ -329,7 +332,8 @@ Win006::~Win006()
 									arr1[i] += rr[jn + i];
 								rep.count++;
 							}									
-						reps.insert_or_assign(sliceB, rep);
+							reps.insert_or_assign(sliceB, rep);							
+						}
 					}
 					reps.erase(sliceA);
 				}
@@ -472,6 +476,7 @@ void Win006::act()
 						Representation rep(1.0,1.0,_size,_size);
 						auto& arr1 = *rep.arr;
 						if (slev.count(sliceB))
+						{
 							for (auto j : slev[sliceB])
 							{
 								auto jn = j*n;
@@ -479,7 +484,8 @@ void Win006::act()
 									arr1[i] += rr[jn + i];
 								rep.count++;
 							}									
-						reps.insert_or_assign(sliceB, rep);
+							reps.insert_or_assign(sliceB, rep);
+						}
 					}
 					reps.erase(sliceA);
 				}

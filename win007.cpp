@@ -365,6 +365,7 @@ Win007::~Win007()
 						Representation rep(1.0,1.0,_size,_size);
 						auto& arr1 = *rep.arr;
 						if (slev.count(sliceB))
+						{
 							for (auto j : slev[sliceB])
 							{
 								auto jn = j*n;
@@ -372,7 +373,8 @@ Win007::~Win007()
 									arr1[i] += rr[jn + i];
 								rep.count++;
 							}									
-						reps.insert_or_assign(sliceB, rep);
+							reps.insert_or_assign(sliceB, rep);							
+						}
 					}
 				}
 				_fudsSize = dr.fuds.size();
@@ -527,6 +529,7 @@ void Win007::act()
 						Representation rep(1.0,1.0,_size,_size);
 						auto& arr1 = *rep.arr;
 						if (slev.count(sliceB))
+						{
 							for (auto j : slev[sliceB])
 							{
 								auto jn = j*n;
@@ -534,7 +537,8 @@ void Win007::act()
 									arr1[i] += rr[jn + i];
 								rep.count++;
 							}									
-						reps.insert_or_assign(sliceB, rep);
+							reps.insert_or_assign(sliceB, rep);
+						}
 					}
 				}
 				_fudsSize = dr.fuds.size();
