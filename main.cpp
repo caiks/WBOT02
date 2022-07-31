@@ -12,10 +12,26 @@
 #include <QLabel>
 #include <QScreen>
 
+#include <sstream>
+#include <rapidjson/document.h>
+#include <rapidjson/istreamwrapper.h>
 
 using namespace Alignment;
 using namespace WBOT02;
 using namespace std;
+namespace js = rapidjson;
+
+#define ARGS_STRING_DEF(x,y) args.HasMember(#x) && args[#x].IsString() ? args[#x].GetString() : y
+#define ARGS_STRING(x) ARGS_STRING_DEF(x,"")
+#define ARGS_INT_DEF(x,y) args.HasMember(#x) && args[#x].IsInt() ? args[#x].GetInt() : y
+#define ARGS_INT(x) ARGS_INT_DEF(x,0)
+#define ARGS_DOUBLE_DEF(x,y) args.HasMember(#x) && args[#x].IsDouble() ? args[#x].GetDouble() : y
+#define ARGS_DOUBLE(x) ARGS_DOUBLE_DEF(x,0.0)
+#define ARGS_BOOL_DEF(x,y) args.HasMember(#x) && args[#x].IsBool() ? args[#x].GetBool() : y
+#define ARGS_BOOL(x) ARGS_BOOL_DEF(x,false)
+
+#define UNLOG  << std::endl; }
+#define LOG { std::cout <<
 
 int main(int argc, char *argv[])
 {
@@ -421,5 +437,128 @@ int main(int argc, char *argv[])
         EVAL(application.exec());
 	}
 		
+	if (argc >= 2 && string(argv[1]) == "generate_contour")
+	{
+		bool ok = true;
+		
+		string config = "contour.json";
+		if (argc >= 3) config = string(argv[2]);
+		js::Document args;
+		if (!config.empty())
+		{
+			std::ifstream in;
+			try 
+			{
+				in.open(config);
+				js::IStreamWrapper isw(in);
+				args.ParseStream(isw);
+			}
+			catch (const std::exception&) 
+			{
+                LOG "actor\terror: failed to open arguments file " << config UNLOG
+                return 1;
+			}	
+			if (!args.IsObject())
+			{
+                LOG "actor\terror: failed to read arguments file " << config UNLOG
+                return 1;
+			}
+		}
+		else
+		{
+			args.Parse("{}");
+		}
+		string model = ARGS_STRING(model_initial);
+	
+		EVAL(model);
+		
+		bool concise = string(argv[1]) == "view_active_concise";
+		TRUTH(concise);
+
+		Active activeA;
+		activeA.logging = true;		
+		if (ok) 
+		{
+			activeA.historySliceCachingIs = true;
+			ActiveIOParameters ppio;
+			ppio.filename = model +".ac";
+			ok = ok && activeA.load(ppio);
+			TRUTH(ok);				
+		}		
+		if (ok)
+		{
+			EVAL(activeA.name);				
+			EVAL(activeA.underlyingEventUpdateds);		
+			std::size_t sizeA = activeA.historyOverflow ? activeA.historySize : activeA.historyEvent;				
+			EVAL(activeA.historySize);				
+			TRUTH(activeA.historyOverflow);				
+			EVAL(activeA.historyEvent);				
+			EVAL(sizeA);
+			EVAL(activeA.historyEvent);		
+			TRUTH(activeA.continousIs);				
+			EVAL(activeA.continousHistoryEventsEvent);	
+			TRUTH(activeA.historySliceCachingIs);				
+			TRUTH(activeA.historySliceCumulativeIs);				
+			EVAL(activeA.historySlicesSize.size());		
+			EVAL(activeA.historySlicesSlicesSizeNext.size());		
+			EVAL(activeA.historySlicesSliceSetPrev.size());				
+			for (auto& hr : activeA.underlyingHistoryRepa)
+			{
+				EVAL(hr->dimension);				
+				EVAL(hr->size);				
+				// EVAL(*hr);				
+			}
+			for (auto& hr : activeA.underlyingHistorySparse)
+			{
+				EVAL(hr->size);				
+				// EVAL(*hr);				
+			}			
+			if (!concise)
+			{
+				EVAL(sorted(activeA.underlyingSlicesParent));				
+			}
+			else 
+			{
+				EVAL(activeA.underlyingSlicesParent.size());				
+			}			
+			EVAL(activeA.bits);				
+			EVAL(activeA.var);				
+			EVAL(activeA.varSlice);				
+			EVAL(activeA.induceThreshold);				
+			EVAL(activeA.induceVarExclusions);				
+			if (activeA.historySparse) {EVAL(activeA.historySparse->size);}
+			if (!concise)
+			{
+				if (activeA.historySparse) {EVAL(*activeA.historySparse);}				
+				EVAL(activeA.historySlicesSetEvent);			
+			}	
+			else 
+			{
+				EVAL(activeA.underlyingSlicesParent.size());				
+			}			
+			EVAL(activeA.historySlicesSetEvent.size());				
+			EVAL(activeA.induceSlices);				
+			EVAL(activeA.induceSliceFailsSize);				
+			EVAL(activeA.frameUnderlyings);				
+			EVAL(activeA.frameHistorys);				
+			// EVAL(activeA.framesVarsOffset);				
+			if (activeA.decomp) {EVAL(activeA.decomp->fuds.size());}
+			if (activeA.decomp) {EVAL(activeA.decomp->fudRepasSize);}
+			if (activeA.decomp) {EVAL((double)activeA.decomp->fuds.size() * activeA.induceThreshold / sizeA);}
+			// if (activeA.decomp) 
+			// {
+				// auto er = dfrer(*activeA.decomp);
+				// EVAL(sorted(er->substrate));
+			// }
+			if (!concise)
+			{
+				if (activeA.decomp) {EVAL(*activeA.decomp);}
+			}	
+			else 
+			{
+				TRUTH(activeA.decomp);				
+			}
+		}
+	}
 	return 0;
 }
