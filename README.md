@@ -671,6 +671,18 @@ cf CAIKS4 202205310940
 
 #### actor002
 
+model|scales|frame position|events|fuds|fuds/sz/thrshld|median diagonal|max diagonal
+---|---|---|---|---|---|---|---
+model009|0.5|1 centred|180,000|700|0.777903|31.5699|40.947
+model010|0.5|4 randomised|720,000|2553|0.709242|23.9962|37.9449
+model011|0.354|4 randomised|720,000|2630|0.730645|24.8569|37.7777
+model012|0.25|4 randomised|720,000|2674|0.74286|25.6999|38.2333
+model013|0.177|4 randomised|720,000|2790|0.775142|26.7243|38.1047	
+
+Noticeable difference between the fixed and randomised, probably because the randomised is now uniformly random rather than around 5 fixed events. Also the long lags in actor 1 meant that the slices were larger and would be better modelled. 
+
+The `0.354 = 1/2^1.5` scale seems to do better. And 0.25 is better still. `0.177 = 1/2^2.5` is the highest, but is getting down to the resolution of the animation.
+
 Non likely versus likely modes
 
 Compare non likely models esp random versus fixed. Use screenshots comparing fixed and random for repeated scenes, learned scenes and new scenes. Draw conclusions regarding scanning and likelihood search. Compare the random models to the fixed models for large likelihoods around faces, etc. Expect the likely models > fixed models > random models in hot spots near faces in credits, but likely models > random models > fixed models otherwise. Key thing is to position the focus on the hot spots (and hot scales) in order to avoid the need for convolving models over many positions. Can we conclude anything about likelihoods from navigating manually? don't seem to be able to show anything convincing by browsing, but the likelihoods of the randomised model around faces seem to be higher than in non-decript areas in general e.g. FS1_1_1m40s_008_1.png. Could do a likelihood map of an image by scanning and colouring each pixel according to its likelihood, but manual navigation suggests that this would be a very jagged landscape - which poses a question mark over the golf ball approach to scanning. Is a gentle pressure enough to demonstrate intelligence - an ineffable quality which is considerably harder to show than faster model growth?

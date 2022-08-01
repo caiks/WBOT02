@@ -419,9 +419,9 @@ void Win007::act()
 		if (_motionThreshold)
 		{
 			std::size_t hash = 0;
-			for (int y = 0; y < image.height(); y += _motionHashStep) 
+			for (int y = 0; y < _captureHeight; y += _motionHashStep) 
 			{
-				for (int x = 0; x < image.width(); x += _motionHashStep) 
+				for (int x = 0; x < _captureWidth; x += _motionHashStep) 
 				{
 					auto rgb = image.pixel(x,y);
 					hash = hash * 13 + (hash >> 60) + qRed(rgb);
@@ -476,8 +476,8 @@ void Win007::act()
 					auto centreRandomX = _centreRandomX > 0.0 ? ((double) rand() / (RAND_MAX)) *_centreRandomX * 2.0 - _centreRandomX : 0.0;
 					auto centreRandomY = _centreRandomY > 0.0 ? ((double) rand() / (RAND_MAX)) *_centreRandomY * 2.0 - _centreRandomY : 0.0;
 					Record record(image, 
-						_scale * image.height() / image.width(), _scale,
-						_centreX + centreRandomX, 
+						_scale * _captureHeight / _captureWidth, _scale,
+						_centreX + (centreRandomX * _captureHeight / _captureWidth), 
 						_centreY + centreRandomY, 
 						_size, _size, _divisor, _divisor);
 					Record recordValent = record.valent(_valency);
@@ -615,7 +615,7 @@ void Win007::act()
 	{
 		// update events
 		Record record(image, 
-			_scale * image.height() / image.width(), _scale,
+			_scale * _captureHeight / _captureWidth, _scale,
 			_centreX, _centreY, _size, _size, _divisor, _divisor);
 		Record recordValent = record.valent(_valency);
 		auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);	

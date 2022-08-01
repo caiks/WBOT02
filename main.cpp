@@ -440,125 +440,99 @@ int main(int argc, char *argv[])
 	if (argc >= 2 && string(argv[1]) == "generate_contour")
 	{
 		bool ok = true;
+		int stage = 0;
 		
-		string config = "contour.json";
-		if (argc >= 3) config = string(argv[2]);
 		js::Document args;
-		if (!config.empty())
+		if (ok)
 		{
-			std::ifstream in;
-			try 
+			string config = "contour.json";
+			if (argc >= 3) config = string(argv[2]);
+			if (ok && !config.empty())
 			{
-				in.open(config);
-				js::IStreamWrapper isw(in);
-				args.ParseStream(isw);
+				std::ifstream in;
+				try 
+				{
+					in.open(config);
+					js::IStreamWrapper isw(in);
+					args.ParseStream(isw);
+				}
+				catch (const std::exception&) 
+				{
+					ok = false;
+				}	
+				if (!args.IsObject())
+				{
+					ok = false;
+				}
 			}
-			catch (const std::exception&) 
+			else
 			{
-                LOG "actor\terror: failed to open arguments file " << config UNLOG
-                return 1;
-			}	
-			if (!args.IsObject())
-			{
-                LOG "actor\terror: failed to read arguments file " << config UNLOG
-                return 1;
+				args.Parse("{}");
+				ok = false;
 			}
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);				
 		}
-		else
+		string model = ARGS_STRING(model);
+		string inputFilename = ARGS_STRING(input_file);
+		string outputFilename = ARGS_STRING(output_file);
+		auto centreX = ARGS_DOUBLE_DEF(centreX,0.5);
+		auto centreY = ARGS_DOUBLE_DEF(centreY,0.5);
+		auto centreRangeX = ARGS_DOUBLE_DEF(range_centreX,0.41);
+		auto centreRangeY = ARGS_DOUBLE_DEF(range_centreY,0.25);
+		auto scale = ARGS_DOUBLE_DEF(scale,0.5);
+		auto valency = ARGS_INT_DEF(valency,10);	
+		auto size = ARGS_INT_DEF(size,40);	
+		auto divisor = ARGS_INT_DEF(divisor,4);	
+		if (ok)
 		{
-			args.Parse("{}");
+			ok = ok && model.size();
+			ok = ok && inputFilename.size();
+			ok = ok && outputFilename.size();
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);	
 		}
-		string model = ARGS_STRING(model_initial);
-	
-		EVAL(model);
-		
-		bool concise = string(argv[1]) == "view_active_concise";
-		TRUTH(concise);
-
 		Active activeA;
-		activeA.logging = true;		
 		if (ok) 
 		{
+			activeA.continousIs = true;
 			activeA.historySliceCachingIs = true;
+			activeA.historySliceCumulativeIs = true;
 			ActiveIOParameters ppio;
 			ppio.filename = model +".ac";
 			ok = ok && activeA.load(ppio);
+			activeA.historySliceCachingIs = true;
+			stage++;
+			EVAL(stage);
 			TRUTH(ok);				
 		}		
+		QImage image;
+		int captureWidth = 0;
+		int captureHeight = 0;	
 		if (ok)
 		{
-			EVAL(activeA.name);				
-			EVAL(activeA.underlyingEventUpdateds);		
-			std::size_t sizeA = activeA.historyOverflow ? activeA.historySize : activeA.historyEvent;				
-			EVAL(activeA.historySize);				
-			TRUTH(activeA.historyOverflow);				
-			EVAL(activeA.historyEvent);				
-			EVAL(sizeA);
-			EVAL(activeA.historyEvent);		
-			TRUTH(activeA.continousIs);				
-			EVAL(activeA.continousHistoryEventsEvent);	
-			TRUTH(activeA.historySliceCachingIs);				
-			TRUTH(activeA.historySliceCumulativeIs);				
-			EVAL(activeA.historySlicesSize.size());		
-			EVAL(activeA.historySlicesSlicesSizeNext.size());		
-			EVAL(activeA.historySlicesSliceSetPrev.size());				
-			for (auto& hr : activeA.underlyingHistoryRepa)
-			{
-				EVAL(hr->dimension);				
-				EVAL(hr->size);				
-				// EVAL(*hr);				
-			}
-			for (auto& hr : activeA.underlyingHistorySparse)
-			{
-				EVAL(hr->size);				
-				// EVAL(*hr);				
-			}			
-			if (!concise)
-			{
-				EVAL(sorted(activeA.underlyingSlicesParent));				
-			}
-			else 
-			{
-				EVAL(activeA.underlyingSlicesParent.size());				
-			}			
-			EVAL(activeA.bits);				
-			EVAL(activeA.var);				
-			EVAL(activeA.varSlice);				
-			EVAL(activeA.induceThreshold);				
-			EVAL(activeA.induceVarExclusions);				
-			if (activeA.historySparse) {EVAL(activeA.historySparse->size);}
-			if (!concise)
-			{
-				if (activeA.historySparse) {EVAL(*activeA.historySparse);}				
-				EVAL(activeA.historySlicesSetEvent);			
-			}	
-			else 
-			{
-				EVAL(activeA.underlyingSlicesParent.size());				
-			}			
-			EVAL(activeA.historySlicesSetEvent.size());				
-			EVAL(activeA.induceSlices);				
-			EVAL(activeA.induceSliceFailsSize);				
-			EVAL(activeA.frameUnderlyings);				
-			EVAL(activeA.frameHistorys);				
-			// EVAL(activeA.framesVarsOffset);				
-			if (activeA.decomp) {EVAL(activeA.decomp->fuds.size());}
-			if (activeA.decomp) {EVAL(activeA.decomp->fudRepasSize);}
-			if (activeA.decomp) {EVAL((double)activeA.decomp->fuds.size() * activeA.induceThreshold / sizeA);}
-			// if (activeA.decomp) 
-			// {
-				// auto er = dfrer(*activeA.decomp);
-				// EVAL(sorted(er->substrate));
-			// }
-			if (!concise)
-			{
-				if (activeA.decomp) {EVAL(*activeA.decomp);}
-			}	
-			else 
-			{
-				TRUTH(activeA.decomp);				
-			}
+			ok = ok && image.load(QString(inputFilename.c_str()));
+			captureWidth = image.width();
+			EVAL(captureWidth);
+			captureHeight = image.height();
+			EVAL(captureHeight);
+			ok = ok && captureWidth > 0 && captureHeight > 0;
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);	
 		}
+		
+		if (ok)
+		{
+
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);	
+		}
+		
+		
 	}
 	return 0;
 }
