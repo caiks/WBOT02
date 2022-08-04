@@ -154,8 +154,15 @@ int main(int argc, char *argv[])
 			TRUTH(activeA.historySliceCachingIs);				
 			TRUTH(activeA.historySliceCumulativeIs);				
 			EVAL(activeA.historySlicesSize.size());		
+			EVAL(activeA.historySlicesLength.size());		
 			EVAL(activeA.historySlicesSlicesSizeNext.size());		
-			EVAL(activeA.historySlicesSliceSetPrev.size());				
+			EVAL(activeA.historySlicesSliceSetPrev.size());		
+			{
+				std::map<std::size_t, std::size_t> lengthsCount;
+				for (auto& pp : activeA.historySlicesLength)
+                    lengthsCount[pp.second] += 1;
+				EVAL(lengthsCount);
+			}			
 			for (auto& hr : activeA.underlyingHistoryRepa)
 			{
 				EVAL(hr->dimension);				
