@@ -484,14 +484,16 @@ int main(int argc, char *argv[])
 		string model = ARGS_STRING(model);
 		string inputFilename = ARGS_STRING(input_file);
 		string outputFilename = ARGS_STRING(output_file);
-		auto centreX = ARGS_DOUBLE_DEF(centreX,0.5);
-		auto centreY = ARGS_DOUBLE_DEF(centreY,0.5);
-		auto centreRangeX = ARGS_DOUBLE_DEF(range_centreX,0.41);
-		auto centreRangeY = ARGS_DOUBLE_DEF(range_centreY,0.25);
-		auto scale = ARGS_DOUBLE_DEF(scale,0.5);
-		auto valency = ARGS_INT_DEF(valency,10);	
-		auto size = ARGS_INT_DEF(size,40);	
-		auto divisor = ARGS_INT_DEF(divisor,4);	
+		double centreX = ARGS_DOUBLE_DEF(centreX,0.5);
+		double centreY = ARGS_DOUBLE_DEF(centreY,0.5);
+		double centreRangeX = ARGS_DOUBLE_DEF(range_centreX,0.41);
+		double centreRangeY = ARGS_DOUBLE_DEF(range_centreY,0.25);
+		double scale = ARGS_DOUBLE_DEF(scale,0.5);
+		int scaleValency = ARGS_INT_DEF(scale_valency,4);	
+		int valency = ARGS_INT_DEF(valency,10);	
+		int size = ARGS_INT_DEF(size,40);	
+		int divisor = ARGS_INT_DEF(divisor,4);	
+		int induceParameters_wmax = ARGS_INT_DEF(induceParameters.wmax,18);
 		if (ok)
 		{
 			ok = ok && model.size();
@@ -520,7 +522,11 @@ int main(int argc, char *argv[])
 		int captureHeight = 0;	
 		if (ok)
 		{
-			ok = ok && image.load(QString(inputFilename.c_str()));
+			QImage imageIn;
+			ok = ok && imageIn.load(QString(inputFilename.c_str()));
+			EVAL(imageIn.format());
+			image = imageIn.convertToFormat(QImage::Format_RGB32);
+			EVAL(image.format());
 			captureWidth = image.width();
 			EVAL(captureWidth);
 			captureHeight = image.height();
@@ -531,6 +537,54 @@ int main(int argc, char *argv[])
 			TRUTH(ok);	
 		}
 		
+		if (ok)
+		{
+			auto drmul = listVarValuesDecompFudSlicedRepasPathSlice_u;
+			auto cap = (unsigned char)(ActiveUpdateParameters().mapCapacity);
+			auto& dr = *activeA.decomp;	
+			auto& cv = dr.mapVarParent();
+			auto& sizes = activeA.historySlicesSize;
+            auto& lengths = activeA.historySlicesLength;
+			double lnwmax = std::log(induceParameters_wmax);
+			for (double y = -0.5; y < 0.5; y += scale/size)	
+				for (double x = -0.5; x < 0.5; x += scale/size)	
+				{
+					Record record(image, 
+						scale * captureHeight / captureWidth, scale,
+						centreX + (centreRangeX * x * captureHeight / captureWidth), 
+						centreY + centreRangeY * y, 
+						size, size, divisor, divisor);
+					Record recordValent = record.valent(valency);
+					auto hr = recordsHistoryRepa(scaleValency, 0, valency, recordValent);
+					auto n = hr->dimension;
+					auto vv = hr->vectorVar;
+					auto rr = hr->arr;	
+					SizeUCharStructList jj;
+					jj.reserve(n);
+					for (std::size_t i = 0; i < n; i++)
+					{
+						SizeUCharStruct qq;
+						qq.uchar = rr[i];	
+						qq.size = vv[i];
+						jj.push_back(qq);
+					}
+					auto ll = drmul(jj,dr,cap);	
+					std::size_t slice = 0;
+					ok = ok && ll && ll->size();
+					if (ok) slice = ll->back();		
+					EVAL(x);					
+					EVAL(y);					
+					EVAL(slice);	
+					double likelihood = (std::log(sizes[slice]) - std::log(sizes[cv[slice]]) + lnwmax)/lnwmax;		
+					EVAL(likelihood);		
+					auto length = lengths[slice];
+					EVAL(length);		
+				}
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);	
+		}
+			
 		if (ok)
 		{
 
