@@ -11,6 +11,7 @@
 #include <QApplication>
 #include <QLabel>
 #include <QScreen>
+#include <QPainter>
 
 #include <sstream>
 #include <rapidjson/document.h>
@@ -448,6 +449,7 @@ int main(int argc, char *argv[])
 	{
 		bool ok = true;
 		int stage = 0;
+		QApplication app(argc, argv);
 		
 		js::Document args;
 		if (ok)
@@ -539,6 +541,9 @@ int main(int argc, char *argv[])
 		
 		if (ok)
 		{
+			QPainter painter(&image);
+			QBrush brush;
+			brush.setStyle(Qt::Dense4Pattern);
 			auto drmul = listVarValuesDecompFudSlicedRepasPathSlice_u;
 			auto cap = (unsigned char)(ActiveUpdateParameters().mapCapacity);
 			auto& dr = *activeA.decomp;	
@@ -549,10 +554,11 @@ int main(int argc, char *argv[])
 			for (double y = -0.5; y < 0.5; y += scale/size)	
 				for (double x = -0.5; x < 0.5; x += scale/size)	
 				{
+					auto posX = centreX + (centreRangeX * x * captureHeight / captureWidth);
+					auto posY = centreY + centreRangeY * y;
 					Record record(image, 
 						scale * captureHeight / captureWidth, scale,
-						centreX + (centreRangeX * x * captureHeight / captureWidth), 
-						centreY + centreRangeY * y, 
+						posX, posY, 
 						size, size, divisor, divisor);
 					Record recordValent = record.valent(valency);
 					auto hr = recordsHistoryRepa(scaleValency, 0, valency, recordValent);
@@ -572,13 +578,17 @@ int main(int argc, char *argv[])
 					std::size_t slice = 0;
 					ok = ok && ll && ll->size();
 					if (ok) slice = ll->back();		
-					EVAL(x);					
-					EVAL(y);					
-					EVAL(slice);	
+					// EVAL(x);					
+					// EVAL(y);					
+					// EVAL(slice);	
 					double likelihood = (std::log(sizes[slice]) - std::log(sizes[cv[slice]]) + lnwmax)/lnwmax;		
-					EVAL(likelihood);		
+					// EVAL(likelihood);		
 					auto length = lengths[slice];
-					EVAL(length);		
+					// EVAL(length);	
+					int brightness = likelihood > 0.0 ? likelihood * 256 : 0;
+					brush.setColor(QColor(brightness,brightness,brightness));
+					QRectF rectangle(posX*captureWidth, posY*captureHeight, scale/size*captureHeight,scale/size*captureHeight);
+					painter.fillRect(rectangle,brush);					
 				}
 			stage++;
 			EVAL(stage);
@@ -587,13 +597,16 @@ int main(int argc, char *argv[])
 			
 		if (ok)
 		{
-
+			QLabel myLabel;
+            auto pixmap = QPixmap::fromImage(image);
+            myLabel.setPixmap(pixmap);
+			myLabel.show();
+            app.exec();
 			stage++;
 			EVAL(stage);
 			TRUTH(ok);	
 		}
-		
-		
+			
 	}
 	return 0;
 }
