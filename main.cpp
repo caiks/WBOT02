@@ -541,7 +541,8 @@ int main(int argc, char *argv[])
 		{
 			QPainter painter(&image);
 			QBrush brush;
-			brush.setStyle(Qt::Dense3Pattern);
+            brush.setStyle(Qt::SolidPattern);
+			// brush.setStyle(Qt::Dense3Pattern);
 			auto drmul = listVarValuesDecompFudSlicedRepasPathSlice_u;
 			auto cap = (unsigned char)(ActiveUpdateParameters().mapCapacity);
 			auto& dr = *activeA.decomp;	
