@@ -485,7 +485,6 @@ int main(int argc, char *argv[])
 		}
 		string model = ARGS_STRING(model);
 		string inputFilename = ARGS_STRING(input_file);
-		string outputFilename = ARGS_STRING(output_file);
 		double centreX = ARGS_DOUBLE_DEF(centreX,0.5);
 		double centreY = ARGS_DOUBLE_DEF(centreY,0.5);
 		double centreRangeX = ARGS_DOUBLE_DEF(range_centreX,0.41);
@@ -500,7 +499,6 @@ int main(int argc, char *argv[])
 		{
 			ok = ok && model.size();
 			ok = ok && inputFilename.size();
-			ok = ok && outputFilename.size();
 			stage++;
 			EVAL(stage);
 			TRUTH(ok);	
@@ -543,7 +541,7 @@ int main(int argc, char *argv[])
 		{
 			QPainter painter(&image);
 			QBrush brush;
-			brush.setStyle(Qt::Dense4Pattern);
+			brush.setStyle(Qt::Dense3Pattern);
 			auto drmul = listVarValuesDecompFudSlicedRepasPathSlice_u;
 			auto cap = (unsigned char)(ActiveUpdateParameters().mapCapacity);
 			auto& dr = *activeA.decomp;	
@@ -551,11 +549,12 @@ int main(int argc, char *argv[])
 			auto& sizes = activeA.historySlicesSize;
             auto& lengths = activeA.historySlicesLength;
 			double lnwmax = std::log(induceParameters_wmax);
-			for (double y = -0.5; y < 0.5; y += scale/size)	
-				for (double x = -0.5; x < 0.5; x += scale/size)	
+			double interval = scale/size;
+			for (double y = -centreRangeY; y < centreRangeY; y += interval)	
+				for (double x = -centreRangeX; x <centreRangeX; x += interval)	
 				{
-					auto posX = centreX + (centreRangeX * x * captureHeight / captureWidth);
-					auto posY = centreY + centreRangeY * y;
+					auto posX = centreX + (x * captureHeight / captureWidth);
+					auto posY = centreY + y;
 					Record record(image, 
 						scale * captureHeight / captureWidth, scale,
 						posX, posY, 
@@ -585,9 +584,16 @@ int main(int argc, char *argv[])
 					// EVAL(likelihood);		
 					auto length = lengths[slice];
 					// EVAL(length);	
-					int brightness = likelihood > 0.0 ? likelihood * 256 : 0;
+					// int brightness = likelihood > 0.0 ? likelihood * 255 : 0;
+					std::size_t lengthMax = 0;
+					{
+						for (auto& pp : activeA.historySlicesLength)
+							lengthMax = std::max(lengthMax,pp.second);
+					}	
+					int brightness = length * 255 / lengthMax;
 					brush.setColor(QColor(brightness,brightness,brightness));
-					QRectF rectangle(posX*captureWidth, posY*captureHeight, scale/size*captureHeight,scale/size*captureHeight);
+					QRectF rectangle(posX*captureWidth, posY*captureHeight, 
+						interval*captureHeight,interval*captureHeight);
 					painter.fillRect(rectangle,brush);					
 				}
 			stage++;
