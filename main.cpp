@@ -12,6 +12,7 @@
 #include <QLabel>
 #include <QScreen>
 #include <QPainter>
+#include <QVBoxLayout>
 
 #include <sstream>
 #include <rapidjson/document.h>
@@ -449,7 +450,6 @@ int main(int argc, char *argv[])
 	{
 		bool ok = true;
 		int stage = 0;
-		QApplication app(argc, argv);
 		
 		js::Document args;
 		if (ok)
@@ -485,6 +485,8 @@ int main(int argc, char *argv[])
 		}
 		string model = ARGS_STRING(model);
 		string inputFilename = ARGS_STRING(input_file);
+		string likelihoodFilename = ARGS_STRING(likelihood_file);
+		string lengthFilename = ARGS_STRING(length_file);
 		double centreX = ARGS_DOUBLE_DEF(centreX,0.5);
 		double centreY = ARGS_DOUBLE_DEF(centreY,0.5);
 		double centreRangeX = ARGS_DOUBLE_DEF(range_centreX,0.41);
@@ -499,6 +501,8 @@ int main(int argc, char *argv[])
 		{
 			ok = ok && model.size();
 			ok = ok && inputFilename.size();
+			ok = ok && likelihoodFilename.size();
+			ok = ok && lengthFilename.size();
 			stage++;
 			EVAL(stage);
 			TRUTH(ok);	
@@ -518,6 +522,8 @@ int main(int argc, char *argv[])
 			TRUTH(ok);				
 		}		
 		QImage image;
+		QImage likelihoodImage;
+		QImage lengthImage;
 		int captureWidth = 0;
 		int captureHeight = 0;	
 		if (ok)
@@ -527,6 +533,8 @@ int main(int argc, char *argv[])
 			EVAL(imageIn.format());
 			image = imageIn.convertToFormat(QImage::Format_RGB32);
 			EVAL(image.format());
+			likelihoodImage = image.copy();
+			lengthImage = image.copy();
 			captureWidth = image.width();
 			EVAL(captureWidth);
 			captureHeight = image.height();
@@ -539,7 +547,8 @@ int main(int argc, char *argv[])
 		
 		if (ok)
 		{
-			QPainter painter(&image);
+			QPainter likelihoodPainter(&likelihoodImage);
+			QPainter lengthPainter(&lengthImage);
 			QBrush brush;
             brush.setStyle(Qt::SolidPattern);
 			// brush.setStyle(Qt::Dense3Pattern);
@@ -551,6 +560,11 @@ int main(int argc, char *argv[])
             auto& lengths = activeA.historySlicesLength;
 			double lnwmax = std::log(induceParameters_wmax);
 			double interval = scale/size;
+			std::size_t lengthMax = 0;
+			{
+				for (auto& pp : activeA.historySlicesLength)
+					lengthMax = std::max(lengthMax,pp.second);
+			}	
 			for (double y = -centreRangeY; y < centreRangeY; y += interval)	
 				for (double x = -centreRangeX; x <centreRangeX; x += interval)	
 				{
@@ -584,19 +598,22 @@ int main(int argc, char *argv[])
 					double likelihood = (std::log(sizes[slice]) - std::log(sizes[cv[slice]]) + lnwmax)/lnwmax;		
 					// EVAL(likelihood);		
 					auto length = lengths[slice];
-					// EVAL(length);	
-					// int brightness = likelihood > 0.0 ? likelihood * 255 : 0;
-					std::size_t lengthMax = 0;
-					{
-						for (auto& pp : activeA.historySlicesLength)
-							lengthMax = std::max(lengthMax,pp.second);
-					}	
-					int brightness = length * 255 / lengthMax;
-					brush.setColor(QColor(brightness,brightness,brightness));
+					// EVAL(length);
 					QRectF rectangle(posX*captureWidth, posY*captureHeight, 
 						interval*captureHeight,interval*captureHeight);
-					painter.fillRect(rectangle,brush);					
+					{
+						int brightness = likelihood > 0.0 ? likelihood * 255 : 0;
+						brush.setColor(QColor(brightness,brightness,brightness));
+						likelihoodPainter.fillRect(rectangle,brush);					
+					}
+					{
+						int brightness = length * 255 / lengthMax;
+						brush.setColor(QColor(brightness,brightness,brightness));
+						lengthPainter.fillRect(rectangle,brush);					
+					}
 				}
+			ok = ok && likelihoodImage.save(QString(likelihoodFilename.c_str()));
+			ok = ok && lengthImage.save(QString(lengthFilename.c_str()));
 			stage++;
 			EVAL(stage);
 			TRUTH(ok);	
@@ -604,10 +621,16 @@ int main(int argc, char *argv[])
 			
 		if (ok)
 		{
-			QLabel myLabel;
-            auto pixmap = QPixmap::fromImage(image);
-            myLabel.setPixmap(pixmap);
-			myLabel.show();
+			QApplication app(argc, argv);
+			QWidget mainWidget;
+			QVBoxLayout* verticalLayout = new QVBoxLayout(&mainWidget);
+			QLabel* likelihoodLabel = new QLabel(&mainWidget);
+			verticalLayout->addWidget(likelihoodLabel);
+            likelihoodLabel->setPixmap(QPixmap::fromImage(likelihoodImage));
+			QLabel* lengthLabel = new QLabel(&mainWidget);
+			verticalLayout->addWidget(lengthLabel);
+            lengthLabel->setPixmap(QPixmap::fromImage(lengthImage));
+			mainWidget.show();
             app.exec();
 			stage++;
 			EVAL(stage);
