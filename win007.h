@@ -103,6 +103,7 @@ private:
 	double _centreX;
 	double _centreY;
 	int _eventSize;	
+	int _scanSize;	
 	double _centreRandomX;
 	double _centreRandomY;
     double _scale;

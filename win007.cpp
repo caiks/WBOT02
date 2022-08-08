@@ -147,6 +147,7 @@ Win007::Win007(const std::string& configA,
 		_divisor = ARGS_INT_DEF(divisor,4);	
 		_multiplier = ARGS_INT_DEF(multiplier,2);	
 		_eventSize = ARGS_INT_DEF(event_size,1);	
+		_scanSize = ARGS_INT_DEF(scan_size,1);	
 	}
 	// add dynamic GUI
 	if (_interactive)
@@ -482,6 +483,74 @@ void Win007::act()
 						_size, _size, _divisor, _divisor);
 					Record recordValent = record.valent(_valency);
 					auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
+					_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
+					this->eventId++;		
+					eventCount++;		
+				}
+				if (!_active->update(_updateParameters))
+				{
+					this->terminate = true;	
+					return;
+				}
+			}
+			else if (_mode == "mode002")
+			{
+				std::vector<Record> records;
+				for (std::size_t k = 0; k < _scanSize; k++)	
+				{
+					auto centreRandomX = _centreRandomX > 0.0 ? ((double) rand() / (RAND_MAX)) *_centreRandomX * 2.0 - _centreRandomX : 0.0;
+					auto centreRandomY = _centreRandomY > 0.0 ? ((double) rand() / (RAND_MAX)) *_centreRandomY * 2.0 - _centreRandomY : 0.0;
+					Record record(image, 
+						_scale * _captureHeight / _captureWidth, _scale,
+						_centreX + (centreRandomX * _captureHeight / _captureWidth), 
+						_centreY + centreRandomY, 
+						_size, _size, _divisor, _divisor);
+					records.push_back(record.valent(_valency));	
+				}
+				std::vector<std::pair<double,std::size_t>> likelihoodsRecord;		
+				{		
+					auto drmul = listVarValuesDecompFudSlicedRepasPathSlice_u;
+					auto cap = (unsigned char)(_updateParameters.mapCapacity);
+					double lnwmax = std::log(_induceParameters.wmax);
+					auto& activeA = *_active;
+					std::lock_guard<std::mutex> guard(activeA.mutex);
+					auto& sizes = activeA.historySlicesSize;
+					auto& dr = *activeA.decomp;		
+					auto& cv = dr.mapVarParent();
+					for (std::size_t k = 0; k < _scanSize; k++)	
+					{
+						auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, records[k]);
+						auto n = hr->dimension;
+						auto vv = hr->vectorVar;
+						auto rr = hr->arr;	
+						SizeUCharStructList jj;
+						jj.reserve(n);
+						for (std::size_t i = 0; i < n; i++)
+						{
+							SizeUCharStruct qq;
+							qq.uchar = rr[i];	
+							qq.size = vv[i];
+							jj.push_back(qq);
+						}
+						auto ll = drmul(jj,dr,cap);	
+						if (ll && ll->size())
+						{
+							std::size_t slice = ll->back();	
+							if (slice && cv.count(slice) && sizes.count(slice))
+							{
+								// EVAL(slice);	
+								double likelihood = (std::log(sizes[slice]) - std::log(sizes[cv[slice]]) + lnwmax)/lnwmax;
+								likelihoodsRecord.push_back(std::make_pair(likelihood, k));
+							}
+						}
+					}
+				}		
+				if (likelihoodsRecord.size())
+					std::sort(likelihoodsRecord.rbegin(), likelihoodsRecord.rend());	
+				for (std::size_t k = 0; k < _eventSize && k < _scanSize; k++)	
+				{
+					std::size_t m =  likelihoodsRecord.size() > k ? likelihoodsRecord[k].second : k;
+					auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, records[m]);
 					_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
 					this->eventId++;		
 					eventCount++;		
