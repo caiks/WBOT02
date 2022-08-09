@@ -561,6 +561,77 @@ void Win007::act()
 					return;
 				}
 			}
+			else if (_mode == "mode003")
+			{
+				std::vector<Record> records;
+				for (std::size_t k = 0; k < _scanSize; k++)	
+				{
+					auto centreRandomX = _centreRandomX > 0.0 ? ((double) rand() / (RAND_MAX)) *_centreRandomX * 2.0 - _centreRandomX : 0.0;
+					auto centreRandomY = _centreRandomY > 0.0 ? ((double) rand() / (RAND_MAX)) *_centreRandomY * 2.0 - _centreRandomY : 0.0;
+					Record record(image, 
+						_scale * _captureHeight / _captureWidth, _scale,
+						_centreX + (centreRandomX * _captureHeight / _captureWidth), 
+						_centreY + centreRandomY, 
+						_size, _size, _divisor, _divisor);
+					records.push_back(record.valent(_valency));	
+				}
+				std::vector<std::pair<std::pair<std::size_t,double>,std::size_t>> actsPotsRecord;		
+				{		
+					auto drmul = listVarValuesDecompFudSlicedRepasPathSlice_u;
+					auto cap = (unsigned char)(_updateParameters.mapCapacity);
+					double lnwmax = std::log(_induceParameters.wmax);
+					auto& activeA = *_active;
+					std::lock_guard<std::mutex> guard(activeA.mutex);
+					auto& sizes = activeA.historySlicesSize;
+					auto& lengths = activeA.historySlicesLength;
+					auto& fails = activeA.induceSliceFailsSize;
+					auto& dr = *activeA.decomp;		
+					auto& cv = dr.mapVarParent();
+					for (std::size_t k = 0; k < _scanSize; k++)	
+					{
+						auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, records[k]);
+						auto n = hr->dimension;
+						auto vv = hr->vectorVar;
+						auto rr = hr->arr;	
+						SizeUCharStructList jj;
+						jj.reserve(n);
+						for (std::size_t i = 0; i < n; i++)
+						{
+							SizeUCharStruct qq;
+							qq.uchar = rr[i];	
+							qq.size = vv[i];
+							jj.push_back(qq);
+						}
+						auto ll = drmul(jj,dr,cap);	
+						if (ll && ll->size())
+						{
+							std::size_t slice = ll->back();	
+							if (slice && cv.count(slice) && sizes.count(slice) 
+								&& lengths.count(slice) && !fails.count(slice))
+							{
+								double likelihood = (std::log(sizes[slice]) - std::log(sizes[cv[slice]]) + lnwmax)/lnwmax;
+								std::size_t length = lengths[slice];
+								actsPotsRecord.push_back(std::make_pair(std::make_pair(length,likelihood), k));
+							}
+						}
+					}
+				}		
+				if (actsPotsRecord.size())
+					std::sort(actsPotsRecord.rbegin(), actsPotsRecord.rend());	
+				for (std::size_t k = 0; k < _eventSize && k < _scanSize; k++)	
+				{
+					std::size_t m =  actsPotsRecord.size() > k ? actsPotsRecord[k].second : k;
+					auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, records[m]);
+					_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
+					this->eventId++;		
+					eventCount++;		
+				}
+				if (!_active->update(_updateParameters))
+				{
+					this->terminate = true;	
+					return;
+				}
+			}
 		}
 		// representations
 		{		
@@ -574,7 +645,6 @@ void Win007::act()
 			auto y = activeA.historyEvent;
 			auto rr = hr->arr;	
 			auto rs = hs.arr;
-			auto& sizes = activeA.historySlicesSize;
 			auto& dr = *activeA.decomp;		
 			auto& cv = dr.mapVarParent();
 			auto& reps = *_slicesRepresentation;
@@ -602,7 +672,6 @@ void Win007::act()
 			{
 				for (std::size_t i = _fudsSize; i < dr.fuds.size(); i++)
 				{
-					auto sliceA = dr.fuds[i].parent;
 					for (auto sliceB : dr.fuds[i].children)
 					{
 						Representation rep(1.0,1.0,_size,_size);
@@ -697,7 +766,6 @@ void Win007::act()
 			auto cap = (unsigned char)(_updateParameters.mapCapacity);
 			auto& activeA = *_active;
 			std::lock_guard<std::mutex> guard(activeA.mutex);
-			auto& slev = activeA.historySlicesSetEvent;
 			auto n = hr->dimension;
 			auto vv = hr->vectorVar;
 			auto rr = hr->arr;	
@@ -705,7 +773,6 @@ void Win007::act()
 			auto& dr = *activeA.decomp;		
 			auto& cv = dr.mapVarParent();
 			auto& vi = dr.mapVarInt();
-			auto& reps = *_slicesRepresentation;
 			SizeUCharStructList jj;
 			jj.reserve(n);
 			for (std::size_t i = 0; i < n; i++)

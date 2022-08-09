@@ -679,6 +679,8 @@ model011|0.354|4 randomised|720,000|2630|0.730645|24.8569|37.7777|
 model012|0.25|4 randomised|720,000|2674|0.74286|25.6999|38.2333|
 model014|0.25|4 randomised|720,000|513|0.712896|24.7938|39.8062|1000 threshold
 model013|0.177|4 randomised|720,000|2790|0.775142|26.7243|38.1047|
+model015|0.177|4 potential|720,000|4106|1.14107|26.5634|38.2065|20 randomised
+model016|0.177|4 actual-potential|720,000|3102|0.861801|26.7202|38.0567|20 randomised
 
 Noticeable difference between the fixed and randomised, probably because the randomised is now uniformly random rather than around 5 fixed events. Also the long lags in actor 1 meant that the slices were larger and would be better modelled. 
 
