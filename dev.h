@@ -85,6 +85,11 @@ namespace WBOT02
 	
 	std::unique_ptr<Alignment::HistoryRepa> recordsHistoryRepa(std::size_t scaleValency, std::size_t scale, std::size_t recordValency, const Record& record);
 	
+	std::unique_ptr<Alignment::HistoryRepa> recordSubsetsHistoryRepa(
+		std::size_t scaleValency, std::size_t scale, std::size_t recordValency, 
+		std::size_t sizeX, std::size_t sizeY, std::size_t originX, std::size_t originY,
+		const Record& record);
+
 	struct Representation
 	{
 		Representation(

@@ -446,7 +446,9 @@ int main(int argc, char *argv[])
         EVAL(application.exec());
 	}
 		
-	if (argc >= 2 && string(argv[1]) == "generate_contour")
+	if (argc >= 2 
+		&& (string(argv[1]) == "generate_contour" 
+			|| string(argv[1]) == "generate_contour001"))
 	{
 		bool ok = true;
 		int stage = 0;
@@ -547,6 +549,12 @@ int main(int argc, char *argv[])
 		
 		if (ok)
 		{
+			auto mark = Clock::now();
+			double recordTime = 0.0;
+			double recordValentTime = 0.0;
+			double repaTime = 0.0;
+			double applyTime = 0.0;
+			std::size_t applyCount = 0;
 			QPainter likelihoodPainter(&likelihoodImage);
 			QPainter lengthPainter(&lengthImage);
 			QBrush brush;
@@ -570,12 +578,19 @@ int main(int argc, char *argv[])
 				{
 					auto posX = centreX + (x * captureHeight / captureWidth);
 					auto posY = centreY + y;
+					mark = Clock::now();
 					Record record(image, 
 						scale * captureHeight / captureWidth, scale,
 						posX, posY, 
 						size, size, divisor, divisor);
+					recordTime += ((Sec)(Clock::now() - mark)).count();
+					mark = Clock::now();
 					Record recordValent = record.valent(valency);
+					recordValentTime += ((Sec)(Clock::now() - mark)).count();
+					mark = Clock::now();
 					auto hr = recordsHistoryRepa(scaleValency, 0, valency, recordValent);
+					repaTime += ((Sec)(Clock::now() - mark)).count();
+					mark = Clock::now();
 					auto n = hr->dimension;
 					auto vv = hr->vectorVar;
 					auto rr = hr->arr;	
@@ -589,6 +604,8 @@ int main(int argc, char *argv[])
 						jj.push_back(qq);
 					}
 					auto ll = drmul(jj,dr,cap);	
+					applyTime += ((Sec)(Clock::now() - mark)).count();
+					applyCount++;
 					std::size_t slice = 0;
 					ok = ok && ll && ll->size();
 					if (ok) slice = ll->back();		
@@ -612,31 +629,22 @@ int main(int argc, char *argv[])
 						lengthPainter.fillRect(rectangle,brush);					
 					}
 				}
+			EVAL(recordTime);
+			EVAL(recordValentTime);
+			EVAL(repaTime);
+			EVAL(applyTime);
+			EVAL(applyCount);
 			ok = ok && likelihoodImage.save(QString(likelihoodFilename.c_str()));
 			ok = ok && lengthImage.save(QString(lengthFilename.c_str()));
 			stage++;
 			EVAL(stage);
 			TRUTH(ok);	
 		}
-			
-		if (ok)
-		{
-			QApplication app(argc, argv);
-			QWidget mainWidget;
-			QVBoxLayout* verticalLayout = new QVBoxLayout(&mainWidget);
-			QLabel* likelihoodLabel = new QLabel(&mainWidget);
-			verticalLayout->addWidget(likelihoodLabel);
-            likelihoodLabel->setPixmap(QPixmap::fromImage(likelihoodImage));
-			QLabel* lengthLabel = new QLabel(&mainWidget);
-			verticalLayout->addWidget(lengthLabel);
-            lengthLabel->setPixmap(QPixmap::fromImage(lengthImage));
-			mainWidget.show();
-            app.exec();
-			stage++;
-			EVAL(stage);
-			TRUTH(ok);	
-		}
-			
 	}
+	
+	if (argc >= 2 && string(argv[1]) == "generate_contour002")
+	{
+	}
+	
 	return 0;
 }

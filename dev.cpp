@@ -263,6 +263,29 @@ std::unique_ptr<HistoryRepa> WBOT02::recordsHistoryRepa(std::size_t scaleValency
 	return hr;
 }
 
+std::unique_ptr<HistoryRepa> WBOT02::recordSubsetsHistoryRepa(
+	std::size_t scaleValency, std::size_t scale, std::size_t recordValency, 
+	std::size_t sizeX, std::size_t sizeY, std::size_t originX, std::size_t originY,	
+	const Record& record)
+{
+	if (!scaleValency || !recordValency || !record.arr || !record.arr->size()
+		|| record.arr->size() != record.sizeX * record.sizeY
+		|| originX + sizeX > record.sizeX || originY + sizeY > record.sizeY)
+		return std::unique_ptr<HistoryRepa>();
+	auto& arr1 = *record.arr;
+	auto sizeX1 = record.sizeX;
+	auto hr = sizesHistoryRepa(scaleValency, recordValency, sizeX*sizeY);
+	auto n = hr->dimension;
+	auto rr = hr->arr;
+	for (std::size_t j = 0, k = 0; j < sizeY; j++)
+	{
+		auto jx1 = (j + originY) * sizeX1;
+		for (std::size_t i = 0; i < sizeX; i++, k++)
+			rr[k] = arr1[jx1 + i + originX];
+	}
+	rr[n-1] = (unsigned char)scale;
+	return hr;
+}
 
 WBOT02::Representation::Representation(
 	double scaleX1, double scaleY1, 
