@@ -52,8 +52,8 @@ WBOT02::Record::Record(QImage image,
 			{
 				int count = 0;
 				int total = 0;
-				auto xp = x + (divisorX && stepX == 1 ? divisorX : pixelsX);
-				auto yp = y + (divisorY && stepY == 1 ? divisorY : pixelsY);
+				auto xp = x + (divisorX && stepX == 1 ? std::min(pixelsX,(int)divisorX) : pixelsX);
+				auto yp = y + (divisorY && stepY == 1 ? std::min(pixelsY,(int)divisorY) : pixelsY);
 				for (int x1 = x; x1 < xp && x1 < w; x1 += stepX)
 					for (int y1 = y; y1 < yp && y1 < h; y1 += stepY)
 					{
