@@ -546,7 +546,6 @@ int main(int argc, char *argv[])
 			EVAL(stage);
 			TRUTH(ok);	
 		}
-		
 		if (ok)
 		{
 			auto mark = Clock::now();
@@ -570,7 +569,7 @@ int main(int argc, char *argv[])
 			double interval = scale/size;
 			std::size_t lengthMax = 0;
 			{
-				for (auto& pp : activeA.historySlicesLength)
+				for (auto& pp : lengths)
 					lengthMax = std::max(lengthMax,pp.second);
 			}	
 			for (double y = -centreRangeY; y < centreRangeY; y += interval)	
@@ -644,7 +643,207 @@ int main(int argc, char *argv[])
 	
 	if (argc >= 2 && string(argv[1]) == "generate_contour002")
 	{
+		bool ok = true;
+		int stage = 0;
+		
+		js::Document args;
+		if (ok)
+		{
+			string config = "contour.json";
+			if (argc >= 3) config = string(argv[2]);
+			if (ok && !config.empty())
+			{
+				std::ifstream in;
+				try 
+				{
+					in.open(config);
+					js::IStreamWrapper isw(in);
+					args.ParseStream(isw);
+				}
+				catch (const std::exception&) 
+				{
+					ok = false;
+				}	
+				if (!args.IsObject())
+				{
+					ok = false;
+				}
+			}
+			else
+			{
+				args.Parse("{}");
+				ok = false;
+			}
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);				
+		}
+		string model = ARGS_STRING(model);
+		string inputFilename = ARGS_STRING(input_file);
+		string likelihoodFilename = ARGS_STRING(likelihood_file);
+		string lengthFilename = ARGS_STRING(length_file);
+		double centreX = ARGS_DOUBLE_DEF(centreX,0.5);
+		double centreY = ARGS_DOUBLE_DEF(centreY,0.5);
+		double centreRangeX = ARGS_DOUBLE_DEF(range_centreX,0.41);
+		double centreRangeY = ARGS_DOUBLE_DEF(range_centreY,0.25);
+		double scale = ARGS_DOUBLE_DEF(scale,0.5);
+		int scaleValency = ARGS_INT_DEF(scale_valency,4);	
+		int valency = ARGS_INT_DEF(valency,10);	
+		int size = ARGS_INT_DEF(size,40);	
+		int divisor = ARGS_INT_DEF(divisor,4);	
+		int induceParameters_wmax = ARGS_INT_DEF(induceParameters.wmax,18);
+		if (ok)
+		{
+			ok = ok && model.size();
+			ok = ok && inputFilename.size();
+			ok = ok && likelihoodFilename.size();
+			ok = ok && lengthFilename.size();
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);	
+		}
+		Active activeA;
+		if (ok) 
+		{
+			activeA.continousIs = true;
+			activeA.historySliceCachingIs = true;
+			activeA.historySliceCumulativeIs = true;
+			ActiveIOParameters ppio;
+			ppio.filename = model +".ac";
+			ok = ok && activeA.load(ppio);
+			activeA.historySliceCachingIs = true;
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);				
+		}		
+		QImage image;
+		QImage likelihoodImage;
+		QImage lengthImage;
+		int captureWidth = 0;
+		int captureHeight = 0;	
+		if (ok)
+		{
+			QImage imageIn;
+			ok = ok && imageIn.load(QString(inputFilename.c_str()));
+			EVAL(imageIn.format());
+			image = imageIn.convertToFormat(QImage::Format_RGB32);
+			EVAL(image.format());
+			likelihoodImage = image.copy();
+			lengthImage = image.copy();
+			captureWidth = image.width();
+			EVAL(captureWidth);
+			captureHeight = image.height();
+			EVAL(captureHeight);
+			ok = ok && captureWidth > 0 && captureHeight > 0;
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);	
+		}
+		if (ok)
+		{
+			auto mark = Clock::now();
+			double recordTime = 0.0;
+			double recordValentTime = 0.0;
+			double repaTime = 0.0;
+			double applyTime = 0.0;
+			std::size_t applyCount = 0;
+			QPainter likelihoodPainter(&likelihoodImage);
+			QPainter lengthPainter(&lengthImage);
+			QBrush brush;
+            brush.setStyle(Qt::SolidPattern);
+			// brush.setStyle(Qt::Dense3Pattern);
+			auto drmul = listVarValuesDecompFudSlicedRepasPathSlice_u;
+			auto cap = (unsigned char)(ActiveUpdateParameters().mapCapacity);
+			auto& dr = *activeA.decomp;	
+			auto& cv = dr.mapVarParent();
+			auto& sizes = activeA.historySlicesSize;
+            auto& lengths = activeA.historySlicesLength;
+			double lnwmax = std::log(induceParameters_wmax);
+			double interval = scale/size;
+			std::size_t lengthMax = 0;
+			{
+				for (auto& pp : lengths)
+					lengthMax = std::max(lengthMax,pp.second);
+			}	
+			auto scaleX = centreRangeX * 2.0 + scale;
+			auto scaleY = centreRangeY * 2.0 + scale;
+			auto sizeX = (std::size_t)(scaleX * size / scale);
+			auto sizeY = (std::size_t)(scaleY * size / scale);
+			mark = Clock::now();
+			Record record(image, 
+				scaleX * captureHeight / captureWidth, scaleY,
+				centreX, centreY, 
+				sizeX, sizeY, 
+				divisor, divisor);
+			recordTime += ((Sec)(Clock::now() - mark)).count();
+			mark = Clock::now();
+			Record recordValent = record.valent(valency);
+			recordValentTime += ((Sec)(Clock::now() - mark)).count();
+			for (std::size_t y = 0; y < sizeY - size; y++)	
+				for (std::size_t x = 0; x < sizeX - size; x++)	
+				{
+					auto posX = centreX + (interval * x - (scaleX - scale) / 2.0) * captureHeight / captureWidth;
+					auto posY = centreY + interval * y - (scaleY - scale) / 2.0;
+					mark = Clock::now();
+					auto hr = recordSubsetsHistoryRepa(
+						scaleValency, 0, valency, 
+						size, size, x, y,
+						recordValent);
+					repaTime += ((Sec)(Clock::now() - mark)).count();
+					mark = Clock::now();
+					auto n = hr->dimension;
+					auto vv = hr->vectorVar;
+					auto rr = hr->arr;	
+					SizeUCharStructList jj;
+					jj.reserve(n);
+					for (std::size_t i = 0; i < n; i++)
+					{
+						SizeUCharStruct qq;
+						qq.uchar = rr[i];	
+						qq.size = vv[i];
+						jj.push_back(qq);
+					}
+					auto ll = drmul(jj,dr,cap);	
+					applyTime += ((Sec)(Clock::now() - mark)).count();
+					applyCount++;
+					std::size_t slice = 0;
+					ok = ok && ll && ll->size();
+					if (ok) slice = ll->back();		
+					// EVAL(x);					
+					// EVAL(y);					
+					// EVAL(slice);	
+					double likelihood = (std::log(sizes[slice]) - std::log(sizes[cv[slice]]) + lnwmax)/lnwmax;		
+					// EVAL(likelihood);		
+					auto length = lengths[slice];
+					// EVAL(length);
+					// EVAL(posX);
+					// EVAL(posY);
+					QRectF rectangle(posX*captureWidth, posY*captureHeight, 
+						interval*captureHeight,interval*captureHeight);
+					{
+						int brightness = likelihood > 0.0 ? likelihood * 255 : 0;
+						brush.setColor(QColor(brightness,brightness,brightness));
+						likelihoodPainter.fillRect(rectangle,brush);					
+					}
+					{
+						int brightness = length * 255 / lengthMax;
+						brush.setColor(QColor(brightness,brightness,brightness));
+						lengthPainter.fillRect(rectangle,brush);					
+					}
+				}
+			EVAL(recordTime);
+			EVAL(recordValentTime);
+			EVAL(repaTime);
+			EVAL(applyTime);
+			EVAL(applyCount);
+			ok = ok && likelihoodImage.save(QString(likelihoodFilename.c_str()));
+			ok = ok && lengthImage.save(QString(lengthFilename.c_str()));
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);	
+		}
 	}
+
 	
 	return 0;
 }
