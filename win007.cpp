@@ -138,8 +138,8 @@ Win007::Win007(const std::string& configA,
 		_captureHeight = ARGS_INT_DEF(height,410);	
 		_centreX = ARGS_DOUBLE_DEF(centreX,0.5);
 		_centreY = ARGS_DOUBLE_DEF(centreY,0.5);
-		_centreRandomX = ARGS_DOUBLE_DEF(random_centreX,0.0);
-		_centreRandomY = ARGS_DOUBLE_DEF(random_centreY,0.0);
+		_centreRandomX = ARGS_DOUBLE_DEF(range_centreX,ARGS_DOUBLE_DEF(random_centreX,0.0));
+		_centreRandomY = ARGS_DOUBLE_DEF(range_centreY,ARGS_DOUBLE_DEF(random_centreY,0.0));
 		_scale = ARGS_DOUBLE_DEF(scale,0.5);
 		_scaleValency = ARGS_INT_DEF(scale_valency,4);	
 		_valency = ARGS_INT_DEF(valency,10);	
@@ -148,6 +148,7 @@ Win007::Win007(const std::string& configA,
 		_multiplier = ARGS_INT_DEF(multiplier,2);	
 		_eventSize = ARGS_INT_DEF(event_size,1);	
 		_scanSize = ARGS_INT_DEF(scan_size,1);	
+		_threadCount = ARGS_INT_DEF(threads,1);	
 	}
 	// add dynamic GUI
 	if (_interactive)
@@ -575,7 +576,7 @@ void Win007::act()
 						_size, _size, _divisor, _divisor);
 					records.push_back(record.valent(_valency));	
 				}
-				std::vector<std::pair<std::pair<std::size_t,double>,std::size_t>> actsPotsRecord;		
+				std::vector<std::pair<std::pair<std::size_t,double>,std::size_t>> actsPotsRecord;
 				{		
 					auto drmul = listVarValuesDecompFudSlicedRepasPathSlice_u;
 					auto cap = (unsigned char)(_updateParameters.mapCapacity);
@@ -631,6 +632,99 @@ void Win007::act()
 					this->terminate = true;	
 					return;
 				}
+			}
+			else if (_mode == "mode004")
+			{
+                auto scaleX = _centreRandomX * 2.0 + _scale;
+                auto scaleY = _centreRandomY * 2.0 + _scale;
+				auto sizeX = (std::size_t)(scaleX * _size / _scale);
+				auto sizeY = (std::size_t)(scaleY * _size / _scale);				
+				Record record(image, 
+					scaleX * _captureHeight / _captureWidth, scaleY,
+					_centreX, _centreY, 
+					sizeX, sizeY, 
+					_divisor, _divisor);	
+				std::vector<std::pair<std::pair<std::size_t,double>,std::pair<std::size_t,std::size_t>>> actsPotsCoord(sizeY*sizeX);
+				auto drmul = listVarValuesDecompFudSlicedRepasPathSlice_u;
+				auto cap = (unsigned char)(_updateParameters.mapCapacity);
+				double lnwmax = std::log(_induceParameters.wmax);
+				auto hr = sizesHistoryRepa(_scaleValency, _valency, _size*_size);
+				auto n = hr->dimension;
+				auto vv = hr->vectorVar;
+				auto rr = hr->arr;
+				rr[n-1] = 0;
+				auto& activeA = *_active;
+				{
+					std::lock_guard<std::mutex> guard(activeA.mutex);
+					auto& sizes = activeA.historySlicesSize;
+					auto& lengths = activeA.historySlicesLength;
+					auto& fails = activeA.induceSliceFailsSize;
+					auto& dr = *activeA.decomp;		
+					auto& cv = dr.mapVarParent();
+					auto& me = *this;
+					std::vector<std::thread> threads;
+					threads.reserve(_threadCount);
+					for (std::size_t t = 0; t < _threadCount; t++)
+						threads.push_back(std::thread(
+							[&me,
+							sizeX,sizeY,&record,n,vv,rr,
+							drmul,&dr,&cv,cap,&sizes,&lengths,&fails,lnwmax,
+							&actsPotsCoord] (int t)
+							{
+								for (std::size_t y = 0, z = 0; y < sizeY - me._size; y++)	
+									for (std::size_t x = 0; x < sizeX - me._size; x++, z++)	
+										if (z % me._threadCount == t)
+										{
+											Record recordSub(record,me._size,me._size,x,y);
+											Record recordValent = recordSub.valent(me._valency);
+											auto& arr1 = *recordValent.arr;	
+											SizeUCharStructList jj;
+											jj.reserve(n);
+											for (std::size_t i = 0; i < n-1; i++)
+											{
+												SizeUCharStruct qq;
+												qq.uchar = arr1[i];	
+												qq.size = vv[i];
+												jj.push_back(qq);
+											}
+											{
+												SizeUCharStruct qq;
+												qq.uchar = rr[n-1];	
+												qq.size = vv[n-1];
+												jj.push_back(qq);
+											}
+											auto ll = drmul(jj,dr,cap);	
+											std::size_t slice = 0;
+											if (ll && ll->size()) slice = ll->back();	
+											if (slice && cv.count(slice) && sizes.count(slice) 
+												&& lengths.count(slice) && !fails.count(slice))
+											{
+												auto length = lengths[slice];
+												auto likelihood = (std::log(sizes[slice]) - std::log(sizes[cv[slice]]) + lnwmax)/lnwmax;
+												actsPotsCoord[z] = std::make_pair(std::make_pair(length,likelihood),std::make_pair(x,y));
+											}
+											else
+												actsPotsCoord[z] = std::make_pair(std::make_pair(0,-INFINITY),std::make_pair(x,y));	
+										}
+							}, t));
+					for (auto& t : threads)
+						t.join();
+				}
+                std::sort(actsPotsCoord.rbegin(), actsPotsCoord.rend());
+                EVAL(actsPotsCoord[0]);
+				// for (std::size_t k = 0; k < _eventSize && k < _scanSize; k++)	
+				// {
+					// std::size_t m =  actsPotsRecord.size() > k ? actsPotsRecord[k].second : k;
+					// auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, records[m]);
+					// _events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
+					// this->eventId++;		
+					// eventCount++;		
+				// }
+				// if (!_active->update(_updateParameters))
+				// {
+					// this->terminate = true;	
+					// return;
+				// }
 			}
 		}
 		// representations
@@ -742,7 +836,7 @@ void Win007::act()
             LOG "actor\tevent id: " << this->eventId << "\ttime " << ((Sec)(Clock::now() - _mark)).count() << "s" UNLOG
 		}
 	}
-	if (_system && _actLogging && (_actLoggingFactor <= 1 || _actCount % _actLoggingFactor == 0))	
+	if (_system && _actLogging && (_actLoggingFactor <= 1 || _actCount % _actLoggingFactor == 0))
 	{
 		std::stringstream string;
         string << "actor\tupdated\t" << std::fixed << std::setprecision(6) << ((Sec)(Clock::now() - _mark)).count() << std::defaultfloat << "s";
@@ -864,7 +958,7 @@ void Win007::act()
 			_labelCentre->setText(string.str().data());
 		}
 	}
-	if (_system && _interactive && _actLogging && (_actLoggingFactor <= 1 || _actCount % _actLoggingFactor == 0))	
+	if (_system && _interactive && _actLogging && (_actLoggingFactor <= 1 || _actCount % _actLoggingFactor == 0))
 	{
 		std::stringstream string;
         string << "actor\tinteractive\t" << std::fixed << std::setprecision(6) << ((Sec)(Clock::now() - _mark)).count() << std::defaultfloat << "s";

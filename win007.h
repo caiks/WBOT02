@@ -112,5 +112,6 @@ private:
 	std::size_t _size;
 	std::size_t _divisor;
 	std::size_t _multiplier;
+	std::size_t _threadCount;
 };
 #endif // WIN007_H
