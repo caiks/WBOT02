@@ -136,11 +136,12 @@ Record WBOT02::Record::valent(std::size_t valency) const
 			zeros = 0;
 		for (std::size_t i = 0; i < valency-1; i++)
 			values[i] = arr2[std::min(i*interval+zeros, size-1)];
+		auto valencyminus = valency-1;
 		for (std::size_t j = 0; j < size; j++)
 		{
 			auto v = arr1[j];
 			bool found = false;
-			for (std::size_t i = 0; i < valency-1; i++)	
+			for (std::size_t i = 0; i < valencyminus; i++)	
 				if (v <= values[i])
 				{
 					arr2[j] = i;
@@ -148,7 +149,7 @@ Record WBOT02::Record::valent(std::size_t valency) const
 					break;
 				}
 			if (!found)
-				arr2[j] = valency-1;
+				arr2[j] = valencyminus;
 		}
 	}
 	return record;
