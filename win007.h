@@ -7,6 +7,7 @@
 #include <QScreen>
 #include <QMouseEvent>
 #include <QLabel>
+#include <QPainter>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Win007; }

@@ -712,6 +712,34 @@ void Win007::act()
 				}
                 std::sort(actsPotsCoord.rbegin(), actsPotsCoord.rend());
                 EVAL(actsPotsCoord[0]);
+				{
+					double interval = _scale/_size;
+					auto x = actsPotsCoord[0].second.first;
+					auto y = actsPotsCoord[0].second.second;
+					auto posX = _centreX + (interval * x - (scaleX - _scale) / 2.0) * _captureHeight / _captureWidth;
+					auto posY = _centreY + interval * y - (scaleY - _scale) / 2.0;
+					EVAL(posX);
+					EVAL(posY);
+					if (posX > _centreRandomX && posX < 1.0 - _centreRandomX)
+						_centreX = posX;
+					if (posY > _centreRandomY && posY < 1.0 - _centreRandomY)
+						_centreY = posY;
+					QPainter framePainter(&image);
+					framePainter.setPen(Qt::white);
+					framePainter.drawRect(
+						(posX-_scale/2.0) * _captureWidth, 
+						(posY-_scale/2.0) * _captureHeight, 
+						_scale * _captureHeight,
+						_scale * _captureHeight);
+					framePainter.drawRect(
+						(_centreX-_scale/2.0) * _captureWidth, 
+						(_centreY-_scale/2.0) * _captureHeight, 
+						_scale * _captureHeight,
+						_scale * _captureHeight);
+					_ui->labelImage->setPixmap(QPixmap::fromImage(image));	
+				}
+				EVAL(_centreX);
+				EVAL(_centreY);
 				// for (std::size_t k = 0; k < _eventSize && k < _scanSize; k++)	
 				// {
 					// std::size_t m =  actsPotsRecord.size() > k ? actsPotsRecord[k].second : k;
