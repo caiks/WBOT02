@@ -67,6 +67,49 @@ WBOT02::Record::Record(QImage image,
 		}
 }
 
+
+WBOT02::Record::Record(
+	const Record& record,
+	std::size_t sizeX1, std::size_t sizeY1,
+	std::size_t originX, std::size_t originY) :
+	scaleX(record.scaleX), scaleY(record.scaleY), 
+	centreX(record.centreX), centreY(record.centreY), 
+	sizeX(sizeX1), sizeY(sizeY1) 
+{
+	sizeX = sizeX ? sizeX : 1;
+	sizeY = sizeY ? sizeY : 1;
+	arr = std::make_shared<std::vector<unsigned char>>();
+	arr->reserve(sizeX*sizeY);
+	auto& arr1 = *arr;	
+	auto& arr2 = *record.arr;
+	auto sizeX2 = record.sizeX;
+	auto sizeY2 = record.sizeY;
+	if (originX + sizeX <= sizeX2 && originY + sizeY <= sizeY2)
+		for (std::size_t j = 0; j < sizeY; j++)
+		{
+			auto jx1 = (j + originY) * sizeX2;
+			for (std::size_t i = 0; i < sizeX; i++)
+				arr1.push_back(arr2[jx1 + i + originX]);				
+		}
+}
+
+std::unique_ptr<ValueList> WBOT02::Record::sorted() const
+{
+    auto result = std::make_unique<ValueList>();
+	if (arr)
+	{
+		auto& arr1 = *arr;		
+		auto& arr2 = *result;	
+		arr2.reserve(sizeX*sizeY);
+		for (std::size_t j = 0, k = 0; j < sizeY; j++)
+			for (std::size_t i = 0; i < sizeX; i++, k++)
+				arr2.push_back(std::make_pair(arr1[k],std::make_pair(i,j)));
+		std::sort(arr2.begin(), arr2.end());
+	}
+	return result;
+}
+
+
 Record WBOT02::Record::valent(std::size_t valency) const
 {
 	Record record(*this);
@@ -111,6 +154,70 @@ Record WBOT02::Record::valent(std::size_t valency) const
 	return record;
 }
 
+Record WBOT02::Record::valent(std::size_t valency,
+	double scaleX1, double scaleY1, 
+	double centreX1, double centreY1, 
+	std::size_t sizeX1, std::size_t sizeY1, std::size_t originX, std::size_t originY,
+	const ValueList& values) const
+{
+	Record record(scaleX1, scaleY1, centreX1, centreY1, sizeX1, sizeY1);
+	if (valency && record.arr && record.arr->size()/valency
+		&& originX + sizeX1 <= sizeX && originY + sizeY1 <= sizeY)
+	{
+		auto& arr1 = *arr;
+		auto& arr2 = *record.arr;
+		{
+			std::size_t termX = originX + sizeX1 - 1;
+			std::size_t termY = originY + sizeY1 - 1;
+			std::size_t k = 0;
+			for (auto pp : values)
+				if (pp.second.first >= originX && pp.second.first <= termX
+					&& pp.second.second >= originY && pp.second.second <= termY)
+				{
+					arr2[k] = pp.first;
+					k++;
+				}	
+		}
+		std::vector<std::size_t> values(valency-1);	
+		{
+			auto size = arr2.size();
+			std::size_t zeros = 0;
+			while (zeros < size && !arr2[zeros]) zeros++;
+			std::size_t interval = size/valency;
+			if (zeros == size)
+				return record;
+			if (zeros > interval)
+			{
+				interval = (size-zeros)/valency;
+				interval = interval ? interval : 1;
+				zeros--;
+			}
+			else 
+				zeros = 0;
+			for (std::size_t i = 0; i < valency-1; i++)
+				values[i] = arr2[std::min(i*interval+zeros, size-1)];			
+		}
+		for (std::size_t j = 0, k = 0; j < sizeY1; j++)
+		{
+			auto jx1 = (j + originY) * sizeX;
+			for (std::size_t i = 0; i < sizeX1; i++, k++)
+			{
+				auto v = arr1[jx1 + i + originX];
+				bool found = false;
+				for (std::size_t m = 0; m < valency-1; m++)	
+					if (v <= values[m])
+					{
+						arr2[k] = m;
+						found = true;
+						break;
+					}
+				if (!found)
+					arr2[k] = valency-1;				
+			}
+		}
+	}
+	return record;
+}
 
 QImage WBOT02::Record::image(std::size_t multiplier, std::size_t valency) const
 {

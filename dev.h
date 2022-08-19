@@ -45,6 +45,7 @@ using TimePoint = std::chrono::time_point<Clock>;
 
 namespace WBOT02
 {
+    typedef std::vector<std::pair<unsigned char,std::pair<std::size_t,std::size_t>>> ValueList;
 	struct Record
 	{
 		Record(
@@ -58,7 +59,20 @@ namespace WBOT02
 			std::size_t sizeX1 = 40, std::size_t sizeY1 = 30,
 			std::size_t divisorX = 0, std::size_t divisorY = 0);
 			
+		Record(const Record& record,
+			std::size_t sizeX1, std::size_t sizeY1,
+			std::size_t originX, std::size_t originY);
+			
 		Record valent(std::size_t valency) const;
+		
+		std::unique_ptr<ValueList> sorted() const;
+		
+		Record valent(std::size_t valency,
+			double scaleX1, double scaleY1, 
+			double centreX1, double centreY1, 
+			std::size_t sizeX1, std::size_t sizeY1, std::size_t originX, std::size_t originY,
+			const ValueList& values) const;
+			
 		QImage image(std::size_t multiplier = 1, std::size_t valency = 0) const;
 		
 		double scaleX;
