@@ -153,11 +153,8 @@ Win007::Win007(const std::string& configA,
 	// add dynamic GUI
 	if (_interactive)
 	{
-		{
-			QImage image(_size*_multiplier, _size*_multiplier, QImage::Format_RGB32);
-			image.fill(0);			
-			_pixmapBlank.fromImage(image);
-		}
+		_pixmapBlank = QPixmap(_size*_multiplier, _size*_multiplier);
+		_pixmapBlank.fill();
 		_ui->layout01->setAlignment(Qt::AlignLeft);
 		_ui->layout02->setAlignment(Qt::AlignLeft);
 		_ui->layout03->setAlignment(Qt::AlignLeft);
@@ -638,13 +635,18 @@ void Win007::act()
                 auto scaleX = _centreRandomX * 2.0 + _scale;
                 auto scaleY = _centreRandomY * 2.0 + _scale;
 				auto sizeX = (std::size_t)(scaleX * _size / _scale);
-				auto sizeY = (std::size_t)(scaleY * _size / _scale);				
+				if (sizeX % 2 != _size % 2) sizeX++;
+				auto sizeY = (std::size_t)(scaleY * _size / _scale);	
+				if (sizeY % 2 != _size % 2) sizeY++;
+				double interval = _scale/_size;		
+				scaleX = sizeX * interval;
+				scaleY = sizeY * interval;
 				Record record(image, 
 					scaleX * _captureHeight / _captureWidth, scaleY,
 					_centreX, _centreY, 
 					sizeX, sizeY, 
 					_divisor, _divisor);	
-				std::vector<std::pair<std::pair<std::size_t,double>,std::pair<std::size_t,std::size_t>>> actsPotsCoord(sizeY*sizeX);
+				std::vector<std::pair<std::pair<std::size_t,double>,std::pair<double,double>>> actsPotsCoord(sizeY*sizeX);
 				auto drmul = listVarValuesDecompFudSlicedRepasPathSlice_u;
 				auto cap = (unsigned char)(_updateParameters.mapCapacity);
 				double lnwmax = std::log(_induceParameters.wmax);
@@ -661,22 +663,31 @@ void Win007::act()
 					auto& fails = activeA.induceSliceFailsSize;
 					auto& dr = *activeA.decomp;		
 					auto& cv = dr.mapVarParent();
-					auto& me = *this;
+					auto& actor = *this;
 					std::vector<std::thread> threads;
 					threads.reserve(_threadCount);
 					for (std::size_t t = 0; t < _threadCount; t++)
 						threads.push_back(std::thread(
-							[&me,
-							sizeX,sizeY,&record,n,vv,rr,
+							[&actor,
+							scaleX,scaleY,sizeX,sizeY,interval,&record,n,vv,rr,
 							drmul,&dr,&cv,cap,&sizes,&lengths,&fails,lnwmax,
 							&actsPotsCoord] (int t)
 							{
-								for (std::size_t y = 0, z = 0; y < sizeY - me._size; y++)	
-									for (std::size_t x = 0; x < sizeX - me._size; x++, z++)	
-										if (z % me._threadCount == t)
+								auto heightWidth = (double)actor._captureHeight / (double)actor._captureWidth;
+								auto offsetX = (scaleX - actor._scale) / 2.0;
+								auto offsetY = (scaleY - actor._scale) / 2.0;
+								auto centreX = actor._centreX;
+								auto centreY = actor._centreY;
+								auto size = actor._size;
+								auto valency = actor._valency;
+								auto sizeX1 = sizeX - size;
+								auto sizeY1 = sizeY - size;
+								for (std::size_t y = 0, z = 0; y < sizeY1; y++)	
+									for (std::size_t x = 0; x < sizeX1; x++, z++)	
+										if (z % actor._threadCount == t)
 										{
-											Record recordSub(record,me._size,me._size,x,y);
-											Record recordValent = recordSub.valent(me._valency);
+											Record recordSub(record,size,size,x,y);
+											Record recordValent = recordSub.valent(valency);
 											auto& arr1 = *recordValent.arr;	
 											SizeUCharStructList jj;
 											jj.reserve(n);
@@ -701,10 +712,12 @@ void Win007::act()
 											{
 												auto length = lengths[slice];
 												auto likelihood = (std::log(sizes[slice]) - std::log(sizes[cv[slice]]) + lnwmax)/lnwmax;
-												actsPotsCoord[z] = std::make_pair(std::make_pair(length,likelihood),std::make_pair(x,y));
+												auto posX = centreX + (interval * x - offsetX) * heightWidth;
+												auto posY = centreY + interval * y - offsetY;
+												actsPotsCoord[z] = std::make_pair(std::make_pair(length,likelihood),std::make_pair(posX,posY));
 											}
 											else
-												actsPotsCoord[z] = std::make_pair(std::make_pair(0,-INFINITY),std::make_pair(x,y));	
+												actsPotsCoord[z] = std::make_pair(std::make_pair(0,-INFINITY),std::make_pair(centreX,centreY));	
 										}
 							}, t));
 					for (auto& t : threads)
@@ -713,30 +726,28 @@ void Win007::act()
                 std::sort(actsPotsCoord.rbegin(), actsPotsCoord.rend());
                 EVAL(actsPotsCoord[0]);
 				{
-					double interval = _scale/_size;
-					auto x = actsPotsCoord[0].second.first;
-					auto y = actsPotsCoord[0].second.second;
-					auto posX = _centreX + (interval * x - (scaleX - _scale) / 2.0) * _captureHeight / _captureWidth;
-					auto posY = _centreY + interval * y - (scaleY - _scale) / 2.0;
+					auto posX = actsPotsCoord[0].second.first;
+					auto posY = actsPotsCoord[0].second.second;
 					EVAL(posX);
 					EVAL(posY);
 					if (posX > _centreRandomX && posX < 1.0 - _centreRandomX)
 						_centreX = posX;
 					if (posY > _centreRandomY && posY < 1.0 - _centreRandomY)
 						_centreY = posY;
-					QPainter framePainter(&image);
+					QImage image2 = image.copy();
+					QPainter framePainter(&image2);
 					framePainter.setPen(Qt::white);
 					framePainter.drawRect(
-						(posX-_scale/2.0) * _captureWidth, 
-						(posY-_scale/2.0) * _captureHeight, 
+						posX * _captureWidth - _scale * _captureHeight / 2.0, 
+						posY * _captureHeight - _scale * _captureHeight / 2.0, 
 						_scale * _captureHeight,
 						_scale * _captureHeight);
 					framePainter.drawRect(
-						(_centreX-_scale/2.0) * _captureWidth, 
-						(_centreY-_scale/2.0) * _captureHeight, 
+						_centreX * _captureWidth - _scale * _captureHeight / 2.0, 
+						_centreY * _captureHeight - _scale * _captureHeight / 2.0, 
 						_scale * _captureHeight,
 						_scale * _captureHeight);
-					_ui->labelImage->setPixmap(QPixmap::fromImage(image));	
+					_ui->labelImage->setPixmap(QPixmap::fromImage(image2));	
 				}
 				EVAL(_centreX);
 				EVAL(_centreY);
