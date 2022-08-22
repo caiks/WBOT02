@@ -646,7 +646,7 @@ void Win007::act()
 					_centreX, _centreY, 
 					sizeX, sizeY, 
 					_divisor, _divisor);	
-				std::vector<std::pair<std::pair<std::size_t,double>,std::pair<double,double>>> actsPotsCoord(sizeY*sizeX);
+				std::vector<std::tuple<std::size_t,double,double,double,std::size_t,std::size_t>> actsPotsCoord(sizeY*sizeX);
 				{
 					auto& activeA = *_active;
 					auto& actor = *this;
@@ -713,20 +713,21 @@ void Win007::act()
 												auto likelihood = (std::log(sizes[slice]) - std::log(sizes[cv[slice]]) + lnwmax)/lnwmax;
 												auto posX = centreX + (interval * x - offsetX) * heightWidth;
 												auto posY = centreY + interval * y - offsetY;
-												actsPotsCoord[z] = std::make_pair(std::make_pair(length,likelihood),std::make_pair(posX,posY));
+												actsPotsCoord[z] = std::make_tuple(length,likelihood,posX,posY,x,y);
 											}
 											else
-												actsPotsCoord[z] = std::make_pair(std::make_pair(0,-INFINITY),std::make_pair(centreX,centreY));	
+												actsPotsCoord[z] = std::make_tuple(0,-INFINITY,centreX,centreY,0,0);	
 										}
 							}, t));
 					for (auto& t : threads)
 						t.join();
 				}
                 std::sort(actsPotsCoord.rbegin(), actsPotsCoord.rend());
-                EVAL(actsPotsCoord[0]);
+                EVAL(std::get<0>(actsPotsCoord[0]));
+                EVAL(std::get<1>(actsPotsCoord[0]));
 				{
-					auto posX = actsPotsCoord[0].second.first;
-					auto posY = actsPotsCoord[0].second.second;
+					auto posX = std::get<2>(actsPotsCoord[0]);
+					auto posY = std::get<3>(actsPotsCoord[0]);
 					EVAL(posX);
 					EVAL(posY);
 					if (posX > _centreRandomX && posX < 1.0 - _centreRandomX)
