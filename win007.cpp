@@ -647,32 +647,26 @@ void Win007::act()
 					sizeX, sizeY, 
 					_divisor, _divisor);	
 				std::vector<std::pair<std::pair<std::size_t,double>,std::pair<double,double>>> actsPotsCoord(sizeY*sizeX);
-				auto drmul = listVarValuesDecompFudSlicedRepasPathSlice_u;
-				auto cap = (unsigned char)(_updateParameters.mapCapacity);
-				double lnwmax = std::log(_induceParameters.wmax);
-				auto hr = sizesHistoryRepa(_scaleValency, _valency, _size*_size);
-				auto n = hr->dimension;
-				auto vv = hr->vectorVar;
-				auto rr = hr->arr;
-				rr[n-1] = 0;
-				auto& activeA = *_active;
 				{
-					std::lock_guard<std::mutex> guard(activeA.mutex);
-					auto& sizes = activeA.historySlicesSize;
-					auto& lengths = activeA.historySlicesLength;
-					auto& fails = activeA.induceSliceFailsSize;
-					auto& dr = *activeA.decomp;		
-					auto& cv = dr.mapVarParent();
+					auto& activeA = *_active;
 					auto& actor = *this;
+					std::lock_guard<std::mutex> guard(activeA.mutex);
 					std::vector<std::thread> threads;
 					threads.reserve(_threadCount);
 					for (std::size_t t = 0; t < _threadCount; t++)
 						threads.push_back(std::thread(
-							[&actor,
-							scaleX,scaleY,sizeX,sizeY,interval,&record,n,vv,rr,
-							drmul,&dr,&cv,cap,&sizes,&lengths,&fails,lnwmax,
+							[&actor, &activeA,
+							scaleX,scaleY,sizeX,sizeY,interval,&record,
 							&actsPotsCoord] (int t)
 							{
+								auto drmul = listVarValuesDecompFudSlicedRepasPathSlice_u;
+								auto& sizes = activeA.historySlicesSize;
+								auto& lengths = activeA.historySlicesLength;
+								auto& fails = activeA.induceSliceFailsSize;
+								auto& dr = *activeA.decomp;		
+								auto& cv = dr.mapVarParent();
+								auto cap = (unsigned char)(actor._updateParameters.mapCapacity);
+								double lnwmax = std::log(actor._induceParameters.wmax);
 								auto heightWidth = (double)actor._captureHeight / (double)actor._captureWidth;
 								auto offsetX = (scaleX - actor._scale) / 2.0;
 								auto offsetY = (scaleY - actor._scale) / 2.0;
@@ -682,6 +676,11 @@ void Win007::act()
 								auto valency = actor._valency;
 								auto sizeX1 = sizeX - size;
 								auto sizeY1 = sizeY - size;
+								auto hr = sizesHistoryRepa(actor._scaleValency, valency, size*size);
+								auto n = hr->dimension;
+								auto vv = hr->vectorVar;
+								auto rr = hr->arr;
+								rr[n-1] = 0;
 								for (std::size_t y = 0, z = 0; y < sizeY1; y++)	
 									for (std::size_t x = 0; x < sizeX1; x++, z++)	
 										if (z % actor._threadCount == t)
