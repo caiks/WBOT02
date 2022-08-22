@@ -114,5 +114,6 @@ private:
 	std::size_t _divisor;
 	std::size_t _multiplier;
 	std::size_t _threadCount;
+	double _separation;
 };
 #endif // WIN007_H

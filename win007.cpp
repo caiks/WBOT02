@@ -149,6 +149,7 @@ Win007::Win007(const std::string& configA,
 		_eventSize = ARGS_INT_DEF(event_size,1);	
 		_scanSize = ARGS_INT_DEF(scan_size,1);	
 		_threadCount = ARGS_INT_DEF(threads,1);	
+		_separation = ARGS_DOUBLE_DEF(separation,0.5);
 	}
 	// add dynamic GUI
 	if (_interactive)
@@ -723,30 +724,73 @@ void Win007::act()
 						t.join();
 				}
                 std::sort(actsPotsCoord.rbegin(), actsPotsCoord.rend());
-                EVAL(std::get<0>(actsPotsCoord[0]));
-                EVAL(std::get<1>(actsPotsCoord[0]));
 				{
-					auto posX = std::get<2>(actsPotsCoord[0]);
-					auto posY = std::get<3>(actsPotsCoord[0]);
-					EVAL(posX);
-					EVAL(posY);
-					if (posX > _centreRandomX && posX < 1.0 - _centreRandomX)
-						_centreX = posX;
-					if (posY > _centreRandomY && posY < 1.0 - _centreRandomY)
-						_centreY = posY;
+					std::vector<std::tuple<std::size_t,double,double,double,std::size_t,std::size_t>> actsPotsCoordTop;
+					actsPotsCoordTop.reserve(_eventSize);
+					for (std::size_t k = 0; k < actsPotsCoord.size() && actsPotsCoordTop.size() < _eventSize; k++)	
+					{
+						auto t = actsPotsCoord[k];
+						auto posX = std::get<2>(t);
+						auto posY = std::get<3>(t);	
+						double d2 = _scale * _separation * _scale * _separation;
+						bool separate = true;
+						for (auto t1 : actsPotsCoordTop)
+						{
+							auto posX1 = std::get<2>(t1);
+							auto posY1 = std::get<3>(t1);	
+							auto d12 = (posX1 - posX) * (posX1 - posX) + (posY1 - posY) * (posY1 - posY);
+							if (d12 < d2)
+							{
+								separate = false;
+								break;
+							}
+						}
+						if (separate)
+						{
+							actsPotsCoordTop.push_back(t);
+							EVAL(k);							
+							EVAL(std::get<0>(t));
+							EVAL(std::get<1>(t));
+						}
+					}
 					QImage image2 = image.copy();
 					QPainter framePainter(&image2);
+					framePainter.setPen(Qt::darkGray);
+					framePainter.drawRect(
+						_centreX * _captureWidth - scaleX * _captureHeight / 2.0, 
+						_centreY * _captureHeight - scaleY * _captureHeight / 2.0, 
+						scaleX * _captureHeight,
+						scaleY * _captureHeight);
+					for (auto t : actsPotsCoordTop)
+					{
+						auto posX = std::get<2>(t);
+						auto posY = std::get<3>(t);	
+						if (posX > scaleX * _captureHeight / _captureWidth / 2.0
+							&& posX < 1.0 - scaleX * _captureHeight / _captureWidth / 2.0
+							&& posY > scaleY / 2.0
+							&& posY < 1.0 - scaleY / 2.0)
+						{
+							_centreX = posX;
+							_centreY = posY;
+							break;
+						}
+					}
 					framePainter.setPen(Qt::white);
-					framePainter.drawRect(
-						posX * _captureWidth - _scale * _captureHeight / 2.0, 
-						posY * _captureHeight - _scale * _captureHeight / 2.0, 
-						_scale * _captureHeight,
-						_scale * _captureHeight);
-					framePainter.drawRect(
-						_centreX * _captureWidth - _scale * _captureHeight / 2.0, 
-						_centreY * _captureHeight - _scale * _captureHeight / 2.0, 
-						_scale * _captureHeight,
-						_scale * _captureHeight);
+					for (auto t : actsPotsCoordTop)
+					{
+						auto posX = std::get<2>(t);
+						auto posY = std::get<3>(t);
+						if (posX == _centreX && posY == _centreY)
+							framePainter.setPen(Qt::white);		
+						else
+							framePainter.setPen(Qt::gray);
+						framePainter.drawRect(
+							posX * _captureWidth - _scale * _captureHeight / 2.0, 
+							posY * _captureHeight - _scale * _captureHeight / 2.0, 
+							_scale * _captureHeight,
+							_scale * _captureHeight);
+					}
+
 					_ui->labelImage->setPixmap(QPixmap::fromImage(image2));	
 				}
 				EVAL(_centreX);
