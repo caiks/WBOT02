@@ -642,9 +642,15 @@ void Win007::act()
 				double interval = _scale/_size;		
 				scaleX = sizeX * interval;
 				scaleY = sizeY * interval;
+				auto centreX = _centreX;
+				centreX = std::max(centreX, scaleX * _captureHeight / _captureWidth / 2.0);
+				centreX = std::min(centreX, 1.0 - scaleX * _captureHeight / _captureWidth / 2.0);
+				auto centreY = _centreY;
+				centreY = std::max(centreY, scaleY / 2.0);
+				centreY = std::min(centreY, 1.0 - scaleY / 2.0);
 				Record record(image, 
 					scaleX * _captureHeight / _captureWidth, scaleY,
-					_centreX, _centreY, 
+					centreX, centreY, 
 					sizeX, sizeY, 
 					_divisor, _divisor);	
 				std::vector<std::tuple<std::size_t,double,double,double,std::size_t,std::size_t>> actsPotsCoord(sizeY*sizeX);
@@ -657,7 +663,7 @@ void Win007::act()
 					for (std::size_t t = 0; t < _threadCount; t++)
 						threads.push_back(std::thread(
 							[&actor, &activeA,
-							scaleX,scaleY,sizeX,sizeY,interval,&record,
+							centreX, centreY, scaleX, scaleY, sizeX, sizeY, interval, &record,
 							&actsPotsCoord] (int t)
 							{
 								auto drmul = listVarValuesDecompFudSlicedRepasPathSlice_u;
@@ -671,8 +677,6 @@ void Win007::act()
 								auto heightWidth = (double)actor._captureHeight / (double)actor._captureWidth;
 								auto offsetX = (scaleX - actor._scale) / 2.0;
 								auto offsetY = (scaleY - actor._scale) / 2.0;
-								auto centreX = actor._centreX;
-								auto centreY = actor._centreY;
 								auto size = actor._size;
 								auto valency = actor._valency;
 								auto sizeX1 = sizeX - size;
@@ -725,6 +729,14 @@ void Win007::act()
 				}
                 std::sort(actsPotsCoord.rbegin(), actsPotsCoord.rend());
 				{
+					QImage image2 = image.copy();
+					QPainter framePainter(&image2);
+					framePainter.setPen(Qt::darkGray);
+					framePainter.drawRect(
+						centreX * _captureWidth - scaleX * _captureHeight / 2.0, 
+						centreY * _captureHeight - scaleY * _captureHeight / 2.0, 
+						scaleX * _captureHeight,
+						scaleY * _captureHeight);
 					std::vector<std::tuple<std::size_t,double,double,double,std::size_t,std::size_t>> actsPotsCoordTop;
 					actsPotsCoordTop.reserve(_eventSize);
 					for (std::size_t k = 0; k < actsPotsCoord.size() && actsPotsCoordTop.size() < _eventSize; k++)	
@@ -749,49 +761,25 @@ void Win007::act()
 						{
 							actsPotsCoordTop.push_back(t);
 							EVAL(k);							
-							EVAL(std::get<0>(t));
-							EVAL(std::get<1>(t));
+							EVAL(posX);
+							EVAL(posY);
+							if (actsPotsCoordTop.size() == 1)
+								framePainter.setPen(Qt::white);		
+							else
+								framePainter.setPen(Qt::gray);
+							framePainter.drawRect(
+								posX * _captureWidth - _scale * _captureHeight / 2.0, 
+								posY * _captureHeight - _scale * _captureHeight / 2.0, 
+								_scale * _captureHeight,
+								_scale * _captureHeight);
 						}
 					}
-					QImage image2 = image.copy();
-					QPainter framePainter(&image2);
-					framePainter.setPen(Qt::darkGray);
-					framePainter.drawRect(
-						_centreX * _captureWidth - scaleX * _captureHeight / 2.0, 
-						_centreY * _captureHeight - scaleY * _captureHeight / 2.0, 
-						scaleX * _captureHeight,
-						scaleY * _captureHeight);
-					for (auto t : actsPotsCoordTop)
-					{
-						auto posX = std::get<2>(t);
-						auto posY = std::get<3>(t);	
-						if (posX > scaleX * _captureHeight / _captureWidth / 2.0
-							&& posX < 1.0 - scaleX * _captureHeight / _captureWidth / 2.0
-							&& posY > scaleY / 2.0
-							&& posY < 1.0 - scaleY / 2.0)
-						{
-							_centreX = posX;
-							_centreY = posY;
-							break;
-						}
-					}
-					framePainter.setPen(Qt::white);
-					for (auto t : actsPotsCoordTop)
-					{
-						auto posX = std::get<2>(t);
-						auto posY = std::get<3>(t);
-						if (posX == _centreX && posY == _centreY)
-							framePainter.setPen(Qt::white);		
-						else
-							framePainter.setPen(Qt::gray);
-						framePainter.drawRect(
-							posX * _captureWidth - _scale * _captureHeight / 2.0, 
-							posY * _captureHeight - _scale * _captureHeight / 2.0, 
-							_scale * _captureHeight,
-							_scale * _captureHeight);
-					}
-
 					_ui->labelImage->setPixmap(QPixmap::fromImage(image2));	
+					if (actsPotsCoordTop.size())
+					{
+						_centreX = std::get<2>(actsPotsCoordTop.front());
+						_centreY = std::get<3>(actsPotsCoordTop.front());	
+					}
 				}
 				EVAL(_centreX);
 				EVAL(_centreY);
