@@ -760,9 +760,11 @@ void Win007::act()
 						if (separate)
 						{
 							actsPotsCoordTop.push_back(t);
-							EVAL(k);							
-							EVAL(posX);
-							EVAL(posY);
+							EVAL(k);	
+							auto length = std::get<0>(t);
+							auto likelihood = std::get<1>(t);
+							EVAL(length);
+							EVAL(likelihood);							
 							if (actsPotsCoordTop.size() == 1)
 								framePainter.setPen(Qt::white);		
 							else
