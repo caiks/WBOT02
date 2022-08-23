@@ -728,6 +728,7 @@ void Win007::act()
 						t.join();
 				}
                 std::sort(actsPotsCoord.rbegin(), actsPotsCoord.rend());
+				std::vector<std::tuple<std::size_t,double,double,double,std::size_t,std::size_t>> actsPotsCoordTop;
 				{
 					QImage image2 = image.copy();
 					QPainter framePainter(&image2);
@@ -737,7 +738,6 @@ void Win007::act()
 						centreY * _captureHeight - scaleY * _captureHeight / 2.0, 
 						scaleX * _captureHeight,
 						scaleY * _captureHeight);
-					std::vector<std::tuple<std::size_t,double,double,double,std::size_t,std::size_t>> actsPotsCoordTop;
 					actsPotsCoordTop.reserve(_eventSize);
 					for (std::size_t k = 0; k < actsPotsCoord.size() && actsPotsCoordTop.size() < _eventSize; k++)	
 					{
@@ -760,11 +760,11 @@ void Win007::act()
 						if (separate)
 						{
 							actsPotsCoordTop.push_back(t);
-							EVAL(k);	
-							auto length = std::get<0>(t);
-							auto likelihood = std::get<1>(t);
-							EVAL(length);
-							EVAL(likelihood);							
+							// EVAL(k);	
+							// auto length = std::get<0>(t);
+							// auto likelihood = std::get<1>(t);
+							// EVAL(length);
+							// EVAL(likelihood);							
 							if (actsPotsCoordTop.size() == 1)
 								framePainter.setPen(Qt::white);		
 							else
@@ -783,21 +783,24 @@ void Win007::act()
 						_centreY = std::get<3>(actsPotsCoordTop.front());	
 					}
 				}
-				EVAL(_centreX);
-				EVAL(_centreY);
-				// for (std::size_t k = 0; k < _eventSize && k < _scanSize; k++)	
-				// {
-					// std::size_t m =  actsPotsRecord.size() > k ? actsPotsRecord[k].second : k;
-					// auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, records[m]);
-					// _events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
-					// this->eventId++;		
-					// eventCount++;		
-				// }
-				// if (!_active->update(_updateParameters))
-				// {
-					// this->terminate = true;	
-					// return;
-				// }
+				// EVAL(_centreX);
+				// EVAL(_centreY);
+				for (auto t : actsPotsCoordTop)
+				{
+					auto x = std::get<4>(t);
+					auto y = std::get<5>(t);
+					Record recordSub(record,_size,_size,x,y);
+					Record recordValent = recordSub.valent(_valency);					
+					auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
+					_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
+					this->eventId++;		
+					eventCount++;		
+				}
+				if (!_active->update(_updateParameters))
+				{
+					this->terminate = true;	
+					return;
+				}
 			}
 		}
 		// representations
