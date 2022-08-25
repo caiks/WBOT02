@@ -107,6 +107,8 @@ private:
 	int _scanSize;	
 	double _centreRandomX;
 	double _centreRandomY;
+	double _centreRangeX;
+	double _centreRangeY;
     double _scale;
 	std::size_t _scaleValency;
 	std::size_t _valency;

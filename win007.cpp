@@ -138,8 +138,10 @@ Win007::Win007(const std::string& configA,
 		_captureHeight = ARGS_INT_DEF(height,410);	
 		_centreX = ARGS_DOUBLE_DEF(centreX,0.5);
 		_centreY = ARGS_DOUBLE_DEF(centreY,0.5);
-		_centreRandomX = ARGS_DOUBLE_DEF(range_centreX,ARGS_DOUBLE_DEF(random_centreX,0.0));
-		_centreRandomY = ARGS_DOUBLE_DEF(range_centreY,ARGS_DOUBLE_DEF(random_centreY,0.0));
+        _centreRandomX = ARGS_DOUBLE(random_centreX);
+		_centreRandomY = ARGS_DOUBLE(random_centreY);
+		_centreRangeX = ARGS_DOUBLE(range_centreX);
+		_centreRangeY = ARGS_DOUBLE(range_centreY);
 		_scale = ARGS_DOUBLE_DEF(scale,0.5);
 		_scaleValency = ARGS_INT_DEF(scale_valency,4);	
 		_valency = ARGS_INT_DEF(valency,10);	
@@ -633,8 +635,8 @@ void Win007::act()
 			}
 			else if (_mode == "mode004")
 			{
-                auto scaleX = _centreRandomX * 2.0 + _scale;
-                auto scaleY = _centreRandomY * 2.0 + _scale;
+                auto scaleX = _centreRangeX * 2.0 + _scale;
+                auto scaleY = _centreRangeY * 2.0 + _scale;
 				auto sizeX = (std::size_t)(scaleX * _size / _scale);
 				if (sizeX % 2 != _size % 2) sizeX++;
 				auto sizeY = (std::size_t)(scaleY * _size / _scale);	
