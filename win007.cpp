@@ -159,7 +159,7 @@ Win007::Win007(const std::string& configA,
 	if (_interactive)
 	{
 		_pixmapBlank = QPixmap(_size*_multiplier, _size*_multiplier);
-		_pixmapBlank.fill();
+		_pixmapBlank.fill(this->palette().color(QWidget::backgroundRole()));
 		_ui->layout01->setAlignment(Qt::AlignLeft);
 		_ui->layout02->setAlignment(Qt::AlignLeft);
 		_ui->layout03->setAlignment(Qt::AlignLeft);
@@ -169,10 +169,12 @@ Win007::Win007(const std::string& configA,
 			_ui->layout01->addLayout(verticalLayout);
 			QLabel* label1 = new QLabel(this);
 			label1->setPixmap(_pixmapBlank);	
+			label1->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 			_labelRecords.push_back(label1);
 			verticalLayout->addWidget(label1);
 			QLabel* label2 = new QLabel(this);
 			label2->setText("");	
+			label2->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 			verticalLayout->addWidget(label2);
 			if (!k)
 				_labelRecordLikelihood = label2;
@@ -183,10 +185,16 @@ Win007::Win007(const std::string& configA,
 			_ui->layout02->addLayout(verticalLayout);
 			QLabel* label1 = new QLabel(this);
 			label1->setPixmap(_pixmapBlank);	
+			label1->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+			QFont font = label1->font();
+			font.setPointSize(40);
+			font.setBold(true);
+			label1->setFont(font);
 			_labelRecordSiblings.push_back(label1);
 			verticalLayout->addWidget(label1);
 			QLabel* label2 = new QLabel(this);
 			label2->setText("");				
+			label2->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 			verticalLayout->addWidget(label2);
 			_labelRecordSiblingLikelihoods.push_back(label2);
 		}
@@ -195,11 +203,17 @@ Win007::Win007(const std::string& configA,
 			QVBoxLayout* verticalLayout = new QVBoxLayout();
 			_ui->layout03->addLayout(verticalLayout);
 			QLabel* label1 = new QLabel(this);
-			label1->setPixmap(_pixmapBlank);				
+			label1->setPixmap(_pixmapBlank);	
+			label1->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+			QFont font = label1->font();
+			font.setPointSize(40);
+			font.setBold(true);
+			label1->setFont(font);			
 			_labelRecordAncestors.push_back(label1);
 			verticalLayout->addWidget(label1);
 			QLabel* label2 = new QLabel(this);
 			label2->setText("");				
+			label2->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 			verticalLayout->addWidget(label2);
 			_labelRecordAncestorLikelihoods.push_back(label2);
 		}		
@@ -1008,7 +1022,14 @@ void Win007::act()
 				_labelRecordLikelihood->setText("");			
 			for (std::size_t k = 0; k < _labelSize; k++)	
 			{
-				if (k < siblings.size() && reps.count(siblings[k].second))
+				if (k == _labelSize - 1 && siblings.size() && k < siblings.size() - 1)
+				{
+					std::stringstream string;
+					string << std::fixed << std::setprecision(0) << siblings.size() - _labelSize + 1 << std::defaultfloat;
+					_labelRecordSiblings[k]->setText(string.str().data());
+					_labelRecordSiblingLikelihoods[k]->setText("");
+				}
+				else if (k < siblings.size() && reps.count(siblings[k].second))
 				{
 					_labelRecordSiblings[k]->setPixmap(QPixmap::fromImage(reps[siblings[k].second].image(_multiplier,_valency)));					
 					std::stringstream string;
@@ -1020,7 +1041,14 @@ void Win007::act()
 					_labelRecordSiblings[k]->setPixmap(_pixmapBlank);
 					_labelRecordSiblingLikelihoods[k]->setText("");
 				}
-				if (k < ancestors.size() && reps.count(ancestors[k].second))
+				if (k == _labelSize - 1 && ancestors.size() && k < ancestors.size() - 1)
+				{
+					std::stringstream string;
+					string << std::fixed << std::setprecision(0) << ancestors.size() - _labelSize + 1 << std::defaultfloat;
+					_labelRecordAncestors[k]->setText(string.str().data());
+					_labelRecordAncestorLikelihoods[k]->setText("");
+				}
+				else if (k < ancestors.size() && reps.count(ancestors[k].second))
 				{
 					_labelRecordAncestors[k]->setPixmap(QPixmap::fromImage(reps[ancestors[k].second].image(_multiplier,_valency)));					
 					std::stringstream string;
