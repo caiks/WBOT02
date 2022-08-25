@@ -104,6 +104,7 @@ Win007::Win007(const std::string& configA,
 		_activeLogging = ARGS_BOOL(logging_active);
 		_activeSummary = ARGS_BOOL(summary_active);
 		_activeSize = ARGS_INT_DEF(activeSize,1000000);
+		_updateParameters.mapCapacity = ARGS_INT_DEF(updateParameters.mapCapacity,3); 
 		_induceThreshold = ARGS_INT_DEF(induceThreshold,200);
 		_induceInterval = (std::chrono::milliseconds)(ARGS_INT_DEF(induceInterval,_interval.count()));	
 		_induceThreadCount = ARGS_INT_DEF(induceThreadCount,4);
