@@ -165,6 +165,36 @@ int main(int argc, char *argv[])
                     lengthsCount[pp.second] += 1;
 				EVAL(lengthsCount);
 			}			
+			{
+				std::vector<std::size_t> lengths;
+				double lengthsTotal = 0;
+				auto& vi = activeA.decomp->mapVarInt();
+				for (auto& pp : activeA.historySlicesLength)
+					if (!vi.count(pp.first))
+					{
+						lengths.push_back(pp.second);
+						lengthsTotal += pp.second;
+					}
+				std::size_t lengthsCount = lengths.size();
+				EVAL(lengthsCount);
+				double lengthsMean = lengthsTotal / lengthsCount;
+				EVAL(lengthsMean);
+				double lengthsSquare = 0;
+				double lengthsCube = 0;
+				double lengthsQuad = 0;
+				for (auto length : lengths)
+				{
+					lengthsSquare += std::pow((double)length - lengthsMean, 2.0);
+					lengthsCube += std::pow((double)length - lengthsMean, 3.0);
+					lengthsQuad += std::pow((double)length - lengthsMean, 4.0);
+				}
+				double lengthsDeviation =  std::sqrt(lengthsSquare/(lengthsCount-1));
+				EVAL(lengthsDeviation);
+				double lengthsSkewness =  lengthsCube/lengthsCount/std::pow(lengthsSquare/lengthsCount,1.5);
+				EVAL(lengthsSkewness);
+				double lengthsKurtosisExcess =  lengthsQuad/lengthsCount/std::pow(lengthsSquare/lengthsCount,2.0) - 3.0;
+				EVAL(lengthsKurtosisExcess);
+			}
 			for (auto& hr : activeA.underlyingHistoryRepa)
 			{
 				EVAL(hr->dimension);				
