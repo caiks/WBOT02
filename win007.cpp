@@ -703,13 +703,15 @@ void Win007::act()
 												SizeUCharStruct qq;
 												qq.uchar = arr1[i];	
 												qq.size = vv[i];
-												jj.push_back(qq);
+												if (qq.uchar)
+													jj.push_back(qq);
 											}
 											{
 												SizeUCharStruct qq;
 												qq.uchar = rr[n-1];	
 												qq.size = vv[n-1];
-												jj.push_back(qq);
+												if (qq.uchar)
+													jj.push_back(qq);
 											}
 											auto ll = drmul(jj,dr,cap);	
 											std::size_t slice = 0;
