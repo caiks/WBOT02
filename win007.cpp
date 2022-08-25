@@ -76,6 +76,7 @@ Win007::Win007(const std::string& configA,
 			args.Parse("{}");
 		}
 		this->eventId = 0;
+		_eventIdPrev = 0;
 		_labelSize = ARGS_INT_DEF(label_size,8);
 		_eventLogging = ARGS_BOOL(logging_event);
 		_eventLoggingFactor = ARGS_INT(logging_event_factor);
@@ -909,9 +910,10 @@ void Win007::act()
 			string << "lag: " << std::fixed << lag;
 			_labelLag->setText(string.str().data());
 		}
-		if (_eventLogging && (_eventLoggingFactor <= 1 || this->eventId % _eventLoggingFactor == 0))
+		if (_eventLogging && (_eventLoggingFactor <= 1 || this->eventId >= _eventIdPrev +  _eventLoggingFactor))
 		{
             LOG "actor\tevent id: " << this->eventId << "\ttime " << ((Sec)(Clock::now() - _mark)).count() << "s" UNLOG
+			_eventIdPrev = this->eventId;
 		}
 	}
 	if (_system && _actLogging && (_actLoggingFactor <= 1 || _actCount % _actLoggingFactor == 0))
