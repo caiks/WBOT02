@@ -671,16 +671,18 @@ cf CAIKS4 202205310940
 
 #### actor002
 
-model|scales|frame position|events|fuds|fuds/sz/thrshld|median diagonal|max diagonal|notes
----|---|---|---|---|---|---|---|---
-model009|0.5|1 centred|180,000|700|0.777903|31.5699|40.947|
-model010|0.5|4 randomised|720,000|2553|0.709242|23.9962|37.9449|
-model011|0.354|4 randomised|720,000|2630|0.730645|24.8569|37.7777|
-model012|0.25|4 randomised|720,000|2674|0.74286|25.6999|38.2333|
-model014|0.25|4 randomised|720,000|513|0.712896|24.7938|39.8062|1000 threshold
-model013|0.177|4 randomised|720,000|2790|0.775142|26.7243|38.1047|
-model015|0.177|4 potential|720,000|4106|1.14107|26.5634|38.2065|20 randomised
-model016|0.177|4 actual-potential|720,000|3102|0.861801|26.7202|38.0567|20 randomised
+model|scales|mode|initial mode|events|fuds|fuds/sz/thrshld|median diagonal|max diagonal|notes
+---|---|---|---|---|---|---|---|---|---
+model009|0.5|1 centred||180,000|700|0.777903|31.5699|40.947|
+model010|0.5|4 randomised||720,000|2553|0.709242|23.9962|37.9449|
+model011|0.354|4 randomised||720,000|2630|0.730645|24.8569|37.7777|
+model012|0.25|4 randomised||720,000|2674|0.74286|25.6999|38.2333|
+model014|0.25|4 randomised||720,000|513|0.712896|24.7938|39.8062|1000 threshold
+model013|0.177|4 randomised||720,000|2790|0.775142|26.7243|38.1047|
+model015|0.177|4 potential||720,000|4106|1.14107|26.5634|38.2065|20 randomised
+model016|0.177|4 actual-potential||720,000|3102|0.861801|26.7202|38.0567|20 randomised
+model018|0.177|4 actual-potential|4 actual-potential|1,000,000|4244|0.848929|26.6287|38.1323|20 randomised
+model017|0.177|10 scanned actual-potential|4 actual-potential|1,000,000|4475|0.895264|26.1288|37.9729|
 
 Noticeable difference between the fixed and randomised, probably because the randomised is now uniformly random rather than around 5 fixed events. Also the long lags in actor 1 meant that the slices were larger and would be better modelled. 
 
