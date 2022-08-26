@@ -733,18 +733,18 @@ void Win007::act()
 											}
 											auto ll = drmul(jj,dr,cap);	
 											std::size_t slice = 0;
+											auto posX = centreX + (interval * x - offsetX) * heightWidth;
+											auto posY = centreY + interval * y - offsetY;
 											if (ll && ll->size()) slice = ll->back();	
 											if (slice && cv.count(slice) && sizes.count(slice) 
 												&& lengths.count(slice) && !fails.count(slice))
 											{
 												auto length = lengths[slice];
 												auto likelihood = (std::log(sizes[slice]) - std::log(sizes[cv[slice]]) + lnwmax)/lnwmax;
-												auto posX = centreX + (interval * x - offsetX) * heightWidth;
-												auto posY = centreY + interval * y - offsetY;
 												actsPotsCoord[z] = std::make_tuple(length,likelihood,posX,posY,x,y);
 											}
 											else
-												actsPotsCoord[z] = std::make_tuple(0,-INFINITY,centreX,centreY,0,0);	
+												actsPotsCoord[z] = std::make_tuple(0,-INFINITY,posX,posY,x,y);	
 										}
 							}, t));
 					for (auto& t : threads)
