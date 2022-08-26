@@ -112,46 +112,60 @@ std::unique_ptr<ValueList> WBOT02::Record::sorted() const
 }
 
 
-Record WBOT02::Record::valent(std::size_t valency) const
+Record WBOT02::Record::valent(std::size_t valency, std::size_t factor) const
 {
 	Record record(*this);
 	if (valency && record.arr && record.arr->size()/valency)
 	{
 		auto& arr1 = *arr;
-		record.arr = std::make_shared<std::vector<unsigned char>>(arr1);
-		auto& arr2 = *record.arr;
-		std::sort(arr2.begin(), arr2.end());
-		std::vector<std::size_t> values(valency-1);	
 		auto size = arr1.size();
-		std::size_t zeros = 0;
-		while (zeros < size && !arr2[zeros]) zeros++;
-		std::size_t interval = size/valency;
-		if (zeros == size)
-			return record;
-		if (zeros > interval)
-		{
-			interval = (size-zeros)/valency;
-			interval = interval ? interval : 1;
-			zeros--;
-		}
-		else 
-			zeros = 0;
-		for (std::size_t i = 0; i < valency-1; i++)
-			values[i] = arr2[std::min(i*interval+zeros, size-1)];
+		record.arr = std::make_shared<std::vector<unsigned char>>();
+		auto& arr2 = *record.arr;
+		arr2.reserve(size);
 		auto valencyminus = valency-1;
+		std::vector<std::size_t> values(valencyminus);	
+		{
+			std::vector<unsigned char> arr3;
+			if (factor > 1)
+			{
+				arr3.reserve(size);
+				for (std::size_t j = 0; j < size; j += factor)
+					arr3.push_back(arr1[j]);
+			}
+			else
+				arr3 = arr1;
+			std::sort(arr3.begin(), arr3.end());
+			auto size3 = arr3.size();
+			std::size_t zeros = 0;
+			while (zeros < size3 && !arr3[zeros]) zeros++;
+			std::size_t interval = size3/valency;
+			if (zeros == size3)
+			{
+				arr2.resize(size);
+				return record;
+			}
+			if (zeros > interval)
+			{
+				interval = (size3-zeros)/valency;
+				interval = interval ? interval : 1;
+				zeros--;
+			}
+			else 
+				zeros = 0;
+			for (std::size_t i = 0; i < valencyminus; i++)
+				values[i] = arr3[std::min(i*interval+zeros, size3-1)];
+		}
 		for (std::size_t j = 0; j < size; j++)
 		{
 			auto v = arr1[j];
-			bool found = false;
+			auto k = valencyminus;
 			for (std::size_t i = 0; i < valencyminus; i++)	
 				if (v <= values[i])
 				{
-					arr2[j] = i;
-					found = true;
+					k = i;
 					break;
 				}
-			if (!found)
-				arr2[j] = valencyminus;
+			arr2.push_back(k);
 		}
 	}
 	return record;

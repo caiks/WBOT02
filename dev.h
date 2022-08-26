@@ -63,7 +63,7 @@ namespace WBOT02
 			std::size_t sizeX1, std::size_t sizeY1,
 			std::size_t originX, std::size_t originY);
 			
-		Record valent(std::size_t valency) const;
+		Record valent(std::size_t valency, std::size_t factor = 0) const;
 		
 		std::unique_ptr<ValueList> sorted() const;
 		
