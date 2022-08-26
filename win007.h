@@ -71,6 +71,7 @@ private:
 	std::size_t _modeLoggingFactor;
 	bool _modeTracing;
 	bool _interactive;
+	bool _updateDisable;
 
 	std::shared_ptr<Alignment::ActiveSystem> _system;
 	std::shared_ptr<Alignment::System> _uu;

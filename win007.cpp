@@ -101,6 +101,7 @@ Win007::Win007(const std::string& configA,
 		_model = ARGS_STRING(model);
 		_modelInitial = ARGS_STRING(model_initial);
 		_interactive = ARGS_BOOL(interactive);
+		_updateDisable = ARGS_BOOL(disable_update);
 		_activeLogging = ARGS_BOOL(logging_active);
 		_activeSummary = ARGS_BOOL(summary_active);
 		_activeSize = ARGS_INT_DEF(activeSize,1000000);
@@ -816,7 +817,7 @@ void Win007::act()
 					this->eventId++;		
 					eventCount++;		
 				}
-				if (!_active->update(_updateParameters))
+				if (!_updateDisable && !_active->update(_updateParameters))
 				{
 					this->terminate = true;	
 					return;
