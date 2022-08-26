@@ -148,6 +148,7 @@ Win007::Win007(const std::string& configA,
 		_scale = ARGS_DOUBLE_DEF(scale,0.5);
 		_scaleValency = ARGS_INT_DEF(scale_valency,4);	
 		_valency = ARGS_INT_DEF(valency,10);	
+		_valencyFactor = ARGS_INT(valency_factor);	
 		_size = ARGS_INT_DEF(size,40);	
 		_divisor = ARGS_INT_DEF(divisor,4);	
 		_multiplier = ARGS_INT_DEF(multiplier,2);	
@@ -698,6 +699,7 @@ void Win007::act()
 								auto offsetY = (scaleY - actor._scale) / 2.0;
 								auto size = actor._size;
 								auto valency = actor._valency;
+								auto valencyFactor = actor._valencyFactor;
 								auto sizeX1 = sizeX - size;
 								auto sizeY1 = sizeY - size;
 								auto hr = sizesHistoryRepa(actor._scaleValency, valency, size*size);
@@ -710,7 +712,7 @@ void Win007::act()
 										if (z % actor._threadCount == t)
 										{
 											Record recordSub(record,size,size,x,y);
-											Record recordValent = recordSub.valent(valency);
+											Record recordValent = recordSub.valent(valency,valencyFactor);
 											auto& arr1 = *recordValent.arr;	
 											SizeUCharStructList jj;
 											jj.reserve(n);
@@ -811,7 +813,7 @@ void Win007::act()
 					auto x = std::get<4>(t);
 					auto y = std::get<5>(t);
 					Record recordSub(record,_size,_size,x,y);
-					Record recordValent = recordSub.valent(_valency);					
+					Record recordValent = recordSub.valent(_valency,_valencyFactor);
 					auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
 					_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
 					this->eventId++;		
@@ -947,7 +949,7 @@ void Win007::act()
 		Record record(image, 
 			_scale * _captureHeight / _captureWidth, _scale,
 			_centreX, _centreY, _size, _size, _divisor, _divisor);
-		Record recordValent = record.valent(_valency);
+		Record recordValent = record.valent(_valency,_valencyFactor);
 		auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);	
 		// representations
 		std::size_t slice = 0;

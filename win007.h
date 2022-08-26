@@ -113,6 +113,7 @@ private:
     double _scale;
 	std::size_t _scaleValency;
 	std::size_t _valency;
+	std::size_t _valencyFactor;
 	std::size_t _size;
 	std::size_t _divisor;
 	std::size_t _multiplier;

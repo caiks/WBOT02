@@ -126,12 +126,10 @@ Record WBOT02::Record::valent(std::size_t valency, std::size_t factor) const
 		std::vector<std::size_t> values(valencyminus);	
 		{
 			std::vector<unsigned char> arr3;
+			arr3.reserve(size);
 			if (factor > 1)
-			{
-				arr3.reserve(size);
 				for (std::size_t j = 0; j < size; j += factor)
 					arr3.push_back(arr1[j]);
-			}
 			else
 				arr3 = arr1;
 			std::sort(arr3.begin(), arr3.end());

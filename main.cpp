@@ -1772,6 +1772,7 @@ int main(int argc, char *argv[])
 		double scale = ARGS_DOUBLE_DEF(scale,0.5);
 		int scaleValency = ARGS_INT_DEF(scale_valency,4);	
 		int valency = ARGS_INT_DEF(valency,10);	
+		int valencyFactor = ARGS_INT(valency_factor);	
 		int size = ARGS_INT_DEF(size,40);	
 		int divisor = ARGS_INT_DEF(divisor,4);	
 		int induceParameters_wmax = ARGS_INT_DEF(induceParameters.wmax,18);
@@ -1877,7 +1878,7 @@ int main(int argc, char *argv[])
 			for (std::size_t t = 0; t < threadCount; t++)
 				threads.push_back(std::thread(
                     [threadCount,
-                    sizeX,sizeY,size,&record,valency,n,vv,rr,
+                    sizeX,sizeY,size,&record,valency,valencyFactor,n,vv,rr,
 					drmul,&dr,&cv,cap,&sizes,&lengths,lnwmax,
 					&likelihoodResults,&lengthResults] (int t)
 					{
@@ -1886,7 +1887,7 @@ int main(int argc, char *argv[])
 								if (z % threadCount == t)
 								{
 									Record recordSub(record,size,size,x,y);
-									Record recordValent = recordSub.valent(valency);
+									Record recordValent = recordSub.valent(valency,valencyFactor);
 									auto& arr1 = *recordValent.arr;	
 									SizeUCharStructList jj;
 									jj.reserve(n);
