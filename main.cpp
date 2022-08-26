@@ -158,14 +158,9 @@ int main(int argc, char *argv[])
 			EVAL(activeA.historySlicesSize.size());		
 			EVAL(activeA.historySlicesLength.size());		
 			EVAL(activeA.historySlicesSlicesSizeNext.size());		
-			EVAL(activeA.historySlicesSliceSetPrev.size());		
+			EVAL(activeA.historySlicesSliceSetPrev.size());				
 			{
-				std::map<std::size_t, std::size_t> lengthsCount;
-				for (auto& pp : activeA.historySlicesLength)
-                    lengthsCount[pp.second] += 1;
-				EVAL(lengthsCount);
-			}			
-			{
+				std::map<std::size_t, std::size_t> lengthsDist;
 				std::vector<std::size_t> lengths;
 				double lengthsTotal = 0;
 				auto& vi = activeA.decomp->mapVarInt();
@@ -174,7 +169,9 @@ int main(int argc, char *argv[])
 					{
 						lengths.push_back(pp.second);
 						lengthsTotal += pp.second;
+						lengthsDist[pp.second] += 1;
 					}
+				EVAL(lengthsDist);
 				std::size_t lengthsCount = lengths.size();
 				EVAL(lengthsCount);
 				double lengthsMean = lengthsTotal / lengthsCount;
@@ -182,11 +179,13 @@ int main(int argc, char *argv[])
 				double lengthsSquare = 0;
 				double lengthsCube = 0;
 				double lengthsQuad = 0;
+				double lengthsQuin = 0;
 				for (auto length : lengths)
 				{
 					lengthsSquare += std::pow((double)length - lengthsMean, 2.0);
 					lengthsCube += std::pow((double)length - lengthsMean, 3.0);
 					lengthsQuad += std::pow((double)length - lengthsMean, 4.0);
+					lengthsQuin += std::pow((double)length - lengthsMean, 5.0);
 				}
 				double lengthsDeviation =  std::sqrt(lengthsSquare/(lengthsCount-1));
 				EVAL(lengthsDeviation);
@@ -194,6 +193,8 @@ int main(int argc, char *argv[])
 				EVAL(lengthsSkewness);
 				double lengthsKurtosisExcess =  lengthsQuad/lengthsCount/std::pow(lengthsSquare/lengthsCount,2.0) - 3.0;
 				EVAL(lengthsKurtosisExcess);
+				double lengthsHyperSkewness =  lengthsQuin/lengthsCount/std::pow(lengthsSquare/lengthsCount,2.5);
+				EVAL(lengthsHyperSkewness);
 			}
 			for (auto& hr : activeA.underlyingHistoryRepa)
 			{
