@@ -81,8 +81,8 @@ WBOT02::Record::Record(
 	sizeX = sizeX ? sizeX : 1;
 	sizeY = sizeY ? sizeY : 1;
 	arr = std::make_shared<std::vector<unsigned char>>(sizeX*sizeY,no_init_alloc<unsigned char>());
-	auto& arr1 = *arr;	
-	auto& arr2 = *record.arr;
+	auto arr1 = arr->data();	
+	auto arr2 = record.arr->data();
 	auto sizeX2 = record.sizeX;
 	auto sizeY2 = record.sizeY;
 	if (originX + sizeX <= sizeX2 && originY + sizeY <= sizeY2)
@@ -116,29 +116,26 @@ Record WBOT02::Record::valent(std::size_t valency, std::size_t factor) const
 	Record record(*this);
 	if (valency && record.arr && record.arr->size()/valency)
 	{
-		auto& arr1 = *arr;
-		auto size = arr1.size();
-		record.arr = std::make_shared<std::vector<unsigned char>>();
-		auto& arr2 = *record.arr;
-		arr2.reserve(size);
+		auto size = arr->size();
+		auto arr1 =  arr->data();
+		record.arr = std::make_shared<std::vector<unsigned char>>(size,no_init_alloc<unsigned char>());
+		auto arr2 = record.arr->data();
 		auto valencyminus = valency-1;
 		std::vector<std::size_t> values(valencyminus);	
 		{
-			std::vector<unsigned char> arr3;
-			arr3.reserve(size);
-			if (factor > 1)
-				for (std::size_t j = 0; j < size; j += factor)
-					arr3.push_back(arr1[j]);
-			else
-				arr3 = arr1;
+			if (!factor) factor = 1;		
+			std::vector<unsigned char> arr3(size,no_init_alloc<unsigned char>());
+			std::size_t	size3 = 0;		
+			for (std::size_t j = 0; j < size; j += factor, size3++)
+				arr3[size3] = arr1[j];
 			std::sort(arr3.begin(), arr3.end());
-			auto size3 = arr3.size();
 			std::size_t zeros = 0;
 			while (zeros < size3 && !arr3[zeros]) zeros++;
 			std::size_t interval = size3/valency;
 			if (zeros == size3)
 			{
-				arr2.resize(size);
+				for (std::size_t j = 0; j < size; j++)
+					arr2[j] = 0;
 				return record;
 			}
 			if (zeros > interval)
@@ -162,7 +159,7 @@ Record WBOT02::Record::valent(std::size_t valency, std::size_t factor) const
 					k = i;
 					break;
 				}
-			arr2.push_back(k);
+			arr2[j] = k;
 		}
 	}
 	return record;
