@@ -80,18 +80,17 @@ WBOT02::Record::Record(
 {
 	sizeX = sizeX ? sizeX : 1;
 	sizeY = sizeY ? sizeY : 1;
-	arr = std::make_shared<std::vector<unsigned char>>();
-	arr->reserve(sizeX*sizeY);
+	arr = std::make_shared<std::vector<unsigned char>>(sizeX*sizeY,no_init_alloc<unsigned char>());
 	auto& arr1 = *arr;	
 	auto& arr2 = *record.arr;
 	auto sizeX2 = record.sizeX;
 	auto sizeY2 = record.sizeY;
 	if (originX + sizeX <= sizeX2 && originY + sizeY <= sizeY2)
-		for (std::size_t j = 0; j < sizeY; j++)
+		for (std::size_t j = 0, k = 0; j < sizeY; j++)
 		{
 			auto jx1 = (j + originY) * sizeX2;
-			for (std::size_t i = 0; i < sizeX; i++)
-				arr1.push_back(arr2[jx1 + i + originX]);				
+			for (std::size_t i = 0; i < sizeX; i++,k++)
+				arr1[k] = arr2[jx1 + i + originX];				
 		}
 }
 

@@ -34,6 +34,16 @@ using Sec = std::chrono::duration<double>;
 using Clock = std::chrono::high_resolution_clock;
 using TimePoint = std::chrono::time_point<Clock>;
 
+template <class T>
+class no_init_alloc
+    : public std::allocator<T>
+{
+public:
+    using std::allocator<T>::allocator;
+
+    template <class U, class... Args> void construct(U*, Args&&...) {}
+};
+
 #define ECHO(x) std::cout << #x << std::endl; x
 #define STARTT auto mark = Clock::now()
 #define ECHOT(x) std::cout << #x ; mark = Clock::now(); x ; std::cout << "\t" << ((Sec)(Clock::now() - mark)).count() << "s" << std::endl
