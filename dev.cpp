@@ -124,10 +124,11 @@ Record WBOT02::Record::valent(std::size_t valency, std::size_t factor) const
 		unsigned char values[256];	
 		{
 			if (!factor) factor = 1;		
-			std::vector<unsigned char> arr3(size,no_init_alloc<unsigned char>());
-			std::size_t	size3 = 0;		
-			for (std::size_t j = 0; j < size; j += factor, size3++)
-				arr3[size3] = arr1[j];
+			std::size_t	size3 = size/factor;		
+			std::vector<unsigned char> arr3(size3,no_init_alloc<unsigned char>());
+			auto arr3p =  arr3.data();
+			for (std::size_t j = 0, k = 0; j < size; j += factor, k++)
+				arr3p[k] = arr1[j];
 			std::sort(arr3.begin(), arr3.end());
 			std::size_t zeros = 0;
 			while (zeros < size3 && !arr3[zeros]) zeros++;
