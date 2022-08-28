@@ -121,7 +121,7 @@ Record WBOT02::Record::valent(std::size_t valency, std::size_t factor) const
 		record.arr = std::make_shared<std::vector<unsigned char>>(size,no_init_alloc<unsigned char>());
 		auto arr2 = record.arr->data();
 		auto valencyminus = valency-1;
-		std::vector<std::size_t> values(valencyminus);	
+		unsigned char values[256];	
 		{
 			if (!factor) factor = 1;		
 			std::vector<unsigned char> arr3(size,no_init_alloc<unsigned char>());
@@ -146,21 +146,20 @@ Record WBOT02::Record::valent(std::size_t valency, std::size_t factor) const
 			}
 			else 
 				zeros = 0;
+			std::size_t prev = 0;
+			std::size_t next = 0;
 			for (std::size_t i = 0; i < valencyminus; i++)
-				values[i] = arr3[std::min(i*interval+zeros, size3-1)];
+			{
+				next = arr3[std::min(i*interval+zeros, size3-1)];
+				for (std::size_t k = prev; k <= next; k++)			
+					values[k] = i;
+				prev = next + 1;
+			}
+			for (std::size_t k = prev; k < 256; k++)			
+				values[k] = valencyminus;
 		}
 		for (std::size_t j = 0; j < size; j++)
-		{
-			auto v = arr1[j];
-			auto k = valencyminus;
-			for (std::size_t i = 0; i < valencyminus; i++)	
-				if (v <= values[i])
-				{
-					k = i;
-					break;
-				}
-			arr2[j] = k;
-		}
+			arr2[j] = values[arr1[j]];
 	}
 	return record;
 }
