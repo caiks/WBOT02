@@ -151,7 +151,7 @@ Record WBOT02::Record::valent(std::size_t valency, std::size_t factor) const
 			std::size_t next = 0;
 			for (std::size_t i = 0; i < valencyminus; i++)
 			{
-				next = arr3[std::min(i*interval+zeros, size3-1)];
+				next = arr3[std::min((i+1)*interval+zeros, size3-1)];
 				for (std::size_t k = prev; k <= next; k++)			
 					values[k] = i;
 				prev = next + 1;
@@ -206,7 +206,7 @@ Record WBOT02::Record::valent(std::size_t valency,
 			else 
 				zeros = 0;
 			for (std::size_t i = 0; i < valency-1; i++)
-				values[i] = arr2[std::min(i*interval+zeros, size-1)];			
+				values[i] = arr2[std::min((i+1)*interval+zeros, size-1)];			
 		}
 		for (std::size_t j = 0, k = 0; j < sizeY1; j++)
 		{
