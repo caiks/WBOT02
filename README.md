@@ -673,17 +673,22 @@ cf CAIKS4 202205310940
 
 #### actor002
 
-model|scales|mode|initial mode|events|fuds|fuds/sz/thrshld|median diagonal|max diagonal|notes
----|---|---|---|---|---|---|---|---|---
-model010|0.5|4 randomised||720,000|2553|0.709242|23.9962|37.9449|
-model011|0.354|4 randomised||720,000|2630|0.730645|24.8569|37.7777|
-model012|0.25|4 randomised||720,000|2674|0.74286|25.6999|38.2333|
-model014|0.25|4 randomised||720,000|513|0.712896|24.7938|39.8062|1000 threshold
-model013|0.177|4 randomised||720,000|2790|0.775142|26.7243|38.1047|
-model015|0.177|4 potential||720,000|4106|1.14107|26.5634|38.2065|20 randomised
-model016|0.177|4 actual-potential||720,000|3102|0.861801|26.7202|38.0567|20 randomised
-model018|0.177|4 actual-potential|4 actual-potential|1,000,000|4244|0.848929|26.6287|38.1323|20 randomised
-model017|0.177|10 scanned actual-potential|4 actual-potential|1,000,000|4475|0.895264|26.1288|37.9729|
+model|scales|mode|initial mode|events|fuds|fuds/sz/thrshld|mean length|std dev length|max length|notes
+---|---|---|---|---|---|---|---|---|---|---
+model010|0.5|4 randomised||720,000|2567|0.713147|6.82|1.83|12|
+model011|0.354|4 randomised||720,000|2699|0.749797|7.22|1.91|12|
+model012|0.25|4 randomised||720,000|2664|0.740086|7.23|38.2333||
+model014|0.25|4 randomised||720,000|492|0.683333|5.40|1.61|9|1000 threshold
+model013|0.177|4 randomised||720,000|2719|0.755362|7.19|1.91|13|
+model015|0.177|4 potential||720,000|4131|1.14803|9.49|1.72|14|20 randomised
+model016|0.177|4 actual-potential||720,000|3014|0.837385|10.13|1.87|14|20 randomised
+model018|0.177|4 actual-potential|4 actual-potential|1,000,000|4194|0.838961|10.48|1.88|15|20 randomised
+model017|0.177|10 scanned actual-potential|4 actual-potential|1,000,000|4397|0.879532|11.58|2.83|20|
+model019|0.177|4 potential|4 potential|1,000,000|5738|1.14813|9.81|1.76|15|20 randomised
+model020|0.177|10 scanned actual-potential|4 potential|1,000,000|5526|1.10558|10.76|2.75|19|
+model021|0.177|10 scanned actual-potential||720,000|3389|0.941585|13.83|2.83|21|
+
+The median diagonals for the actor 2 *models* were consistently in the range 23-27, and the maximum diagonals were consistently in the the range 37-39.
 
 Noticeable difference between the fixed and randomised, probably because the randomised is now uniformly random rather than around 5 fixed events. Also the long lags in actor 1 meant that the slices were larger and would be better modelled. 
 
