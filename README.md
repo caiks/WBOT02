@@ -677,7 +677,7 @@ model|scales|mode|initial mode|events|fuds|fuds/sz/thrshld|mean length|std dev l
 ---|---|---|---|---|---|---|---|---|---|---
 model010|0.5|4 randomised||720,000|2567|0.713147|6.82|1.83|12|
 model011|0.354|4 randomised||720,000|2699|0.749797|7.22|1.91|12|
-model012|0.25|4 randomised||720,000|2664|0.740086|7.23|38.2333||
+model012|0.25|4 randomised||720,000|2664|0.740086|7.23|38.2333|12|
 model014|0.25|4 randomised||720,000|492|0.683333|5.40|1.61|9|1000 threshold
 model013|0.177|4 randomised||720,000|2719|0.755362|7.19|1.91|13|
 model015|0.177|4 potential||720,000|4131|1.14803|9.49|1.72|14|20 randomised
@@ -689,6 +689,8 @@ model020|0.177|10 scanned actual-potential|4 potential|1,000,000|5526|1.10558|10
 model021|0.177|10 scanned actual-potential||720,000|3389|0.941585|13.83|2.83|21|
 
 The median diagonals for the actor 2 *models* were consistently in the range 23-27, and the maximum diagonals were consistently in the the range 37-39.
+
+TODO - contour comparisons. Compared to model 16 model 21 has very concentrated hotspots. If we manually move around nearby the model has very short paths.
 
 Noticeable difference between the fixed and randomised, probably because the randomised is now uniformly random rather than around 5 fixed events. Also the long lags in actor 1 meant that the slices were larger and would be better modelled. 
 
