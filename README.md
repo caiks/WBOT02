@@ -673,7 +673,7 @@ cf CAIKS4 202205310940
 
 #### actor002
 
-model|scales|mode|initial mode|events|fuds|fuds/sz/thrshld|mean length|std dev length|max length|notes
+model|scales|mode|initial mode|events|fuds|evts/sz/thrshld|mean length|std dev length|max length|notes
 ---|---|---|---|---|---|---|---|---|---|---
 model010|0.5|4 randomised||720,000|2567|0.713147|6.82|1.83|12|25 FPS
 model011|0.354|4 randomised||720,000|2699|0.749797|7.22|1.91|12|
@@ -688,10 +688,14 @@ model019|0.177|4 potential|4 potential|1,000,000|5738|1.14813|9.81|1.76|15|20 ra
 model020|0.177|10 scanned actual-potential|4 potential|1,000,000|5526|1.10558|10.76|2.75|19|
 model021|0.177|10 scanned actual-potential||720,000|3389|0.941585|13.83|2.83|21|
 model022|0.177|10 scanned actual-potential|10 scanned actual-potential|1,000,000|4729|0.946055|14.41|2.87|22|
+model023|0.177|10 scanned actual-potential|10 scanned actual-potential|1,300,000|5488|0.845|14.66|2.89|22|
+model024|0.177|10 scanned actual-potential|10 scanned actual-potential|1,700,000|6172|0.726|14.84|2.90|22|
 
 The median diagonals for the actor 2 *models* were consistently in the range 23-27, and the maximum diagonals were consistently in the the range 37-39.
 
 TODO - contour comparisons. Compared to model 16 model 21 has very concentrated hotspots. If we manually move around nearby the model has very short paths.
+
+TODO - Model 23 fuds per events per threshold = 0.845, so has declined from 0.946. If had continued at original rate would have been 6137 fuds, i.e. running at about half the growth rate, at 0.506 fuds/sz/thrshld or 53% of non-overflow rate. The path lengths have not changed much, not half the diff between model 720k (model 17) and 1000k (model 22). So overflow has a large effect. Model 24 growth has declined again, at 0.342 fuds/sz/thrshld or only 36% of non-overflow rate. But note that later series of fireman Sam are CGI and have more colours but perhaps less contrast so often the focus is on the backgrounds rather than the characters or objects.
 
 Noticeable difference between the fixed and randomised, probably because the randomised is now uniformly random rather than around 5 fixed events. Also the long lags in actor 1 meant that the slices were larger and would be better modelled. 
 

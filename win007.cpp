@@ -815,7 +815,8 @@ void Win007::act()
 					Record recordSub(record,_size,_size,x,y);
 					Record recordValent = recordSub.valent(_valency,_valencyFactor);
 					auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
-					_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
+					if (!_updateDisable)
+						_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
 					this->eventId++;		
 					eventCount++;		
 				}
