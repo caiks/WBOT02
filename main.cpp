@@ -1765,6 +1765,7 @@ int main(int argc, char *argv[])
 		string inputFilename = ARGS_STRING(input_file);
 		string likelihoodFilename = ARGS_STRING(likelihood_file);
 		string lengthFilename = ARGS_STRING(length_file);
+		string representationFilename = ARGS_STRING(representation_file);
 		double centreX = ARGS_DOUBLE_DEF(centreX,0.5);
 		double centreY = ARGS_DOUBLE_DEF(centreY,0.5);
 		double centreRangeX = ARGS_DOUBLE_DEF(range_centreX,0.41);
@@ -1801,9 +1802,35 @@ int main(int argc, char *argv[])
 			EVAL(stage);
 			TRUTH(ok);				
 		}		
+		std::unique_ptr<WBOT02::SliceRepresentationUMap> slicesRepresentation;
+		if (ok) 
+		{
+			try
+			{
+				std::ifstream in(model + ".rep", std::ios::binary);
+				if (in.is_open())
+				{
+					slicesRepresentation = persistentsSliceRepresentationUMap(in);
+					in.close();
+				}
+				else
+				{
+					ok = false;
+				}
+				ok = ok && slicesRepresentation;
+			}
+			catch (const std::exception&)
+			{
+				ok = false;
+			}
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);				
+		}		
 		QImage image;
 		QImage likelihoodImage;
 		QImage lengthImage;
+		QImage representationImage;
 		int captureWidth = 0;
 		int captureHeight = 0;	
 		if (ok)
@@ -1815,6 +1842,7 @@ int main(int argc, char *argv[])
 			EVAL(image.format());
 			likelihoodImage = image.copy();
 			lengthImage = image.copy();
+			representationImage = image.copy();
 			captureWidth = image.width();
 			EVAL(captureWidth);
 			captureHeight = image.height();
@@ -1834,6 +1862,7 @@ int main(int argc, char *argv[])
 			std::size_t applyCount = 0;
 			QPainter likelihoodPainter(&likelihoodImage);
 			QPainter lengthPainter(&lengthImage);
+			QPainter representationPainter(&representationImage);
 			QBrush brush;
             brush.setStyle(Qt::SolidPattern);
 			// brush.setStyle(Qt::Dense3Pattern);
@@ -1858,6 +1887,9 @@ int main(int argc, char *argv[])
 			if (sizeY % 2 != size % 2) sizeY++;
 			scaleX = sizeX * interval;
 			scaleY = sizeY * interval;
+			auto offsetX = (scaleX - scale) / 2.0;
+			auto offsetY = (scaleY - scale) / 2.0;
+			auto heightWidth = (double)captureHeight / (double)captureWidth;
 			mark = Clock::now();
 			Record record(image, 
 				scaleX * captureHeight / captureWidth, scaleY,
@@ -1872,14 +1904,15 @@ int main(int argc, char *argv[])
 			rr[n-1] = 0;
 			std::vector<std::size_t> lengthResults(sizeY*sizeX);
 			std::vector<double> likelihoodResults(sizeY*sizeX);
+			std::vector<std::tuple<std::size_t,double,std::size_t,std::size_t,std::size_t>> actsPotsCoord(sizeY*sizeX);
 			std::vector<std::thread> threads;
 			threads.reserve(threadCount);
 			mark = Clock::now();
 			for (std::size_t t = 0; t < threadCount; t++)
 				threads.push_back(std::thread(
                     [threadCount,
-                    sizeX,sizeY,size,&record,valency,valencyFactor,n,vv,rr,
-					drmul,&dr,&cv,cap,&sizes,&lengths,lnwmax,
+					sizeX,sizeY,size,&record,valency,valencyFactor,n,vv,rr,
+					drmul,&dr,&cv,cap,&sizes,&lengths,lnwmax,&actsPotsCoord,
 					&likelihoodResults,&lengthResults] (int t)
 					{
 						for (std::size_t y = 0, z = 0; y < sizeY - size; y++)	
@@ -1908,14 +1941,20 @@ int main(int argc, char *argv[])
 									}
 									auto ll = drmul(jj,dr,cap);	
 									std::size_t slice = 0;
-									if (ll && ll->size()) slice = ll->back();		
-									likelihoodResults[z] = (std::log(sizes[slice]) - std::log(sizes[cv[slice]]) + lnwmax)/lnwmax;				
-									lengthResults[z] = lengths[slice];						
+									if (ll && ll->size()) slice = ll->back();				
+									auto length = lengths[slice];
+									auto likelihood = (std::log(sizes[slice]) - std::log(sizes[cv[slice]]) + lnwmax)/lnwmax;
+									likelihoodResults[z] = likelihood;
+									lengthResults[z] = length;
+									if (slice)
+										actsPotsCoord[z] = std::make_tuple(length,likelihood,x,y,slice);
+									else
+										actsPotsCoord[z] = std::make_tuple(0,-INFINITY,x,y,0);
 								}
 					}, t));
 			for (auto& t : threads)
 				t.join();
-			applyTime += ((Sec)(Clock::now() - mark)).count();			
+			applyTime += ((Sec)(Clock::now() - mark)).count();	
 			for (std::size_t y = 0, z = 0; y < sizeY - size; y++)	
 				for (std::size_t x = 0; x < sizeX - size; x++,z++)	
 				{
@@ -1936,11 +1975,31 @@ int main(int argc, char *argv[])
 						lengthPainter.fillRect(rectangle,brush);					
 					}
 				}	
+            std::sort(actsPotsCoord.begin(), actsPotsCoord.end());			
+            auto& reps = *slicesRepresentation;
+			for (auto t : actsPotsCoord)	
+			{
+				auto slice = std::get<4>(t);
+				if (slice && reps.count(slice))
+				{
+					auto x = std::get<2>(t);
+					auto y = std::get<3>(t);
+					auto posX = centreX + (interval * x - scaleX / 2.0) * captureHeight / captureWidth;
+					auto posY = centreY + interval * y - scaleY / 2.0;
+					QPointF point(posX*captureWidth,posY*captureHeight);
+					auto rep = reps[slice].image(1,valency).scaledToHeight(scale*captureHeight);
+					representationPainter.drawImage(point,rep);
+				}
+			}
 			EVAL(recordTime);
 			EVAL(applyTime);		
 			EVAL(sizeY*sizeX);
-			ok = ok && likelihoodImage.save(QString(likelihoodFilename.c_str()));
-			ok = ok && lengthImage.save(QString(lengthFilename.c_str()));
+			if (likelihoodFilename.size())
+				ok = ok && likelihoodImage.save(QString(likelihoodFilename.c_str()));
+			if (lengthFilename.size())
+				ok = ok && lengthImage.save(QString(lengthFilename.c_str()));			
+			if (representationFilename.size())
+				ok = ok && representationImage.save(QString(representationFilename.c_str()));
 			stage++;
 			EVAL(stage);
 			TRUTH(ok);	
