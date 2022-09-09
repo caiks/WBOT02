@@ -1782,8 +1782,7 @@ int main(int argc, char *argv[])
 		{
 			ok = ok && model.size();
 			ok = ok && inputFilename.size();
-			ok = ok && likelihoodFilename.size();
-			ok = ok && lengthFilename.size();
+			ok = ok && (likelihoodFilename.size() || lengthFilename.size() || representationFilename.size());
 			stage++;
 			EVAL(stage);
 			TRUTH(ok);	
