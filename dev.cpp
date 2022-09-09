@@ -110,6 +110,20 @@ std::unique_ptr<ValueList> WBOT02::Record::sorted() const
 	return result;
 }
 
+Record WBOT02::Record::valentFixed(std::size_t valency) const
+{
+	Record record(*this);
+	if (valency && valency <= 128 && record.arr)
+	{
+		auto size = arr->size();
+		auto arr1 =  arr->data();
+		record.arr = std::make_shared<std::vector<unsigned char>>(size,no_init_alloc<unsigned char>());
+		auto arr2 = record.arr->data();
+		for (std::size_t j = 0; j < size; j++)
+			arr2[j] = arr1[j]*valency/256;
+	}
+	return record;
+}
 
 Record WBOT02::Record::valent(std::size_t valency, std::size_t factor) const
 {
