@@ -1774,6 +1774,7 @@ int main(int argc, char *argv[])
 		int scaleValency = ARGS_INT_DEF(scale_valency,4);	
 		int valency = ARGS_INT_DEF(valency,10);	
 		int valencyFactor = ARGS_INT(valency_factor);	
+		bool valencyFixed = ARGS_BOOL(valency_fixed);	
 		int size = ARGS_INT_DEF(size,40);	
 		int divisor = ARGS_INT_DEF(divisor,4);	
 		int induceParameters_wmax = ARGS_INT_DEF(induceParameters.wmax,18);
@@ -1909,7 +1910,7 @@ int main(int argc, char *argv[])
 			mark = Clock::now();
 			for (std::size_t t = 0; t < threadCount; t++)
 				threads.push_back(std::thread(
-                    [threadCount,
+                    [threadCount,valencyFixed,
 					sizeX,sizeY,size,&record,valency,valencyFactor,n,vv,rr,
 					drmul,&dr,&cv,cap,&sizes,&lengths,lnwmax,&actsPotsCoord,
 					&likelihoodResults,&lengthResults] (int t)
@@ -1919,7 +1920,7 @@ int main(int argc, char *argv[])
 								if (z % threadCount == t)
 								{
 									Record recordSub(record,size,size,x,y);
-									Record recordValent = recordSub.valent(valency,valencyFactor);
+									Record recordValent = valencyFixed ? recordSub.valentFixed(valency) : recordSub.valent(valency,valencyFactor);
 									auto& arr1 = *recordValent.arr;	
 									SizeUCharStructList jj;
 									jj.reserve(n);
