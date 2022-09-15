@@ -854,7 +854,7 @@ void Win007::act()
 				auto hr = sizesHistoryRepa(_scaleValency, _valency, _size*_size);
 				auto n = hr->dimension;
 				auto vv = hr->vectorVar;
-				std::vector<std::tuple<double,double,double,std::size_t,std::size_t>> actsPotsCoordTop;
+				std::vector<std::tuple<double,std::size_t,double,double,std::size_t,std::size_t>> actsPotsCoordTop;
 				for (std::size_t ty = 0; ty < (sizeX-_size)/_sizeTile; ty++)	
 					for (std::size_t tx = 0; tx < (sizeY-_size)/_sizeTile; tx++)
 					{
@@ -925,12 +925,13 @@ void Win007::act()
 						{
 							std::sort(actsPotsCoord.begin(), actsPotsCoord.end());
 							auto t = actsPotsCoord.back();
+							auto length = std::get<0>(t);
 							auto likelihood = std::get<1>(t);
 							auto posX = std::get<2>(t);
 							auto posY = std::get<3>(t);								
 							auto x = std::get<4>(t);								
 							auto y = std::get<5>(t);								
-							actsPotsCoordTop.push_back(std::make_tuple(likelihood,posX,posY,x,y));
+							actsPotsCoordTop.push_back(std::make_tuple(likelihood,length,posX,posY,x,y));
 						}
 					}
                 std::sort(actsPotsCoordTop.rbegin(), actsPotsCoordTop.rend());
@@ -946,8 +947,8 @@ void Win007::act()
 					for (std::size_t k = 0; k < actsPotsCoordTop.size() && k < _eventSize; k++)	
 					{
 						auto t = actsPotsCoordTop[k];
-						auto posX = std::get<1>(t);
-						auto posY = std::get<2>(t);							
+						auto posX = std::get<2>(t);
+						auto posY = std::get<3>(t);							
 						if (k == 0)
 							framePainter.setPen(Qt::white);		
 						else
@@ -961,19 +962,20 @@ void Win007::act()
 					_ui->labelImage->setPixmap(QPixmap::fromImage(image2));	
 					if (actsPotsCoordTop.size())
 					{
-						_centreX = std::get<1>(actsPotsCoordTop.front());
-						_centreY = std::get<2>(actsPotsCoordTop.front());	
+						_centreX = std::get<2>(actsPotsCoordTop.front());
+						_centreY = std::get<3>(actsPotsCoordTop.front());	
 					}
 				}
 				// EVAL(_centreX);
 				// EVAL(_centreY);
 				for (std::size_t k = 0; k < actsPotsCoordTop.size() && k < _eventSize; k++)	
 				{
-					EVAL(k);
+					// EVAL(k);
 					auto t = actsPotsCoordTop[k];
-					EVAL(std::get<0>(t));
-					auto x = std::get<3>(t);
-					auto y = std::get<4>(t);
+					// EVAL(std::get<0>(t));
+					// EVAL(std::get<1>(t));
+					auto x = std::get<4>(t);
+					auto y = std::get<5>(t);
 					Record recordSub(record,_size,_size,x,y);
 					Record recordValent = _valencyFixed ? recordSub.valentFixed(_valency) : recordSub.valent(_valency,_valencyFactor);
 					auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
