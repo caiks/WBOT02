@@ -855,8 +855,8 @@ void Win007::act()
 				auto n = hr->dimension;
 				auto vv = hr->vectorVar;
 				std::vector<std::tuple<double,std::size_t,double,double,std::size_t,std::size_t>> actsPotsCoordTop;
-				for (std::size_t ty = 0; ty < (sizeX-_size)/_sizeTile; ty++)	
-					for (std::size_t tx = 0; tx < (sizeY-_size)/_sizeTile; tx++)
+				for (std::size_t ty = 0; ty < (sizeY-_size)/_sizeTile; ty++)	
+					for (std::size_t tx = 0; tx < (sizeX-_size)/_sizeTile; tx++)
 					{
 						auto& activeA = *_active;
 						auto& actor = *this;
