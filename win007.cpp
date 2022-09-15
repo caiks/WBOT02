@@ -239,6 +239,11 @@ Win007::Win007(const std::string& configA,
 			_labelLag = new QLabel(this); 
 			_ui->layout04->addWidget(_labelLag);
 		}			
+		if (_lagThreshold)
+		{
+			_labelFails = new QLabel(this); 
+			_ui->layout04->addWidget(_labelFails);
+		}		
 		if (_motionThreshold)
 		{
 			_labelMotion = new QLabel(this); 
@@ -484,11 +489,12 @@ void Win007::act()
 	}
 	// update
 	_mark = Clock::now(); 
-	std::size_t lag = 0;
 	if (_system)
 	{
 		// update events
 		std::size_t eventCount = 0;
+		std::size_t lag = 0;
+		std::size_t failCount = 0;
 		if (!_motionWaiting && !_lagWaiting && (!_eventIdMax || this->eventId < _eventIdMax))
 		{
 			if (_mode == "mode001")
@@ -1053,10 +1059,12 @@ void Win007::act()
             if (_lagThreshold)
 			{
 				auto& thresholds = _induceParameters.induceThresholds;
+				auto& fails = activeA.induceSliceFailsSize;
+				failCount = fails.size();
 				for (auto slice : activeA.induceSlices)
 				{
-					auto it = activeA.induceSliceFailsSize.find(slice);
-					if (it != activeA.induceSliceFailsSize.end())
+					auto it = fails.find(slice);
+					if (it != fails.end())
 					{
 						auto sliceSize = slev[slice].size();
 						if (it->second < sliceSize 
@@ -1094,6 +1102,13 @@ void Win007::act()
 			std::stringstream string;
 			string << "lag: " << std::fixed << lag;
 			_labelLag->setText(string.str().data());
+		}
+		// fails label
+        if (_lagThreshold)
+		{
+			std::stringstream string;
+			string << "fails: " << std::fixed << failCount;
+			_labelFails->setText(string.str().data());
 		}
 		if (_eventLogging && (_eventLoggingFactor <= 1 || this->eventId >= _eventIdPrev +  _eventLoggingFactor))
 		{
