@@ -116,6 +116,7 @@ private:
 	std::size_t _valencyFactor;
 	bool _valencyFixed;
 	std::size_t _size;
+	std::size_t _sizeTile;
 	std::size_t _divisor;
 	std::size_t _multiplier;
 	std::size_t _threadCount;

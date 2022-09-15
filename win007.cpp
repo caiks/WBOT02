@@ -151,6 +151,7 @@ Win007::Win007(const std::string& configA,
 		_valencyFactor = ARGS_INT(valency_factor);	
 		_valencyFixed = ARGS_BOOL(valency_fixed);	
 		_size = ARGS_INT_DEF(size,40);	
+		_sizeTile = ARGS_INT_DEF(tile_size,_size/2);	
 		_divisor = ARGS_INT_DEF(divisor,4);	
 		_multiplier = ARGS_INT_DEF(multiplier,2);	
 		_eventSize = ARGS_INT_DEF(event_size,1);	
@@ -814,6 +815,165 @@ void Win007::act()
 				{
 					auto x = std::get<4>(t);
 					auto y = std::get<5>(t);
+					Record recordSub(record,_size,_size,x,y);
+					Record recordValent = _valencyFixed ? recordSub.valentFixed(_valency) : recordSub.valent(_valency,_valencyFactor);
+					auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
+					if (!_updateDisable)
+						_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
+					this->eventId++;		
+					eventCount++;		
+				}
+				if (!_updateDisable && !_active->update(_updateParameters))
+				{
+					this->terminate = true;	
+					return;
+				}
+			}
+			else if (_mode == "mode005")
+			{
+                auto scaleX = _centreRangeX * 2.0 + _scale;
+                auto scaleY = _centreRangeY * 2.0 + _scale;
+				auto sizeX = (std::size_t)(scaleX * _size / _scale);
+				sizeX = (sizeX - _size + (_sizeTile/2)) / _sizeTile * _sizeTile + _size;
+				auto sizeY = (std::size_t)(scaleY * _size / _scale);	
+				sizeY = (sizeY - _size + (_sizeTile/2)) / _sizeTile * _sizeTile + _size;
+				double interval = _scale/_size;		
+				scaleX = sizeX * interval;
+				scaleY = sizeY * interval;
+				auto centreX = _centreX;
+				centreX = std::max(centreX, scaleX * _captureHeight / _captureWidth / 2.0);
+				centreX = std::min(centreX, 1.0 - scaleX * _captureHeight / _captureWidth / 2.0);
+				auto centreY = _centreY;
+				centreY = std::max(centreY, scaleY / 2.0);
+				centreY = std::min(centreY, 1.0 - scaleY / 2.0);
+				Record record(image, 
+					scaleX * _captureHeight / _captureWidth, scaleY,
+					centreX, centreY, 
+					sizeX, sizeY, 
+					_divisor, _divisor);
+				auto hr = sizesHistoryRepa(_scaleValency, _valency, _size*_size);
+				auto n = hr->dimension;
+				auto vv = hr->vectorVar;
+				std::vector<std::tuple<double,double,double,std::size_t,std::size_t>> actsPotsCoordTop;
+				for (std::size_t ty = 0; ty < (sizeX-_size)/_sizeTile; ty++)	
+					for (std::size_t tx = 0; tx < (sizeY-_size)/_sizeTile; tx++)
+					{
+						auto& activeA = *_active;
+						auto& actor = *this;
+						std::vector<std::tuple<std::size_t,double,double,double,std::size_t,std::size_t>> actsPotsCoord(_sizeTile*_sizeTile);
+						std::lock_guard<std::mutex> guard(activeA.mutex);
+						std::vector<std::thread> threads;
+						threads.reserve(_threadCount);
+						for (std::size_t t = 0; t < _threadCount; t++)
+							threads.push_back(std::thread(
+								[&actor, &activeA, n, vv, 
+								centreX, centreY, scaleX, scaleY, sizeX, sizeY, interval, &record, tx, ty,
+								&actsPotsCoord] (int t)
+								{
+									auto drmul = listVarValuesDecompFudSlicedRepasPathSlice_u;
+									auto& sizes = activeA.historySlicesSize;
+									auto& lengths = activeA.historySlicesLength;
+									auto& fails = activeA.induceSliceFailsSize;
+									auto& dr = *activeA.decomp;		
+									auto& cv = dr.mapVarParent();
+									auto cap = (unsigned char)(actor._updateParameters.mapCapacity);
+									double lnwmax = std::log(actor._induceParameters.wmax);
+									auto heightWidth = (double)actor._captureHeight / (double)actor._captureWidth;
+									auto offsetX = (scaleX - actor._scale) / 2.0;
+									auto offsetY = (scaleY - actor._scale) / 2.0;
+									auto size = actor._size;
+									auto sizeTile = actor._sizeTile;
+									auto valency = actor._valency;
+									auto valencyFactor = actor._valencyFactor;
+									auto valencyFixed = actor._valencyFixed;
+									for (std::size_t y = ty*sizeTile, z = 0; y < (ty+1)*sizeTile; y++)	
+										for (std::size_t x = tx*sizeTile; x < (tx+1)*sizeTile; x++, z++)
+											if (z % actor._threadCount == t)
+											{
+												Record recordSub(record,size,size,x,y);
+												Record recordValent = valencyFixed ? recordSub.valentFixed(valency) : recordSub.valent(valency,valencyFactor);
+												auto& arr1 = *recordValent.arr;	
+												SizeUCharStructList jj;
+												jj.reserve(n);
+												for (std::size_t i = 0; i < n-1; i++)
+												{
+													SizeUCharStruct qq;
+													qq.uchar = arr1[i];	
+													qq.size = vv[i];
+													if (qq.uchar)
+														jj.push_back(qq);
+												}
+												auto ll = drmul(jj,dr,cap);	
+												std::size_t slice = 0;
+												auto posX = centreX + (interval * x - offsetX) * heightWidth;
+												auto posY = centreY + interval * y - offsetY;
+												if (ll && ll->size()) slice = ll->back();	
+												if (slice && cv.count(slice) && sizes.count(slice) 
+													&& lengths.count(slice) && !fails.count(slice))
+												{
+													auto length = lengths[slice];
+													auto likelihood = (std::log(sizes[slice]) - std::log(sizes[cv[slice]]) + lnwmax)/lnwmax;
+													actsPotsCoord[z] = std::make_tuple(length,likelihood,posX,posY,x,y);
+												}
+												else
+													actsPotsCoord[z] = std::make_tuple(0,-INFINITY,posX,posY,x,y);	
+											}
+								}, t));
+						for (auto& t : threads)
+							t.join();
+						if (actsPotsCoord.size())
+						{
+							std::sort(actsPotsCoord.begin(), actsPotsCoord.end());
+							auto t = actsPotsCoord.back();
+							auto likelihood = std::get<1>(t);
+							auto posX = std::get<2>(t);
+							auto posY = std::get<3>(t);								
+							auto x = std::get<4>(t);								
+							auto y = std::get<5>(t);								
+							actsPotsCoordTop.push_back(std::make_tuple(likelihood,posX,posY,x,y));
+						}
+					}
+                std::sort(actsPotsCoordTop.rbegin(), actsPotsCoordTop.rend());
+				{
+					QImage image2 = image.copy();
+					QPainter framePainter(&image2);
+					framePainter.setPen(Qt::darkGray);
+					framePainter.drawRect(
+						centreX * _captureWidth - scaleX * _captureHeight / 2.0, 
+						centreY * _captureHeight - scaleY * _captureHeight / 2.0, 
+						scaleX * _captureHeight,
+						scaleY * _captureHeight);
+					for (std::size_t k = 0; k < actsPotsCoordTop.size() && k < _eventSize; k++)	
+					{
+						auto t = actsPotsCoordTop[k];
+						auto posX = std::get<1>(t);
+						auto posY = std::get<2>(t);							
+						if (k == 0)
+							framePainter.setPen(Qt::white);		
+						else
+							framePainter.setPen(Qt::gray);
+						framePainter.drawRect(
+							posX * _captureWidth - _scale * _captureHeight / 2.0, 
+							posY * _captureHeight - _scale * _captureHeight / 2.0, 
+							_scale * _captureHeight,
+							_scale * _captureHeight);
+					}
+					_ui->labelImage->setPixmap(QPixmap::fromImage(image2));	
+					if (actsPotsCoordTop.size())
+					{
+						_centreX = std::get<1>(actsPotsCoordTop.front());
+						_centreY = std::get<2>(actsPotsCoordTop.front());	
+					}
+				}
+				// EVAL(_centreX);
+				// EVAL(_centreY);
+				for (std::size_t k = 0; k < actsPotsCoordTop.size() && k < _eventSize; k++)	
+				{
+					EVAL(k);
+					auto t = actsPotsCoordTop[k];
+					EVAL(std::get<0>(t));
+					auto x = std::get<3>(t);
+					auto y = std::get<4>(t);
 					Record recordSub(record,_size,_size,x,y);
 					Record recordValent = _valencyFixed ? recordSub.valentFixed(_valency) : recordSub.valent(_valency,_valencyFactor);
 					auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
