@@ -692,6 +692,8 @@ model023|0.177|10 scanned actual-potential|10 scanned actual-potential|1,300,000
 model024|0.177|10 scanned actual-potential|10 scanned actual-potential|1,700,000|6172|0.726|14.84|2.90|22|
 model025|0.177|10 scanned actual-potential fixed buckets||865,170|5283|1.22126|18.73|7.35|50|Film Noir, 179 failed slices
 model027|0.177|10 scanned actual-potential||759,760|3757|0.988997|14.14|3.13|24|Film Noir, 12 failed slices
+model028|0.177|10 scanned actual-potential||659,550|3203|0.971268|14.84|3.14|27|Film Noir, 49 failed slices
+model029|0.177|5 scanned potential tiled actual-potential||526,345|3386|1.28661|13.49|2.60|23|Film Noir, 2 failed slices
 
 The median diagonals for the actor 2 *models* were consistently in the range 23-27, and the maximum diagonals were consistently in the the range 37-39.
 
