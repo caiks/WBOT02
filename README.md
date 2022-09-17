@@ -673,27 +673,28 @@ cf CAIKS4 202205310940
 
 #### actor002
 
-model|scales|mode|initial mode|events|fuds|evts/sz/thrshld|mean length|std dev length|max length|notes
----|---|---|---|---|---|---|---|---|---|---
-model010|0.5|4 randomised||720,000|2567|0.713147|6.82|1.83|12|25 FPS
-model011|0.354|4 randomised||720,000|2699|0.749797|7.22|1.91|12|
-model012|0.25|4 randomised||720,000|2664|0.740086|7.23|38.2333|12|
-model014|0.25|4 randomised||720,000|492|0.683333|5.40|1.61|9|1000 threshold
-model013|0.177|4 randomised||720,000|2719|0.755362|7.19|1.91|13|
-model015|0.177|4 potential||720,000|4131|1.14803|9.49|1.72|14|20 randomised
-model016|0.177|4 actual-potential||720,000|3014|0.837385|10.13|1.87|14|20 randomised
-model018|0.177|4 actual-potential|4 actual-potential|1,000,000|4194|0.838961|10.48|1.88|15|20 randomised
-model017|0.177|10 scanned actual-potential|4 actual-potential|1,000,000|4397|0.879532|11.58|2.83|20|4 FPS
-model019|0.177|4 potential|4 potential|1,000,000|5738|1.14813|9.81|1.76|15|20 randomised
-model020|0.177|10 scanned actual-potential|4 potential|1,000,000|5526|1.10558|10.76|2.75|19|
-model021|0.177|10 scanned actual-potential||720,000|3389|0.941585|13.83|2.83|21|
-model022|0.177|10 scanned actual-potential|10 scanned actual-potential|1,000,000|4729|0.946055|14.41|2.87|22|
-model023|0.177|10 scanned actual-potential|10 scanned actual-potential|1,300,000|5488|0.845|14.66|2.89|22|
-model024|0.177|10 scanned actual-potential|10 scanned actual-potential|1,700,000|6172|0.726|14.84|2.90|22|
-model025|0.177|10 scanned actual-potential fixed buckets||865,170|5283|1.22126|18.73|7.35|50|Film Noir, 179 failed slices
-model027|0.177|10 scanned actual-potential||759,760|3757|0.988997|14.14|3.13|24|Film Noir, 12 failed slices
-model028|0.177|10 scanned actual-potential||659,550|3203|0.971268|14.84|3.14|27|Film Noir, 49 failed slices
-model029|0.177|5 scanned potential tiled actual-potential||526,345|3386|1.28661|13.49|2.60|23|Film Noir, 2 failed slices
+model|scales|mode|initial mode|valency|domain|events|fuds|evts/sz/thrshld|mean length|std dev length|max length|fails|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model010|0.5|4 randomised||bucketed|Fireman Sam|720,000|2567|0.713147|6.82|1.83|12||25 FPS
+model011|0.354|4 randomised||bucketed|Fireman Sam|720,000|2699|0.749797|7.22|1.91|12||
+model012|0.25|4 randomised||bucketed|Fireman Sam|720,000|2664|0.740086|7.23|38.2333|12||
+model014|0.25|4 randomised||bucketed|Fireman Sam|720,000|492|0.683333|5.40|1.61|9||1000 threshold
+model013|0.177|4 randomised||bucketed|Fireman Sam|720,000|2719|0.755362|7.19|1.91|13||
+model015|0.177|4 potential||bucketed|Fireman Sam|720,000|4131|1.14803|9.49|1.72|14||20 randomised
+model016|0.177|4 actual-potential||bucketed|Fireman Sam|720,000|3014|0.837385|10.13|1.87|14||20 randomised
+model018|0.177|4 actual-potential|4 actual-potential|bucketed|Fireman Sam|1,000,000|4194|0.838961|10.48|1.88|15||20 randomised
+model017|0.177|10 scanned actual-potential|4 actual-potential|bucketed|Fireman Sam|1,000,000|4397|0.879532|11.58|2.83|20||4 FPS
+model019|0.177|4 potential|4 potential|bucketed|Fireman Sam|1,000,000|5738|1.14813|9.81|1.76|15||20 randomised
+model020|0.177|10 scanned actual-potential|4 potential|bucketed|Fireman Sam|1,000,000|5526|1.10558|10.76|2.75|19|
+model021|0.177|10 scanned actual-potential||bucketed|Fireman Sam|720,000|3389|0.941585|13.83|2.83|21|
+model022|0.177|10 scanned actual-potential|10 scanned actual-potential|bucketed|Fireman Sam|1,000,000|4729|0.946055|14.41|2.87|22|
+model023|0.177|10 scanned actual-potential|10 scanned actual-potential|bucketed|Fireman Sam|1,300,000|5488|0.845|14.66|2.89|22|
+model024|0.177|10 scanned actual-potential|10 scanned actual-potential|bucketed|Fireman Sam|1,700,000|6172|0.726|14.84|2.90|22|
+model025|0.177|10 scanned actual-potential||fixed|Film Noir|865,170|5283|1.22126|18.73|7.35|50|179|
+model027|0.177|10 scanned actual-potential||bucketed|Film Noir|759,760|3757|0.988997|14.14|3.13|24|12|
+model028|0.177|10 scanned actual-potential||bucketed|Film Noir|659,550|3203|0.971268|14.84|3.14|27|49|
+model029|0.177|5 scanned potential tiled actual-potential||bucketed|Film Noir|526,345|3386|1.28661|13.49|2.60|23|2|
+model030|0.177|5 scanned potential tiled actual-potential||fixed|Film Noir|527,045|3816|1.44807|15.56|3.74|31|27|
 
 The median diagonals for the actor 2 *models* were consistently in the range 23-27, and the maximum diagonals were consistently in the the range 37-39.
 
