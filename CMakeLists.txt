@@ -13,6 +13,15 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets Gui Multimedia MultimediaWidgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets Gui Multimedia MultimediaWidgets)
+if(${QT_VERSION_MAJOR} GREATER_EQUAL 7)
+qt_standard_project_setup()
+else()
+if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
+if (${QT_VERSION_MINOR} GREATER_EQUAL 3)
+qt_standard_project_setup()
+endif()
+endif()
+endif()
 
 find_package (Threads)
 
