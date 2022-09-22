@@ -29,13 +29,15 @@ The wotbot [WBOT01 repository](https://github.com/caiks/WBOT01) was essentially 
 
 ## Sections
 
-[Download, build and run main executable](#main)
+[Download, build and run main executable in Windows](#main_Windows)
+
+[Download, build and run main executable in Ubuntu](#main_Ubuntu)
 
 [Discussion](#Discussion)
 
-<a name="main"></a>
+<a name="main_Windows"></a>
 
-## Download, build and run main executable
+## Download, build and run main executable in Windows
 
 This repository is based on the 6.2.4 installation of [Qt](https://www.qt.io) on Windows 11. [Download](https://www.qt.io/download) the installer `C:\Qt\MaintenanceTool.exe`, and run it. Install Qt Creator and the `Desktop Qt 6.2.4 MSVC2019 64bit` kit. (Note that the default `Desktop Qt6.2.4 MinGW 64-bit` kit, which is GCC for Windows, may not have camera or screen grab functionality.) Check the various examples build and run ok.
 
@@ -88,6 +90,90 @@ cd /d C:\caiks\WBOT02_ws
 
 ```
 The `actor001` window should open on the left hand side of the screen and capture a rectangle on the right hand side of the screen.
+
+
+<a name="main_Ubuntu"></a>
+
+## Download, build and run main executable in Ubuntu
+
+TODO - 
+```
+sudo apt-get update -y && sudo apt install -y git g++ cmake
+sudo apt-get install build-essential libgl1-mesa-dev
+sudo apt install -y g++ xorg gedit
+sudo apt install qt6-base-dev
+sudo apt install qt6-base-dev-tools
+sudo apt install qt6-wayland
+
+git clone https://github.com/Tencent/rapidjson.git
+git clone https://github.com/caiks/AlignmentC.git
+git clone https://github.com/caiks/AlignmentRepaC.git
+git clone https://github.com/caiks/AlignmentActive.git
+git clone https://github.com/caiks/WBOT02.git
+git clone https://github.com/caiks/WBOT02_ws.git
+
+```
+
+```
+mkdir AlignmentC_build AlignmentRepaC_build AlignmentActive_build WBOT02_build
+cd WBOT02_build
+cmake -DCMAKE_BUILD_TYPE=RELEASE ../WBOT02
+make
+cd ~/WBOT02_ws
+ln -s ../WBOT02_build/WBOT02 WBOT02
+
+```
+Copied over model030.ac and model030.rep
+
+ran 
+```
+C:\Program Files\VcXsrv
+```
+
+```
+cd ~/WBOT02_ws
+./WBOT02 actor002 actor.json
+
+```
+actor.json -
+```
+{
+	"interval" : 100,
+	"x" : 870,
+	"width" : 560,
+	"model_initial" : "model030",
+	"mode" : "mode004",
+	"valency_fixed" : true,
+	"event_size" : 1,
+	"threads" : 6,
+	"scale" : 0.177,
+	"range_centreX" : 0.236,
+	"range_centreY" :0.177,
+	"interactive" : true,
+	"disable_update" : true,
+	"summary_active" : false,
+	"logging_action" : false,
+	"warning_action" : false
+}
+```
+
+```
+model030        load    file name: model030.ac  time 3.43874s
+model   fuds cardinality: 3816  model cardinality: 76313        active size: 527045     fuds per threshold: 1.44807
+actor   status: started
+QPainter::begin: Paint device returned engine == 0, type: 3
+QPainter::setPen: Painter not active
+QPainter::drawRects: Painter not active
+QPainter::setPen: Painter not active
+QPainter::drawRects: Painter not active
+QPainter::begin: Paint device returned engine == 0, type: 3
+QPainter::setPen: Painter not active
+QPainter::drawRects: Painter not active
+QPainter::setPen: Painter not active
+QPainter::drawRects: Painter not active
+```
+
+
 
 <a name = "Discussion"></a>
 
