@@ -13,13 +13,13 @@ The turtlebot house and other simulated environments are hugely simplified model
 
 Given these location ambiguities, it seems unlikely that a complex limbed robot with camera vision would have an environment in a simulated virtual world that is rich enough to enable a later transition to real world embodiment. On the other hand, if we attempt to develop active *models* using real robots instead of virtual ones, we are presented with very difficult technical challenges. So, to make progress, we shall move directly to the real world but initially without locomotion or manipulation. To do this we shall use the existing technologies of cameras, microphones and speakers in smartphones and laptops. It will be up to the user to carry wotbot around and point it in the general direction of something interesting.
 
-In this repository, `WBOT02` has a *substrate* derived from images sourced from a camera, a video or a screen-grab. A typical RGB image from one of these sources has thousands to millions of pixels with the colour of each pixel encoded in 24 bits. In order to allow for practicable action *induction*, the wotbot *substrate* has only 40x40 *variables* each with a *valency* of 10 *values*. To reduce the image we choose a centre (a pixel coordinate) and a scale (e.g. 1.0, 0.5, 0.25 ...) so that only a portion of the image is captured - something like the saccades of the human eye. Where a *variable* corresponds to a rectangle of pixels, an average pixel value is calculated. The Red-Green-Blue colour is converted to a 256 grey-scale by taking the maximum of the red, green or blue components (the 'value' of Hue-Saturation-Value). The 256 *valency* is then reduced to 10 by calculating the deciles. 
+In this repository, `WBOT02` has a *substrate* derived from images sourced from a camera, a video or a screen-grab. A typical RGB image from one of these sources has thousands to millions of pixels with the colour of each pixel encoded in 24 bits. In order to allow for practicable action *induction*, the wotbot *substrate* has only 40x40 *variables* each with a *valency* of 10 *values*. To reduce the image we choose a centre (a pixel coordinate) and a scale (e.g. 1.0, 0.5, 0.25 ...) so that only a portion of the image is captured - something like the saccades of the human eye. Where a *variable* corresponds to a rectangle of pixels, an average pixel value is calculated. The Red-Green-Blue colour is converted to a 256 grey-scale by taking the maximum of the red, green or blue components (the 'value' of Hue-Saturation-Value). The 256 *valency* is then reduced to 10 by calculating the deciles or by simply dividing into regular intervals. 
 
-We can compare this process of reduction to the case of the MNIST handwritten digits dataset described in [Haskell analysis](https://greenlake.co.uk/pages/dataset_NIST) or [Python analysis](https://greenlake.co.uk/pages/dataset_python_NIST). There the images were already centered and scaled and reduced to 28x28 pixel *variables* of 256 *values*. We then only had to bucket the *variables*; in this case 2 *values* was sufficient.
+We can compare this process of reduction to the case of the MNIST handwritten digits dataset described in [Haskell analysis](https://greenlake.co.uk/pages/dataset_NIST) or [Python analysis](https://greenlake.co.uk/pages/dataset_python_NIST). There the images were already centered and scaled and reduced to 28x28 pixel *variables* of 256 *values*. We then only had to bucket the *variables*; in that case 2 *values* was sufficient.
 
-We can see that, compared to MNIST, wotbot images have a huge potential *volume* (the number of pixels times `2^24`). Reducing them to the *substrate* *reduces* the *volume* (`40x40x10`) but now the wotbot has to choose the centre and the scale of the sample, so the action space goes from nothing to at least the number of pixels times the cardinality of a set of scales. In addition, there are many more *alignments* within the real images than there are within the MNIST handwritten digit images - a randomly chosen focus and scale in a real image is likely to view a random jumble of partially obscured objects or perhaps areas of some object larger than the frame. Even with an image that contains, say, a face that is reasonably centered and cropped, a set of similar faces slightly translated or seen at different distances is likely to yield lower *alignments* because there is no convolution. That is, the same object viewed with different fixation points will produce multiple *slices* and dilute the *slice sizes* accordingly. Choosing exactly the same point of view for similar images will find a single *slice* much more quickly. This is where we can take advantage of the key idea of *likelihood*-accelerated *model* growth - by selecting the most *likely* foci for attention the active *inducer* can spend its time on the parts and resolutions of the images which will yield the greatest *alignments*. In general, the most *likely* focus will present the object so that it fits the frame nicely, but to some degree the exact choice will be slightly arbitrary - so long as the same choice is used repeatedly, the *events* will be in the same *slice*. 
+We can see that, compared to MNIST, wotbot images have a huge potential *volume* (the number of pixels times `2^24`). Reducing them to the *substrate* *reduces* the *volume* (`40x40x10`) but now the wotbot has to choose the centre and the scale of the sample, so the action space goes from nothing to at least the number of pixels times the cardinality of a set of scales. In addition, there are many more *alignments* within the real images than there are within the MNIST handwritten digit images - a randomly chosen focus and scale in a real image is likely to view a random jumble of partially obscured objects or perhaps areas of some object larger than the frame. Even with an image that contains, say, a face that is reasonably centered and cropped, a set of similar faces slightly translated or seen at different distances is likely to yield lower *alignments* because there is no convolution. That is, the same object viewed with different fixation points will produce multiple *slices* and will dilute the *slice sizes* accordingly. Choosing exactly the same point of view for similar images will find a single *slice* much more quickly. This is where we can take advantage of the key idea of *likelihood*-accelerated *model* growth - by selecting the most *likely* foci for attention the active *inducer* can spend its time on the parts and resolutions of the images which will yield the greatest *alignments*. In general, the most *likely* focus will present the object so that it fits the frame nicely, but to some degree the exact choice will be somewhat arbitrary - so long as the same choice is used repeatedly, the *events* will be in the same *slice*. 
 
-In the case of the turtlebot of `TBOT03` we searched the *slice* topology to choose an action which we hope will transition to a high *likelihood* next *slice*. In the case of wotbot, there may well be a use later on for temporal *likelihoods*, especially in higher *levels*, but in `WBOT02` we will merely scan the current image to find the best place for the focus - the current *event* will be taken from the scanned frame with the highest *likelihood*. Of course, if the scene is changing rapidly, the new location may no longer be interesting, but it only provides the starting location for the search in the scan of the next image, not the next *event* itself. If an interesting object is moving across the image slowly, wotbot should be able to track it until something else more interesting appears.
+In the case of the turtlebot of `TBOT03` we searched the *slice* topology to choose an action which we hope will transition to a high *likelihood* next *slice*. In the case of wotbot, there may well be a use later on for temporal *likelihoods*, especially in higher *levels*, but in `WBOT02` we will merely scan the current image to find the best place for the focus - the current *event* will be taken from the scanned frame with the highest *likelihood*. Of course, if the scene is changing rapidly, the new location may no longer be interesting, but it only need provide the starting location for the search in the scan of the next image, not the next *event* itself. If an interesting object is moving across the image slowly, wotbot should be able to track it until something else more interesting appears.
 
 Although wotbot appears to be severely disadvantaged with respect to MNIST because of the need to saccade around the image, it does have an unlimited dataset to learn from - there are only 60,000 samples in MNIST. Active *models* are unlimited in size, so if the wotbot acts to use its compute resources efficiently by concentrating on interesting parts of the images, it has the potential to produce interesting *models*.
 
@@ -39,7 +39,7 @@ The wotbot [WBOT01 repository](https://github.com/caiks/WBOT01) was essentially 
 
 ## Download, build and run main executable in Windows
 
-This repository is based on the 6.2.4 installation of [Qt](https://www.qt.io) on Windows 11. [Download](https://www.qt.io/download) the installer `C:\Qt\MaintenanceTool.exe`, and run it. Install Qt Creator and the `Desktop Qt 6.2.4 MSVC2019 64bit` kit. (Note that the default `Desktop Qt6.2.4 MinGW 64-bit` kit, which is GCC for Windows, may not have camera or screen grab functionality.) Check the various examples build and run ok.
+This repository is based on the 6.2.4 version of [Qt](https://www.qt.io). The installation on Windows 11 is as follows. [Download](https://www.qt.io/download) the installer `C:\Qt\MaintenanceTool.exe`, and run it. Install Qt Creator and the `Desktop Qt 6.2.4 MSVC2019 64bit` kit. (Note that the default `Desktop Qt6.2.4 MinGW 64-bit` kit, which is GCC for Windows, may not have camera or screen grab functionality.) Check the various examples build and run ok.
 
 Now install the [AlignmentActive repository](https://github.com/caiks/AlignmentActive), the [AlignmentRepaC repository](https://github.com/caiks/AlignmentRepaC) and the underlying repositories. Create a directory,
 
@@ -96,24 +96,33 @@ The `actor001` window should open on the left hand side of the screen and captur
 
 ## Download, build and run main executable in Ubuntu
 
-TODO - 
+This repository is based on the 6.2.4 version of [Qt](https://www.qt.io). The installation on Ubuntu 22.04 is as follows:
+
+First install the developer tools,
 ```
-sudo apt-get update -y && sudo apt install -y git g++ cmake
-sudo apt-get install build-essential libgl1-mesa-dev
+sudo apt update -y
+sudo apt install -y git g++ cmake
+sudo apt install build-essential libgl1-mesa-dev
 sudo apt install -y g++ xorg gedit
 sudo apt install qt6-base-dev
 sudo apt install qt6-base-dev-tools
-sudo apt install qt6-wayland
 
+```
+Now install the [AlignmentActive repository](https://github.com/caiks/AlignmentActive), the [AlignmentRepaC repository](https://github.com/caiks/AlignmentRepaC) and the underlying repositories, 
+```
 git clone https://github.com/Tencent/rapidjson.git
 git clone https://github.com/caiks/AlignmentC.git
 git clone https://github.com/caiks/AlignmentRepaC.git
 git clone https://github.com/caiks/AlignmentActive.git
+
+```
+Then clone the [WBOT02 repository](https://github.com/caiks/WBOT02) and the [WBOT02 workspace repository](https://github.com/caiks/WBOT02_ws) -
+```
 git clone https://github.com/caiks/WBOT02.git
 git clone https://github.com/caiks/WBOT02_ws.git
 
 ```
-
+Then make the release build,
 ```
 mkdir AlignmentC_build AlignmentRepaC_build AlignmentActive_build WBOT02_build
 cd WBOT02_build
@@ -123,57 +132,18 @@ cd ~/WBOT02_ws
 ln -s ../WBOT02_build/WBOT02 WBOT02
 
 ```
-Copied over model030.ac and model030.rep
-
-ran 
-```
-C:\Program Files\VcXsrv
-```
-
+Then test the executable runs,
 ```
 cd ~/WBOT02_ws
-./WBOT02 actor002 actor.json
+./WBOT02 hello
 
 ```
-actor.json -
+To test `actor001` can grab the screen, run the following,
 ```
-{
-	"interval" : 100,
-	"x" : 870,
-	"width" : 560,
-	"model_initial" : "model030",
-	"mode" : "mode004",
-	"valency_fixed" : true,
-	"event_size" : 1,
-	"threads" : 6,
-	"scale" : 0.177,
-	"range_centreX" : 0.236,
-	"range_centreY" :0.177,
-	"interactive" : true,
-	"disable_update" : true,
-	"summary_active" : false,
-	"logging_action" : false,
-	"warning_action" : false
-}
-```
+cd ~/WBOT02_ws
+./WBOT02 actor001
 
 ```
-model030        load    file name: model030.ac  time 3.43874s
-model   fuds cardinality: 3816  model cardinality: 76313        active size: 527045     fuds per threshold: 1.44807
-actor   status: started
-QPainter::begin: Paint device returned engine == 0, type: 3
-QPainter::setPen: Painter not active
-QPainter::drawRects: Painter not active
-QPainter::setPen: Painter not active
-QPainter::drawRects: Painter not active
-QPainter::begin: Paint device returned engine == 0, type: 3
-QPainter::setPen: Painter not active
-QPainter::drawRects: Painter not active
-QPainter::setPen: Painter not active
-QPainter::drawRects: Painter not active
-```
-
-
 
 <a name = "Discussion"></a>
 
@@ -783,6 +753,8 @@ model029|0.177|5 scanned potential tiled actual-potential||bucketed|Film Noir|52
 model030|0.177|5 scanned potential tiled actual-potential||fixed|Film Noir|527,045|3816|1.44807|15.56|3.74|31|27|
 
 The median diagonals for the actor 2 *models* were consistently in the range 23-27, and the maximum diagonals were consistently in the the range 37-39.
+
+TODO - the potential and actual-potential models demonstrate that the search for model growth can be achieved even without restricting the history size, which we were forced to do in TBOT03.
 
 TODO - contour comparisons. Compared to model 16 model 21 has very concentrated hotspots. If we manually move around nearby the model has very short paths.
 
