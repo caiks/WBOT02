@@ -29,15 +29,15 @@ The wotbot [WBOT01 repository](https://github.com/caiks/WBOT01) was essentially 
 
 ## Sections
 
-[Download, build and run main executable in Windows](#main_Windows)
+[Download, build and run in Windows](#main_Windows)
 
-[Download, build and run main executable in Ubuntu](#main_Ubuntu)
+[Download, build and run in Ubuntu](#main_Ubuntu)
 
 [Discussion](#Discussion)
 
 <a name="main_Windows"></a>
 
-## Download, build and run main executable in Windows
+## Download, build and run in Windows
 
 This repository is based on the 6.2.4 version of [Qt](https://www.qt.io). The installation on Windows 11 is as follows. [Download](https://www.qt.io/download) the installer `C:\Qt\MaintenanceTool.exe`, and run it. Install Qt Creator and the `Desktop Qt 6.2.4 MSVC2019 64bit` kit. (Note that the default `Desktop Qt6.2.4 MinGW 64-bit` kit, which is GCC for Windows, may not have camera or screen grab functionality.) Check the various examples build and run ok.
 
@@ -94,7 +94,7 @@ The `actor001` window should open on the left hand side of the screen and captur
 
 <a name="main_Ubuntu"></a>
 
-## Download, build and run main executable in Ubuntu
+## Download, build and run in Ubuntu
 
 This repository is based on the 6.2.4 version of [Qt](https://www.qt.io). The installation on Ubuntu 22.04 is as follows:
 
@@ -149,7 +149,7 @@ cd ~/WBOT02_ws
 
 ## Discussion
 
-Now let us investigate various wotbot *slice* topologies and goals. 
+Now let us investigate various wotbot modes and active structures. 
 
 [Actor node](#Actor)
 
