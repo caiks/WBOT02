@@ -47,6 +47,9 @@ set(PROJECT_SOURCES
         win007.cpp
         win007.h
         win007.ui
+		win008.cpp
+        win008.h
+        win008.ui
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
