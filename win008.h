@@ -23,35 +23,23 @@ public:
     ~Win008();
 		
 	bool terminate;
-	bool captured;
 	std::size_t eventId;
 	
 public Q_SLOTS:
     void capture();
     void act();
-	
-protected:
-	void mousePressEvent(QMouseEvent *event) override;
-	void keyPressEvent(QKeyEvent *event);
 
 private:
     Ui::Win008 *_ui;
 	QScreen *_screen;
-	std::vector<QLabel*> _labelRecords;
-	QLabel* _labelRecordLikelihood;
-	std::size_t _labelSize;
-	std::vector<QLabel*> _labelRecordSiblings;
-	std::vector<QLabel*> _labelRecordSiblingLikelihoods;
-	std::vector<QLabel*> _labelRecordAncestors;
-	std::vector<QLabel*> _labelRecordAncestorLikelihoods;
 	QLabel* _labelCentre;
 	QLabel* _labelEvent;
 	QLabel* _labelFuds;
 	QLabel* _labelActs;
 	QLabel* _labelFails;
-	QLabel* _labelMotion;
-	QPixmap _pixmapBlank;
 	std::chrono::time_point<std::chrono::high_resolution_clock> _mark;
+	
+	QImage _image;
 
 	std::string _config;
 	bool _eventLogging;	
@@ -62,26 +50,18 @@ private:
 	bool _actWarning;
 	bool _actLoggingSlice;	
     std::chrono::milliseconds _interval;
-	std::size_t _motionThreshold;
-	std::size_t _motionCount;
-	std::size_t _motionHashStep;
-	std::size_t _motionHash;	
-	bool _motionWaiting;
 	std::string _mode;
 	bool _modeLogging;
 	std::size_t _modeLoggingFactor;
 	bool _modeTracing;
-	bool _interactive;
 	bool _updateDisable;
+	bool _gui;
 	
-	QImage _image;
-
 	std::shared_ptr<Alignment::ActiveSystem> _system;
 	std::shared_ptr<Alignment::System> _uu;
 	std::shared_ptr<Alignment::SystemRepa> _ur;
 	
 	std::shared_ptr<Alignment::ActiveEventsRepa> _events;
-	std::vector<std::thread> _threads;
 	std::shared_ptr<Alignment::Active> _active;
 	
 	std::size_t _eventIdMax;	
@@ -95,7 +75,6 @@ private:
 	Alignment::ActiveUpdateParameters _updateParameters;
 	Alignment::ActiveInduceParameters _induceParameters;
 	std::size_t _induceThreshold;
-    std::chrono::milliseconds _induceInterval;
 	std::size_t _induceThreadCount;
 	std::size_t _fudsSize;	
 	std::size_t _failCount;

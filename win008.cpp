@@ -32,13 +32,6 @@ static void layerer_actor_log(const std::string& str)
 	return;
 };
 
-void run_induce(Win008& actor, Active& active, ActiveInduceParameters& param, std::chrono::milliseconds induceInterval)
-{
-	while (!actor.terminate && !active.terminate && active.induce(param))
-		std::this_thread::sleep_for(induceInterval);
-	return;
-};
-
 Win008::Win008(const std::string& configA,
                QWidget *parent)
     : QWidget(parent),
@@ -48,7 +41,6 @@ Win008::Win008(const std::string& configA,
 	setCursor(Qt::CrossCursor);
     _ui->setupUi(this);
 	this->terminate = true;
-	this->captured = false;
 	// parse config
 	{
 		js::Document args;
@@ -78,20 +70,12 @@ Win008::Win008(const std::string& configA,
 		}
 		this->eventId = 0;
 		_eventIdPrev = 0;
-		_labelSize = ARGS_INT_DEF(label_size,8);
 		_eventLogging = ARGS_BOOL(logging_event);
 		_eventLoggingFactor = ARGS_INT(logging_event_factor);
 		_actLogging = ARGS_BOOL(logging_action);
 		_actLoggingFactor = ARGS_INT(logging_action_factor);
 		_actCount = 0;
 		_interval = (std::chrono::milliseconds)(ARGS_INT_DEF(interval,1000));
-		_lagThreshold = ARGS_INT(lag_threshold);	
-		_lagWaiting = false;
-        _motionThreshold = ARGS_INT(motion_detection_threshold);
-		_motionCount = 0;
-        _motionHashStep = ARGS_INT_DEF(motion_detection_hash_step,17);
-		_motionHash = 0; 
-		_motionWaiting = false;
 		_actWarning = ARGS_BOOL(warning_action);
 		_actLoggingSlice = ARGS_BOOL(logging_action_slice);
 		_mode = ARGS_STRING(mode);
@@ -101,14 +85,13 @@ Win008::Win008(const std::string& configA,
 		_eventIdMax = ARGS_INT(event_maximum);
 		_model = ARGS_STRING(model);
 		_modelInitial = ARGS_STRING(model_initial);
-		_interactive = ARGS_BOOL(interactive);
+		_gui = ARGS_BOOL(gui);
 		_updateDisable = ARGS_BOOL(disable_update);
 		_activeLogging = ARGS_BOOL(logging_active);
 		_activeSummary = ARGS_BOOL(summary_active);
 		_activeSize = ARGS_INT_DEF(activeSize,1000000);
 		_updateParameters.mapCapacity = ARGS_INT_DEF(updateParameters.mapCapacity,3); 
 		_induceThreshold = ARGS_INT_DEF(induceThreshold,200);
-		_induceInterval = (std::chrono::milliseconds)(ARGS_INT_DEF(induceInterval,_interval.count()));	
 		_induceThreadCount = ARGS_INT_DEF(induceThreadCount,4);
 		_induceParameters.tint = _induceThreadCount;		
 		_induceParameters.wmax = ARGS_INT_DEF(induceParameters.wmax,18);
@@ -161,91 +144,18 @@ Win008::Win008(const std::string& configA,
 		_threadCount = ARGS_INT_DEF(threads,1);	
 		_separation = ARGS_DOUBLE_DEF(separation,0.5);
 	}
-	// add dynamic GUI
-	if (_interactive)
 	{
-		_pixmapBlank = QPixmap(_size*_multiplier, _size*_multiplier);
-		_pixmapBlank.fill(this->palette().color(QWidget::backgroundRole()));
-		_ui->layout01->setAlignment(Qt::AlignLeft);
-		_ui->layout02->setAlignment(Qt::AlignLeft);
-		_ui->layout03->setAlignment(Qt::AlignLeft);
-		for (std::size_t k = 0; k < 3; k++)
-		{
-			QVBoxLayout* verticalLayout = new QVBoxLayout();
-			_ui->layout01->addLayout(verticalLayout);
-			QLabel* label1 = new QLabel(this);
-			label1->setPixmap(_pixmapBlank);	
-			label1->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-			_labelRecords.push_back(label1);
-			verticalLayout->addWidget(label1);
-			QLabel* label2 = new QLabel(this);
-			label2->setText("");	
-			label2->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-			verticalLayout->addWidget(label2);
-			if (!k)
-				_labelRecordLikelihood = label2;
-		}
-		for (std::size_t k = 0; k < _labelSize; k++)
-		{
-			QVBoxLayout* verticalLayout = new QVBoxLayout();
-			_ui->layout02->addLayout(verticalLayout);
-			QLabel* label1 = new QLabel(this);
-			label1->setPixmap(_pixmapBlank);	
-			label1->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-			QFont font = label1->font();
-			font.setPointSize(40);
-			font.setBold(true);
-			label1->setFont(font);
-			_labelRecordSiblings.push_back(label1);
-			verticalLayout->addWidget(label1);
-			QLabel* label2 = new QLabel(this);
-			label2->setText("");				
-			label2->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-			verticalLayout->addWidget(label2);
-			_labelRecordSiblingLikelihoods.push_back(label2);
-		}
-		for (std::size_t k = 0; k < _labelSize; k++)
-		{
-			QVBoxLayout* verticalLayout = new QVBoxLayout();
-			_ui->layout03->addLayout(verticalLayout);
-			QLabel* label1 = new QLabel(this);
-			label1->setPixmap(_pixmapBlank);	
-			label1->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-			QFont font = label1->font();
-			font.setPointSize(40);
-			font.setBold(true);
-			label1->setFont(font);			
-			_labelRecordAncestors.push_back(label1);
-			verticalLayout->addWidget(label1);
-			QLabel* label2 = new QLabel(this);
-			label2->setText("");				
-			label2->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
-			verticalLayout->addWidget(label2);
-			_labelRecordAncestorLikelihoods.push_back(label2);
-		}		
-		{
-			_labelCentre = new QLabel(this); 
-			_ui->layout04->addWidget(_labelCentre);
-		}		
-	}
-	{
-		if (_mode.size())
-		{
-			_labelEvent = new QLabel(this); 
-			_ui->layout04->addWidget(_labelEvent);
-			_labelActs = new QLabel(this); 
-			_ui->layout04->addWidget(_labelActs);
-			_labelFuds = new QLabel(this); 
-			_ui->layout04->addWidget(_labelFuds);
-			_labelFails = new QLabel(this); 
-			_ui->layout04->addWidget(_labelFails);
-		}	
-		if (_motionThreshold)
-		{
-			_labelMotion = new QLabel(this); 
-			_ui->layout04->addWidget(_labelMotion);
-		}
-	}
+		_labelCentre = new QLabel(this); 
+		_ui->layout04->addWidget(_labelCentre);
+		_labelEvent = new QLabel(this); 
+		_ui->layout04->addWidget(_labelEvent);
+		_labelActs = new QLabel(this); 
+		_ui->layout04->addWidget(_labelActs);
+		_labelFuds = new QLabel(this); 
+		_ui->layout04->addWidget(_labelFuds);
+		_labelFails = new QLabel(this); 
+		_ui->layout04->addWidget(_labelFails);
+	}	
 	// load slice representations if modelInitial 
 	if (_modelInitial.size())
 	{
@@ -281,7 +191,6 @@ Win008::Win008(const std::string& configA,
             _ur = std::move(std::get<1>(xx));
 		}
 		_system = std::make_shared<ActiveSystem>();
-		_threads.reserve(1);
 		_events = std::make_shared<ActiveEventsRepa>(1);
 		_active = std::make_shared<Active>();
 		{
@@ -346,16 +255,14 @@ Win008::Win008(const std::string& configA,
 			{
 				LOG activeA.name << "\tfuds cardinality: " << activeA.decomp->fuds.size() << "\tmodel cardinality: " << activeA.decomp->fudRepasSize << "\tactive size: " << sizeA << "\tfuds per threshold: " << (double)activeA.decomp->fuds.size() * activeA.induceThreshold / sizeA UNLOG				
 			}
-			if (_mode.size())
-				_threads.push_back(std::thread(run_induce, std::ref(*this), std::ref(activeA), std::ref(_induceParameters), _induceInterval));
 		}
 	}
 	// start act timer
-	if (_system)
+	if (_system && _gui)
 	{
 		this->terminate = false;		
 		_screen = QGuiApplication::primaryScreen();
-		QTimer::singleShot(_interval.count(), this, &Win008::act);
+		QTimer::singleShot(_interval.count(), this, &Win008::capture);
 		LOG "actor\tstatus: started" UNLOG
 	}
 	else
@@ -370,41 +277,9 @@ Win008::~Win008()
 	if (_system)
 	{
 		_active->terminate = true;
-		for (auto& t : _threads)
-			t.join();
 		if ( _model!="")
 		{
 			auto& activeA = *_active;
-			std::shared_ptr<HistoryRepa> hr = activeA.underlyingHistoryRepa.front();
-			auto& slev = activeA.historySlicesSetEvent;
-			auto& dr = *activeA.decomp;		
-			auto n = hr->dimension;
-			auto rr = hr->arr;	
-			auto& reps = *_slicesRepresentation;
-			// check for new leaf slices and update representation map
-            if (_mode.size() && _fudsSize < dr.fuds.size())
-			{
-				for (std::size_t i = _fudsSize; i < dr.fuds.size(); i++)
-				{
-					for (auto sliceB : dr.fuds[i].children)
-					{
-						Representation rep(1.0,1.0,_size,_size);
-						auto& arr1 = *rep.arr;
-						if (slev.count(sliceB))
-						{
-							for (auto j : slev[sliceB])
-							{
-								auto jn = j*n;
-								for (size_t i = 0; i < n-1; i++)
-									arr1[i] += rr[jn + i];
-								rep.count++;
-							}									
-							reps.insert_or_assign(sliceB, rep);							
-						}
-					}
-				}
-				_fudsSize = dr.fuds.size();
-			}
 			ActiveIOParameters ppio;
 			ppio.filename = activeA.name+".ac";
 			activeA.logging = true;
@@ -431,266 +306,13 @@ void Win008::capture()
 {
 	if (this->terminate || (_active && _active->terminate))
 		return;
-	QImage image;
-	if (!this->captured || _motionThreshold || _interactive)
-	{
-		{
-			auto pixmap = _screen->grabWindow(0, _captureX, _captureY, _captureWidth, _captureHeight);
-			image = pixmap.toImage();
-		}
-		if (_motionThreshold)
-		{
-			std::size_t hash = 0;
-			for (int y = 0; y < _captureHeight; y += _motionHashStep) 
-			{
-				for (int x = 0; x < _captureWidth; x += _motionHashStep) 
-				{
-					auto rgb = image.pixel(x,y);
-					hash = hash * 13 + (hash >> 60) + qRed(rgb);
-					hash = hash * 13 + (hash >> 60) + qGreen(rgb);
-					hash = hash * 13 + (hash >> 60) + qBlue(rgb);
-				}
-			}
-			if (hash == _motionHash)
-			{
-				_motionCount++;
-				if (!_motionWaiting)
-				{
-					if (_motionCount >= _motionThreshold)
-					{
-						this->eventId ++;	
-						_motionWaiting = true;
-					}					
-				}
-			}
-			else
-			{
-				_motionWaiting = false;				
-				_motionCount = 0;
-			}
-			_motionHash = hash;		
-			{
-				std::stringstream string;
-				string << "still: " << std::fixed << _motionCount;
-				_labelMotion->setText(string.str().data());
-			}			
-		}
-		if (!_motionWaiting && !this->captured)
-		{
-			_ui->labelImage->setPixmap(QPixmap::fromImage(image));	
-			_image = image;
-			this->captured = true;
-		}
-	}
-	if (_mode.size() && !_motionWaiting)
-	{
-		this->eventId++;	
-	}
-	// event labels
-	if (_mode.size())
-	{
-		{
-			std::stringstream string;
-			string << "event: " << std::fixed << this->eventId;
-			_labelEvent->setText(string.str().data());
-		}
-		{
-			std::stringstream string;
-			string << "acts: " << std::fixed << _actCount;
-			_labelActs->setText(string.str().data());
-		}
-		{
-			std::stringstream string;
-			string << "fuds: " << std::fixed << _fudsSize;
-			_labelFuds->setText(string.str().data());
-		}
-		{
-			std::stringstream string;
-			string << "fails: " << std::fixed << _failCount;
-			_labelFails->setText(string.str().data());
-		}
-	}
-
-	if (_system && _interactive)
-	{
-		// update events
-		Record record(image, 
-			_scale * _captureHeight / _captureWidth, _scale,
-			_centreX, _centreY, _size, _size, _divisor, _divisor);
-		Record recordValent = _valencyFixed ? record.valentFixed(_valency) : record.valent(_valency,_valencyFactor);
-		auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);	
-		// representations
-		std::size_t slice = 0;
-		std::vector<std::pair<double,std::size_t>> ancestors;
-		std::vector<std::pair<double,std::size_t>> siblings;
-		{		
-			auto drmul = listVarValuesDecompFudSlicedRepasPathSlice_u;
-			auto cap = (unsigned char)(_updateParameters.mapCapacity);
-			auto& activeA = *_active;
-			std::lock_guard<std::mutex> guard(activeA.mutex);
-			auto n = hr->dimension;
-			auto vv = hr->vectorVar;
-			auto rr = hr->arr;	
-			auto& sizes = activeA.historySlicesSize;
-			auto& dr = *activeA.decomp;		
-			auto& cv = dr.mapVarParent();
-			auto& vi = dr.mapVarInt();
-			SizeUCharStructList jj;
-			jj.reserve(n);
-			for (std::size_t i = 0; i < n; i++)
-			{
-				SizeUCharStruct qq;
-				qq.uchar = rr[i];	
-				qq.size = vv[i];
-				jj.push_back(qq);
-			}									
-			auto ll = drmul(jj,dr,cap);	
-			if (ll && ll->size())
-				slice = ll->back();
-			// ancestors
-			if (cv.count(slice) && sizes.count(slice))
-			{
-				double lnwmax = std::log(_induceParameters.wmax);
-				std::size_t sliceA = slice;
-				while (true)
-				{
-					auto sliceSize = sizes[sliceA];
-					std::size_t parentSize = sizes[cv[sliceA]];
-					double likelihood = (std::log(sliceSize) - std::log(parentSize) + lnwmax)/lnwmax;
-					ancestors.push_back(std::make_pair(likelihood, sliceA));
-					if (!sliceA)
-						break;
-					sliceA = cv[sliceA];					
-				}
-				sliceA = cv[slice];	
-				{
-					std::size_t parentSize = sizes[sliceA];
-					for (auto sliceB : dr.fuds[vi[sliceA]].children)
-					{
-						auto sliceSize = sizes[sliceB];
-						double likelihood = (std::log(sliceSize) - std::log(parentSize) + lnwmax)/lnwmax;
-						siblings.push_back(std::make_pair(likelihood, sliceB));
-					}
-				}
-			}
-		}
-		{
-			std::sort(siblings.rbegin(), siblings.rend());
-			auto& reps = *_slicesRepresentation;	
-			_labelRecords[2]->setPixmap(QPixmap::fromImage(record.image(_multiplier,0)));
-			_labelRecords[1]->setPixmap(QPixmap::fromImage(recordValent.image(_multiplier,_valency)));
-			if (reps.count(slice))
-				_labelRecords[0]->setPixmap(QPixmap::fromImage(reps[slice].image(_multiplier,_valency)));	
-			else
-				_labelRecords[0]->setPixmap(_pixmapBlank);	
-			if (reps.count(slice) && ancestors.size())
-			{
-				std::stringstream string;
-				string << std::fixed << std::setprecision(3) << ancestors[0].first << std::defaultfloat;
-				_labelRecordLikelihood->setText(string.str().data());				
-			}
-			else
-				_labelRecordLikelihood->setText("");			
-			for (std::size_t k = 0; k < _labelSize; k++)	
-			{
-				if (k == _labelSize - 1 && siblings.size() && k < siblings.size() - 1)
-				{
-					std::stringstream string;
-					string << std::fixed << std::setprecision(0) << siblings.size() - _labelSize + 1 << std::defaultfloat;
-					_labelRecordSiblings[k]->setText(string.str().data());
-					_labelRecordSiblingLikelihoods[k]->setText("");
-				}
-				else if (k < siblings.size() && reps.count(siblings[k].second))
-				{
-					_labelRecordSiblings[k]->setPixmap(QPixmap::fromImage(reps[siblings[k].second].image(_multiplier,_valency)));					
-					std::stringstream string;
-					string << std::fixed << std::setprecision(3) << siblings[k].first << std::defaultfloat;
-					_labelRecordSiblingLikelihoods[k]->setText(string.str().data());
-				}
-				else
-				{
-					_labelRecordSiblings[k]->setPixmap(_pixmapBlank);
-					_labelRecordSiblingLikelihoods[k]->setText("");
-				}
-				if (k == _labelSize - 1 && ancestors.size() && k < ancestors.size() - 1)
-				{
-					std::stringstream string;
-					string << std::fixed << std::setprecision(0) << ancestors.size() - _labelSize + 1 << std::defaultfloat;
-					_labelRecordAncestors[k]->setText(string.str().data());
-					_labelRecordAncestorLikelihoods[k]->setText("");
-				}
-				else if (k < ancestors.size() && reps.count(ancestors[k].second))
-				{
-					_labelRecordAncestors[k]->setPixmap(QPixmap::fromImage(reps[ancestors[k].second].image(_multiplier,_valency)));					
-					std::stringstream string;
-					string << std::fixed << std::setprecision(3) << ancestors[k].first << std::defaultfloat;
-					_labelRecordAncestorLikelihoods[k]->setText(string.str().data());
-				}
-				else
-				{
-					_labelRecordAncestors[k]->setPixmap(_pixmapBlank);
-					_labelRecordAncestorLikelihoods[k]->setText("");
-				}
-			}					
-		}
-		// centre label
-		{
-			std::stringstream string;
-			string << "centre: (" << std::setprecision(3) << _centreX << "," << _centreY << ")";
-			_labelCentre->setText(string.str().data());
-		}
-	}
-}
-
-void Win008::act()
-{
-	if (this->terminate || (_active && _active->terminate))
-		return;
 	auto actMark = Clock::now();	
 	// capture
 	_mark = Clock::now();
-	QImage image;
 	{
 		auto pixmap = _screen->grabWindow(0, _captureX, _captureY, _captureWidth, _captureHeight);
-		image = pixmap.toImage();
-		_ui->labelImage->setPixmap(QPixmap::fromImage(image));	
-		if (_motionThreshold)
-		{
-			std::size_t hash = 0;
-			for (int y = 0; y < _captureHeight; y += _motionHashStep) 
-			{
-				for (int x = 0; x < _captureWidth; x += _motionHashStep) 
-				{
-					auto rgb = image.pixel(x,y);
-					hash = hash * 13 + (hash >> 60) + qRed(rgb);
-					hash = hash * 13 + (hash >> 60) + qGreen(rgb);
-					hash = hash * 13 + (hash >> 60) + qBlue(rgb);
-				}
-			}
-			if (hash == _motionHash)
-			{
-				_motionCount++;
-				if (!_motionWaiting)
-				{
-					if (_motionCount >= _motionThreshold)
-					{
-						this->eventId ++;	
-						_motionWaiting = true;
-					}					
-				}
-			}
-			else
-			{
-				_motionWaiting = false;				
-				_motionCount = 0;
-			}
-			_motionHash = hash;		
-			{
-				std::stringstream string;
-				string << "still: " << std::fixed << _motionCount;
-				_labelMotion->setText(string.str().data());
-			}			
-		}
+		_image = pixmap.toImage();
+		_ui->labelImage->setPixmap(QPixmap::fromImage(_image));	
 	}
 	if (_actLogging && (_actLoggingFactor <= 1 || _actCount % _actLoggingFactor == 0))	
 	{
@@ -698,210 +320,415 @@ void Win008::act()
         string << "actor\tcaptured\t" << std::fixed << std::setprecision(6) << ((Sec)(Clock::now() - _mark)).count() << std::defaultfloat << "s";
 		LOG string.str() UNLOG
 	}
+	this->act();
+	{
+		std::stringstream string;
+		string << "centre: (" << std::setprecision(3) << _centreX << "," << _centreY << ")";
+		_labelCentre->setText(string.str().data());
+	}
+	{
+		std::stringstream string;
+		string << "event: " << std::fixed << this->eventId;
+		_labelEvent->setText(string.str().data());
+	}
+	{
+		std::stringstream string;
+		string << "acts: " << std::fixed << _actCount;
+		_labelActs->setText(string.str().data());
+	}
+	{
+		std::stringstream string;
+		string << "fuds: " << std::fixed << _fudsSize;
+		_labelFuds->setText(string.str().data());
+	}
+	{
+		std::stringstream string;
+		string << "fails: " << std::fixed << _failCount;
+		_labelFails->setText(string.str().data());
+	}
+	auto t = (Sec)(Clock::now() - actMark);
+	auto ti = (Sec)_interval;
+    if (ti > t)
+    {
+		QTimer::singleShot((int)((ti - t).count()*1000.0), this, &Win008::capture);
+	}
+	else		
+	{
+		QTimer::singleShot(0, this, &Win008::capture);
+		if (_actWarning)
+		{
+			LOG "actor\twarning: act time " << t.count() << "s" UNLOG
+		}
+	}	
+}
+
+void Win008::act()
+{
+	if (this->terminate || (_active && _active->terminate))
+		return;
 	// update
 	_mark = Clock::now(); 
-	if (_system)
+	if (_system && (!_eventIdMax || this->eventId < _eventIdMax))
 	{
 		// update events
 		std::size_t eventCount = 0;
-		_failCount = 0;
-		if (!_motionWaiting && !_lagWaiting && (!_eventIdMax || this->eventId < _eventIdMax))
+		if (_mode == "mode001")
 		{
-			if (_mode == "mode001")
+			for (std::size_t k = 0; k < _eventSize; k++)	
 			{
-				for (std::size_t k = 0; k < _eventSize; k++)	
-				{
-					auto centreRandomX = _centreRandomX > 0.0 ? ((double) rand() / (RAND_MAX)) *_centreRandomX * 2.0 - _centreRandomX : 0.0;
-					auto centreRandomY = _centreRandomY > 0.0 ? ((double) rand() / (RAND_MAX)) *_centreRandomY * 2.0 - _centreRandomY : 0.0;
-					Record record(image, 
-						_scale * _captureHeight / _captureWidth, _scale,
-						_centreX + (centreRandomX * _captureHeight / _captureWidth), 
-						_centreY + centreRandomY, 
-						_size, _size, _divisor, _divisor);
-					Record recordValent = record.valent(_valency);
-					auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
-					_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
-					this->eventId++;		
-					eventCount++;		
-				}
-				if (!_active->update(_updateParameters))
-				{
-					this->terminate = true;	
-					return;
-				}
+				auto centreRandomX = _centreRandomX > 0.0 ? ((double) rand() / (RAND_MAX)) *_centreRandomX * 2.0 - _centreRandomX : 0.0;
+				auto centreRandomY = _centreRandomY > 0.0 ? ((double) rand() / (RAND_MAX)) *_centreRandomY * 2.0 - _centreRandomY : 0.0;
+                Record record(_image,
+					_scale * _captureHeight / _captureWidth, _scale,
+					_centreX + (centreRandomX * _captureHeight / _captureWidth), 
+					_centreY + centreRandomY, 
+					_size, _size, _divisor, _divisor);
+				Record recordValent = record.valent(_valency);
+				auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
+				_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
+				this->eventId++;		
+				eventCount++;		
 			}
-			else if (_mode == "mode002")
+		}
+		else if (_mode == "mode002")
+		{
+			std::vector<Record> records;
+			for (std::size_t k = 0; k < _scanSize; k++)	
 			{
-				std::vector<Record> records;
+				auto centreRandomX = _centreRandomX > 0.0 ? ((double) rand() / (RAND_MAX)) *_centreRandomX * 2.0 - _centreRandomX : 0.0;
+				auto centreRandomY = _centreRandomY > 0.0 ? ((double) rand() / (RAND_MAX)) *_centreRandomY * 2.0 - _centreRandomY : 0.0;
+                Record record(_image,
+					_scale * _captureHeight / _captureWidth, _scale,
+					_centreX + (centreRandomX * _captureHeight / _captureWidth), 
+					_centreY + centreRandomY, 
+					_size, _size, _divisor, _divisor);
+				records.push_back(record.valent(_valency));	
+			}
+			std::vector<std::pair<double,std::size_t>> likelihoodsRecord;		
+			{		
+				auto drmul = listVarValuesDecompFudSlicedRepasPathSlice_u;
+				auto cap = (unsigned char)(_updateParameters.mapCapacity);
+				double lnwmax = std::log(_induceParameters.wmax);
+				auto& activeA = *_active;
+				std::lock_guard<std::mutex> guard(activeA.mutex);
+				auto& sizes = activeA.historySlicesSize;
+				auto& dr = *activeA.decomp;		
+				auto& cv = dr.mapVarParent();
 				for (std::size_t k = 0; k < _scanSize; k++)	
 				{
-					auto centreRandomX = _centreRandomX > 0.0 ? ((double) rand() / (RAND_MAX)) *_centreRandomX * 2.0 - _centreRandomX : 0.0;
-					auto centreRandomY = _centreRandomY > 0.0 ? ((double) rand() / (RAND_MAX)) *_centreRandomY * 2.0 - _centreRandomY : 0.0;
-					Record record(image, 
-						_scale * _captureHeight / _captureWidth, _scale,
-						_centreX + (centreRandomX * _captureHeight / _captureWidth), 
-						_centreY + centreRandomY, 
-						_size, _size, _divisor, _divisor);
-					records.push_back(record.valent(_valency));	
-				}
-				std::vector<std::pair<double,std::size_t>> likelihoodsRecord;		
-				{		
-					auto drmul = listVarValuesDecompFudSlicedRepasPathSlice_u;
-					auto cap = (unsigned char)(_updateParameters.mapCapacity);
-					double lnwmax = std::log(_induceParameters.wmax);
-					auto& activeA = *_active;
-					std::lock_guard<std::mutex> guard(activeA.mutex);
-					auto& sizes = activeA.historySlicesSize;
-					auto& dr = *activeA.decomp;		
-					auto& cv = dr.mapVarParent();
-					for (std::size_t k = 0; k < _scanSize; k++)	
+					auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, records[k]);
+					auto n = hr->dimension;
+					auto vv = hr->vectorVar;
+					auto rr = hr->arr;	
+					SizeUCharStructList jj;
+					jj.reserve(n);
+					for (std::size_t i = 0; i < n; i++)
 					{
-						auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, records[k]);
-						auto n = hr->dimension;
-						auto vv = hr->vectorVar;
-						auto rr = hr->arr;	
-						SizeUCharStructList jj;
-						jj.reserve(n);
-						for (std::size_t i = 0; i < n; i++)
+						SizeUCharStruct qq;
+						qq.uchar = rr[i];	
+						qq.size = vv[i];
+						jj.push_back(qq);
+					}
+					auto ll = drmul(jj,dr,cap);	
+					if (ll && ll->size())
+					{
+						std::size_t slice = ll->back();	
+						if (slice && cv.count(slice) && sizes.count(slice))
 						{
-							SizeUCharStruct qq;
-							qq.uchar = rr[i];	
-							qq.size = vv[i];
-							jj.push_back(qq);
-						}
-						auto ll = drmul(jj,dr,cap);	
-						if (ll && ll->size())
-						{
-							std::size_t slice = ll->back();	
-							if (slice && cv.count(slice) && sizes.count(slice))
-							{
-								// EVAL(slice);	
-								double likelihood = (std::log(sizes[slice]) - std::log(sizes[cv[slice]]) + lnwmax)/lnwmax;
-								likelihoodsRecord.push_back(std::make_pair(likelihood, k));
-							}
+							// EVAL(slice);	
+							double likelihood = (std::log(sizes[slice]) - std::log(sizes[cv[slice]]) + lnwmax)/lnwmax;
+							likelihoodsRecord.push_back(std::make_pair(likelihood, k));
 						}
 					}
-				}		
-				if (likelihoodsRecord.size())
-					std::sort(likelihoodsRecord.rbegin(), likelihoodsRecord.rend());	
-				for (std::size_t k = 0; k < _eventSize && k < _scanSize; k++)	
-				{
-					std::size_t m =  likelihoodsRecord.size() > k ? likelihoodsRecord[k].second : k;
-					auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, records[m]);
-					_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
-					this->eventId++;		
-					eventCount++;		
 				}
-				if (!_active->update(_updateParameters))
-				{
-					this->terminate = true;	
-					return;
-				}
-			}
-			else if (_mode == "mode003")
+			}		
+			if (likelihoodsRecord.size())
+				std::sort(likelihoodsRecord.rbegin(), likelihoodsRecord.rend());	
+			for (std::size_t k = 0; k < _eventSize && k < _scanSize; k++)	
 			{
-				std::vector<Record> records;
+				std::size_t m =  likelihoodsRecord.size() > k ? likelihoodsRecord[k].second : k;
+				auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, records[m]);
+				_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
+				this->eventId++;		
+				eventCount++;		
+			}
+		}
+		else if (_mode == "mode003")
+		{
+			std::vector<Record> records;
+			for (std::size_t k = 0; k < _scanSize; k++)	
+			{
+				auto centreRandomX = _centreRandomX > 0.0 ? ((double) rand() / (RAND_MAX)) *_centreRandomX * 2.0 - _centreRandomX : 0.0;
+				auto centreRandomY = _centreRandomY > 0.0 ? ((double) rand() / (RAND_MAX)) *_centreRandomY * 2.0 - _centreRandomY : 0.0;
+                Record record(_image,
+					_scale * _captureHeight / _captureWidth, _scale,
+					_centreX + (centreRandomX * _captureHeight / _captureWidth), 
+					_centreY + centreRandomY, 
+					_size, _size, _divisor, _divisor);
+				records.push_back(record.valent(_valency));	
+			}
+			std::vector<std::pair<std::pair<std::size_t,double>,std::size_t>> actsPotsRecord;
+			{		
+				auto drmul = listVarValuesDecompFudSlicedRepasPathSlice_u;
+				auto cap = (unsigned char)(_updateParameters.mapCapacity);
+				double lnwmax = std::log(_induceParameters.wmax);
+				auto& activeA = *_active;
+				std::lock_guard<std::mutex> guard(activeA.mutex);
+				auto& sizes = activeA.historySlicesSize;
+				auto& lengths = activeA.historySlicesLength;
+				auto& fails = activeA.induceSliceFailsSize;
+				auto& dr = *activeA.decomp;		
+				auto& cv = dr.mapVarParent();
 				for (std::size_t k = 0; k < _scanSize; k++)	
 				{
-					auto centreRandomX = _centreRandomX > 0.0 ? ((double) rand() / (RAND_MAX)) *_centreRandomX * 2.0 - _centreRandomX : 0.0;
-					auto centreRandomY = _centreRandomY > 0.0 ? ((double) rand() / (RAND_MAX)) *_centreRandomY * 2.0 - _centreRandomY : 0.0;
-					Record record(image, 
-						_scale * _captureHeight / _captureWidth, _scale,
-						_centreX + (centreRandomX * _captureHeight / _captureWidth), 
-						_centreY + centreRandomY, 
-						_size, _size, _divisor, _divisor);
-					records.push_back(record.valent(_valency));	
-				}
-				std::vector<std::pair<std::pair<std::size_t,double>,std::size_t>> actsPotsRecord;
-				{		
-					auto drmul = listVarValuesDecompFudSlicedRepasPathSlice_u;
-					auto cap = (unsigned char)(_updateParameters.mapCapacity);
-					double lnwmax = std::log(_induceParameters.wmax);
-					auto& activeA = *_active;
-					std::lock_guard<std::mutex> guard(activeA.mutex);
-					auto& sizes = activeA.historySlicesSize;
-					auto& lengths = activeA.historySlicesLength;
-					auto& fails = activeA.induceSliceFailsSize;
-					auto& dr = *activeA.decomp;		
-					auto& cv = dr.mapVarParent();
-					for (std::size_t k = 0; k < _scanSize; k++)	
+					auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, records[k]);
+					auto n = hr->dimension;
+					auto vv = hr->vectorVar;
+					auto rr = hr->arr;	
+					SizeUCharStructList jj;
+					jj.reserve(n);
+					for (std::size_t i = 0; i < n; i++)
 					{
-						auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, records[k]);
-						auto n = hr->dimension;
-						auto vv = hr->vectorVar;
-						auto rr = hr->arr;	
-						SizeUCharStructList jj;
-						jj.reserve(n);
-						for (std::size_t i = 0; i < n; i++)
+						SizeUCharStruct qq;
+						qq.uchar = rr[i];	
+						qq.size = vv[i];
+						jj.push_back(qq);
+					}
+					auto ll = drmul(jj,dr,cap);	
+					if (ll && ll->size())
+					{
+						std::size_t slice = ll->back();	
+						if (slice && cv.count(slice) && sizes.count(slice) 
+							&& lengths.count(slice) && !fails.count(slice))
 						{
-							SizeUCharStruct qq;
-							qq.uchar = rr[i];	
-							qq.size = vv[i];
-							jj.push_back(qq);
-						}
-						auto ll = drmul(jj,dr,cap);	
-						if (ll && ll->size())
-						{
-							std::size_t slice = ll->back();	
-							if (slice && cv.count(slice) && sizes.count(slice) 
-								&& lengths.count(slice) && !fails.count(slice))
-							{
-								double likelihood = (std::log(sizes[slice]) - std::log(sizes[cv[slice]]) + lnwmax)/lnwmax;
-								std::size_t length = lengths[slice];
-								actsPotsRecord.push_back(std::make_pair(std::make_pair(length,likelihood), k));
-							}
+							double likelihood = (std::log(sizes[slice]) - std::log(sizes[cv[slice]]) + lnwmax)/lnwmax;
+							std::size_t length = lengths[slice];
+							actsPotsRecord.push_back(std::make_pair(std::make_pair(length,likelihood), k));
 						}
 					}
-				}		
-				if (actsPotsRecord.size())
-					std::sort(actsPotsRecord.rbegin(), actsPotsRecord.rend());	
-				for (std::size_t k = 0; k < _eventSize && k < _scanSize; k++)	
-				{
-					std::size_t m =  actsPotsRecord.size() > k ? actsPotsRecord[k].second : k;
-					auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, records[m]);
-					_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
-					this->eventId++;		
-					eventCount++;		
 				}
-				if (!_active->update(_updateParameters))
+			}		
+			if (actsPotsRecord.size())
+				std::sort(actsPotsRecord.rbegin(), actsPotsRecord.rend());	
+			for (std::size_t k = 0; k < _eventSize && k < _scanSize; k++)	
+			{
+				std::size_t m =  actsPotsRecord.size() > k ? actsPotsRecord[k].second : k;
+				auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, records[m]);
+				_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
+				this->eventId++;		
+				eventCount++;		
+			}
+		}
+		else if (_mode == "mode004")
+		{
+			auto scaleX = _centreRangeX * 2.0 + _scale;
+			auto scaleY = _centreRangeY * 2.0 + _scale;
+			auto sizeX = (std::size_t)(scaleX * _size / _scale);
+			if (sizeX % 2 != _size % 2) sizeX++;
+			auto sizeY = (std::size_t)(scaleY * _size / _scale);	
+			if (sizeY % 2 != _size % 2) sizeY++;
+			double interval = _scale/_size;		
+			scaleX = sizeX * interval;
+			scaleY = sizeY * interval;
+			auto centreX = _centreX;
+			centreX = std::max(centreX, scaleX * _captureHeight / _captureWidth / 2.0);
+			centreX = std::min(centreX, 1.0 - scaleX * _captureHeight / _captureWidth / 2.0);
+			auto centreY = _centreY;
+			centreY = std::max(centreY, scaleY / 2.0);
+			centreY = std::min(centreY, 1.0 - scaleY / 2.0);
+            Record record(_image,
+				scaleX * _captureHeight / _captureWidth, scaleY,
+				centreX, centreY, 
+				sizeX, sizeY, 
+				_divisor, _divisor);	
+			std::vector<std::tuple<std::size_t,double,double,double,std::size_t,std::size_t>> actsPotsCoord(sizeY*sizeX);
+			{
+				auto& activeA = *_active;
+				auto& actor = *this;
+				std::lock_guard<std::mutex> guard(activeA.mutex);
+				std::vector<std::thread> threads;
+				threads.reserve(_threadCount);
+				for (std::size_t t = 0; t < _threadCount; t++)
+					threads.push_back(std::thread(
+						[&actor, &activeA,
+						centreX, centreY, scaleX, scaleY, sizeX, sizeY, interval, &record,
+						&actsPotsCoord] (int t)
+						{
+							auto drmul = listVarValuesDecompFudSlicedRepasPathSlice_u;
+							auto& sizes = activeA.historySlicesSize;
+							auto& lengths = activeA.historySlicesLength;
+							auto& fails = activeA.induceSliceFailsSize;
+							auto& dr = *activeA.decomp;		
+							auto& cv = dr.mapVarParent();
+							auto cap = (unsigned char)(actor._updateParameters.mapCapacity);
+							double lnwmax = std::log(actor._induceParameters.wmax);
+							auto heightWidth = (double)actor._captureHeight / (double)actor._captureWidth;
+							auto offsetX = (scaleX - actor._scale) / 2.0;
+							auto offsetY = (scaleY - actor._scale) / 2.0;
+							auto size = actor._size;
+							auto valency = actor._valency;
+							auto valencyFactor = actor._valencyFactor;
+							auto valencyFixed = actor._valencyFixed;
+							auto sizeX1 = sizeX - size;
+							auto sizeY1 = sizeY - size;
+							auto hr = sizesHistoryRepa(actor._scaleValency, valency, size*size);
+							auto n = hr->dimension;
+							auto vv = hr->vectorVar;
+							auto rr = hr->arr;
+							rr[n-1] = 0;
+							for (std::size_t y = 0, z = 0; y < sizeY1; y++)	
+								for (std::size_t x = 0; x < sizeX1; x++, z++)	
+									if (z % actor._threadCount == t)
+									{
+										Record recordSub(record,size,size,x,y);
+										Record recordValent = valencyFixed ? recordSub.valentFixed(valency) : recordSub.valent(valency,valencyFactor);
+										auto& arr1 = *recordValent.arr;	
+										SizeUCharStructList jj;
+										jj.reserve(n);
+										for (std::size_t i = 0; i < n-1; i++)
+										{
+											SizeUCharStruct qq;
+											qq.uchar = arr1[i];	
+											qq.size = vv[i];
+											if (qq.uchar)
+												jj.push_back(qq);
+										}
+										{
+											SizeUCharStruct qq;
+											qq.uchar = rr[n-1];	
+											qq.size = vv[n-1];
+											if (qq.uchar)
+												jj.push_back(qq);
+										}
+										auto ll = drmul(jj,dr,cap);	
+										std::size_t slice = 0;
+										auto posX = centreX + (interval * x - offsetX) * heightWidth;
+										auto posY = centreY + interval * y - offsetY;
+										if (ll && ll->size()) slice = ll->back();	
+										if (slice && cv.count(slice) && sizes.count(slice) 
+											&& lengths.count(slice) && !fails.count(slice))
+										{
+											auto length = lengths[slice];
+											auto likelihood = (std::log(sizes[slice]) - std::log(sizes[cv[slice]]) + lnwmax)/lnwmax;
+											actsPotsCoord[z] = std::make_tuple(length,likelihood,posX,posY,x,y);
+										}
+										else
+											actsPotsCoord[z] = std::make_tuple(0,-INFINITY,posX,posY,x,y);	
+									}
+						}, t));
+				for (auto& t : threads)
+					t.join();
+			}
+			std::sort(actsPotsCoord.rbegin(), actsPotsCoord.rend());
+			std::vector<std::tuple<std::size_t,double,double,double,std::size_t,std::size_t>> actsPotsCoordTop;
+			{
+                QImage image2 = _image.copy();
+				QPainter framePainter(&image2);
+				framePainter.setPen(Qt::darkGray);
+				framePainter.drawRect(
+					centreX * _captureWidth - scaleX * _captureHeight / 2.0, 
+					centreY * _captureHeight - scaleY * _captureHeight / 2.0, 
+					scaleX * _captureHeight,
+					scaleY * _captureHeight);
+				actsPotsCoordTop.reserve(_eventSize);
+				for (std::size_t k = 0; k < actsPotsCoord.size() && actsPotsCoordTop.size() < _eventSize; k++)	
 				{
-					this->terminate = true;	
-					return;
+					auto t = actsPotsCoord[k];
+					auto posX = std::get<2>(t);
+					auto posY = std::get<3>(t);	
+					double d2 = _scale * _separation * _scale * _separation;
+					bool separate = true;
+					for (auto t1 : actsPotsCoordTop)
+					{
+						auto posX1 = std::get<2>(t1);
+						auto posY1 = std::get<3>(t1);	
+						auto d12 = (posX1 - posX) * (posX1 - posX) + (posY1 - posY) * (posY1 - posY);
+						if (d12 < d2)
+						{
+							separate = false;
+							break;
+						}
+					}
+					if (separate)
+					{
+						actsPotsCoordTop.push_back(t);
+						// EVAL(k);	
+						// auto length = std::get<0>(t);
+						// auto likelihood = std::get<1>(t);
+						// EVAL(length);
+						// EVAL(likelihood);							
+						if (actsPotsCoordTop.size() == 1)
+							framePainter.setPen(Qt::white);		
+						else
+							framePainter.setPen(Qt::gray);
+						framePainter.drawRect(
+							posX * _captureWidth - _scale * _captureHeight / 2.0, 
+							posY * _captureHeight - _scale * _captureHeight / 2.0, 
+							_scale * _captureHeight,
+							_scale * _captureHeight);
+					}
+				}
+				_ui->labelImage->setPixmap(QPixmap::fromImage(image2));	
+				if (actsPotsCoordTop.size())
+				{
+					_centreX = std::get<2>(actsPotsCoordTop.front());
+					_centreY = std::get<3>(actsPotsCoordTop.front());	
 				}
 			}
-			else if (_mode == "mode004")
+			// EVAL(_centreX);
+			// EVAL(_centreY);
+			for (auto t : actsPotsCoordTop)
 			{
-                auto scaleX = _centreRangeX * 2.0 + _scale;
-                auto scaleY = _centreRangeY * 2.0 + _scale;
-				auto sizeX = (std::size_t)(scaleX * _size / _scale);
-				if (sizeX % 2 != _size % 2) sizeX++;
-				auto sizeY = (std::size_t)(scaleY * _size / _scale);	
-				if (sizeY % 2 != _size % 2) sizeY++;
-				double interval = _scale/_size;		
-				scaleX = sizeX * interval;
-				scaleY = sizeY * interval;
-				auto centreX = _centreX;
-				centreX = std::max(centreX, scaleX * _captureHeight / _captureWidth / 2.0);
-				centreX = std::min(centreX, 1.0 - scaleX * _captureHeight / _captureWidth / 2.0);
-				auto centreY = _centreY;
-				centreY = std::max(centreY, scaleY / 2.0);
-				centreY = std::min(centreY, 1.0 - scaleY / 2.0);
-				Record record(image, 
-					scaleX * _captureHeight / _captureWidth, scaleY,
-					centreX, centreY, 
-					sizeX, sizeY, 
-					_divisor, _divisor);	
-				std::vector<std::tuple<std::size_t,double,double,double,std::size_t,std::size_t>> actsPotsCoord(sizeY*sizeX);
+				auto x = std::get<4>(t);
+				auto y = std::get<5>(t);
+				Record recordSub(record,_size,_size,x,y);
+				Record recordValent = _valencyFixed ? recordSub.valentFixed(_valency) : recordSub.valent(_valency,_valencyFactor);
+				auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
+				if (!_updateDisable)
+					_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
+				this->eventId++;		
+				eventCount++;		
+			}
+		}
+		else if (_mode == "mode005")
+		{
+			auto scaleX = _centreRangeX * 2.0 + _scale;
+			auto scaleY = _centreRangeY * 2.0 + _scale;
+			auto sizeX = (std::size_t)(scaleX * _size / _scale);
+			sizeX = (sizeX - _size + (_sizeTile/2)) / _sizeTile * _sizeTile + _size;
+			auto sizeY = (std::size_t)(scaleY * _size / _scale);	
+			sizeY = (sizeY - _size + (_sizeTile/2)) / _sizeTile * _sizeTile + _size;
+			double interval = _scale/_size;		
+			scaleX = sizeX * interval;
+			scaleY = sizeY * interval;
+			auto centreX = _centreX;
+			centreX = std::max(centreX, scaleX * _captureHeight / _captureWidth / 2.0);
+			centreX = std::min(centreX, 1.0 - scaleX * _captureHeight / _captureWidth / 2.0);
+			auto centreY = _centreY;
+			centreY = std::max(centreY, scaleY / 2.0);
+			centreY = std::min(centreY, 1.0 - scaleY / 2.0);
+            Record record(_image,
+				scaleX * _captureHeight / _captureWidth, scaleY,
+				centreX, centreY, 
+				sizeX, sizeY, 
+				_divisor, _divisor);
+			auto hr = sizesHistoryRepa(_scaleValency, _valency, _size*_size);
+			auto n = hr->dimension;
+			auto vv = hr->vectorVar;
+			std::vector<std::tuple<double,std::size_t,double,double,std::size_t,std::size_t>> actsPotsCoordTop;
+			for (std::size_t ty = 0; ty < (sizeY-_size)/_sizeTile; ty++)	
+				for (std::size_t tx = 0; tx < (sizeX-_size)/_sizeTile; tx++)
 				{
 					auto& activeA = *_active;
 					auto& actor = *this;
+					std::vector<std::tuple<std::size_t,double,double,double,std::size_t,std::size_t>> actsPotsCoord(_sizeTile*_sizeTile);
 					std::lock_guard<std::mutex> guard(activeA.mutex);
 					std::vector<std::thread> threads;
 					threads.reserve(_threadCount);
 					for (std::size_t t = 0; t < _threadCount; t++)
 						threads.push_back(std::thread(
-							[&actor, &activeA,
-							centreX, centreY, scaleX, scaleY, sizeX, sizeY, interval, &record,
+							[&actor, &activeA, n, vv, 
+							centreX, centreY, scaleX, scaleY, sizeX, sizeY, interval, &record, tx, ty,
 							&actsPotsCoord] (int t)
 							{
 								auto drmul = listVarValuesDecompFudSlicedRepasPathSlice_u;
@@ -916,18 +743,12 @@ void Win008::act()
 								auto offsetX = (scaleX - actor._scale) / 2.0;
 								auto offsetY = (scaleY - actor._scale) / 2.0;
 								auto size = actor._size;
+								auto sizeTile = actor._sizeTile;
 								auto valency = actor._valency;
 								auto valencyFactor = actor._valencyFactor;
 								auto valencyFixed = actor._valencyFixed;
-								auto sizeX1 = sizeX - size;
-								auto sizeY1 = sizeY - size;
-								auto hr = sizesHistoryRepa(actor._scaleValency, valency, size*size);
-								auto n = hr->dimension;
-								auto vv = hr->vectorVar;
-								auto rr = hr->arr;
-								rr[n-1] = 0;
-								for (std::size_t y = 0, z = 0; y < sizeY1; y++)	
-									for (std::size_t x = 0; x < sizeX1; x++, z++)	
+								for (std::size_t y = ty*sizeTile, z = 0; y < (ty+1)*sizeTile; y++)	
+									for (std::size_t x = tx*sizeTile; x < (tx+1)*sizeTile; x++, z++)
 										if (z % actor._threadCount == t)
 										{
 											Record recordSub(record,size,size,x,y);
@@ -940,13 +761,6 @@ void Win008::act()
 												SizeUCharStruct qq;
 												qq.uchar = arr1[i];	
 												qq.size = vv[i];
-												if (qq.uchar)
-													jj.push_back(qq);
-											}
-											{
-												SizeUCharStruct qq;
-												qq.uchar = rr[n-1];	
-												qq.size = vv[n-1];
 												if (qq.uchar)
 													jj.push_back(qq);
 											}
@@ -968,243 +782,82 @@ void Win008::act()
 							}, t));
 					for (auto& t : threads)
 						t.join();
-				}
-                std::sort(actsPotsCoord.rbegin(), actsPotsCoord.rend());
-				std::vector<std::tuple<std::size_t,double,double,double,std::size_t,std::size_t>> actsPotsCoordTop;
-				{
-					QImage image2 = image.copy();
-					QPainter framePainter(&image2);
-					framePainter.setPen(Qt::darkGray);
-					framePainter.drawRect(
-						centreX * _captureWidth - scaleX * _captureHeight / 2.0, 
-						centreY * _captureHeight - scaleY * _captureHeight / 2.0, 
-						scaleX * _captureHeight,
-						scaleY * _captureHeight);
-					actsPotsCoordTop.reserve(_eventSize);
-					for (std::size_t k = 0; k < actsPotsCoord.size() && actsPotsCoordTop.size() < _eventSize; k++)	
+					if (actsPotsCoord.size())
 					{
-						auto t = actsPotsCoord[k];
+						std::sort(actsPotsCoord.begin(), actsPotsCoord.end());
+						auto t = actsPotsCoord.back();
+						auto length = std::get<0>(t);
+						auto likelihood = std::get<1>(t);
 						auto posX = std::get<2>(t);
-						auto posY = std::get<3>(t);	
-						double d2 = _scale * _separation * _scale * _separation;
-						bool separate = true;
-						for (auto t1 : actsPotsCoordTop)
-						{
-							auto posX1 = std::get<2>(t1);
-							auto posY1 = std::get<3>(t1);	
-							auto d12 = (posX1 - posX) * (posX1 - posX) + (posY1 - posY) * (posY1 - posY);
-							if (d12 < d2)
-							{
-								separate = false;
-								break;
-							}
-						}
-						if (separate)
-						{
-							actsPotsCoordTop.push_back(t);
-							// EVAL(k);	
-							// auto length = std::get<0>(t);
-							// auto likelihood = std::get<1>(t);
-							// EVAL(length);
-							// EVAL(likelihood);							
-							if (actsPotsCoordTop.size() == 1)
-								framePainter.setPen(Qt::white);		
-							else
-								framePainter.setPen(Qt::gray);
-							framePainter.drawRect(
-								posX * _captureWidth - _scale * _captureHeight / 2.0, 
-								posY * _captureHeight - _scale * _captureHeight / 2.0, 
-								_scale * _captureHeight,
-								_scale * _captureHeight);
-						}
-					}
-					_ui->labelImage->setPixmap(QPixmap::fromImage(image2));	
-					if (actsPotsCoordTop.size())
-					{
-						_centreX = std::get<2>(actsPotsCoordTop.front());
-						_centreY = std::get<3>(actsPotsCoordTop.front());	
+						auto posY = std::get<3>(t);								
+						auto x = std::get<4>(t);								
+						auto y = std::get<5>(t);								
+						actsPotsCoordTop.push_back(std::make_tuple(likelihood,length,posX,posY,x,y));
 					}
 				}
-				// EVAL(_centreX);
-				// EVAL(_centreY);
-				for (auto t : actsPotsCoordTop)
-				{
-					auto x = std::get<4>(t);
-					auto y = std::get<5>(t);
-					Record recordSub(record,_size,_size,x,y);
-					Record recordValent = _valencyFixed ? recordSub.valentFixed(_valency) : recordSub.valent(_valency,_valencyFactor);
-					auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
-					if (!_updateDisable)
-						_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
-					this->eventId++;		
-					eventCount++;		
-				}
-				if (!_updateDisable && !_active->update(_updateParameters))
-				{
-					this->terminate = true;	
-					return;
-				}
-			}
-			else if (_mode == "mode005")
+			std::sort(actsPotsCoordTop.rbegin(), actsPotsCoordTop.rend());
 			{
-                auto scaleX = _centreRangeX * 2.0 + _scale;
-                auto scaleY = _centreRangeY * 2.0 + _scale;
-				auto sizeX = (std::size_t)(scaleX * _size / _scale);
-				sizeX = (sizeX - _size + (_sizeTile/2)) / _sizeTile * _sizeTile + _size;
-				auto sizeY = (std::size_t)(scaleY * _size / _scale);	
-				sizeY = (sizeY - _size + (_sizeTile/2)) / _sizeTile * _sizeTile + _size;
-				double interval = _scale/_size;		
-				scaleX = sizeX * interval;
-				scaleY = sizeY * interval;
-				auto centreX = _centreX;
-				centreX = std::max(centreX, scaleX * _captureHeight / _captureWidth / 2.0);
-				centreX = std::min(centreX, 1.0 - scaleX * _captureHeight / _captureWidth / 2.0);
-				auto centreY = _centreY;
-				centreY = std::max(centreY, scaleY / 2.0);
-				centreY = std::min(centreY, 1.0 - scaleY / 2.0);
-				Record record(image, 
-					scaleX * _captureHeight / _captureWidth, scaleY,
-					centreX, centreY, 
-					sizeX, sizeY, 
-					_divisor, _divisor);
-				auto hr = sizesHistoryRepa(_scaleValency, _valency, _size*_size);
-				auto n = hr->dimension;
-				auto vv = hr->vectorVar;
-				std::vector<std::tuple<double,std::size_t,double,double,std::size_t,std::size_t>> actsPotsCoordTop;
-				for (std::size_t ty = 0; ty < (sizeY-_size)/_sizeTile; ty++)	
-					for (std::size_t tx = 0; tx < (sizeX-_size)/_sizeTile; tx++)
-					{
-						auto& activeA = *_active;
-						auto& actor = *this;
-						std::vector<std::tuple<std::size_t,double,double,double,std::size_t,std::size_t>> actsPotsCoord(_sizeTile*_sizeTile);
-						std::lock_guard<std::mutex> guard(activeA.mutex);
-						std::vector<std::thread> threads;
-						threads.reserve(_threadCount);
-						for (std::size_t t = 0; t < _threadCount; t++)
-							threads.push_back(std::thread(
-								[&actor, &activeA, n, vv, 
-								centreX, centreY, scaleX, scaleY, sizeX, sizeY, interval, &record, tx, ty,
-								&actsPotsCoord] (int t)
-								{
-									auto drmul = listVarValuesDecompFudSlicedRepasPathSlice_u;
-									auto& sizes = activeA.historySlicesSize;
-									auto& lengths = activeA.historySlicesLength;
-									auto& fails = activeA.induceSliceFailsSize;
-									auto& dr = *activeA.decomp;		
-									auto& cv = dr.mapVarParent();
-									auto cap = (unsigned char)(actor._updateParameters.mapCapacity);
-									double lnwmax = std::log(actor._induceParameters.wmax);
-									auto heightWidth = (double)actor._captureHeight / (double)actor._captureWidth;
-									auto offsetX = (scaleX - actor._scale) / 2.0;
-									auto offsetY = (scaleY - actor._scale) / 2.0;
-									auto size = actor._size;
-									auto sizeTile = actor._sizeTile;
-									auto valency = actor._valency;
-									auto valencyFactor = actor._valencyFactor;
-									auto valencyFixed = actor._valencyFixed;
-									for (std::size_t y = ty*sizeTile, z = 0; y < (ty+1)*sizeTile; y++)	
-										for (std::size_t x = tx*sizeTile; x < (tx+1)*sizeTile; x++, z++)
-											if (z % actor._threadCount == t)
-											{
-												Record recordSub(record,size,size,x,y);
-												Record recordValent = valencyFixed ? recordSub.valentFixed(valency) : recordSub.valent(valency,valencyFactor);
-												auto& arr1 = *recordValent.arr;	
-												SizeUCharStructList jj;
-												jj.reserve(n);
-												for (std::size_t i = 0; i < n-1; i++)
-												{
-													SizeUCharStruct qq;
-													qq.uchar = arr1[i];	
-													qq.size = vv[i];
-													if (qq.uchar)
-														jj.push_back(qq);
-												}
-												auto ll = drmul(jj,dr,cap);	
-												std::size_t slice = 0;
-												auto posX = centreX + (interval * x - offsetX) * heightWidth;
-												auto posY = centreY + interval * y - offsetY;
-												if (ll && ll->size()) slice = ll->back();	
-												if (slice && cv.count(slice) && sizes.count(slice) 
-													&& lengths.count(slice) && !fails.count(slice))
-												{
-													auto length = lengths[slice];
-													auto likelihood = (std::log(sizes[slice]) - std::log(sizes[cv[slice]]) + lnwmax)/lnwmax;
-													actsPotsCoord[z] = std::make_tuple(length,likelihood,posX,posY,x,y);
-												}
-												else
-													actsPotsCoord[z] = std::make_tuple(0,-INFINITY,posX,posY,x,y);	
-											}
-								}, t));
-						for (auto& t : threads)
-							t.join();
-						if (actsPotsCoord.size())
-						{
-							std::sort(actsPotsCoord.begin(), actsPotsCoord.end());
-							auto t = actsPotsCoord.back();
-							auto length = std::get<0>(t);
-							auto likelihood = std::get<1>(t);
-							auto posX = std::get<2>(t);
-							auto posY = std::get<3>(t);								
-							auto x = std::get<4>(t);								
-							auto y = std::get<5>(t);								
-							actsPotsCoordTop.push_back(std::make_tuple(likelihood,length,posX,posY,x,y));
-						}
-					}
-                std::sort(actsPotsCoordTop.rbegin(), actsPotsCoordTop.rend());
-				{
-					QImage image2 = image.copy();
-					QPainter framePainter(&image2);
-					framePainter.setPen(Qt::darkGray);
-					framePainter.drawRect(
-						centreX * _captureWidth - scaleX * _captureHeight / 2.0, 
-						centreY * _captureHeight - scaleY * _captureHeight / 2.0, 
-						scaleX * _captureHeight,
-						scaleY * _captureHeight);
-					for (std::size_t k = 0; k < actsPotsCoordTop.size() && k < _eventSize; k++)	
-					{
-						auto t = actsPotsCoordTop[k];
-						auto posX = std::get<2>(t);
-						auto posY = std::get<3>(t);							
-						if (k == 0)
-							framePainter.setPen(Qt::white);		
-						else
-							framePainter.setPen(Qt::gray);
-						framePainter.drawRect(
-							posX * _captureWidth - _scale * _captureHeight / 2.0, 
-							posY * _captureHeight - _scale * _captureHeight / 2.0, 
-							_scale * _captureHeight,
-							_scale * _captureHeight);
-					}
-					_ui->labelImage->setPixmap(QPixmap::fromImage(image2));	
-					if (actsPotsCoordTop.size())
-					{
-						_centreX = std::get<2>(actsPotsCoordTop.front());
-						_centreY = std::get<3>(actsPotsCoordTop.front());	
-					}
-				}
-				// EVAL(_centreX);
-				// EVAL(_centreY);
+                QImage image2 = _image.copy();
+				QPainter framePainter(&image2);
+				framePainter.setPen(Qt::darkGray);
+				framePainter.drawRect(
+					centreX * _captureWidth - scaleX * _captureHeight / 2.0, 
+					centreY * _captureHeight - scaleY * _captureHeight / 2.0, 
+					scaleX * _captureHeight,
+					scaleY * _captureHeight);
 				for (std::size_t k = 0; k < actsPotsCoordTop.size() && k < _eventSize; k++)	
 				{
-					// EVAL(k);
 					auto t = actsPotsCoordTop[k];
-					// EVAL(std::get<0>(t));
-					// EVAL(std::get<1>(t));
-					auto x = std::get<4>(t);
-					auto y = std::get<5>(t);
-					Record recordSub(record,_size,_size,x,y);
-					Record recordValent = _valencyFixed ? recordSub.valentFixed(_valency) : recordSub.valent(_valency,_valencyFactor);
-					auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
-					if (!_updateDisable)
-						_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
-					this->eventId++;		
-					eventCount++;		
+					auto posX = std::get<2>(t);
+					auto posY = std::get<3>(t);							
+					if (k == 0)
+						framePainter.setPen(Qt::white);		
+					else
+						framePainter.setPen(Qt::gray);
+					framePainter.drawRect(
+						posX * _captureWidth - _scale * _captureHeight / 2.0, 
+						posY * _captureHeight - _scale * _captureHeight / 2.0, 
+						_scale * _captureHeight,
+						_scale * _captureHeight);
 				}
-				if (!_updateDisable && !_active->update(_updateParameters))
+				_ui->labelImage->setPixmap(QPixmap::fromImage(image2));	
+				if (actsPotsCoordTop.size())
 				{
-					this->terminate = true;	
-					return;
+					_centreX = std::get<2>(actsPotsCoordTop.front());
+					_centreY = std::get<3>(actsPotsCoordTop.front());	
 				}
+			}
+			// EVAL(_centreX);
+			// EVAL(_centreY);
+			for (std::size_t k = 0; k < actsPotsCoordTop.size() && k < _eventSize; k++)	
+			{
+				// EVAL(k);
+				auto t = actsPotsCoordTop[k];
+				// EVAL(std::get<0>(t));
+				// EVAL(std::get<1>(t));
+				auto x = std::get<4>(t);
+				auto y = std::get<5>(t);
+				Record recordSub(record,_size,_size,x,y);
+				Record recordValent = _valencyFixed ? recordSub.valentFixed(_valency) : recordSub.valent(_valency,_valencyFactor);
+				auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
+				if (!_updateDisable)
+					_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
+				this->eventId++;		
+				eventCount++;		
+			}
+
+		}
+		if (!_updateDisable)
+		{
+			if (!_active->update(_updateParameters))
+			{
+				this->terminate = true;	
+				return;
+			}
+			if (!_active->induce(_induceParameters))
+			{
+				this->terminate = true;	
+				return;
 			}
 		}
 		// representations
@@ -1219,7 +872,10 @@ void Win008::act()
 			auto y = activeA.historyEvent;
 			auto rr = hr->arr;	
 			auto rs = hs.arr;
-			auto& dr = *activeA.decomp;		
+			auto& fails = activeA.induceSliceFailsSize;
+			_failCount = fails.size();
+			auto& dr = *activeA.decomp;	
+			_fudsSize = dr.fuds.size();			
 			auto& cv = dr.mapVarParent();
 			auto& reps = *_slicesRepresentation;
 			for (std::size_t k = 0; k < eventCount; k++)	
@@ -1241,84 +897,6 @@ void Win008::act()
 					slice = cv[slice];
 				}		
 			}		
-			// check for new leaf slices and update representation map
-            if (_fudsSize < dr.fuds.size())
-			{
-				for (std::size_t i = _fudsSize; i < dr.fuds.size(); i++)
-				{
-					for (auto sliceB : dr.fuds[i].children)
-					{
-						Representation rep(1.0,1.0,_size,_size);
-						auto& arr1 = *rep.arr;
-						if (slev.count(sliceB))
-						{
-							for (auto j : slev[sliceB])
-							{
-								auto jn = j*n;
-								for (size_t i = 0; i < n-1; i++)
-									arr1[i] += rr[jn + i];
-								rep.count++;
-							}									
-							reps.insert_or_assign(sliceB, rep);
-						}
-					}
-				}
-				_fudsSize = dr.fuds.size();
-			}
-			// determine if a lagging pause is needed
-            if (_lagThreshold)
-			{
-				auto& thresholds = _induceParameters.induceThresholds;
-				auto& fails = activeA.induceSliceFailsSize;
-				_failCount = fails.size();
-				for (auto slice : activeA.induceSlices)
-				{
-					auto it = fails.find(slice);
-					if (it != fails.end())
-					{
-						auto sliceSize = slev[slice].size();
-						if (it->second < sliceSize 
-							&& (!thresholds.size() || thresholds.count(sliceSize)))			
-							lag++;							
-					}
-					else 
-						lag++;
-				}	
-				if (lag >= _lagThreshold && !_lagWaiting)
-				{
-					this->eventId ++;	
-					_lagWaiting = true;		
-				}
-				else if (!lag)
-					_lagWaiting = false;	
-			}
-		}
-        // event label
-		if (_mode.size())
-		{
-			std::stringstream string;
-			string << "event: " << std::fixed << this->eventId;
-			_labelEvent->setText(string.str().data());
-		}
-		if (_mode.size())
-		{
-			std::stringstream string;
-			string << "fuds: " << std::fixed << _fudsSize;
-			_labelFuds->setText(string.str().data());
-		}
-		// lagging label
-        if (_lagThreshold)
-		{
-			std::stringstream string;
-			string << "lag: " << std::fixed << lag;
-			_labelActs->setText(string.str().data());
-		}
-		// fails label
-        if (_lagThreshold)
-		{
-			std::stringstream string;
-			string << "fails: " << std::fixed << _failCount;
-			_labelFails->setText(string.str().data());
 		}
 		if (_eventLogging && (_eventLoggingFactor <= 1 || this->eventId >= _eventIdPrev +  _eventLoggingFactor))
 		{
@@ -1332,202 +910,6 @@ void Win008::act()
         string << "actor\tupdated\t" << std::fixed << std::setprecision(6) << ((Sec)(Clock::now() - _mark)).count() << std::defaultfloat << "s";
 		LOG string.str() UNLOG
 	}
-	_mark = Clock::now(); 
-	if (_system && _interactive)
-	{
-		// update events
-		Record record(image, 
-			_scale * _captureHeight / _captureWidth, _scale,
-			_centreX, _centreY, _size, _size, _divisor, _divisor);
-		Record recordValent = _valencyFixed ? record.valentFixed(_valency) : record.valent(_valency,_valencyFactor);
-		auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);	
-		// representations
-		std::size_t slice = 0;
-		std::vector<std::pair<double,std::size_t>> ancestors;
-		std::vector<std::pair<double,std::size_t>> siblings;
-		{		
-			auto drmul = listVarValuesDecompFudSlicedRepasPathSlice_u;
-			auto cap = (unsigned char)(_updateParameters.mapCapacity);
-			auto& activeA = *_active;
-			std::lock_guard<std::mutex> guard(activeA.mutex);
-			auto n = hr->dimension;
-			auto vv = hr->vectorVar;
-			auto rr = hr->arr;	
-			auto& sizes = activeA.historySlicesSize;
-			auto& dr = *activeA.decomp;		
-			auto& cv = dr.mapVarParent();
-			auto& vi = dr.mapVarInt();
-			SizeUCharStructList jj;
-			jj.reserve(n);
-			for (std::size_t i = 0; i < n; i++)
-			{
-				SizeUCharStruct qq;
-				qq.uchar = rr[i];	
-				qq.size = vv[i];
-				jj.push_back(qq);
-			}									
-			auto ll = drmul(jj,dr,cap);	
-			if (ll && ll->size())
-				slice = ll->back();
-			// ancestors
-			if (cv.count(slice) && sizes.count(slice))
-			{
-				double lnwmax = std::log(_induceParameters.wmax);
-				std::size_t sliceA = slice;
-				while (true)
-				{
-					auto sliceSize = sizes[sliceA];
-					std::size_t parentSize = sizes[cv[sliceA]];
-					double likelihood = (std::log(sliceSize) - std::log(parentSize) + lnwmax)/lnwmax;
-					ancestors.push_back(std::make_pair(likelihood, sliceA));
-					if (!sliceA)
-						break;
-					sliceA = cv[sliceA];					
-				}
-				sliceA = cv[slice];	
-				{
-					std::size_t parentSize = sizes[sliceA];
-					for (auto sliceB : dr.fuds[vi[sliceA]].children)
-					{
-						auto sliceSize = sizes[sliceB];
-						double likelihood = (std::log(sliceSize) - std::log(parentSize) + lnwmax)/lnwmax;
-						siblings.push_back(std::make_pair(likelihood, sliceB));
-					}
-				}
-			}
-		}
-		{
-			std::sort(siblings.rbegin(), siblings.rend());
-			auto& reps = *_slicesRepresentation;	
-			_labelRecords[2]->setPixmap(QPixmap::fromImage(record.image(_multiplier,0)));
-			_labelRecords[1]->setPixmap(QPixmap::fromImage(recordValent.image(_multiplier,_valency)));
-			if (reps.count(slice))
-				_labelRecords[0]->setPixmap(QPixmap::fromImage(reps[slice].image(_multiplier,_valency)));	
-			else
-				_labelRecords[0]->setPixmap(_pixmapBlank);	
-			if (reps.count(slice) && ancestors.size())
-			{
-				std::stringstream string;
-				string << std::fixed << std::setprecision(3) << ancestors[0].first << std::defaultfloat;
-				_labelRecordLikelihood->setText(string.str().data());				
-			}
-			else
-				_labelRecordLikelihood->setText("");			
-			for (std::size_t k = 0; k < _labelSize; k++)	
-			{
-				if (k == _labelSize - 1 && siblings.size() && k < siblings.size() - 1)
-				{
-					std::stringstream string;
-					string << std::fixed << std::setprecision(0) << siblings.size() - _labelSize + 1 << std::defaultfloat;
-					_labelRecordSiblings[k]->setText(string.str().data());
-					_labelRecordSiblingLikelihoods[k]->setText("");
-				}
-				else if (k < siblings.size() && reps.count(siblings[k].second))
-				{
-					_labelRecordSiblings[k]->setPixmap(QPixmap::fromImage(reps[siblings[k].second].image(_multiplier,_valency)));					
-					std::stringstream string;
-					string << std::fixed << std::setprecision(3) << siblings[k].first << std::defaultfloat;
-					_labelRecordSiblingLikelihoods[k]->setText(string.str().data());
-				}
-				else
-				{
-					_labelRecordSiblings[k]->setPixmap(_pixmapBlank);
-					_labelRecordSiblingLikelihoods[k]->setText("");
-				}
-				if (k == _labelSize - 1 && ancestors.size() && k < ancestors.size() - 1)
-				{
-					std::stringstream string;
-					string << std::fixed << std::setprecision(0) << ancestors.size() - _labelSize + 1 << std::defaultfloat;
-					_labelRecordAncestors[k]->setText(string.str().data());
-					_labelRecordAncestorLikelihoods[k]->setText("");
-				}
-				else if (k < ancestors.size() && reps.count(ancestors[k].second))
-				{
-					_labelRecordAncestors[k]->setPixmap(QPixmap::fromImage(reps[ancestors[k].second].image(_multiplier,_valency)));					
-					std::stringstream string;
-					string << std::fixed << std::setprecision(3) << ancestors[k].first << std::defaultfloat;
-					_labelRecordAncestorLikelihoods[k]->setText(string.str().data());
-				}
-				else
-				{
-					_labelRecordAncestors[k]->setPixmap(_pixmapBlank);
-					_labelRecordAncestorLikelihoods[k]->setText("");
-				}
-			}					
-		}
-		// centre label
-		{
-			std::stringstream string;
-			string << "centre: (" << std::setprecision(3) << _centreX << "," << _centreY << ")";
-			_labelCentre->setText(string.str().data());
-		}
-	}
-	if (_system && _interactive && _actLogging && (_actLoggingFactor <= 1 || _actCount % _actLoggingFactor == 0))
-	{
-		std::stringstream string;
-        string << "actor\tinteractive\t" << std::fixed << std::setprecision(6) << ((Sec)(Clock::now() - _mark)).count() << std::defaultfloat << "s";
-		LOG string.str() UNLOG
-	}
-    auto t = (Sec)(Clock::now() - actMark);
-	auto ti = (Sec)_interval;
-    if (ti > t)
-    {
-		QTimer::singleShot((int)((ti - t).count()*1000.0), this, &Win008::act);
-	}
-	else		
-	{
-		QTimer::singleShot(0, this, &Win008::act);
-		if (_actWarning)
-		{
-			LOG "actor\twarning: act time " << t.count() << "s" UNLOG
-		}
-	}	
 	_actCount++;
 }
 
-void Win008::mousePressEvent(QMouseEvent *event)
-{
-	if (_interactive)	
-	{
-		auto geo = _ui->labelImage->geometry();
-		auto point = event->position().toPoint() - geo.topLeft();
-		_centreX = (double)point.x()/geo.size().width();
-		_centreY = (double)point.y()/geo.size().height();
-        std::stringstream string;
-        string << "centre: (" << std::setprecision(3) << _centreX << "," << _centreY << ")";
-        // LOG string.str() UNLOG
-        _labelCentre->setText(string.str().data());
-	}
-}
-
-void Win008::keyPressEvent(QKeyEvent *event)
-{
-	if (_interactive)	
-	{
-		if(event->key() == Qt::Key_Left)
-		{
-			_centreX -= 0.25/40.0;
-		}
-		else if(event->key() == Qt::Key_Up)
-		{
-			_centreY -= 0.25/40.0;
-		}
-		else if(event->key() == Qt::Key_Down)
-		{
-			_centreY += 0.25/40.0;
-		}
-		else if(event->key() == Qt::Key_Right)
-		{
-			_centreX += 0.25/40.0;
-		}
-		else if(event->key() == Qt::Key_Space)
-		{
-			_centreX = 0.5;
-			_centreY = 0.5;
-		}
-        std::stringstream string;
-        string << "centre: (" << std::setprecision(3) << _centreX << "," << _centreY << ")";
-        // LOG string.str() UNLOG
-        _labelCentre->setText(string.str().data());
-	}
-}
