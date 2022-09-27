@@ -24,6 +24,7 @@ public:
 		
 	bool terminate;
 	std::size_t eventId;
+	bool gui;
 	
 public Q_SLOTS:
     void capture();
@@ -35,7 +36,6 @@ private:
 	QLabel* _labelCentre;
 	QLabel* _labelEvent;
 	QLabel* _labelFuds;
-	QLabel* _labelActs;
 	QLabel* _labelFails;
 	std::chrono::time_point<std::chrono::high_resolution_clock> _mark;
 	
@@ -55,7 +55,6 @@ private:
 	std::size_t _modeLoggingFactor;
 	bool _modeTracing;
 	bool _updateDisable;
-	bool _gui;
 	
 	std::shared_ptr<Alignment::ActiveSystem> _system;
 	std::shared_ptr<Alignment::System> _uu;

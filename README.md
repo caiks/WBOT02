@@ -751,6 +751,7 @@ model027|0.177|10 scanned actual-potential||bucketed|Film Noir|759,760|3757|0.98
 model028|0.177|10 scanned actual-potential||bucketed|Film Noir|659,550|3203|0.971268|14.84|3.14|27|49|
 model029|0.177|5 scanned potential tiled actual-potential||bucketed|Film Noir|526,345|3386|1.28661|13.49|2.60|23|2|
 model030|0.177|5 scanned potential tiled actual-potential||fixed|Film Noir|527,045|3816|1.44807|15.56|3.74|31|27|
+model031|0.177|5 scanned potential tiled actual-potential||fixed|Film Noir|452,255|3197|1.4138|14.62|3.73|32|31|12.0 min diagonal
 
 The median diagonals for the actor 2 *models* were consistently in the range 23-27, and the maximum diagonals were consistently in the the range 37-39.
 

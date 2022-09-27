@@ -85,7 +85,7 @@ Win008::Win008(const std::string& configA,
 		_eventIdMax = ARGS_INT(event_maximum);
 		_model = ARGS_STRING(model);
 		_modelInitial = ARGS_STRING(model_initial);
-		_gui = ARGS_BOOL(gui);
+		gui = ARGS_BOOL(gui);
 		_updateDisable = ARGS_BOOL(disable_update);
 		_activeLogging = ARGS_BOOL(logging_active);
 		_activeSummary = ARGS_BOOL(summary_active);
@@ -149,8 +149,6 @@ Win008::Win008(const std::string& configA,
 		_ui->layout04->addWidget(_labelCentre);
 		_labelEvent = new QLabel(this); 
 		_ui->layout04->addWidget(_labelEvent);
-		_labelActs = new QLabel(this); 
-		_ui->layout04->addWidget(_labelActs);
 		_labelFuds = new QLabel(this); 
 		_ui->layout04->addWidget(_labelFuds);
 		_labelFails = new QLabel(this); 
@@ -258,12 +256,15 @@ Win008::Win008(const std::string& configA,
 		}
 	}
 	// start act timer
-	if (_system && _gui)
+	if (_system)
 	{
-		this->terminate = false;		
-		_screen = QGuiApplication::primaryScreen();
-		QTimer::singleShot(_interval.count(), this, &Win008::capture);
-		LOG "actor\tstatus: started" UNLOG
+		this->terminate = false;	
+		if (gui)
+		{
+			_screen = QGuiApplication::primaryScreen();
+			QTimer::singleShot(_interval.count(), this, &Win008::capture);
+		}
+		LOG "actor\tstatus: initialised" UNLOG
 	}
 	else
 	{
@@ -333,11 +334,6 @@ void Win008::capture()
 	}
 	{
 		std::stringstream string;
-		string << "acts: " << std::fixed << _actCount;
-		_labelActs->setText(string.str().data());
-	}
-	{
-		std::stringstream string;
 		string << "fuds: " << std::fixed << _fudsSize;
 		_labelFuds->setText(string.str().data());
 	}
@@ -383,7 +379,7 @@ void Win008::act()
 					_centreX + (centreRandomX * _captureHeight / _captureWidth), 
 					_centreY + centreRandomY, 
 					_size, _size, _divisor, _divisor);
-				Record recordValent = record.valent(_valency);
+				Record recordValent = _valencyFixed ? record.valentFixed(_valency) : record.valent(_valency,_valencyFactor);
 				auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
 				_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
 				this->eventId++;		
@@ -402,7 +398,7 @@ void Win008::act()
 					_centreX + (centreRandomX * _captureHeight / _captureWidth), 
 					_centreY + centreRandomY, 
 					_size, _size, _divisor, _divisor);
-				records.push_back(record.valent(_valency));	
+				records.push_back(_valencyFixed ? record.valentFixed(_valency) : record.valent(_valency,_valencyFactor));	
 			}
 			std::vector<std::pair<double,std::size_t>> likelihoodsRecord;		
 			{		
@@ -410,7 +406,7 @@ void Win008::act()
 				auto cap = (unsigned char)(_updateParameters.mapCapacity);
 				double lnwmax = std::log(_induceParameters.wmax);
 				auto& activeA = *_active;
-				std::lock_guard<std::mutex> guard(activeA.mutex);
+				// std::lock_guard<std::mutex> guard(activeA.mutex);
 				auto& sizes = activeA.historySlicesSize;
 				auto& dr = *activeA.decomp;		
 				auto& cv = dr.mapVarParent();
@@ -465,7 +461,7 @@ void Win008::act()
 					_centreX + (centreRandomX * _captureHeight / _captureWidth), 
 					_centreY + centreRandomY, 
 					_size, _size, _divisor, _divisor);
-				records.push_back(record.valent(_valency));	
+				records.push_back(_valencyFixed ? record.valentFixed(_valency) : record.valent(_valency,_valencyFactor));	
 			}
 			std::vector<std::pair<std::pair<std::size_t,double>,std::size_t>> actsPotsRecord;
 			{		
@@ -473,7 +469,7 @@ void Win008::act()
 				auto cap = (unsigned char)(_updateParameters.mapCapacity);
 				double lnwmax = std::log(_induceParameters.wmax);
 				auto& activeA = *_active;
-				std::lock_guard<std::mutex> guard(activeA.mutex);
+				// std::lock_guard<std::mutex> guard(activeA.mutex);
 				auto& sizes = activeA.historySlicesSize;
 				auto& lengths = activeA.historySlicesLength;
 				auto& fails = activeA.induceSliceFailsSize;
@@ -545,7 +541,7 @@ void Win008::act()
 			{
 				auto& activeA = *_active;
 				auto& actor = *this;
-				std::lock_guard<std::mutex> guard(activeA.mutex);
+				// std::lock_guard<std::mutex> guard(activeA.mutex);
 				std::vector<std::thread> threads;
 				threads.reserve(_threadCount);
 				for (std::size_t t = 0; t < _threadCount; t++)
@@ -622,14 +618,6 @@ void Win008::act()
 			std::sort(actsPotsCoord.rbegin(), actsPotsCoord.rend());
 			std::vector<std::tuple<std::size_t,double,double,double,std::size_t,std::size_t>> actsPotsCoordTop;
 			{
-                QImage image2 = _image.copy();
-				QPainter framePainter(&image2);
-				framePainter.setPen(Qt::darkGray);
-				framePainter.drawRect(
-					centreX * _captureWidth - scaleX * _captureHeight / 2.0, 
-					centreY * _captureHeight - scaleY * _captureHeight / 2.0, 
-					scaleX * _captureHeight,
-					scaleY * _captureHeight);
 				actsPotsCoordTop.reserve(_eventSize);
 				for (std::size_t k = 0; k < actsPotsCoord.size() && actsPotsCoordTop.size() < _eventSize; k++)	
 				{
@@ -652,23 +640,8 @@ void Win008::act()
 					if (separate)
 					{
 						actsPotsCoordTop.push_back(t);
-						// EVAL(k);	
-						// auto length = std::get<0>(t);
-						// auto likelihood = std::get<1>(t);
-						// EVAL(length);
-						// EVAL(likelihood);							
-						if (actsPotsCoordTop.size() == 1)
-							framePainter.setPen(Qt::white);		
-						else
-							framePainter.setPen(Qt::gray);
-						framePainter.drawRect(
-							posX * _captureWidth - _scale * _captureHeight / 2.0, 
-							posY * _captureHeight - _scale * _captureHeight / 2.0, 
-							_scale * _captureHeight,
-							_scale * _captureHeight);
 					}
 				}
-				_ui->labelImage->setPixmap(QPixmap::fromImage(image2));	
 				if (actsPotsCoordTop.size())
 				{
 					_centreX = std::get<2>(actsPotsCoordTop.front());
@@ -722,7 +695,7 @@ void Win008::act()
 					auto& activeA = *_active;
 					auto& actor = *this;
 					std::vector<std::tuple<std::size_t,double,double,double,std::size_t,std::size_t>> actsPotsCoord(_sizeTile*_sizeTile);
-					std::lock_guard<std::mutex> guard(activeA.mutex);
+					// std::lock_guard<std::mutex> guard(activeA.mutex);
 					std::vector<std::thread> threads;
 					threads.reserve(_threadCount);
 					for (std::size_t t = 0; t < _threadCount; t++)
@@ -797,38 +770,12 @@ void Win008::act()
 				}
 			std::sort(actsPotsCoordTop.rbegin(), actsPotsCoordTop.rend());
 			{
-                QImage image2 = _image.copy();
-				QPainter framePainter(&image2);
-				framePainter.setPen(Qt::darkGray);
-				framePainter.drawRect(
-					centreX * _captureWidth - scaleX * _captureHeight / 2.0, 
-					centreY * _captureHeight - scaleY * _captureHeight / 2.0, 
-					scaleX * _captureHeight,
-					scaleY * _captureHeight);
-				for (std::size_t k = 0; k < actsPotsCoordTop.size() && k < _eventSize; k++)	
-				{
-					auto t = actsPotsCoordTop[k];
-					auto posX = std::get<2>(t);
-					auto posY = std::get<3>(t);							
-					if (k == 0)
-						framePainter.setPen(Qt::white);		
-					else
-						framePainter.setPen(Qt::gray);
-					framePainter.drawRect(
-						posX * _captureWidth - _scale * _captureHeight / 2.0, 
-						posY * _captureHeight - _scale * _captureHeight / 2.0, 
-						_scale * _captureHeight,
-						_scale * _captureHeight);
-				}
-				_ui->labelImage->setPixmap(QPixmap::fromImage(image2));	
 				if (actsPotsCoordTop.size())
 				{
 					_centreX = std::get<2>(actsPotsCoordTop.front());
 					_centreY = std::get<3>(actsPotsCoordTop.front());	
 				}
 			}
-			// EVAL(_centreX);
-			// EVAL(_centreY);
 			for (std::size_t k = 0; k < actsPotsCoordTop.size() && k < _eventSize; k++)	
 			{
 				// EVAL(k);
@@ -863,7 +810,7 @@ void Win008::act()
 		// representations
 		{		
 			auto& activeA = *_active;
-			std::lock_guard<std::mutex> guard(activeA.mutex);
+			// std::lock_guard<std::mutex> guard(activeA.mutex);
 			std::shared_ptr<HistoryRepa> hr = activeA.underlyingHistoryRepa.front();
 			auto& hs = *activeA.historySparse;
 			auto& slev = activeA.historySlicesSetEvent;
