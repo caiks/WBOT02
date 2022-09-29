@@ -1,5 +1,8 @@
 #include "win008.h"
 #include "./ui_win008.h"
+#include <QUrl>
+#include <QVideoSink>
+#include <QVideoFrame>
 #include <sstream>
 #include <rapidjson/document.h>
 #include <rapidjson/istreamwrapper.h>
@@ -86,6 +89,8 @@ Win008::Win008(const std::string& configA,
 		_model = ARGS_STRING(model);
 		_modelInitial = ARGS_STRING(model_initial);
 		gui = ARGS_BOOL(gui);
+		_videoSource = ARGS_STRING(video_source);
+		_videoStart = ARGS_INT_DEF(video_start,120);
 		_updateDisable = ARGS_BOOL(disable_update);
 		_activeLogging = ARGS_BOOL(logging_active);
 		_activeSummary = ARGS_BOOL(summary_active);
@@ -259,7 +264,16 @@ Win008::Win008(const std::string& configA,
 	if (_system)
 	{
 		this->terminate = false;	
-		if (gui)
+		if (gui && _videoSource.size())
+		{
+			_mediaPlayer = new QMediaPlayer(this);
+			connect(_mediaPlayer, &QMediaPlayer::errorChanged,this, &Win008::handleError);
+			_videoWidget = new QVideoWidget;
+			_mediaPlayer->setVideoOutput(_videoWidget);
+			_mediaPlayer->setSource(QUrl::fromLocalFile(QString(_videoSource.c_str())));
+			connect(_mediaPlayer, &::QMediaPlayer::mediaStatusChanged, this, &Win008::mediaStateChanged);
+		}
+		else if (gui)
 		{
 			_screen = QGuiApplication::primaryScreen();
 			QTimer::singleShot(_interval.count(), this, &Win008::capture);
@@ -303,6 +317,33 @@ Win008::~Win008()
 	LOG "actor\tstatus: finished" UNLOG
 }
 
+
+void Win008::handleError()
+{
+    if (_mediaPlayer->error() == QMediaPlayer::NoError)
+        return;
+
+    const QString errorString = _mediaPlayer->errorString();
+    QString message;
+    if (errorString.isEmpty())
+        message += " #" + QString::number(int(_mediaPlayer->error()));
+    else
+        message += errorString;
+	
+	std::stringstream string;
+	string << "actor\tmedia error\t" << message.toStdString();
+	LOG string.str() UNLOG
+}
+
+void Win008::mediaStateChanged(QMediaPlayer::MediaStatus state)
+{
+    if (state == QMediaPlayer::LoadedMedia)
+    {
+		_mediaPlayer->setPosition(_videoStart*1000);
+        connect(_mediaPlayer, &QMediaPlayer::positionChanged, this, &Win008::capture);
+		_mediaPlayer->play();
+    }
+}
 void Win008::capture()
 {
 	if (this->terminate || (_active && _active->terminate))
@@ -310,11 +351,22 @@ void Win008::capture()
 	auto actMark = Clock::now();	
 	// capture
 	_mark = Clock::now();
+	if (_videoSource.size())
+	{
+		if (_mediaPlayer->playbackState() != QMediaPlayer::PlayingState)
+			return;
+		_image = _mediaPlayer->videoSink()->videoFrame().toImage();		
+		auto position = _mediaPlayer->position() + _interval.count();
+		if (position >= _mediaPlayer->duration())
+			position = _videoStart*1000;
+		_mediaPlayer->setPosition(position);			
+	}
+	else
 	{
 		auto pixmap = _screen->grabWindow(0, _captureX, _captureY, _captureWidth, _captureHeight);
 		_image = pixmap.toImage();
-		_ui->labelImage->setPixmap(QPixmap::fromImage(_image));	
 	}
+	_ui->labelImage->setPixmap(QPixmap::fromImage(_image));	
 	if (_actLogging && (_actLoggingFactor <= 1 || _actCount % _actLoggingFactor == 0))	
 	{
         std::stringstream string;
@@ -342,20 +394,23 @@ void Win008::capture()
 		string << "fails: " << std::fixed << _failCount;
 		_labelFails->setText(string.str().data());
 	}
-	auto t = (Sec)(Clock::now() - actMark);
-	auto ti = (Sec)_interval;
-    if (ti > t)
-    {
-		QTimer::singleShot((int)((ti - t).count()*1000.0), this, &Win008::capture);
-	}
-	else		
+	if (!_videoSource.size())
 	{
-		QTimer::singleShot(0, this, &Win008::capture);
-		if (_actWarning)
+		auto t = (Sec)(Clock::now() - actMark);
+		auto ti = (Sec)_interval;
+		if (ti > t)
 		{
-			LOG "actor\twarning: act time " << t.count() << "s" UNLOG
+			QTimer::singleShot((int)((ti - t).count()*1000.0), this, &Win008::capture);
 		}
-	}	
+		else		
+		{
+			QTimer::singleShot(0, this, &Win008::capture);
+			if (_actWarning)
+			{
+				LOG "actor\twarning: act time " << t.count() << "s" UNLOG
+			}
+		}	
+	}
 }
 
 void Win008::act()

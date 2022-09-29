@@ -5,6 +5,8 @@
 #include <QWidget>
 #include <QTimer>
 #include <QScreen>
+#include <QMediaPlayer>
+#include <QVideoWidget>
 #include <QMouseEvent>
 #include <QLabel>
 #include <QPainter>
@@ -27,12 +29,16 @@ public:
 	bool gui;
 	
 public Q_SLOTS:
+    void mediaStateChanged(QMediaPlayer::MediaStatus state);
     void capture();
     void act();
+	void handleError();
 
 private:
     Ui::Win008 *_ui;
 	QScreen *_screen;
+	QMediaPlayer* _mediaPlayer;
+    QVideoWidget* _videoWidget;
 	QLabel* _labelCentre;
 	QLabel* _labelEvent;
 	QLabel* _labelFuds;
@@ -55,6 +61,9 @@ private:
 	std::size_t _modeLoggingFactor;
 	bool _modeTracing;
 	bool _updateDisable;
+	
+	std::string _videoSource;
+	std::size_t _videoStart;	
 	
 	std::shared_ptr<Alignment::ActiveSystem> _system;
 	std::shared_ptr<Alignment::System> _uu;
