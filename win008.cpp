@@ -331,8 +331,13 @@ void Win008::handleError()
         message += errorString;
 	
 	std::stringstream string;
-	string << "actor\tmedia error\t" << message.toStdString();
+	string << "actor\tmedia error\t" << message.toStdString()
+		<< "\tposition\t" << std::fixed << _mediaPlayer->position()
+		<< "\tduration\t" << std::fixed << _mediaPlayer->duration()
+		<< std::defaultfloat;
 	LOG string.str() UNLOG
+	
+	this->terminate = true;
 }
 
 void Win008::mediaStateChanged(QMediaPlayer::MediaStatus state)
@@ -356,8 +361,16 @@ void Win008::capture()
 		if (_mediaPlayer->playbackState() != QMediaPlayer::PlayingState)
 			return;
 		_image = _mediaPlayer->videoSink()->videoFrame().toImage();		
+		_captureWidth = _image.width();
+		_captureHeight = _image.height();
+		if (_actLogging && (_actLoggingFactor <= 1 || _actCount % _actLoggingFactor == 0))	
+		{
+			std::stringstream string;
+			string << "actor\tposition\t" << std::fixed << _mediaPlayer->position() << std::defaultfloat;
+			LOG string.str() UNLOG
+		}
 		auto position = _mediaPlayer->position() + _interval.count();
-		if (position >= _mediaPlayer->duration())
+		if (position >= _mediaPlayer->duration() -  _interval.count() * 2)
 			position = _videoStart*1000;
 		_mediaPlayer->setPosition(position);			
 	}
@@ -366,7 +379,6 @@ void Win008::capture()
 		auto pixmap = _screen->grabWindow(0, _captureX, _captureY, _captureWidth, _captureHeight);
 		_image = pixmap.toImage();
 	}
-	_ui->labelImage->setPixmap(QPixmap::fromImage(_image));	
 	if (_actLogging && (_actLoggingFactor <= 1 || _actCount % _actLoggingFactor == 0))	
 	{
         std::stringstream string;
@@ -374,6 +386,7 @@ void Win008::capture()
 		LOG string.str() UNLOG
 	}
 	this->act();
+	_ui->labelImage->setPixmap(QPixmap::fromImage(_image));	
 	{
 		std::stringstream string;
 		string << "centre: (" << std::setprecision(3) << _centreX << "," << _centreY << ")";
@@ -673,7 +686,14 @@ void Win008::act()
 			std::sort(actsPotsCoord.rbegin(), actsPotsCoord.rend());
 			std::vector<std::tuple<std::size_t,double,double,double,std::size_t,std::size_t>> actsPotsCoordTop;
 			{
-				actsPotsCoordTop.reserve(_eventSize);
+				QPainter framePainter(&_image);
+				framePainter.setPen(Qt::darkGray);
+				framePainter.drawRect(
+					centreX * _captureWidth - scaleX * _captureHeight / 2.0, 
+					centreY * _captureHeight - scaleY * _captureHeight / 2.0, 
+					scaleX * _captureHeight,
+					scaleY * _captureHeight);
+					actsPotsCoordTop.reserve(_eventSize);
 				for (std::size_t k = 0; k < actsPotsCoord.size() && actsPotsCoordTop.size() < _eventSize; k++)	
 				{
 					auto t = actsPotsCoord[k];
@@ -695,6 +715,15 @@ void Win008::act()
 					if (separate)
 					{
 						actsPotsCoordTop.push_back(t);
+						if (actsPotsCoordTop.size() == 1)
+							framePainter.setPen(Qt::white);		
+						else
+							framePainter.setPen(Qt::gray);
+						framePainter.drawRect(
+							posX * _captureWidth - _scale * _captureHeight / 2.0, 
+							posY * _captureHeight - _scale * _captureHeight / 2.0, 
+							_scale * _captureHeight,
+							_scale * _captureHeight);
 					}
 				}
 				if (actsPotsCoordTop.size())
@@ -825,6 +854,28 @@ void Win008::act()
 				}
 			std::sort(actsPotsCoordTop.rbegin(), actsPotsCoordTop.rend());
 			{
+				QPainter framePainter(&_image);
+				framePainter.setPen(Qt::darkGray);
+				framePainter.drawRect(
+					centreX * _captureWidth - scaleX * _captureHeight / 2.0, 
+					centreY * _captureHeight - scaleY * _captureHeight / 2.0, 
+					scaleX * _captureHeight,
+					scaleY * _captureHeight);
+				for (std::size_t k = 0; k < actsPotsCoordTop.size() && k < _eventSize; k++)	
+				{
+					auto t = actsPotsCoordTop[k];
+					auto posX = std::get<2>(t);
+					auto posY = std::get<3>(t);							
+					if (k == 0)
+						framePainter.setPen(Qt::white);		
+					else
+						framePainter.setPen(Qt::gray);
+					framePainter.drawRect(
+						posX * _captureWidth - _scale * _captureHeight / 2.0, 
+						posY * _captureHeight - _scale * _captureHeight / 2.0, 
+						_scale * _captureHeight,
+						_scale * _captureHeight);
+				}
 				if (actsPotsCoordTop.size())
 				{
 					_centreX = std::get<2>(actsPotsCoordTop.front());
