@@ -29,6 +29,7 @@ public:
 	bool gui;
 	
 public Q_SLOTS:
+    void mediaStart();
     void mediaStateChanged(QMediaPlayer::MediaStatus state);
     void capture();
     void act();
@@ -38,6 +39,7 @@ private:
     Ui::Win008 *_ui;
 	QScreen *_screen;
 	QMediaPlayer* _mediaPlayer;
+	bool _isSeekable;
     QVideoWidget* _videoWidget;
 	QLabel* _labelCentre;
 	QLabel* _labelEvent;

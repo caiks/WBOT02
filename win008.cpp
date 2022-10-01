@@ -266,12 +266,13 @@ Win008::Win008(const std::string& configA,
 		this->terminate = false;	
 		if (gui && _videoSource.size())
 		{
+			_isSeekable = false;
 			_mediaPlayer = new QMediaPlayer(this);
 			connect(_mediaPlayer, &QMediaPlayer::errorChanged,this, &Win008::handleError);
+			connect(_mediaPlayer, &::QMediaPlayer::mediaStatusChanged, this, &Win008::mediaStateChanged);
 			_videoWidget = new QVideoWidget;
 			_mediaPlayer->setVideoOutput(_videoWidget);
-			_mediaPlayer->setSource(QUrl::fromLocalFile(QString(_videoSource.c_str())));
-			connect(_mediaPlayer, &::QMediaPlayer::mediaStatusChanged, this, &Win008::mediaStateChanged);
+			QTimer::singleShot(1000, this, &Win008::mediaStart);
 		}
 		else if (gui)
 		{
@@ -340,11 +341,23 @@ void Win008::handleError()
 	this->terminate = true;
 }
 
+
+void Win008::mediaStart()
+{
+	_mediaPlayer->setSource(QUrl::fromLocalFile(QString(_videoSource.c_str())));
+	EVAL(_mediaPlayer->source().toString().toStdString());
+}
+
 void Win008::mediaStateChanged(QMediaPlayer::MediaStatus state)
 {
     if (state == QMediaPlayer::LoadedMedia)
     {
-		_mediaPlayer->setPosition(_videoStart*1000);
+		// TRUTH(_mediaPlayer->isSeekable());
+        // EVAL(_mediaPlayer->duration());
+		_isSeekable = _mediaPlayer->isSeekable();
+		if (_isSeekable)
+			_mediaPlayer->setPosition(_videoStart*1000);
+		// EVAL(_mediaPlayer->position());
         connect(_mediaPlayer, &QMediaPlayer::positionChanged, this, &Win008::capture);
 		_mediaPlayer->play();
     }
@@ -360,7 +373,8 @@ void Win008::capture()
 	{
 		if (_mediaPlayer->playbackState() != QMediaPlayer::PlayingState)
 			return;
-		_image = _mediaPlayer->videoSink()->videoFrame().toImage();		
+		auto videoframe = _mediaPlayer->videoSink()->videoFrame();
+		_image = videoframe.toImage();
 		_captureWidth = _image.width();
 		_captureHeight = _image.height();
 		if (_actLogging && (_actLoggingFactor <= 1 || _actCount % _actLoggingFactor == 0))	
@@ -369,10 +383,14 @@ void Win008::capture()
 			string << "actor\tposition\t" << std::fixed << _mediaPlayer->position() << std::defaultfloat;
 			LOG string.str() UNLOG
 		}
-		auto position = _mediaPlayer->position() + _interval.count();
-		if (position >= _mediaPlayer->duration() -  _interval.count() * 2)
-			position = _videoStart*1000;
-		_mediaPlayer->setPosition(position);			
+		// TRUTH(_mediaPlayer->isSeekable());
+		if (_isSeekable)
+		{
+			auto position = _mediaPlayer->position() + _interval.count();
+			if (position >= _mediaPlayer->duration() -  _interval.count() * 2)
+				position = _videoStart*1000;
+			_mediaPlayer->setPosition(position);							
+		}
 	}
 	else
 	{
