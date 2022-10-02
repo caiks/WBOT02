@@ -90,7 +90,15 @@ Win008::Win008(const std::string& configA,
 		_modelInitial = ARGS_STRING(model_initial);
 		gui = ARGS_BOOL(gui);
 		_videoSource = ARGS_STRING(video_source);
+		if (args.HasMember("video_sources") && args["video_sources"].IsArray())
+		{
+			auto& arr = args["video_sources"];
+			for (int k = 0; k < arr.Size(); k++)
+				_videoSources.push_back(arr[k].GetString());	
+		}
+		_videoIndex = 0;
 		_videoStart = ARGS_INT_DEF(video_start,120);
+		_videoEnd = ARGS_INT_DEF(video_end,30);
 		_updateDisable = ARGS_BOOL(disable_update);
 		_activeLogging = ARGS_BOOL(logging_active);
 		_activeSummary = ARGS_BOOL(summary_active);
@@ -264,13 +272,13 @@ Win008::Win008(const std::string& configA,
 	if (_system)
 	{
 		this->terminate = false;	
-		if (gui && _videoSource.size())
+		if (gui && (_videoSource.size() || _videoSources.size()))
 		{
+			_playing = false;
 			_isSeekable = false;
 			_position = _videoStart*1000;
 			_mediaPlayer = new QMediaPlayer(this);
 			connect(_mediaPlayer, &QMediaPlayer::errorChanged,this, &Win008::handleError);
-			connect(_mediaPlayer, &::QMediaPlayer::mediaStatusChanged, this, &Win008::mediaStateChanged);
 			_videoWidget = new QVideoWidget;
 			_mediaPlayer->setVideoOutput(_videoWidget);
 			QTimer::singleShot(1000, this, &Win008::mediaStart);
@@ -345,7 +353,16 @@ void Win008::handleError()
 
 void Win008::mediaStart()
 {
-	_mediaPlayer->setSource(QUrl::fromLocalFile(QString(_videoSource.c_str())));
+	connect(_mediaPlayer, &QMediaPlayer::mediaStatusChanged, this, &Win008::mediaStateChanged);
+	if (_videoSources.size())
+	{
+		_mediaPlayer->setSource(QUrl::fromLocalFile(QString(_videoSources[_videoIndex].c_str())));		
+		_videoIndex++;
+		if (_videoIndex >= _videoSources.size())
+			_videoIndex = 0;
+	}
+	else
+		_mediaPlayer->setSource(QUrl::fromLocalFile(QString(_videoSource.c_str())));
 	EVAL(_mediaPlayer->source().toString().toStdString());
 }
 
@@ -359,7 +376,9 @@ void Win008::mediaStateChanged(QMediaPlayer::MediaStatus state)
 		if (_isSeekable)
 			_mediaPlayer->setPosition(_position);
 		// EVAL(_mediaPlayer->position());
+        disconnect(_mediaPlayer, &QMediaPlayer::mediaStatusChanged, 0, 0);
         connect(_mediaPlayer, &QMediaPlayer::positionChanged, this, &Win008::capture);
+		_playing = true;
 		_mediaPlayer->play();
     }
 }
@@ -371,9 +390,9 @@ void Win008::capture()
 	auto actMark = Clock::now();	
 	// capture
 	_mark = Clock::now();
-	if (_videoSource.size())
+	if (_videoSource.size() || _videoSources.size())
 	{
-		if (_mediaPlayer->playbackState() != QMediaPlayer::PlayingState)
+		if (!_playing)
 			return;
 		EVAL(_mediaPlayer->position());
 		if (!_isSeekable && _mediaPlayer->position() < _position)
@@ -389,18 +408,22 @@ void Win008::capture()
 			LOG string.str() UNLOG
 		}
 		_position = _mediaPlayer->position() + _interval.count();
-		if (_isSeekable)
-		{
-			if (_position >= _mediaPlayer->duration() - _interval.count() * 2)
-				_position = _videoStart*1000;
-			_mediaPlayer->setPosition(_position);								
-		}
-		else if (_position >= _mediaPlayer->duration() - _interval.count() * 2)
+		if (_position >= _mediaPlayer->duration() - _videoEnd*1000)
 		{
 			_position = _videoStart*1000;
-			_mediaPlayer->stop();
-			_mediaPlayer->play();
+			disconnect(_mediaPlayer, &QMediaPlayer::positionChanged, 0, 0);
+			disconnect(_mediaPlayer, &QMediaPlayer::errorChanged, 0, 0);
+			ECHO(_mediaPlayer->stop());	
+			_playing = false;
+			_mediaPlayer = new QMediaPlayer(this);
+			connect(_mediaPlayer, &QMediaPlayer::errorChanged,this, &Win008::handleError);
+			_videoWidget = new QVideoWidget;
+			_mediaPlayer->setVideoOutput(_videoWidget);
+			QTimer::singleShot(1000, this, &Win008::mediaStart);	
+			return;			
 		}
+		else if (_isSeekable)
+			_mediaPlayer->setPosition(_position);								
 	}
 	else
 	{
@@ -435,7 +458,7 @@ void Win008::capture()
 		string << "fails: " << std::fixed << _failCount;
 		_labelFails->setText(string.str().data());
 	}
-	if (!_videoSource.size())
+	if (!(_videoSource.size() || _videoSources.size()))
 	{
 		auto t = (Sec)(Clock::now() - actMark);
 		auto ti = (Sec)_interval;

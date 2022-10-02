@@ -64,7 +64,11 @@ private:
 	bool _updateDisable;
 	
 	std::string _videoSource;
+	std::vector<std::string> _videoSources;
+	std::size_t _videoIndex;
 	std::size_t _videoStart;	
+	std::size_t _videoEnd;	
+	bool _playing;
 	bool _isSeekable;
 	std::size_t _position;	
 
