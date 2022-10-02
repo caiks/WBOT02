@@ -39,7 +39,6 @@ private:
     Ui::Win008 *_ui;
 	QScreen *_screen;
 	QMediaPlayer* _mediaPlayer;
-	bool _isSeekable;
     QVideoWidget* _videoWidget;
 	QLabel* _labelCentre;
 	QLabel* _labelEvent;
@@ -66,7 +65,9 @@ private:
 	
 	std::string _videoSource;
 	std::size_t _videoStart;	
-	
+	bool _isSeekable;
+	std::size_t _position;	
+
 	std::shared_ptr<Alignment::ActiveSystem> _system;
 	std::shared_ptr<Alignment::System> _uu;
 	std::shared_ptr<Alignment::SystemRepa> _ur;
