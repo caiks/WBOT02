@@ -274,7 +274,6 @@ Win008::Win008(const std::string& configA,
 		this->terminate = false;	
 		if (gui && (_videoSource.size() || _videoSources.size()))
 		{
-			_playing = false;
 			_isSeekable = false;
 			_position = _videoStart*1000;
 			_mediaPlayer = new QMediaPlayer(this);
@@ -363,7 +362,12 @@ void Win008::mediaStart()
 	}
 	else
 		_mediaPlayer->setSource(QUrl::fromLocalFile(QString(_videoSource.c_str())));
-	EVAL(_mediaPlayer->source().toString().toStdString());
+	if (_actLogging)	
+	{
+		std::string string = "actor\tsource\t";
+		string += _mediaPlayer->source().toString().toStdString();
+		LOG string UNLOG
+	}
 }
 
 void Win008::mediaStateChanged(QMediaPlayer::MediaStatus state)
@@ -378,7 +382,6 @@ void Win008::mediaStateChanged(QMediaPlayer::MediaStatus state)
 		// EVAL(_mediaPlayer->position());
         disconnect(_mediaPlayer, &QMediaPlayer::mediaStatusChanged, 0, 0);
         connect(_mediaPlayer, &QMediaPlayer::positionChanged, this, &Win008::capture);
-		_playing = true;
 		_mediaPlayer->play();
     }
 }
@@ -392,9 +395,9 @@ void Win008::capture()
 	_mark = Clock::now();
 	if (_videoSource.size() || _videoSources.size())
 	{
-		if (!_playing)
+		if (_mediaPlayer->playbackState() != QMediaPlayer::PlayingState)
 			return;
-		EVAL(_mediaPlayer->position());
+		// EVAL(_mediaPlayer->position());
 		if (!_isSeekable && _mediaPlayer->position() < _position)
 			return;
 		auto videoframe = _mediaPlayer->videoSink()->videoFrame();
@@ -413,8 +416,7 @@ void Win008::capture()
 			_position = _videoStart*1000;
 			disconnect(_mediaPlayer, &QMediaPlayer::positionChanged, 0, 0);
 			disconnect(_mediaPlayer, &QMediaPlayer::errorChanged, 0, 0);
-			ECHO(_mediaPlayer->stop());	
-			_playing = false;
+			_mediaPlayer->stop();	
 			_mediaPlayer = new QMediaPlayer(this);
 			connect(_mediaPlayer, &QMediaPlayer::errorChanged,this, &Win008::handleError);
 			_videoWidget = new QVideoWidget;
