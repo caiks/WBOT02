@@ -382,6 +382,25 @@ void Win008::capture()
 		_image = videoframe.toImage();
 		_captureWidth = _image.width();
 		_captureHeight = _image.height();
+		if (_actLogging && (_actLoggingFactor <= 1 || _actCount % _actLoggingFactor == 0))	
+		{
+			std::stringstream string;
+			string << "actor\tposition\t" << std::fixed << _mediaPlayer->position() << std::defaultfloat;
+			LOG string.str() UNLOG
+		}
+		_position = _mediaPlayer->position() + _interval.count();
+		if (_isSeekable)
+		{
+			if (_position >= _mediaPlayer->duration() - _interval.count() * 2)
+				_position = _videoStart*1000;
+			_mediaPlayer->setPosition(_position);								
+		}
+		else if (_position >= _mediaPlayer->duration() - _interval.count() * 2)
+		{
+			_position = _videoStart*1000;
+			_mediaPlayer->stop();
+			_mediaPlayer->play();
+		}
 	}
 	else
 	{
@@ -416,28 +435,7 @@ void Win008::capture()
 		string << "fails: " << std::fixed << _failCount;
 		_labelFails->setText(string.str().data());
 	}
-	if (_videoSource.size())
-	{
-		if (_actLogging && (_actLoggingFactor <= 1 || _actCount % _actLoggingFactor == 0))	
-		{
-			std::stringstream string;
-			string << "actor\tposition\t" << std::fixed << _mediaPlayer->position() << std::defaultfloat;
-			LOG string.str() UNLOG
-		}
-		_position = _mediaPlayer->position() + _interval.count();
-		if (_position >= _mediaPlayer->duration() - _interval.count() * 2)
-		{
-			_position = _videoStart*1000;
-			if (_isSeekable)
-				_mediaPlayer->setPosition(_position);								
-			else
-			{
-				_mediaPlayer->stop();
-				_mediaPlayer->play();
-			}			
-		}
-	}
-	else
+	if (!_videoSource.size())
 	{
 		auto t = (Sec)(Clock::now() - actMark);
 		auto ti = (Sec)_interval;
