@@ -70,6 +70,7 @@ private:
 	std::size_t _videoEnd;	
 	bool _isSeekable;
 	std::size_t _position;	
+	double _playbackRate;
 
 	std::shared_ptr<Alignment::ActiveSystem> _system;
 	std::shared_ptr<Alignment::System> _uu;

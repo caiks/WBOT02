@@ -99,6 +99,7 @@ Win008::Win008(const std::string& configA,
 		_videoIndex = 0;
 		_videoStart = ARGS_INT_DEF(video_start,120);
 		_videoEnd = ARGS_INT_DEF(video_end,30);
+		_playbackRate = ARGS_DOUBLE(playback_rate);
 		_updateDisable = ARGS_BOOL(disable_update);
 		_activeLogging = ARGS_BOOL(logging_active);
 		_activeSummary = ARGS_BOOL(summary_active);
@@ -382,6 +383,8 @@ void Win008::mediaStateChanged(QMediaPlayer::MediaStatus state)
 		// EVAL(_mediaPlayer->position());
         disconnect(_mediaPlayer, &QMediaPlayer::mediaStatusChanged, 0, 0);
         connect(_mediaPlayer, &QMediaPlayer::positionChanged, this, &Win008::capture);
+		if (_playbackRate != 1.0 && _playbackRate > 0.0)
+			_mediaPlayer->setPlaybackRate(_playbackRate);
 		_mediaPlayer->play();
     }
 }
