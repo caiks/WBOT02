@@ -273,7 +273,7 @@ Win008::Win008(const std::string& configA,
 	if (_system)
 	{
 		this->terminate = false;	
-		if (gui && (_videoSource.size() || _videoSources.size()))
+		if (_videoSource.size() || _videoSources.size())
 		{
 			_isSeekable = false;
 			_position = _videoStart*1000;
@@ -283,7 +283,7 @@ Win008::Win008(const std::string& configA,
 			_mediaPlayer->setVideoOutput(_videoWidget);
 			QTimer::singleShot(1000, this, &Win008::mediaStart);
 		}
-		else if (gui)
+		else
 		{
 			_screen = QGuiApplication::primaryScreen();
 			QTimer::singleShot(_interval.count(), this, &Win008::capture);
@@ -348,6 +348,7 @@ void Win008::handleError()
 	LOG string.str() UNLOG
 	
 	this->terminate = true;
+	QCoreApplication::exit();
 }
 
 
@@ -1012,6 +1013,11 @@ void Win008::act()
             LOG "actor\tevent id: " << this->eventId << "\ttime " << ((Sec)(Clock::now() - _mark)).count() << "s" UNLOG
 			_eventIdPrev = this->eventId;
 		}
+	}
+	else 
+	{
+		this->terminate = true;
+		QCoreApplication::exit();
 	}
 	if (_system && _actLogging && (_actLoggingFactor <= 1 || _actCount % _actLoggingFactor == 0))
 	{

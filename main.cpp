@@ -482,18 +482,9 @@ int main(int argc, char *argv[])
 	{
         QApplication application(argc, argv);
         Win008 win008(std::string(argc >= 3 ? argv[2] : ""),nullptr);
-
 		if (win008.gui)
-		{
-			if (QGuiApplication::primaryScreen())
-			{
-				const auto screenSize = QGuiApplication::primaryScreen()->availableGeometry();
-				win008.resize(screenSize.width()/2, screenSize.height()*0.95);
-				win008.move(screenSize.topLeft());			
-			}
 			win008.show();
-			EVAL(application.exec());			
-		}
+		application.exec();			
 	}
 
 	if (argc >= 2 
