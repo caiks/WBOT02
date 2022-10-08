@@ -985,7 +985,6 @@ void Win008::act()
 			auto& fails = activeA.induceSliceFailsSize;
 			_failCount = fails.size();
 			auto& dr = *activeA.decomp;	
-			_fudsSize = dr.fuds.size();			
 			auto& cv = dr.mapVarParent();
 			auto& reps = *_slicesRepresentation;
 			for (std::size_t k = 0; k < eventCount; k++)	
@@ -1007,6 +1006,30 @@ void Win008::act()
 					slice = cv[slice];
 				}		
 			}		
+			// check for new leaf slices and update representation map
+            if (_fudsSize < dr.fuds.size())
+			{
+				for (std::size_t i = _fudsSize; i < dr.fuds.size(); i++)
+				{
+					for (auto sliceB : dr.fuds[i].children)
+					{
+						Representation rep(1.0,1.0,_size,_size);
+						auto& arr1 = *rep.arr;
+						if (slev.count(sliceB))
+						{
+							for (auto j : slev[sliceB])
+							{
+								auto jn = j*n;
+								for (size_t i = 0; i < n-1; i++)
+									arr1[i] += rr[jn + i];
+								rep.count++;
+							}									
+							reps.insert_or_assign(sliceB, rep);
+						}
+					}
+				}
+				_fudsSize = dr.fuds.size();
+			}
 		}
 		if (_eventLogging && (_eventLoggingFactor <= 1 || this->eventId >= _eventIdPrev +  _eventLoggingFactor))
 		{
