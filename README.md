@@ -728,7 +728,7 @@ don't seem to be able to show anything convincing by browsing, but the likelihoo
 cf CAIKS4 202205310940
 
 
-#### actor002
+#### actor002 and actor003
 
 model|scales|mode|initial mode|valency|domain|events|fuds|evts/sz/thrshld|mean length|std dev length|max length|fails|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -753,6 +753,10 @@ model028|0.177|10 scanned actual-potential||bucketed|Film Noir|659,550|3203|0.97
 model029|0.177|5 scanned potential tiled actual-potential||bucketed|Film Noir|526,345|3386|1.28661|13.49|2.60|23|2|
 model030|0.177|5 scanned potential tiled actual-potential||fixed|Film Noir|527,045|3816|1.44807|15.56|3.74|31|27|
 model031|0.177|5 scanned potential tiled actual-potential||fixed|Film Noir|452,255|3197|1.4138|14.62|3.73|32|31|12.0 min diagonal
+model034|0.177|5 scanned potential tiled actual-potential||fixed|10 B&W videos|527,045|3846|1.45946|15.17|4.40|35|21|first actor003 model
+model035|0.177|5 scanned potential tiled actual-potential||fixed|14 B&W videos|1,000,000|7069|1.4138|15.92|3.50|35|16|
+model036|0.177|4 randomised||fixed|12 B&W videos|500,000|1931|0.7724|7.20|2.00|17|6|
+model037|0.177|5 scanned potential tiled actual-potential|4 randomised|fixed|12 B&W videos|1,000,000|6033|1.2066|12.60|5.11|35|60|two modes at 7 and 15
 
 The median diagonals for the actor 2 *models* were consistently in the range 23-27, and the maximum diagonals were consistently in the the range 37-39.
 
