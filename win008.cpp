@@ -157,6 +157,9 @@ Win008::Win008(const std::string& configA,
 		_scanSize = ARGS_INT_DEF(scan_size,1);	
 		_threadCount = ARGS_INT_DEF(threads,1);	
 		_separation = ARGS_DOUBLE_DEF(separation,0.5);
+		_recordUniqueSize = ARGS_INT(unique_records);	
+		if (_recordUniqueSize)
+			_recordUniqueSet.reserve(_recordUniqueSize);
 	}
 	{
 		_labelCentre = new QLabel(this); 
@@ -505,8 +508,22 @@ void Win008::act()
 					_centreY + centreRandomY, 
 					_size, _size, _divisor, _divisor);
 				Record recordValent = _valencyFixed ? record.valentFixed(_valency) : record.valent(_valency,_valencyFactor);
+				if (_recordUniqueSize)
+				{
+					auto recordHash = recordValent.hash();
+					if (_recordUniqueSet.count(recordHash))
+						continue;		
+					while (_recordUniqueQueue.size() >= _recordUniqueSize)
+					{
+						_recordUniqueSet.erase(_recordUniqueQueue.front());
+						_recordUniqueQueue.pop();
+					}
+					_recordUniqueSet.insert(recordHash);
+					_recordUniqueQueue.push(recordHash);
+				}
 				auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
-				_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
+				if (!_updateDisable)
+					_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
 				this->eventId++;		
 				eventCount++;		
 			}
@@ -565,11 +582,26 @@ void Win008::act()
 			}		
 			if (likelihoodsRecord.size())
 				std::sort(likelihoodsRecord.rbegin(), likelihoodsRecord.rend());	
-			for (std::size_t k = 0; k < _eventSize && k < _scanSize; k++)	
+			for (std::size_t k = 0; eventCount < _eventSize && k < _scanSize; k++)	
 			{
 				std::size_t m =  likelihoodsRecord.size() > k ? likelihoodsRecord[k].second : k;
-				auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, records[m]);
-				_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
+				auto& record = records[m];
+				if (_recordUniqueSize)
+				{
+					auto recordHash = record.hash();
+					if (_recordUniqueSet.count(recordHash))
+						continue;		
+					while (_recordUniqueQueue.size() >= _recordUniqueSize)
+					{
+						_recordUniqueSet.erase(_recordUniqueQueue.front());
+						_recordUniqueQueue.pop();
+					}
+					_recordUniqueSet.insert(recordHash);
+					_recordUniqueQueue.push(recordHash);
+				}
+				auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, record);
+				if (!_updateDisable)
+					_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
 				this->eventId++;		
 				eventCount++;		
 			}
@@ -631,11 +663,29 @@ void Win008::act()
 			}		
 			if (actsPotsRecord.size())
 				std::sort(actsPotsRecord.rbegin(), actsPotsRecord.rend());	
-			for (std::size_t k = 0; k < _eventSize && k < _scanSize; k++)	
+			for (std::size_t k = 0; eventCount < _eventSize && k < _scanSize; k++)	
 			{
 				std::size_t m =  actsPotsRecord.size() > k ? actsPotsRecord[k].second : k;
-				auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, records[m]);
-				_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
+				auto& record = records[m];
+				if (_recordUniqueSize)
+				{
+					auto recordHash = record.hash();
+					if (_recordUniqueSet.count(recordHash))
+					{
+						// EVAL(recordHash);
+						continue;		
+					}
+					while (_recordUniqueQueue.size() >= _recordUniqueSize)
+					{
+						_recordUniqueSet.erase(_recordUniqueQueue.front());
+						_recordUniqueQueue.pop();
+					}
+					_recordUniqueSet.insert(recordHash);
+					_recordUniqueQueue.push(recordHash);
+				}
+				auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, record);
+				if (!_updateDisable)
+					_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
 				this->eventId++;		
 				eventCount++;		
 			}
@@ -797,6 +847,22 @@ void Win008::act()
 				auto y = std::get<5>(t);
 				Record recordSub(record,_size,_size,x,y);
 				Record recordValent = _valencyFixed ? recordSub.valentFixed(_valency) : recordSub.valent(_valency,_valencyFactor);
+				if (_recordUniqueSize)
+				{
+					auto recordHash = recordValent.hash();
+					if (_recordUniqueSet.count(recordHash))
+					{
+						// EVAL(recordHash);
+						continue;		
+					}
+					while (_recordUniqueQueue.size() >= _recordUniqueSize)
+					{
+						_recordUniqueSet.erase(_recordUniqueQueue.front());
+						_recordUniqueQueue.pop();
+					}
+					_recordUniqueSet.insert(recordHash);
+					_recordUniqueQueue.push(recordHash);
+				}
 				auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
 				if (!_updateDisable)
 					_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
@@ -949,6 +1015,22 @@ void Win008::act()
 				auto y = std::get<5>(t);
 				Record recordSub(record,_size,_size,x,y);
 				Record recordValent = _valencyFixed ? recordSub.valentFixed(_valency) : recordSub.valent(_valency,_valencyFactor);
+				if (_recordUniqueSize)
+				{
+					auto recordHash = recordValent.hash();
+					if (_recordUniqueSet.count(recordHash))
+					{
+						// EVAL(recordHash);
+						continue;		
+					}
+					while (_recordUniqueQueue.size() >= _recordUniqueSize)
+					{
+						_recordUniqueSet.erase(_recordUniqueQueue.front());
+						_recordUniqueQueue.pop();
+					}
+					_recordUniqueSet.insert(recordHash);
+					_recordUniqueQueue.push(recordHash);
+				}
 				auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
 				if (!_updateDisable)
 					_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	

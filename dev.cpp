@@ -94,6 +94,20 @@ WBOT02::Record::Record(
 		}
 }
 
+std::size_t WBOT02::Record::hash() const
+{
+	std::size_t hash = 0;
+	if (arr)
+	{
+		hash++;
+		auto size = arr->size();
+		auto arr1 =  arr->data();
+		for (std::size_t j = 0; j < size; j++)
+			hash = hash * 13 + (hash >> 60) + arr1[j];
+	}
+	return hash;
+}
+
 std::unique_ptr<ValueList> WBOT02::Record::sorted() const
 {
     auto result = std::make_unique<ValueList>();

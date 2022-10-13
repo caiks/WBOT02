@@ -120,6 +120,10 @@ private:
 	std::size_t _threadCount;
 	double _separation;
 	std::size_t _eventIdPrev;
+	
+	std::size_t _recordUniqueSize;
+	std::unordered_set<std::size_t> _recordUniqueSet;
+	std::queue<std::size_t> _recordUniqueQueue;
 
 };
 #endif // WIN008_H

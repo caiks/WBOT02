@@ -17,6 +17,7 @@
 #include <iomanip>
 #include <set>
 #include <unordered_set>
+#include <queue>
 #include <vector>
 #include <array>
 #include <iostream>
@@ -73,6 +74,8 @@ namespace WBOT02
 			std::size_t sizeX1, std::size_t sizeY1,
 			std::size_t originX, std::size_t originY);
 			
+		std::size_t hash() const;
+		
 		Record valentFixed(std::size_t valency) const;
 		
 		Record valent(std::size_t valency, std::size_t factor = 0) const;
