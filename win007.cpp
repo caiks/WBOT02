@@ -101,6 +101,7 @@ Win007::Win007(const std::string& configA,
 		_model = ARGS_STRING(model);
 		_modelInitial = ARGS_STRING(model_initial);
 		_interactive = ARGS_BOOL(interactive);
+		_interactiveExamples = ARGS_BOOL(interactive_examples);
 		_updateDisable = ARGS_BOOL(disable_update);
 		_activeLogging = ARGS_BOOL(logging_active);
 		_activeSummary = ARGS_BOOL(summary_active);
@@ -167,6 +168,7 @@ Win007::Win007(const std::string& configA,
 		_ui->layout01->setAlignment(Qt::AlignLeft);
 		_ui->layout02->setAlignment(Qt::AlignLeft);
 		_ui->layout03->setAlignment(Qt::AlignLeft);
+		_ui->layout05->setAlignment(Qt::AlignLeft);
 		for (std::size_t k = 0; k < 3; k++)
 		{
 			QVBoxLayout* verticalLayout = new QVBoxLayout();
@@ -220,7 +222,16 @@ Win007::Win007(const std::string& configA,
 			label2->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 			verticalLayout->addWidget(label2);
 			_labelRecordAncestorLikelihoods.push_back(label2);
-		}		
+		}
+		if (_interactiveExamples)		
+			for (std::size_t k = 0; k < _labelSize; k++)
+			{
+				QLabel* label1 = new QLabel(this);
+				label1->setPixmap(_pixmapBlank);	
+				label1->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);		
+				_labelRecordExamples.push_back(label1);
+				_ui->layout05->addWidget(label1);
+			}			
 		{
 			_labelCentre = new QLabel(this); 
 			_ui->layout04->addWidget(_labelCentre);
@@ -1133,6 +1144,7 @@ void Win007::act()
 		auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);	
 		// representations
 		std::size_t slice = 0;
+		std::vector<Representation> examples;
 		std::vector<std::pair<double,std::size_t>> ancestors;
 		std::vector<std::pair<double,std::size_t>> siblings;
 		{		
@@ -1140,9 +1152,12 @@ void Win007::act()
 			auto cap = (unsigned char)(_updateParameters.mapCapacity);
 			auto& activeA = *_active;
 			std::lock_guard<std::mutex> guard(activeA.mutex);
+			std::shared_ptr<HistoryRepa> hr1 = activeA.underlyingHistoryRepa.front();
+			auto& slev = activeA.historySlicesSetEvent;
 			auto n = hr->dimension;
 			auto vv = hr->vectorVar;
 			auto rr = hr->arr;	
+			auto rr1 = hr1->arr;	
 			auto& sizes = activeA.historySlicesSize;
 			auto& dr = *activeA.decomp;		
 			auto& cv = dr.mapVarParent();
@@ -1183,6 +1198,27 @@ void Win007::act()
 						double likelihood = (std::log(sliceSize) - std::log(parentSize) + lnwmax)/lnwmax;
 						siblings.push_back(std::make_pair(likelihood, sliceB));
 					}
+				}
+			}
+			if (_interactiveExamples && slev.count(slice))
+			{
+				auto& events = slev[slice];
+				std::size_t k = 0;
+				std::size_t interval = events.size()/_labelSize;
+				if (!interval) interval = 1;
+				for (auto j : events)
+				{
+					if (k % interval == 0)
+					{
+						Representation rep(1.0,1.0,_size,_size);
+						auto& arr1 = *rep.arr;
+						auto jn = j*n;
+						for (size_t i = 0; i < n-1; i++)
+							arr1[i] += rr1[jn + i];
+						rep.count++;
+						examples.push_back(rep);
+					}
+					k++;
 				}
 			}
 		}
@@ -1242,6 +1278,16 @@ void Win007::act()
 				{
 					_labelRecordAncestors[k]->setPixmap(_pixmapBlank);
 					_labelRecordAncestorLikelihoods[k]->setText("");
+				}
+				if (_interactiveExamples && k < _labelRecordExamples.size() && k < examples.size())
+				{
+					auto rep = examples[k];
+					auto image = rep.image(_multiplier,_valency);
+					_labelRecordExamples[k]->setPixmap(QPixmap::fromImage(image));					
+				}
+				else if (_interactiveExamples && k < _labelRecordExamples.size())
+				{
+					_labelRecordExamples[k]->setPixmap(_pixmapBlank);
 				}
 			}					
 		}

@@ -38,6 +38,7 @@ private:
 	std::vector<QLabel*> _labelRecords;
 	QLabel* _labelRecordLikelihood;
 	std::size_t _labelSize;
+	std::vector<QLabel*> _labelRecordExamples;
 	std::vector<QLabel*> _labelRecordSiblings;
 	std::vector<QLabel*> _labelRecordSiblingLikelihoods;
 	std::vector<QLabel*> _labelRecordAncestors;
@@ -72,6 +73,7 @@ private:
 	std::size_t _modeLoggingFactor;
 	bool _modeTracing;
 	bool _interactive;
+	bool _interactiveExamples;
 	bool _updateDisable;
 
 	std::shared_ptr<Alignment::ActiveSystem> _system;
