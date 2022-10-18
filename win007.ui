@@ -33,10 +33,10 @@
       </widget>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="layout05"/>
+      <layout class="QHBoxLayout" name="layout01"/>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="layout01"/>
+      <layout class="QHBoxLayout" name="layout05"/>
      </item>
      <item>
       <layout class="QHBoxLayout" name="layout02"/>

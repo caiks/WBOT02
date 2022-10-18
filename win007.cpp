@@ -193,7 +193,7 @@ Win007::Win007(const std::string& configA,
 			label1->setPixmap(_pixmapBlank);	
 			label1->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 			QFont font = label1->font();
-			font.setPointSize(40);
+			font.setPointSize(_multiplier == 1 ? 20 : 40);
 			font.setBold(true);
 			label1->setFont(font);
 			_labelRecordSiblings.push_back(label1);
@@ -212,7 +212,7 @@ Win007::Win007(const std::string& configA,
 			label1->setPixmap(_pixmapBlank);	
 			label1->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
 			QFont font = label1->font();
-			font.setPointSize(40);
+			font.setPointSize(_multiplier == 1 ? 20 : 40);
 			font.setBold(true);
 			label1->setFont(font);			
 			_labelRecordAncestors.push_back(label1);
