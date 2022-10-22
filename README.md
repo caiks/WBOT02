@@ -434,7 +434,9 @@ The remainder of `Win006::act` is as for `Win005::act` - the labels are updated 
 
 #### actor001 models
 
-Now let us consider some of the *models* obtained by `actor001`. In order to make them comparable, we have trained them on the first two hours of the [Fireman Sam videos](https://www.bbc.co.uk/iplayer/episode/p08phyzv/fireman-sam-series-1-1-kite?seriesId=b00kr5w3). The default coordinates and rectangle for the screen grab may be checked by running with the following command line arguments and `actor.json` file -
+Now let us consider some of the *models* obtained by `actor001`. In order to make them comparable, we have trained them on the first few hours of the [Fireman Sam videos](https://www.bbc.co.uk/iplayer/episode/p08phyzv/fireman-sam-series-1-1-kite?seriesId=b00kr5w3). Fireman Sam is an animated character for children's television from the BBC. The programmes consists of around 51 episodes of about 10 minutes. In the early series the characters are animated plasticine; in later series CGI is used. The indoor scenes are generally fairly simple, in the early series at least, but outdoor scenes and later indoor scenes are more complex. The lighting is fairly even and primary colours are used a great deal - again, especially in the early series.
+
+The default coordinates and rectangle for the screen grab may be checked by running with the following command line arguments and `actor.json` file -
 ```
 actor001 actor.json
 ```
@@ -700,37 +702,35 @@ The representation is possibly less blurry than for the *model* 4 hotspot, but s
 
 We can perhaps tentatively conclude that frequently seen frames are more likely to have high *likelihood* hotspots nearby, in varying degrees of *decomposition*, than frames containing the intervals between objects (such as the edge of the mirror above), or with jumbles of rarely seen objects. To find out, `actor002` will actively scan for hotspots and will show the siblings and ancestor *slice* representations. 
 
-None of the *models* with only one frame (5, 6 and 7) have induce lags. There is a small lag in *model* 1 with four frames, and large lags in *models* 3, 4, 2 and 8 with five frames. The *models* that lagged the most may have slightly better *models* because of the larger *slices*. The lagging is mainly a problem, however, because the *model* is out of date, and so it will be important to avoid lags when we come to *likelihood* search in `actor002`. Eventually in  in `actor003` we run the image capture from video and the active update and induce is done synchronously, thus avoiding lags altogether.
+None of the *models* with only one frame (5, 6 and 7) have induce lags. There is a small lag in *model* 1 with four frames, and large lags in *models* 3, 4, 2 and 8 with five frames. The *models* that lagged the most may have slightly better *models* because of the larger *slices*. The lagging is mainly a problem, however, because the *model* is out of date, and so it will be important to avoid lags when we come to *likelihood* search in `actor002`. Eventually  in `actor003` we will run the image capture from video, and the active update and induce will be done synchronously, thus avoiding lags altogether.
 
 Note that the `actor001` *models* were all subject to a bug in the record `valent` bucketing which meant that the first *value* was too infrequent and the last *value* was too frequent. Thus the *valency* was more like 9 than 10.  Qualitatively, however, the *models* still seem to work quite well. The `actor002` *models* were all corrected nonetheless.
 
-TODO -
-
-What are the siblings for the slices that seem to be images? Are they also the same image but translated? Only slightly e.g. alarm clock for model 9 - not translated but ringing differently, or at 1:03 of Sam. Show the relations nearest a browsed slice. Perhaps a decomp browser.
-
-Do actor 2 for likelihood. Only need one current frame visible for a single active. Idea is to experiment with different scans. The displayed frame under user control need not be an event, only part of the scan.
+<!-- TODO 
 
 For model 8 there are 20/28 hotspots > 0.5 every 20s of the first episode at (0.5,0.5) and 10/28 in episode 2. At (0.562,0.562) there are 14/28 hotspots and 10/28 in episode 2. So pretty random. Do the same for fixed - model 2 at (0.5,0.5) has 19/28 episode 1 and 18/28 episode 2. So there probably is an advantage for the fixed. However, even for random there is at least a 50% chance a location is a hotspot.
 
-The fixed models will have many identical events in a slice from the credits. So some slices are identical to the event. Really need to see the ancestors and siblings to see how generic the model is - actor 2. Of course we don't want it to be too generic - the model would have to be far too large, so we need hotspots rather like the fixed points but smart.
-
-
 Scenes from the credits have nearly uniformly high likelihoods (> 0.5) and the slice is usually right. Scenes from the first series have variable results. The slices are wrong quite frequently, although perhaps show a scene which is one of the stock backgrounds but does not have the object in the foreground, such as a bus moving along a road. Scenes from other series usually have low likelihoods and often the slices are only approximate or completely wrong.  
-
-This behaviour is excellent in the sense that likelihood is a good indicator for future potential, but shows that we need less cluttered frames - the model is quite poor for new scenes. Wotbot needs to be able to be able to identify the different objects independently at smaller scales, while having the overall scene at larger scales too. Should we extend the substrate to allow one full scale frame plus a dynamic variable scale frame? Or should that be arranged in levels, i.e. the higher level has temporal and two underlyings - the full scale scene and the scanned variable scale frame.
 
 don't seem to be able to show anything convincing by browsing, but the likelihoods of the randomised model around faces seem to be higher than in non-decript areas in general e.g. FS1_1_1m40s_008_1.png
 
 cf CAIKS4 202205310940
 
+-->
 
 #### actor002 description
 
 In `actor001` the fixed *models* had many identical *events* in a *slice* from the credits and pauses in the action. Some *slices* might even be identical to a single *event*. To see what is going on we really need a browser to view the *slice* ancestors and siblings and example *events*. This will enable us to see how generic the *model* is. Of course we don't want it to be too generic - the *model* would have to be far too large for the compute time available, so we need to focus the search on hotspots in addition to browsing the *model*. These are rather like the fixed points, in that the *slices* will be more specialised, but also like the random points because the hotspots are chosen initially at random.
 
-TODO -
+<!-- TODO 
+
+Do actor 2 for likelihood. Only need one current frame visible for a single active. Idea is to experiment with different scans. The displayed frame under user control need not be an event, only part of the scan.
 
 Actor 2 GUI will have current slice, 10 valent actual and 256 actual and colour actual in the first row. The top 5 siblings are in the next row, excluding the current, in descending order of likelihood. The likelihoods are shown. The last 5 ancestors are shown in the third row along with likelihoods. Statistics of the model and timings below that.
+
+What are the siblings for the slices that seem to be images? Are they also the same image but translated? Only slightly e.g. alarm clock for model 9 - not translated but ringing differently, or at 1:03 of Sam. Show the relations nearest a browsed slice. Perhaps a decomp browser.
+
+-->
 
 #### actor002 models
 
@@ -800,7 +800,7 @@ model040|0.177|5 scanned potential tiled actual-potential|5 scanned potential ti
 model041|0.177|5 scanned potential tiled actual-potential|5 scanned potential tiled actual-potential|fixed|12 B&W videos|2,656,962|14079|1.0598|18.30|6.61|62|102|30s unique
 
 
-TODO -
+<!-- TODO 
 
 Film Noir and fixed buckets
 
@@ -844,9 +844,13 @@ Scanning. What we really want is local actual-potential and global potential. Th
 
 The models are still very blurry and so we must try to increase model detail but concentrated in areas interesting to us humans. These are not that much more interesting than clouds and backgrounds. With multi-scale, face hotspots will be more common and that might accelerate model growth there. Also if we have dynamics, the backgrounds will be more separated from heads and bodies - although that will geneally be the case anyway. Once attached to a head the small scan hotspot mode tends to follow it around - so there is a chance that we can parameterise the mode so that the model can be interested in the objects we are too.
 
+-->
+
 <a name = "Conclusion"></a>
 
 ### Conclusion
+
+<!-- TODO 
 
 Could do an RGB capture instead of HSV. After all, this is how HB do it. Have to balance resolution, valency and type and bucketing to maximise contrast
 
@@ -854,4 +858,6 @@ Expect that even with multi-scale and edge detection we will probably still need
 
 The things that are interesting to humans and other animals are those that natural selection has chosen - other agents, ripe fruit, water, heights, insects, teeth, eyes, etc. The lowest levels are those which depend most on hardwiring eg edge detection for other animals, and stereoscopic vision for distance calculation. At higher levels emotions seem to control the goal choices as agents navigate through the active slice topologies. For wotbot to be interesting to users it must be interested in the same things users are, so let biology be our guide while remembering that the larger context is the inanimate such as is seen in autistic interest in backgrounds and arrangements rather than agents.
 
+This behaviour is excellent in the sense that likelihood is a good indicator for future potential, but shows that we need less cluttered frames - the model is quite poor for new scenes. Wotbot needs to be able to be able to identify the different objects independently at smaller scales, while having the overall scene at larger scales too. Should we extend the substrate to allow one full scale frame plus a dynamic variable scale frame? Or should that be arranged in levels, i.e. the higher level has temporal and two underlyings - the full scale scene and the scanned variable scale frame.
 
+-->
