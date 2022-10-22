@@ -569,7 +569,7 @@ model004|0.5|1 centred, 4 offset, randomised|720,000|2951|0.819722|25.9151|41.37
 model002|0.25|1 centred, 4 offset|720,000|2807|0.779722|30.9492|41.6394|630
 model008|0.25|1 centred, 4 offset, randomised|720,000|2730|0.758333|25.8088|38.3436|305
 
-*Model* 1 is the only *model* with varying scales. In order to determine which scale had the most *alignments* we ran the first three scales separately, in *models* 5, 6 and 7. We can see that no scale has any noticeable advantage, with the *fuds* per *size* per threshold fairly constant amongst all of them at around 0.77. The median and maximum *diagonals* is similar too. 
+*Model* 1 is the only *model* with varying scales. In order to determine which scale had the most *alignments* we ran the first three scales separately, in *models* 5, 6 and 7. We can see that no scale has any noticeable advantage, with the *fuds* per *size* per threshold fairly constant amongst all of them at around 0.77. The median and maximum *diagonals* are similar too. 
 
 The configuration for these three *models* is very similar. For example, `model005.json` -
 ```
@@ -690,7 +690,7 @@ If we navigate around Sam's face with *model* 4 we find that all of the represen
 
 ![actor001_015](images/actor001_015.png) 
 
-None of the representations look very much like his face. This suggests that randomised *modelling* would need much longer runs to attain, say, two darker areas for the pupils of the eyes. A limited active *history* is likely to preclude ever obtaining even a basic *model* of faces.
+None of the representations look very much like his face. This suggests that randomised *modelling* would need much longer runs to attain, say, two darker areas for the pupils of the eyes. A limited active *history* is likely to preclude ever obtaining even a basic *model* of faces, unless special methods are used to accelerate *model* growth.
 
 If we repeat for *model* 3 we have a high *likelihood* hotspot at (0.5,0.5) -
 
@@ -700,15 +700,11 @@ The representation is possibly less blurry than for the *model* 4 hotspot, but s
 
 We can perhaps tentatively conclude that frequently seen frames are more likely to have high *likelihood* hotspots nearby, in varying degrees of *decomposition*, than frames containing the intervals between objects (such as the edge of the mirror above), or with jumbles of rarely seen objects. To find out, `actor002` will actively scan for hotspots and will show the siblings and ancestor *slice* representations. 
 
-None of the *models* with only one frame (5, 6 and 7) have induce lags. There is a small lag in *model* 1 with four frames, and large lags in *models* 3, 4, 2 and 8 with five frames. The *models* that lagged the most may have slightly better *models* because of the larger *slices*. The lagging is mainly a problem, however, because the *model* is out of date, and so it will be important to avoid lags when we come to *likelihood* search in `actor002`.
+None of the *models* with only one frame (5, 6 and 7) have induce lags. There is a small lag in *model* 1 with four frames, and large lags in *models* 3, 4, 2 and 8 with five frames. The *models* that lagged the most may have slightly better *models* because of the larger *slices*. The lagging is mainly a problem, however, because the *model* is out of date, and so it will be important to avoid lags when we come to *likelihood* search in `actor002`. Eventually in  in `actor003` we run the image capture from video and the active update and induce is done synchronously, thus avoiding lags altogether.
+
+Note that the `actor001` *models* were all subject to a bug in the record `valent` bucketing which meant that the first *value* was too infrequent and the last *value* was too frequent. Thus the *valency* was more like 9 than 10.  Qualitatively, however, the *models* still seem to work quite well. The `actor002` *models* were all corrected nonetheless.
 
 TODO -
-
-The actor 1 models were all subject to a bug in the valent record calculation which meant that the first value was too infrequent and the last value was too frequent. Thus the valency was more like 9 than 10.  Qualitatively, the models still seem to work quite well. The actor 2 models were all corrected nonetheless.
-
-The fixed models will have many identical events in a slice from the credits. So some slices are identical to the event. Really need to see the ancestors and siblings to see how generic the model is - actor 2. Of course we don't want it to be too generic - the model would have to be far too large, so we need hotspots rather like the fixed points but smart.
-
-Actor 2 GUI will have current slice, 10 valent actual and 256 actual and colour actual in the first row. The top 5 siblings are in the next row, excluding the current, in descending order of likelihood. The likelihoods are shown. The last 5 ancestors are shown in the third row along with likelihoods. Statistics of the model and timings below that.
 
 What are the siblings for the slices that seem to be images? Are they also the same image but translated? Only slightly e.g. alarm clock for model 9 - not translated but ringing differently, or at 1:03 of Sam. Show the relations nearest a browsed slice. Perhaps a decomp browser.
 
@@ -728,7 +724,48 @@ don't seem to be able to show anything convincing by browsing, but the likelihoo
 cf CAIKS4 202205310940
 
 
-#### actor002 and actor003
+#### actor002 description
+
+In `actor001` the fixed *models* had many identical *events* in a *slice* from the credits and pauses in the action. Some *slices* might even be identical to a single *event*. To see what is going on we really need a browser to view the *slice* ancestors and siblings and example *events*. This will enable us to see how generic the *model* is. Of course we don't want it to be too generic - the *model* would have to be far too large for the compute time available, so we need to focus the search on hotspots in addition to browsing the *model*. These are rather like the fixed points, in that the *slices* will be more specialised, but also like the random points because the hotspots are chosen initially at random.
+
+TODO -
+
+Actor 2 GUI will have current slice, 10 valent actual and 256 actual and colour actual in the first row. The top 5 siblings are in the next row, excluding the current, in descending order of likelihood. The likelihoods are shown. The last 5 ancestors are shown in the third row along with likelihoods. Statistics of the model and timings below that.
+
+#### actor002 models
+
+model|scales|mode|initial mode|valency|domain|events|fuds|evts/sz/thrshld|mean length|std dev length|max length|fails|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model010|0.5|4 randomised||bucketed|Fireman Sam|720,000|2567|0.713147|6.82|1.83|12||25 FPS
+model011|0.354|4 randomised||bucketed|Fireman Sam|720,000|2699|0.749797|7.22|1.91|12||
+model012|0.25|4 randomised||bucketed|Fireman Sam|720,000|2664|0.740086|7.23|38.2333|12||
+model014|0.25|4 randomised||bucketed|Fireman Sam|720,000|492|0.683333|5.40|1.61|9||1000 threshold
+model013|0.177|4 randomised||bucketed|Fireman Sam|720,000|2719|0.755362|7.19|1.91|13||
+model015|0.177|4 potential||bucketed|Fireman Sam|720,000|4131|1.14803|9.49|1.72|14||20 randomised
+model016|0.177|4 actual-potential||bucketed|Fireman Sam|720,000|3014|0.837385|10.13|1.87|14||20 randomised
+model018|0.177|4 actual-potential|4 actual-potential|bucketed|Fireman Sam|1,000,000|4194|0.838961|10.48|1.88|15||20 randomised
+model017|0.177|10 scanned actual-potential|4 actual-potential|bucketed|Fireman Sam|1,000,000|4397|0.879532|11.58|2.83|20||4 FPS
+model019|0.177|4 potential|4 potential|bucketed|Fireman Sam|1,000,000|5738|1.14813|9.81|1.76|15||20 randomised
+model020|0.177|10 scanned actual-potential|4 potential|bucketed|Fireman Sam|1,000,000|5526|1.10558|10.76|2.75|19|
+model021|0.177|10 scanned actual-potential||bucketed|Fireman Sam|720,000|3389|0.941585|13.83|2.83|21|
+model022|0.177|10 scanned actual-potential|10 scanned actual-potential|bucketed|Fireman Sam|1,000,000|4729|0.946055|14.41|2.87|22|
+model023|0.177|10 scanned actual-potential|10 scanned actual-potential|bucketed|Fireman Sam|1,300,000|5488|0.845|14.66|2.89|22|
+model024|0.177|10 scanned actual-potential|10 scanned actual-potential|bucketed|Fireman Sam|1,700,000|6172|0.726|14.84|2.90|22|
+model025|0.177|10 scanned actual-potential||fixed|Film Noir|865,170|5283|1.22126|18.73|7.35|50|179|
+model027|0.177|10 scanned actual-potential||bucketed|Film Noir|759,760|3757|0.988997|14.14|3.13|24|12|
+model028|0.177|10 scanned actual-potential||bucketed|Film Noir|659,550|3203|0.971268|14.84|3.14|27|49|
+model029|0.177|5 scanned potential tiled actual-potential||bucketed|Film Noir|526,345|3386|1.28661|13.49|2.60|23|2|
+model030|0.177|5 scanned potential tiled actual-potential||fixed|Film Noir|527,045|3816|1.44807|15.56|3.74|31|27|
+model031|0.177|5 scanned potential tiled actual-potential||fixed|Film Noir|452,255|3197|1.4138|14.62|3.73|32|31|12.0 min diagonal
+
+The median diagonals for the actor 2 *models* were consistently in the range 23-27, and the maximum diagonals were consistently in the the range 37-39.
+
+
+#### actor003 description
+
+#### actor003 models
+
+This summarises the *model* results for both `actor002` and `actor003` -
 
 model|scales|mode|initial mode|valency|domain|events|fuds|evts/sz/thrshld|mean length|std dev length|max length|fails|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -762,7 +799,6 @@ model039|0.177|5 scanned potential tiled actual-potential||fixed|12 B&W videos|1
 model040|0.177|5 scanned potential tiled actual-potential|5 scanned potential tiled actual-potential|fixed|12 B&W videos|2,000,000|12262|1.2262|17.77|6.01|54|72|30s unique
 model041|0.177|5 scanned potential tiled actual-potential|5 scanned potential tiled actual-potential|fixed|12 B&W videos|2,656,962|14079|1.0598|18.30|6.61|62|102|30s unique
 
-The median diagonals for the actor 2 *models* were consistently in the range 23-27, and the maximum diagonals were consistently in the the range 37-39.
 
 TODO -
 
