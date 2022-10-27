@@ -100,6 +100,7 @@ Win008::Win008(const std::string& configA,
 		_videoStart = ARGS_INT_DEF(video_start,120);
 		_videoEnd = ARGS_INT_DEF(video_end,30);
 		_playbackRate = ARGS_DOUBLE(playback_rate);
+		_mediaRetry = ARGS_BOOL(retry_media);
 		_updateDisable = ARGS_BOOL(disable_update);
 		_activeLogging = ARGS_BOOL(logging_active);
 		_activeSummary = ARGS_BOOL(summary_active);
@@ -350,7 +351,20 @@ void Win008::handleError()
 		<< std::defaultfloat;
 	LOG string.str() UNLOG
 	
-	this->terminate = true;
+	if (_mediaRetry)
+	{
+		_position = _videoStart*1000;
+		disconnect(_mediaPlayer, &QMediaPlayer::positionChanged, 0, 0);
+		disconnect(_mediaPlayer, &QMediaPlayer::errorChanged, 0, 0);
+		_mediaPlayer->stop();	
+		_mediaPlayer = new QMediaPlayer(this);
+		connect(_mediaPlayer, &QMediaPlayer::errorChanged,this, &Win008::handleError);
+		_videoWidget = new QVideoWidget;
+		_mediaPlayer->setVideoOutput(_videoWidget);
+		QTimer::singleShot(1000, this, &Win008::mediaStart);			
+	}
+	else
+		this->terminate = true;
 	QCoreApplication::exit();
 }
 

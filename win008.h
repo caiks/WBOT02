@@ -71,6 +71,7 @@ private:
 	bool _isSeekable;
 	std::size_t _position;	
 	double _playbackRate;
+	bool _mediaRetry;
 
 	std::shared_ptr<Alignment::ActiveSystem> _system;
 	std::shared_ptr<Alignment::System> _uu;
