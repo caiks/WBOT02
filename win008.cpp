@@ -99,7 +99,7 @@ Win008::Win008(const std::string& configA,
 		_videoIndex = 0;
 		_videoStart = ARGS_INT_DEF(video_start,120);
 		_videoEnd = ARGS_INT_DEF(video_end,30);
-		_mediaStart = ARGS_INT_DEF(media_start,2000);
+		_mediaStart = ARGS_INT_DEF(media_start,10000);
 		_playbackRate = ARGS_DOUBLE(playback_rate);
 		_mediaRetry = ARGS_BOOL(retry_media);
 		_updateDisable = ARGS_BOOL(disable_update);
@@ -389,6 +389,12 @@ void Win008::mediaStart()
 	{
 		std::string string = "actor\tsource\t";
 		string += _mediaPlayer->source().toString().toStdString();
+		LOG string UNLOG
+	}
+	if (_actLogging && _videoSources.size())	
+	{
+		std::string string = "actor\tnext index\t";
+		string += _videoIndex;
 		LOG string UNLOG
 	}
 }
