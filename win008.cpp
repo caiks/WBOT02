@@ -320,27 +320,38 @@ void Win008::dump()
 {
 	if (_system && _model!="")
 	{
+		bool ok = true;
 		auto& activeA = *_active;
 		ActiveIOParameters ppio;
 		ppio.filename = activeA.name+".ac";
+		auto logging = activeA.logging;
 		activeA.logging = true;
-		activeA.dump(ppio);		
-		// dump slice representations
-		try
+		ok = ok && activeA.dump(ppio);		
+		activeA.logging = logging;
+		if (ok)
 		{
-			auto mark = Clock::now(); 
-			std::ofstream out(_model + ".rep", std::ios::binary);
-			sliceRepresentationUMapsPersistent(*_slicesRepresentation, out); 
-			out.close();
-			LOG "actor\tdump\tfile name: " << _model + ".rep" UNLOG
-            LOG "actor\tevent id: " << this->eventId << "\ttime " << ((Sec)(Clock::now() - mark)).count() << "s" UNLOG
+			// dump slice representations
+			try
+			{
+				auto mark = Clock::now(); 
+				std::ofstream out(_model + ".rep", std::ios::binary);
+				sliceRepresentationUMapsPersistent(*_slicesRepresentation, out); 
+				out.close();
+				LOG "actor\tdump\tfile name: " << _model + ".rep" << "\ttime " << ((Sec)(Clock::now() - mark)).count() << "s" UNLOG
+				LOG "actor\tevent id: " << this->eventId UNLOG
+			}
+			catch (const std::exception&)
+			{
+				LOG "actor\terror: failed to write slice-representations file" <<_model + ".rep" UNLOG
+				ok = false;
+			}				
 		}
-		catch (const std::exception&)
+		if (!ok)
 		{
-			LOG "actor\terror: failed to write slice-representations file" <<_model + ".rep" UNLOG
 			terminate = true;
 			_active->terminate = true;
-		}	
+			LOG "actor\tstatus: quitting" UNLOG
+		}
 	}	
 }
 
@@ -380,6 +391,7 @@ void Win008::handleError()
 	{
 		this->terminate = true;
 		QCoreApplication::exit();
+		LOG "actor\tstatus: quitting" UNLOG
 	}
 }
 
@@ -1086,11 +1098,13 @@ void Win008::act()
 			if (!_active->update(_updateParameters))
 			{
 				this->terminate = true;	
+				LOG "actor\tstatus: quitting" UNLOG
 				return;
 			}
 			if (!_active->induce(_induceParameters))
 			{
 				this->terminate = true;	
+				LOG "actor\tstatus: quitting" UNLOG
 				return;
 			}
 		}
@@ -1171,6 +1185,7 @@ void Win008::act()
 	{
 		this->terminate = true;
 		QCoreApplication::exit();
+		LOG "actor\tstatus: quitting" UNLOG
 	}
 	if (_system && _actLogging && (_actLoggingFactor <= 1 || _actCount % _actLoggingFactor == 0))
 	{
