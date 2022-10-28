@@ -34,6 +34,7 @@ public Q_SLOTS:
     void capture();
     void act();
 	void handleError();
+    void dump();
 
 private:
     Ui::Win008 *_ui;
@@ -62,6 +63,10 @@ private:
 	std::size_t _modeLoggingFactor;
 	bool _modeTracing;
 	bool _updateDisable;
+	
+	bool _checkpointing;	
+	std::size_t _checkpointInterval;
+	std::size_t _checkpointEvent;
 	
 	std::string _videoSource;
 	std::vector<std::string> _videoSources;

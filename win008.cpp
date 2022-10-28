@@ -81,6 +81,9 @@ Win008::Win008(const std::string& configA,
 		_interval = (std::chrono::milliseconds)(ARGS_INT_DEF(interval,1000));
 		_actWarning = ARGS_BOOL(warning_action);
 		_actLoggingSlice = ARGS_BOOL(logging_action_slice);
+		_checkpointing = ARGS_BOOL(checkpointing);
+		_checkpointInterval = ARGS_INT_DEF(checkpoint_interval,100000);
+		_checkpointEvent = 0;
 		_mode = ARGS_STRING(mode);
 		_modeLogging = ARGS_BOOL(logging_mode);
 		_modeLoggingFactor = ARGS_INT(logging_mode_factor); 
@@ -96,7 +99,7 @@ Win008::Win008(const std::string& configA,
 			for (int k = 0; k < arr.Size(); k++)
 				_videoSources.push_back(arr[k].GetString());	
 		}
-		_videoIndex = 0;
+		_videoIndex = ARGS_INT(video_index);
 		_videoStart = ARGS_INT_DEF(video_start,120);
 		_videoEnd = ARGS_INT_DEF(video_end,30);
 		_mediaStart = ARGS_INT_DEF(media_start,10000);
@@ -236,6 +239,7 @@ Win008::Win008(const std::string& configA,
 					this->eventId = std::max(this->eventId,activeA.historySize);	
 				else					
 					this->eventId = std::max(this->eventId,activeA.historyEvent);	
+				_checkpointEvent = this->eventId;
 				this->eventId++;
 				_fudsSize = activeA.decomp->fuds.size();
 			}
@@ -304,34 +308,41 @@ Win008::Win008(const std::string& configA,
 Win008::~Win008()
 {
 	terminate = true;
-	if (_system)
-	{
-		_active->terminate = true;
-		if ( _model!="")
-		{
-			auto& activeA = *_active;
-			ActiveIOParameters ppio;
-			ppio.filename = activeA.name+".ac";
-			activeA.logging = true;
-			activeA.dump(ppio);		
-			// dump slice representations
-			try
-			{
-				std::ofstream out(_model + ".rep", std::ios::binary);
-				sliceRepresentationUMapsPersistent(*_slicesRepresentation, out); 
-				out.close();
-				LOG "actor\tdump\tfile name:" << _model + ".rep" UNLOG
-			}
-			catch (const std::exception&)
-			{
-				LOG "actor\terror: failed to write slice-representations file" <<_model + ".rep" UNLOG
-			}	
-		}			
-	}
+	_active->terminate = true;
+	LOG "actor\tdumping" UNLOG
+	dump();	
     delete _ui;
 	LOG "actor\tstatus: finished" UNLOG
 }
 
+
+void Win008::dump()
+{
+	if (_system && _model!="")
+	{
+		auto& activeA = *_active;
+		ActiveIOParameters ppio;
+		ppio.filename = activeA.name+".ac";
+		activeA.logging = true;
+		activeA.dump(ppio);		
+		// dump slice representations
+		try
+		{
+			auto mark = Clock::now(); 
+			std::ofstream out(_model + ".rep", std::ios::binary);
+			sliceRepresentationUMapsPersistent(*_slicesRepresentation, out); 
+			out.close();
+			LOG "actor\tdump\tfile name: " << _model + ".rep" UNLOG
+            LOG "actor\tevent id: " << this->eventId << "\ttime " << ((Sec)(Clock::now() - mark)).count() << "s" UNLOG
+		}
+		catch (const std::exception&)
+		{
+			LOG "actor\terror: failed to write slice-representations file" <<_model + ".rep" UNLOG
+			terminate = true;
+			_active->terminate = true;
+		}	
+	}	
+}
 
 void Win008::handleError()
 {
@@ -1146,6 +1157,12 @@ void Win008::act()
 				_fudsSize = dr.fuds.size();
 			}
 		}
+		if (_checkpointing && _system && _model!="" && this->eventId >= _checkpointEvent + _checkpointInterval)
+		{
+            LOG "actor\tcheckpointing" UNLOG
+			dump();
+			_checkpointEvent = this->eventId;
+		}		
 		if (_eventLogging && (_eventLoggingFactor <= 1 || this->eventId >= _eventIdPrev +  _eventLoggingFactor))
 		{
             LOG "actor\tevent id: " << this->eventId << "\ttime " << ((Sec)(Clock::now() - _mark)).count() << "s" UNLOG
