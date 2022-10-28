@@ -68,6 +68,7 @@ private:
 	std::size_t _videoIndex;
 	std::size_t _videoStart;	
 	std::size_t _videoEnd;	
+	std::size_t _mediaStart;	
 	bool _isSeekable;
 	std::size_t _position;	
 	double _playbackRate;

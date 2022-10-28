@@ -99,6 +99,7 @@ Win008::Win008(const std::string& configA,
 		_videoIndex = 0;
 		_videoStart = ARGS_INT_DEF(video_start,120);
 		_videoEnd = ARGS_INT_DEF(video_end,30);
+		_mediaStart = ARGS_INT_DEF(media_start,2000);
 		_playbackRate = ARGS_DOUBLE(playback_rate);
 		_mediaRetry = ARGS_BOOL(retry_media);
 		_updateDisable = ARGS_BOOL(disable_update);
@@ -285,7 +286,7 @@ Win008::Win008(const std::string& configA,
 			connect(_mediaPlayer, &QMediaPlayer::errorChanged,this, &Win008::handleError);
 			_videoWidget = new QVideoWidget;
 			_mediaPlayer->setVideoOutput(_videoWidget);
-			QTimer::singleShot(1000, this, &Win008::mediaStart);
+			QTimer::singleShot(_mediaStart, this, &Win008::mediaStart);
 		}
 		else
 		{
@@ -361,7 +362,7 @@ void Win008::handleError()
 		connect(_mediaPlayer, &QMediaPlayer::errorChanged,this, &Win008::handleError);
 		_videoWidget = new QVideoWidget;
 		_mediaPlayer->setVideoOutput(_videoWidget);
-		QTimer::singleShot(1000, this, &Win008::mediaStart);			
+		QTimer::singleShot(_mediaStart, this, &Win008::mediaStart);			
 	}
 	else
 		this->terminate = true;
@@ -442,7 +443,7 @@ void Win008::capture()
 			connect(_mediaPlayer, &QMediaPlayer::errorChanged,this, &Win008::handleError);
 			_videoWidget = new QVideoWidget;
 			_mediaPlayer->setVideoOutput(_videoWidget);
-			QTimer::singleShot(1000, this, &Win008::mediaStart);	
+			QTimer::singleShot(_mediaStart, this, &Win008::mediaStart);	
 			return;			
 		}
 		else if (_isSeekable)
