@@ -404,9 +404,7 @@ void Win008::mediaStart()
 	}
 	if (_actLogging && _videoSources.size())	
 	{
-		std::string string = "actor\tnext index\t";
-		string += _videoIndex;
-		LOG string UNLOG
+		LOG "actor\tnext index: " << _videoIndex UNLOG
 	}
 }
 
@@ -422,17 +420,17 @@ void Win008::mediaStateChanged(QMediaPlayer::MediaStatus state)
 		if (_playbackRate != 1.0 && _playbackRate > 0.0)
 			_mediaPlayer->setPlaybackRate(_playbackRate);
 		_mediaPlayer->play();
-		if (_actLogging)	
+		if (_actLogging && _isSeekable)	
 		{
-			std::string string = "actor\tseekable\t";
-			string += _isSeekable ? "true" : "false";
-			LOG string UNLOG
+			LOG "actor\tseekable" UNLOG
+		}		
+		else if (_actLogging)	
+		{
+			LOG "actor\tnot seekable" UNLOG
 		}
 		if (_actLogging)	
 		{
-			std::string string = "actor\tduration\t";
-			string += _mediaPlayer->duration();
-			LOG string UNLOG
+			LOG "actor\tduration: " << _mediaPlayer->duration() UNLOG
 		}
     }
 }
