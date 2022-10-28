@@ -351,7 +351,7 @@ void Win008::handleError()
 		<< "\tduration\t" << std::fixed << _mediaPlayer->duration()
 		<< std::defaultfloat;
 	LOG string.str() UNLOG
-	
+
 	if (_mediaRetry)
 	{
 		_position = _videoStart*1000;
@@ -362,11 +362,14 @@ void Win008::handleError()
 		connect(_mediaPlayer, &QMediaPlayer::errorChanged,this, &Win008::handleError);
 		_videoWidget = new QVideoWidget;
 		_mediaPlayer->setVideoOutput(_videoWidget);
-		QTimer::singleShot(_mediaStart, this, &Win008::mediaStart);			
+		QTimer::singleShot(_mediaStart, this, &Win008::mediaStart);	
+		LOG "actor\tretrying" UNLOG		
 	}
 	else
+	{
 		this->terminate = true;
-	QCoreApplication::exit();
+		QCoreApplication::exit();
+	}
 }
 
 
@@ -394,17 +397,26 @@ void Win008::mediaStateChanged(QMediaPlayer::MediaStatus state)
 {
     if (state == QMediaPlayer::LoadedMedia)
     {
-		// TRUTH(_mediaPlayer->isSeekable());
-        // EVAL(_mediaPlayer->duration());
 		_isSeekable = _mediaPlayer->isSeekable();
 		if (_isSeekable)
 			_mediaPlayer->setPosition(_position);
-		// EVAL(_mediaPlayer->position());
         disconnect(_mediaPlayer, &QMediaPlayer::mediaStatusChanged, 0, 0);
         connect(_mediaPlayer, &QMediaPlayer::positionChanged, this, &Win008::capture);
 		if (_playbackRate != 1.0 && _playbackRate > 0.0)
 			_mediaPlayer->setPlaybackRate(_playbackRate);
 		_mediaPlayer->play();
+		if (_actLogging)	
+		{
+			std::string string = "actor\tseekable\t";
+			string += _isSeekable ? "true" : "false";
+			LOG string UNLOG
+		}
+		if (_actLogging)	
+		{
+			std::string string = "actor\tduration\t";
+			string += _mediaPlayer->duration();
+			LOG string UNLOG
+		}
     }
 }
 
