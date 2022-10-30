@@ -271,6 +271,15 @@ Win008::Win008(const std::string& configA,
 			activeA.summary = _activeSummary;
 			activeA.underlyingEventsRepa.push_back(_events);
 			activeA.eventsSparse = std::make_shared<ActiveEventsArray>(1);
+			if (_modelInitial.size())
+			{
+				if (!activeA.induce(_induceParameters))
+				{
+					LOG "actor\tstatus: failed to run initial induce" UNLOG
+					_system.reset();
+					return;
+				}
+			}
 			std::size_t sizeA = activeA.historyOverflow ? activeA.historySize : activeA.historyEvent;
 			if (sizeA)
 			{
