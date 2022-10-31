@@ -882,7 +882,7 @@ What are the siblings for the slices that seem to be images? Are they also the s
 
 This summarises the *model* results for both `actor002` and `actor003` -
 
-model|scales|mode|initial mode|valency|domain|events|fuds|evts/sz/thrshld|mean length|std dev length|max length|fails|notes
+model|scales|mode|initial mode|valency|domain|events|fuds|evts/sz/thrshld (first 1m)|mean length|std dev length|max length|fails|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---
 model010|0.5|4 randomised||bucketed|Fireman Sam|720,000|2,567|0.713147|6.82|1.83|12||25 FPS
 model011|0.354|4 randomised||bucketed|Fireman Sam|720,000|2,699|0.749797|7.22|1.91|12||
@@ -911,9 +911,10 @@ model036|0.177|4 randomised||fixed|12 B&W videos|500,000|1,931|0.7724|7.20|2.00|
 model037|0.177|5 scanned potential tiled actual-potential|4 randomised|fixed|12 B&W videos|1,000,000|6,033|1.2066|12.60|5.11|35|60|two modes at 7 and 15
 model038|0.177|4 potential||fixed|12 B&W videos|500,000|2,488|0.9952|9.04|2.12|18|7|20 randomised
 model039|0.177|5 scanned potential tiled actual-potential||fixed|12 B&W videos|1,000,000|7,214|1.4428|16.42|5.40|46|43|30s unique
-model040|0.177|5 scanned potential tiled actual-potential||fixed|12 B&W videos|2,000,000|12,262|1.2262|17.77|6.01|54|72|30s unique
-model041|0.177|5 scanned potential tiled actual-potential||fixed|12 B&W videos|2,656,962|14,079|1.0598|18.30|6.61|62|102|30s unique
-model045|0.177|5 scanned potential tiled actual-potential||fixed 5-valent|48 B&W videos|2,656,963|34,557|1.3001|20.2|5.09|44|297|30s unique, 12.0 min diagonal
+model040|0.177|5 scanned potential tiled actual-potential||fixed|12 B&W videos|2,000,000|12,262|1.2262 (1.4428)|17.77|6.01|54|72|30s unique
+model041|0.177|5 scanned potential tiled actual-potential||fixed|12 B&W videos|2,656,962|14,079|1.0598 (1.4428)|18.30|6.61|62|102|30s unique
+model045|0.177|5 scanned potential tiled actual-potential||fixed 5-valent|48 B&W videos|2,656,963|34,557|1.300 (1.643)|20.2|5.09|44|297|30s unique, 12.0 min diagonal
+model046|0.177|5 scanned potential tiled actual-potential||fixed|48 B&W videos|2,656,965|13,432|1.011 (1.406)|16.8|4.49|36|67|30s unique, 12.0 min diagonal
 
 The median diagonals for the actor 2 *models* were consistently in the range 23-27, and the maximum diagonals were consistently in the the range 37-39.
 
