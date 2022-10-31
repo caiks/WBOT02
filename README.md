@@ -882,37 +882,37 @@ What are the siblings for the slices that seem to be images? Are they also the s
 
 This summarises the *model* results for both `actor002` and `actor003` -
 
-model|scales|mode|initial mode|valency|domain|events|fuds|evts/sz/thrshld (first 1m)|mean length|std dev length|max length|fails|notes
+model|scales|mode|initial mode|valency|domain|events|fuds|fuds/evts/ths (at 1m)|mean length|std dev length|max length|fails|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model010|0.5|4 randomised||bucketed|Fireman Sam|720,000|2,567|0.713147|6.82|1.83|12||25 FPS
-model011|0.354|4 randomised||bucketed|Fireman Sam|720,000|2,699|0.749797|7.22|1.91|12||
-model012|0.25|4 randomised||bucketed|Fireman Sam|720,000|2,664|0.740086|7.23|38.2333|12||
-model014|0.25|4 randomised||bucketed|Fireman Sam|720,000|492|0.683333|5.40|1.61|9||1000 threshold
-model013|0.177|4 randomised||bucketed|Fireman Sam|720,000|2,719|0.755362|7.19|1.91|13||
-model015|0.177|4 potential||bucketed|Fireman Sam|720,000|4,131|1.14803|9.49|1.72|14||20 randomised
-model016|0.177|4 actual-potential||bucketed|Fireman Sam|720,000|3,014|0.837385|10.13|1.87|14||20 randomised
-model018|0.177|4 actual-potential||bucketed|Fireman Sam|1,000,000|4,194|0.838961|10.48|1.88|15||20 randomised
-model017|0.177|10 scanned actual-potential|4 actual-potential|bucketed|Fireman Sam|1,000,000|4,397|0.879532|11.58|2.83|20||4 FPS
-model019|0.177|4 potential||bucketed|Fireman Sam|1,000,000|5,738|1.14813|9.81|1.76|15||20 randomised
-model020|0.177|10 scanned actual-potential|4 potential|bucketed|Fireman Sam|1,000,000|5,526|1.10558|10.76|2.75|19|
-model021|0.177|10 scanned actual-potential||bucketed|Fireman Sam|720,000|3,389|0.941585|13.83|2.83|21|
-model022|0.177|10 scanned actual-potential||bucketed|Fireman Sam|1,000,000|4,729|0.946055|14.41|2.87|22|
-model023|0.177|10 scanned actual-potential||bucketed|Fireman Sam|1,300,000|5,488|0.845|14.66|2.89|22|
-model024|0.177|10 scanned actual-potential||bucketed|Fireman Sam|1,700,000|6,172|0.726|14.84|2.90|22|
-model025|0.177|10 scanned actual-potential||fixed|Film Noir|865,170|5,283|1.22126|18.73|7.35|50|179|
-model027|0.177|10 scanned actual-potential||bucketed|Film Noir|759,760|3,757|0.988997|14.14|3.13|24|12|
-model028|0.177|10 scanned actual-potential||bucketed|Film Noir|659,550|3,203|0.971268|14.84|3.14|27|49|
-model029|0.177|5 scanned potential tiled actual-potential||bucketed|Film Noir|526,345|3,386|1.28661|13.49|2.60|23|2|
-model030|0.177|5 scanned potential tiled actual-potential||fixed|Film Noir|527,045|3,816|1.44807|15.56|3.74|31|27|
-model031|0.177|5 scanned potential tiled actual-potential||fixed|Film Noir|452,255|3,197|1.4138|14.62|3.73|32|31|12.0 min diagonal
-model034|0.177|5 scanned potential tiled actual-potential||fixed|10 B&W videos|527,045|3,846|1.45946|15.17|4.40|35|21|first actor003 model
-model035|0.177|5 scanned potential tiled actual-potential||fixed|14 B&W videos|1,000,000|7,069|1.4138|15.92|3.50|35|16|
-model036|0.177|4 randomised||fixed|12 B&W videos|500,000|1,931|0.7724|7.20|2.00|17|6|
-model037|0.177|5 scanned potential tiled actual-potential|4 randomised|fixed|12 B&W videos|1,000,000|6,033|1.2066|12.60|5.11|35|60|two modes at 7 and 15
-model038|0.177|4 potential||fixed|12 B&W videos|500,000|2,488|0.9952|9.04|2.12|18|7|20 randomised
-model039|0.177|5 scanned potential tiled actual-potential||fixed|12 B&W videos|1,000,000|7,214|1.4428|16.42|5.40|46|43|30s unique
-model040|0.177|5 scanned potential tiled actual-potential||fixed|12 B&W videos|2,000,000|12,262|1.2262 (1.4428)|17.77|6.01|54|72|30s unique
-model041|0.177|5 scanned potential tiled actual-potential||fixed|12 B&W videos|2,656,962|14,079|1.0598 (1.4428)|18.30|6.61|62|102|30s unique
+model010|0.5|4 randomised||bucketed|Fireman Sam|720,000|2,567|0.713|6.82|1.83|12||25 FPS
+model011|0.354|4 randomised||bucketed|Fireman Sam|720,000|2,699|0.750|7.22|1.91|12||
+model012|0.25|4 randomised||bucketed|Fireman Sam|720,000|2,664|0.740|7.23|38.2333|12||
+model014|0.25|4 randomised||bucketed|Fireman Sam|720,000|492|0.683|5.40|1.61|9||1000 threshold
+model013|0.177|4 randomised||bucketed|Fireman Sam|720,000|2,719|0.755|7.19|1.91|13||
+model015|0.177|4 potential||bucketed|Fireman Sam|720,000|4,131|1.148|9.49|1.72|14||20 randomised
+model016|0.177|4 actual-potential||bucketed|Fireman Sam|720,000|3,014|0.838|10.13|1.87|14||20 randomised
+model018|0.177|4 actual-potential||bucketed|Fireman Sam|1,000,000|4,194|0.839|10.48|1.88|15||20 randomised
+model017|0.177|10 scanned actual-potential|4 actual-potential|bucketed|Fireman Sam|1,000,000|4,397|0.880|11.58|2.83|20||4 FPS
+model019|0.177|4 potential||bucketed|Fireman Sam|1,000,000|5,738|1.148|9.81|1.76|15||20 randomised
+model020|0.177|10 scanned actual-potential|4 potential|bucketed|Fireman Sam|1,000,000|5,526|1.106|10.76|2.75|19|
+model021|0.177|10 scanned actual-potential||bucketed|Fireman Sam|720,000|3,389|0.942|13.83|2.83|21|
+model022|0.177|10 scanned actual-potential||bucketed|Fireman Sam|1,000,000|4,729|0.946|14.41|2.87|22|
+model023|0.177|10 scanned actual-potential||bucketed|Fireman Sam|1,300,000|5,488|0.845 (0.946)|14.66|2.89|22|
+model024|0.177|10 scanned actual-potential||bucketed|Fireman Sam|1,700,000|6,172|0.726 (0.946)|14.84|2.90|22|
+model025|0.177|10 scanned actual-potential||fixed|Film Noir|865,170|5,283|1.221|18.73|7.35|50|179|
+model027|0.177|10 scanned actual-potential||bucketed|Film Noir|759,760|3,757|0.989|14.14|3.13|24|12|
+model028|0.177|10 scanned actual-potential||bucketed|Film Noir|659,550|3,203|0.971|14.84|3.14|27|49|
+model029|0.177|5 scanned potential tiled actual-potential||bucketed|Film Noir|526,345|3,386|1.287|13.49|2.60|23|2|
+model030|0.177|5 scanned potential tiled actual-potential||fixed|Film Noir|527,045|3,816|1.448|15.56|3.74|31|27|
+model031|0.177|5 scanned potential tiled actual-potential||fixed|Film Noir|452,255|3,197|1.414|14.62|3.73|32|31|12.0 min diagonal
+model034|0.177|5 scanned potential tiled actual-potential||fixed|10 B&W videos|527,045|3,846|1.459|15.17|4.40|35|21|first actor003 model
+model035|0.177|5 scanned potential tiled actual-potential||fixed|14 B&W videos|1,000,000|7,069|1.414|15.92|3.50|35|16|
+model036|0.177|4 randomised||fixed|12 B&W videos|500,000|1,931|0.772|7.20|2.00|17|6|
+model037|0.177|5 scanned potential tiled actual-potential|4 randomised|fixed|12 B&W videos|1,000,000|6,033|1.207|12.60|5.11|35|60|two modes at 7 and 15
+model038|0.177|4 potential||fixed|12 B&W videos|500,000|2,488|0.995|9.04|2.12|18|7|20 randomised
+model039|0.177|5 scanned potential tiled actual-potential||fixed|12 B&W videos|1,000,000|7,214|1.443|16.42|5.40|46|43|30s unique
+model040|0.177|5 scanned potential tiled actual-potential||fixed|12 B&W videos|2,000,000|12,262|1.226 (1.443)|17.77|6.01|54|72|30s unique
+model041|0.177|5 scanned potential tiled actual-potential||fixed|12 B&W videos|2,656,962|14,079|1.060 (1.443)|18.30|6.61|62|102|30s unique
 model045|0.177|5 scanned potential tiled actual-potential||fixed 5-valent|48 B&W videos|2,656,963|34,557|1.300 (1.643)|20.2|5.09|44|297|30s unique, 12.0 min diagonal
 model046|0.177|5 scanned potential tiled actual-potential||fixed|48 B&W videos|2,656,965|13,432|1.011 (1.406)|16.8|4.49|36|67|30s unique, 12.0 min diagonal
 
