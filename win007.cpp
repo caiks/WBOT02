@@ -102,6 +102,7 @@ Win007::Win007(const std::string& configA,
 		_modelInitial = ARGS_STRING(model_initial);
 		_interactive = ARGS_BOOL(interactive);
 		_interactiveExamples = ARGS_BOOL(interactive_examples);
+		_interactiveEntropies = ARGS_BOOL(interactive_entropies);
 		_updateDisable = ARGS_BOOL(disable_update);
 		_activeLogging = ARGS_BOOL(logging_active);
 		_activeSummary = ARGS_BOOL(summary_active);
@@ -184,6 +185,10 @@ Win007::Win007(const std::string& configA,
 			verticalLayout->addWidget(label2);
 			if (!k)
 				_labelRecordLikelihood = label2;
+			else if (k == 1)
+				_labelRecordEntropy1 = label2;
+			else if (k == 2)
+				_labelRecordEntropy2 = label2;
 		}
 		for (std::size_t k = 0; k < _labelSize; k++)
 		{
@@ -226,11 +231,18 @@ Win007::Win007(const std::string& configA,
 		if (_interactiveExamples)		
 			for (std::size_t k = 0; k < _labelSize; k++)
 			{
+				QVBoxLayout* verticalLayout = new QVBoxLayout();
+				_ui->layout05->addLayout(verticalLayout);				
 				QLabel* label1 = new QLabel(this);
 				label1->setPixmap(_pixmapBlank);	
 				label1->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);		
 				_labelRecordExamples.push_back(label1);
-				_ui->layout05->addWidget(label1);
+				verticalLayout->addWidget(label1);
+				QLabel* label2 = new QLabel(this);
+				label2->setText("");				
+				label2->setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
+				verticalLayout->addWidget(label2);				
+				_labelRecordExampleEntropies.push_back(label2);
 			}			
 		{
 			_labelCentre = new QLabel(this); 
@@ -1247,7 +1259,19 @@ void Win007::act()
 				_labelRecordLikelihood->setText(string.str().data());				
 			}
 			else
-				_labelRecordLikelihood->setText("");			
+				_labelRecordLikelihood->setText("");	
+			if (_interactiveEntropies)
+			{
+				std::stringstream string;
+				string << std::fixed << std::setprecision(3) << recordValent.entropy() << std::defaultfloat;
+				_labelRecordEntropy1->setText(string.str().data());				
+			}
+			if (_interactiveEntropies)
+			{
+				std::stringstream string;
+				string << std::fixed << std::setprecision(3) << record.entropy() << std::defaultfloat;
+				_labelRecordEntropy2->setText(string.str().data());				
+			}				
 			for (std::size_t k = 0; k < _labelSize; k++)	
 			{
 				if (k == _labelSize - 1 && siblings.size() && k < siblings.size() - 1)
@@ -1292,7 +1316,13 @@ void Win007::act()
 				{
 					auto rep = examples[k];
 					auto image = rep.image(_multiplier,_valency);
-					_labelRecordExamples[k]->setPixmap(QPixmap::fromImage(image));					
+					_labelRecordExamples[k]->setPixmap(QPixmap::fromImage(image));
+					if (_interactiveEntropies)
+					{
+						std::stringstream string;
+						string << std::fixed << std::setprecision(3) << rep.entropy() << std::defaultfloat;
+						_labelRecordExampleEntropies[k]->setText(string.str().data());
+					}
 				}
 				else if (_interactiveExamples && k < _labelRecordExamples.size())
 				{

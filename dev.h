@@ -76,6 +76,8 @@ namespace WBOT02
 			
 		std::size_t hash() const;
 		
+		double entropy() const;
+		
 		Record valentFixed(std::size_t valency) const;
 		
 		Record valent(std::size_t valency, std::size_t factor = 0) const;
@@ -124,6 +126,8 @@ namespace WBOT02
 		Representation(
 			double scaleX1 = 1.0, double scaleY1 = 1.0, 
 			std::size_t sizeX1 = 40, std::size_t sizeY1 = 30);
+			
+		double entropy() const;
 			
 		QImage image(std::size_t multiplier = 1, std::size_t valency = 0) const;
 		void add(const Record& record);

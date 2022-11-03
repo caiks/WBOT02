@@ -108,6 +108,27 @@ std::size_t WBOT02::Record::hash() const
 	return hash;
 }
 
+
+double WBOT02::Record::entropy() const
+{
+	double e = 0.0;
+	std::unordered_map<unsigned char,std::size_t> map(256);
+	if (arr && arr->size())
+	{
+		auto size = arr->size();
+		auto arr1 =  arr->data();
+		for (std::size_t j = 0; j < size; j++)
+			map[arr1[j]]++;
+		auto z = (double)size;
+		for(const auto& p : map) 
+		{
+			auto a = p.second / z;
+			e -= a * log(a);
+		}
+	}
+	return e;
+}
+
 std::unique_ptr<ValueList> WBOT02::Record::sorted() const
 {
     auto result = std::make_unique<ValueList>();
@@ -443,6 +464,26 @@ WBOT02::Representation::Representation(
 	sizeX = sizeX ? sizeX : 1;
 	sizeY = sizeY ? sizeY : 1;
 	arr = std::make_shared<std::vector<std::size_t>>(sizeX*sizeY);
+}
+
+double WBOT02::Representation::entropy() const
+{
+	double e = 0.0;
+	std::unordered_map<std::size_t,std::size_t> map(256);
+	if (arr && arr->size())
+	{
+		auto size = arr->size();
+		auto arr1 =  arr->data();
+		for (std::size_t j = 0; j < size; j++)
+			map[arr1[j]]++;
+		auto z = (double)size;
+		for(const auto& p : map) 
+		{
+			auto a = p.second / z;
+			e -= a * log(a);
+		}
+	}
+	return e;
 }
 
 QImage WBOT02::Representation::image(std::size_t multiplier, std::size_t valency) const

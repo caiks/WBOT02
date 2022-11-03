@@ -37,8 +37,11 @@ private:
 	QScreen *_screen;
 	std::vector<QLabel*> _labelRecords;
 	QLabel* _labelRecordLikelihood;
+	QLabel* _labelRecordEntropy1;
+	QLabel* _labelRecordEntropy2;
 	std::size_t _labelSize;
 	std::vector<QLabel*> _labelRecordExamples;
+	std::vector<QLabel*> _labelRecordExampleEntropies;
 	std::vector<QLabel*> _labelRecordSiblings;
 	std::vector<QLabel*> _labelRecordSiblingLikelihoods;
 	std::vector<QLabel*> _labelRecordAncestors;
@@ -74,6 +77,7 @@ private:
 	bool _modeTracing;
 	bool _interactive;
 	bool _interactiveExamples;
+	bool _interactiveEntropies;
 	bool _updateDisable;
 
 	std::shared_ptr<Alignment::ActiveSystem> _system;
