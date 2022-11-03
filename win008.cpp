@@ -165,6 +165,7 @@ Win008::Win008(const std::string& configA,
 		_recordUniqueSize = ARGS_INT(unique_records);	
 		if (_recordUniqueSize)
 			_recordUniqueSet.reserve(_recordUniqueSize);
+		_entropyMinimum = ARGS_DOUBLE(entropy_minimum);
 	}
 	{
 		_labelCentre = new QLabel(this); 
@@ -576,6 +577,8 @@ void Win008::act()
 					_recordUniqueSet.insert(recordHash);
 					_recordUniqueQueue.push(recordHash);
 				}
+				if (_entropyMinimum > 0.0 && recordValent.entropy() < _entropyMinimum)
+					continue;		
 				auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
 				if (!_updateDisable)
 					_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
@@ -654,6 +657,8 @@ void Win008::act()
 					_recordUniqueSet.insert(recordHash);
 					_recordUniqueQueue.push(recordHash);
 				}
+				if (_entropyMinimum > 0.0 && record.entropy() < _entropyMinimum)
+					continue;	
 				auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, record);
 				if (!_updateDisable)
 					_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
@@ -726,10 +731,7 @@ void Win008::act()
 				{
 					auto recordHash = record.hash();
 					if (_recordUniqueSet.count(recordHash))
-					{
-						// EVAL(recordHash);
 						continue;		
-					}
 					while (_recordUniqueQueue.size() >= _recordUniqueSize)
 					{
 						_recordUniqueSet.erase(_recordUniqueQueue.front());
@@ -738,6 +740,8 @@ void Win008::act()
 					_recordUniqueSet.insert(recordHash);
 					_recordUniqueQueue.push(recordHash);
 				}
+				if (_entropyMinimum > 0.0 && record.entropy() < _entropyMinimum)
+					continue;		
 				auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, record);
 				if (!_updateDisable)
 					_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
@@ -906,10 +910,7 @@ void Win008::act()
 				{
 					auto recordHash = recordValent.hash();
 					if (_recordUniqueSet.count(recordHash))
-					{
-						// EVAL(recordHash);
 						continue;		
-					}
 					while (_recordUniqueQueue.size() >= _recordUniqueSize)
 					{
 						_recordUniqueSet.erase(_recordUniqueQueue.front());
@@ -918,6 +919,8 @@ void Win008::act()
 					_recordUniqueSet.insert(recordHash);
 					_recordUniqueQueue.push(recordHash);
 				}
+				if (_entropyMinimum > 0.0 && recordValent.entropy() < _entropyMinimum)
+					continue;		
 				auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
 				if (!_updateDisable)
 					_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
@@ -1074,10 +1077,7 @@ void Win008::act()
 				{
 					auto recordHash = recordValent.hash();
 					if (_recordUniqueSet.count(recordHash))
-					{
-						// EVAL(recordHash);
 						continue;		
-					}
 					while (_recordUniqueQueue.size() >= _recordUniqueSize)
 					{
 						_recordUniqueSet.erase(_recordUniqueQueue.front());
@@ -1086,6 +1086,8 @@ void Win008::act()
 					_recordUniqueSet.insert(recordHash);
 					_recordUniqueQueue.push(recordHash);
 				}
+				if (_entropyMinimum > 0.0 && recordValent.entropy() < _entropyMinimum)
+					continue;	
 				auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
 				if (!_updateDisable)
 					_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	

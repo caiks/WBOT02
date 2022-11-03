@@ -127,6 +127,7 @@ private:
 	std::size_t _threadCount;
 	double _separation;
 	std::size_t _eventIdPrev;
+	double _entropyMinimum;
 	
 	std::size_t _recordUniqueSize;
 	std::unordered_set<std::size_t> _recordUniqueSet;
