@@ -102,11 +102,11 @@ First install the developer tools,
 ```
 sudo apt update -y
 sudo apt install -y git g++ cmake
-sudo apt install build-essential libgl1-mesa-dev
+sudo apt install -y build-essential libgl1-mesa-dev
 sudo apt install -y g++ xorg gedit
-sudo apt install qt6-base-dev
-sudo apt install qt6-base-dev-tools
-sudo apt install qt6-multimedia-dev
+sudo apt install -y qt6-base-dev
+sudo apt install -y qt6-base-dev-tools
+sudo apt install -y qt6-multimedia-dev
 
 ```
 Now install the [AlignmentActive repository](https://github.com/caiks/AlignmentActive), the [AlignmentRepaC repository](https://github.com/caiks/AlignmentRepaC) and the underlying repositories, 
