@@ -1057,13 +1057,9 @@ void Win008::act()
 						_scale * _captureHeight,
 						_scale * _captureHeight);
 				}
-				if (actsPotsCoordTop.size())
-				{
-					_centreX = std::get<2>(actsPotsCoordTop.front());
-					_centreY = std::get<3>(actsPotsCoordTop.front());	
-				}
 			}
-			for (std::size_t k = 0; k < actsPotsCoordTop.size() && k < _eventSize; k++)	
+			bool centered = false;
+			for (std::size_t k = 0; k < actsPotsCoordTop.size() && eventCount < _eventSize; k++)	
 			{
 				// EVAL(k);
 				auto t = actsPotsCoordTop[k];
@@ -1088,6 +1084,12 @@ void Win008::act()
 				}
 				if (_entropyMinimum > 0.0 && recordValent.entropy() < _entropyMinimum)
 					continue;	
+				if (!centered)
+				{
+					_centreX = std::get<2>(t);
+					_centreY = std::get<3>(t);	
+					centered = true;
+				}
 				auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
 				if (!_updateDisable)
 					_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
