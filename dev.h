@@ -30,6 +30,7 @@
 #include <string>
 #include <cmath>
 #include <algorithm>
+#include <cstring>
 
 using Sec = std::chrono::duration<double>;
 using Clock = std::chrono::high_resolution_clock;

@@ -255,6 +255,89 @@ int main(int argc, char *argv[])
 			}
 		}
 	}
+	
+	if (argc >= 4 && (string(argv[1]) == "resize" || string(argv[1]) == "resize_tidy"))
+	{
+		bool ok = true;
+		int stage = 0;
+		bool tidy = string(argv[1]) == "resize_tidy";
+		string model = string(argv[2]);
+		string model_new = string(argv[3]);
+		std::size_t size = argc >= 5 ? atoi(argv[4]) : 1000000;
+		
+		EVAL(model);
+		EVAL(model_new);
+		TRUTH(tidy);
+		EVAL(size);
+		
+		Active activeA;
+		activeA.logging = true;		
+		if (ok) 
+		{
+			activeA.historySliceCachingIs = true;
+			ActiveIOParameters ppio;
+			ppio.filename = model +".ac";
+			ok = ok && activeA.load(ppio);
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);		
+		}
+		if (ok)
+		{
+			ok = ok && size < activeA.historySize;
+			ok = ok && activeA.underlyingHistoryRepa.size() == 1;
+			ok = ok && activeA.underlyingHistoryRepa.back();
+			ok = ok && activeA.underlyingHistorySparse.size() == 0;
+			ok = ok && activeA.historySparse;
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);	
+		}	
+		if (ok)
+		{
+			activeA.name = model_new;	
+			auto over = activeA.historyOverflow || size < activeA.historyEvent;
+			{
+				auto& hr = activeA.underlyingHistoryRepa.back();
+				auto n = hr->dimension;
+				auto arr = new unsigned char[size*n];
+				std::memcpy(arr,hr->arr,size*n);
+				delete[] hr->arr;
+				hr->arr = arr;
+				hr->size = size;
+			}
+			{
+				auto& hr = activeA.historySparse;
+				auto n = hr->capacity;
+				auto arr = new std::size_t[size*n];
+				std::memcpy(arr,hr->arr,size*n*sizeof(std::size_t));
+				delete[] hr->arr;
+				hr->arr = arr;
+				hr->size = size;
+			}
+			activeA.historySize = size;				
+			activeA.historyOverflow = over;		
+			if (over)
+				activeA.historyEvent = 0;				
+			if (tidy) activeA.continousHistoryEventsEvent.clear();
+			if (tidy) activeA.historySlicesSlicesSizeNext.clear();
+			if (tidy) activeA.historySlicesSliceSetPrev.clear();
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);	
+		}
+		if (ok) 
+		{
+			ActiveIOParameters ppio;
+			ppio.filename = activeA.name+".ac";
+			activeA.logging = true;
+			ok = ok && activeA.dump(ppio);		
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);		
+		}
+	}
+	
 	if (argc >= 3 && std::string(argv[1]) == "image001")
 	{
 		auto mark = Clock::now();
