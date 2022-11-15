@@ -296,6 +296,9 @@ int main(int argc, char *argv[])
 		if (ok)
 		{
 			activeA.name = model_new;	
+			if (tidy) activeA.continousHistoryEventsEvent.clear();
+			if (tidy) activeA.historySlicesSlicesSizeNext.clear();
+			if (tidy) activeA.historySlicesSliceSetPrev.clear();
 			auto over = activeA.historyOverflow || size < activeA.historyEvent;
 			{
 				auto& hr = activeA.underlyingHistoryRepa.back();
@@ -319,9 +322,6 @@ int main(int argc, char *argv[])
 			activeA.historyOverflow = over;		
 			if (over)
 				activeA.historyEvent = 0;				
-			if (tidy) activeA.continousHistoryEventsEvent.clear();
-			if (tidy) activeA.historySlicesSlicesSizeNext.clear();
-			if (tidy) activeA.historySlicesSliceSetPrev.clear();
 			stage++;
 			EVAL(stage);
 			TRUTH(ok);	
