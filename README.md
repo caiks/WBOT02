@@ -916,6 +916,7 @@ model041|0.177|5 scanned potential tiled actual-potential||fixed|12 B&W videos|2
 model045|0.177|5 scanned potential tiled actual-potential||fixed 5-valent|48 B&W videos|2,656,963|34,557|1.300 (1.643)|20.2|5.09|44|297|30s unique, 12.0 min diagonal
 model046|0.177|5 scanned potential tiled actual-potential||fixed|48 B&W videos|2,656,965|13,432|1.011 (1.406)|16.8|4.49|36|67|30s unique, 12.0 min diagonal
 model047|0.177|5 scanned potential tiled actual-potential||fixed|48 B&W videos|2,656,963|13,688|1.030 (1.364)|15.9|3.07|25|0|30s unique, 12.0 min diagonal, 1.2 min entropy
+model048|0.177|5 scanned potential tiled actual-potential||fixed 5-valent|48 B&W videos|2,656,965|38,124|1.434|18.9|3.43|30|0|30s unique, 12.0 min diagonal, 0.8 min entropy, no overflow
 
 The median diagonals for the actor 2 *models* were consistently in the range 23-27, and the maximum diagonals were consistently in the the range 37-39.
 
@@ -956,6 +957,56 @@ Scanning. What we really want is local actual-potential and global potential. Th
 "wotbot should be able to track it until something else more interesting appears" - put an example of a video and model of the wotbot tracking successfully. Use a model from actor 3, since more reproducible.
 
 The models are still very blurry and so we must try to increase model detail but concentrated in areas interesting to us humans. These are not that much more interesting than clouds and backgrounds. With multi-scale, face hotspots will be more common and that might accelerate model growth there. Also if we have dynamics, the backgrounds will be more separated from heads and bodies - although that will geneally be the case anyway. Once attached to a head the small scan hotspot mode tends to follow it around - so there is a chance that we can parameterise the mode so that the model can be interested in the objects we are too.
+
+model 46 -
+```
+lengthsDist: {(1,1),(2,17),(3,18),(4,31),(5,100),(6,228),(7,375),(8,661),(9,1205),(10,1973),(11,3334),(12,5220),(13,7381),(14,9115),(15,10368),(16,10740),(17,9662),(18,8370),(19,6331),(20,4626),(21,3394),(22,2374),(23,1874),(24,1811),(25,1556),(26,1399),(27,1106),(28,830),(29,652),(30,437),(31,280),(32,213),(33,106),(34,77),(35,54),(36,19)}
+lengthsCount: 95938
+lengthsMean: 16.8148
+lengthsDeviation: 4.48833
+lengthsSkewness: 0.768545
+lengthsKurtosisExcess: 1.05939
+lengthsHyperSkewness: 7.36744
+```
+model 47 -
+```
+lengthsDist: {(1,3),(2,12),(3,20),(4,60),(5,120),(6,236),(7,417),(8,839),(9,1317),(10,2339),(11,3604),(12,5775),(13,8134),(14,10667),(15,13343),(16,14043),(17,13979),(18,12387),(19,9497),(20,6270),(21,3264),(22,1587),(23,503),(24,169),(25,12)}
+lengthsCount: 108597
+lengthsMean: 15.856
+lengthsDeviation: 3.06973
+lengthsSkewness: -0.376717
+lengthsKurtosisExcess: 0.249775
+lengthsHyperSkewness: -3.94355
+```
+
+Noticeably different statistics between models without and with min entropy. Same mode, but lower deviation and max length and sign of skew has changed and smaller kurtosis - all suggest a more balanced stubbier tree, with more shorter paths (presumably lowish enrtropy/alignments) and fewer longer paths (but perhaps more interesting to us). No fails also suggests that all of the failed slices in the previous model where low entropy. All but 12 of the 1556 slices of length 25 or more were presumably also low entropy.
+
+If model 47 had no overflow, it probably would have had 18,120 fuds at 1.364 fuds/sz/200. Compare this to 5-valent model 48 which had 38,124 fuds at 1.434 fuds/sz/100, or 19,062 equivalently. That is around double. If we assume that min entropies are equivalent, we can conclude that the valency does not have much effect on growth. This seems consistent with the diagonals.
+
+model 47 -
+```
+lengthsDist: {(1,3),(2,12),(3,20),(4,60),(5,120),(6,236),(7,417),(8,839),(9,1317),(10,2339),(11,3604),(12,5775),(13,8134),(14,10667),(15,13343),(16,14043),(17,13979),(18,12387),(19,9497),(20,6270),(21,3264),(22,1587),(23,503),(24,169),(25,12)}
+lengthsCount: 108597
+lengthsMean: 15.856
+lengthsDeviation: 3.06973
+lengthsSkewness: -0.376717
+lengthsKurtosisExcess: 0.249775
+lengthsHyperSkewness: -3.94355
+```
+
+model 48 -
+```
+lengthsDist: {(1,2),(2,3),(3,12),(4,32),(5,49),(6,101),(7,190),(8,358),(9,633),(10,1105),(11,1933),(12,2950),(13,4553),(14,6566),(15,9351),(16,12512),(17,15831),(18,18657),(19,21069),(20,21341),(21,19216),(22,15614),(23,11678),(24,7486),(25,3789),(26,1728),(27,599),(28,121),(29,52),(30,10)}
+lengthsCount: 177541
+lengthsMean: 18.9173
+lengthsDeviation: 3.43071
+lengthsSkewness: -0.418654
+lengthsKurtosisExcess: 0.262438
+lengthsHyperSkewness: -4.25479
+```
+In spite of being twice the model, the leaf slices only increase from 108,597 to 177,541 slices, ie only 60% more. This is because the increase in model was not evenly distributed but concentrated, presumably on the hotspots.
+
+Mode increases from 16 to 20 and the max from 25 to 30, and the mean from 15.9 to 18.9, so the statistics seem to similar as expected.
 
 -->
 
