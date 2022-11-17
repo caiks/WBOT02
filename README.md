@@ -740,7 +740,7 @@ cf CAIKS4 202205310940
 
 In `actor001` the fixed position *models* had many identical *events* in a *slice* from the opening introduction sequence, the closing credit sequence, and other pauses in the action. Some *slices* might even be identical to a single *event*. We would like to compare these *models* to those created in random or other modes. To see what is going on in a *model*, the `actor002` GUI displays the representations and *likelihoods* of the ancestors and siblings of the current centre's *slice*. It can also optionally display some example *events* from the *slice*.
 
-This ability to 'browse' the *model* enables us to make qualitative estimates of how generic the *model* is. Of course we do not want it to be too generic - the *model* would never become large enough to be useful in the compute time available without a solution to the problem of *model* duplication due to translation. So we need explore modes that focus the search on hot spots and hot scales. These are rather like the fixed points, in that the *slices* will be more specialised, but also like the random points because the hotspots initially have a certain degree of arbitrariness about them.
+This ability to 'browse' the *model* enables us to make qualitative estimates of how generic the *model* is. Of course we do not want it to be too generic - the *model* would never become large enough to be useful in the compute time available without a solution to the problem of *model* duplication due to translation. So we need to explore modes that focus the search on hot spots and hot scales. These are rather like the fixed points, in that the *slices* will be more specialised, but also like the random points because the hotspots initially have a certain degree of arbitrariness about them.
 
  `actor002` was developed to both create *models* and browse them, but the event loop architecture of a GUI means that the callbacks must remain short and so the active induce must be done in a separate thread. This can cause the *model* to lag behind the *events* depending on the act mode and the active induce parameterisation. Dealing with the lags and interruptions tends to make it difficult to reproduce experiments - especially as the *event* capture is by screen grab. In addition, occasional prompts to continue from the BBC website used for the Fireman Sam videos meant that a motion detector was required to pause the active when the action stops. The Windows O/S that was used for development was a desktop O/S rather than a server O/S so there there were problems arising from the operating system's scheduling of long running processes. Ultimately wotbot will comprise a client-server architecture with the sensors and actuators on the client, e.g. a mobile phone, and the active system running on a server machine. 
  
@@ -814,12 +814,6 @@ To show a selection of example *events* from the current *slice*, set `interacti
 ```
 ![actor002_model010_Sam_002](images/actor002_model010_Sam_002.png) 
 
-<!-- TODO 
-
-check the following 
-
--->
-
 The examples row is inserted between the top row and the siblings row. There are as many example representations as can be fitted in the available images (defined by `label_size` in the configuration). If the *slice* has more *events* than the available images, they are taken at regular intervals from the *slice*.
 
 In the Fireman Sam example above we can see the *slice* matches the greyscale record only very roughly. The bucketing of the *valency* record has exaggerated the slightly varying brightness of the wallpaper to the right of the mirror frame, and so the *slice* has matched a dark area in the top left which is really just an artefact of the `valent` algorithm. 
@@ -852,6 +846,12 @@ We can examine the same image with a *model* that uses the `valentFixed` algorit
 	"warning_action" : false
 }
 ```
+<!-- TODO 
+
+do the description of the effect of valentFixed 
+
+-->
+
 ![actor002_model010_Sam_003](images/actor002_model010_Sam_003.png) 
 
 
@@ -860,6 +860,8 @@ We can examine the same image with a *model* that uses the `valentFixed` algorit
 compare the valent and valentFixed
 
 make a note re the mode 4 used and the centering
+
+film noir has lots of uniform frames, especially dark ones, so need min entropy and show the entropies in the GUI
 
 -->
 
