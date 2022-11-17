@@ -101,14 +101,12 @@ This repository is based on the 6.2.4 version of [Qt](https://www.qt.io). The in
 First install the developer tools,
 ```
 sudo apt update -y
-sudo apt install -y git g++ cmake
-sudo apt install -y build-essential libgl1-mesa-dev
-sudo apt install -y g++ xorg gedit
-sudo apt install -y qt6-base-dev
-sudo apt install -y qt6-base-dev-tools
-sudo apt install -y qt6-multimedia-dev
+sudo apt install -y git g++ cmake build-essential xorg libgl1-mesa-dev
+sudo apt install -y qt6-base-dev qt6-base-dev-tools qt6-multimedia-dev
 
 ```
+If running in the cloud, reboot the machine and reconnect, e.g. with `ssh -X`, and then test that the X server is running, e.g. with `xeyes`.
+
 Now install the [AlignmentActive repository](https://github.com/caiks/AlignmentActive), the [AlignmentRepaC repository](https://github.com/caiks/AlignmentRepaC) and the underlying repositories, 
 ```
 git clone https://github.com/Tencent/rapidjson.git
@@ -148,8 +146,8 @@ cd ~/WBOT02_ws
 To obtain the YouTube videos discussed in connection with `actor003` below, install `yt-dlp`,
 ```
 sudo add-apt-repository ppa:yt-dlp/stable
-sudo apt update
-sudo apt install yt-dlp  
+sudo apt update -y
+sudo apt install -y yt-dlp  
 
 ```
 To test, run the following,
