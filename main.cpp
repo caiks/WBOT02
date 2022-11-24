@@ -2140,6 +2140,8 @@ int main(int argc, char *argv[])
 		string inputFilename = ARGS_STRING(input_file);
 		string likelihoodFilename = ARGS_STRING(likelihood_file);
 		string lengthFilename = ARGS_STRING(length_file);
+		string positionFilename = ARGS_STRING(position_file);
+		string lengthPositionFilename = ARGS_STRING(length_position_file);
 		string representationFilename = ARGS_STRING(representation_file);
 		double centreX = ARGS_DOUBLE_DEF(centreX,0.5);
 		double centreY = ARGS_DOUBLE_DEF(centreY,0.5);
@@ -2158,7 +2160,7 @@ int main(int argc, char *argv[])
 		{
 			ok = ok && model.size();
 			ok = ok && inputFilename.size();
-			ok = ok && (likelihoodFilename.size() || lengthFilename.size() || representationFilename.size());
+			ok = ok && (likelihoodFilename.size() || lengthFilename.size() || positionFilename.size() || lengthPositionFilename.size() || representationFilename.size());
 			stage++;
 			EVAL(stage);
 			TRUTH(ok);	
@@ -2205,6 +2207,8 @@ int main(int argc, char *argv[])
 		QImage image;
 		QImage likelihoodImage;
 		QImage lengthImage;
+		QImage positionImage;
+		QImage lengthPositionImage;
 		QImage representationImage;
 		int captureWidth = 0;
 		int captureHeight = 0;	
@@ -2217,6 +2221,8 @@ int main(int argc, char *argv[])
 			EVAL(image.format());
 			likelihoodImage = image.copy();
 			lengthImage = image.copy();
+			positionImage = image.copy();
+			lengthPositionImage = image.copy();
 			representationImage = image.copy();
 			captureWidth = image.width();
 			EVAL(captureWidth);
@@ -2237,6 +2243,8 @@ int main(int argc, char *argv[])
 			std::size_t applyCount = 0;
 			QPainter likelihoodPainter(&likelihoodImage);
 			QPainter lengthPainter(&lengthImage);
+			QPainter positionPainter(&positionImage);
+			QPainter lengthPositionPainter(&lengthPositionImage);
 			QPainter representationPainter(&representationImage);
 			QBrush brush;
             brush.setStyle(Qt::SolidPattern);
@@ -2245,6 +2253,7 @@ int main(int argc, char *argv[])
 			auto cap = (unsigned char)(ActiveUpdateParameters().mapCapacity);
 			auto& dr = *activeA.decomp;	
 			auto& cv = dr.mapVarParent();
+			auto& vi = dr.mapVarInt();
 			auto& sizes = activeA.historySlicesSize;
             auto& lengths = activeA.historySlicesLength;
 			double lnwmax = std::log(induceParameters_wmax);
@@ -2330,6 +2339,37 @@ int main(int argc, char *argv[])
 			for (auto& t : threads)
 				t.join();
 			applyTime += ((Sec)(Clock::now() - mark)).count();	
+			std::map<std::size_t,double> positions;
+			{
+				std::vector<std::size_t> slices;
+				for (auto& pp : lengths)
+					if (!vi.count(pp.first))
+						slices.push_back(pp.first);		
+				typedef std::pair<std::size_t,std::size_t> SizePair;
+				std::vector<std::vector<SizePair>> paths;
+				for (auto slice : slices)
+				{
+					std::vector<SizePair> path;
+					while (slice)
+					{
+						path.push_back(SizePair(sizes[slice],slice));
+						slice = cv[slice];
+					}
+					std::reverse(path.begin(), path.end());
+					paths.push_back(path);
+				}
+				std::sort(paths.begin(), paths.end());	
+				std::reverse(paths.begin(), paths.end());
+				double total = 0;
+				for (auto& path : paths)
+				{
+					auto& pp = path.back();
+					positions[pp.second] = total;
+					total += pp.first;
+				}
+				for (auto& pp : positions)
+					pp.second /= total;
+			}
 			for (std::size_t y = 0, z = 0; y < sizeY - size; y++)	
 				for (std::size_t x = 0; x < sizeX - size; x++,z++)	
 				{
@@ -2337,6 +2377,7 @@ int main(int argc, char *argv[])
 					auto posY = centreY + interval * y - (scaleY - scale) / 2.0;
 					double likelihood = likelihoodResults[z];				
 					auto length = lengthResults[z];
+					auto slice = std::get<4>(actsPotsCoord[z]);
 					QRectF rectangle(posX*captureWidth, posY*captureHeight, 
 						interval*captureHeight,interval*captureHeight);
 					{
@@ -2348,6 +2389,26 @@ int main(int argc, char *argv[])
 						int brightness = length * 255 / lengthMax;
 						brush.setColor(QColor(brightness,brightness,brightness));
 						lengthPainter.fillRect(rectangle,brush);					
+					}
+					{
+						QColor colour;
+						int position = (int)(positions[slice] * 46080);
+						int hue = position/128;
+						int saturation = 128 + position%128;
+						int brightness = 255;
+						colour.setHsv(hue, saturation, brightness);
+						brush.setColor(colour);
+						positionPainter.fillRect(rectangle,brush);					
+					}
+					{
+						QColor colour;
+						int position = (int)(positions[slice] * 46080);
+						int hue = position/128;
+						int saturation = 128 + position%128;
+						int brightness = length * 255 / lengthMax;
+						colour.setHsv(hue, saturation, brightness);
+						brush.setColor(colour);
+						lengthPositionPainter.fillRect(rectangle,brush);
 					}
 				}	
             std::sort(actsPotsCoord.begin(), actsPotsCoord.end());			
@@ -2373,6 +2434,10 @@ int main(int argc, char *argv[])
 				ok = ok && likelihoodImage.save(QString(likelihoodFilename.c_str()));
 			if (lengthFilename.size())
 				ok = ok && lengthImage.save(QString(lengthFilename.c_str()));			
+			if (positionFilename.size())
+				ok = ok && positionImage.save(QString(positionFilename.c_str()));
+			if (lengthPositionFilename.size())
+				ok = ok && lengthPositionImage.save(QString(lengthPositionFilename.c_str()));
 			if (representationFilename.size())
 				ok = ok && representationImage.save(QString(representationFilename.c_str()));
 			stage++;
