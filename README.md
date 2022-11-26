@@ -920,6 +920,7 @@ model048|0.177|5 scanned potential tiled actual-potential||fixed 5-valent|48 B&W
 model049|0.177|5 scanned potential tiled actual-potential||fixed|48 B&W videos|2,656,964|36,146|1.360|16.7|2.87|28|0|30s unique, 12.0 min diagonal, 100 threshold, 1.2 min entropy, no overflow
 model050|0.177|5 scanned potential tiled actual-potential||fixed|48 B&W videos|2,656,962|16,980|1.278|15.3|2.78|23|0|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow
 model051|0.177|5 scanned potential tiled actual-potential||fixed|48 B&W videos|2,656,963|8,079|1.216|15.1|2.94|23|0|30s unique, 12.0 min diagonal, 400 threshold, 1.2 min entropy, no overflow
+model052|0.177|4 randomised||fixed|48 B&W videos|500,000|1,887|0.753|6.7|1.64|11|0|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow
 
 The median diagonals for the actor 2 *models* were consistently in the range 23-27, and the maximum diagonals were consistently in the the range 37-39.
 
