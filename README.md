@@ -846,14 +846,26 @@ We can examine the same image with a *model* that uses the `valentFixed` algorit
 	"warning_action" : false
 }
 ```
+![actor002_model010_Sam_003](images/actor002_model010_Sam_003.png) 
+
+We introduced the `valentFixed` algorithm when we switched from Fireman Sam to Film Noir (see *model* 25 and after, below). In this scene from 'Citizen Kane' the mode 4 focus has found a hotspot just above the woman's left eye -
+
+![actor002_model041_Film_Noir_014](images/actor002_model041_Film_Noir_014.png) 
+
+The fixed intervals of the `valentFixed` algorithm produce better results with Film Noir videos because of the high contrast used by the cinematographers. The bucketing of the `valent` method tended to magnify small variations in low contrast areas of background or textures. This caused the *modelling* to be distracted away from interesting foreground objects.
+
+ The `valentFixed` algorithm was a step forward but we found that the *models* were still tending to be very interested in the infinite variations of black that are a feature of Film Noir. Later *models* set a minimum value for the entropy of the record, in order to exclude slightly varying areas of background, especially dark corners of interiors or, indeed, light areas of sky. In order to judge what entropy level to use we can show the entropy of the record in the GUI by adding `"interactive_entropies" : true` to `actor.json`, e.g.
+
+![actor002_model050_Film_Noir_003](images/actor002_model050_Film_Noir_003.png) 
+
+Here we have added the entropy below the second and third records in the top row, and below each of the example records in the second row. The entropies are not to be confused with the *likelihoods* underneath the representations elsewhere. In this example, the entropies are all quite high. The highest is grey-scale record (third in the top row) - this is as expected because of its *valency* of 256, which is much greater than the 10-*valent* *substrate*.
+
+
 <!-- TODO 
 
 do the description of the effect of valentFixed 
 
 -->
-
-![actor002_model010_Sam_003](images/actor002_model010_Sam_003.png) 
-
 
 <!-- TODO 
 
@@ -864,8 +876,6 @@ make a note re the mode 4 used and the centering
 film noir has lots of uniform frames, especially dark ones, so need min entropy and show the entropies in the GUI
 
 -->
-
-![actor002_model041_Film_Noir_014](images/actor002_model041_Film_Noir_014.png) 
 
 
 <!-- TODO 
