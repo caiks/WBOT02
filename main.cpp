@@ -2099,7 +2099,8 @@ int main(int argc, char *argv[])
 		}
 	}
 		
-	if (argc >= 2 && string(argv[1]) == "generate_contour008")
+	if (argc >= 2 && (string(argv[1]) == "generate_contour008"
+		|| string(argv[1]) == "generate_contour009"))
 	{
 		bool ok = true;
 		int stage = 0;
@@ -2136,6 +2137,7 @@ int main(int argc, char *argv[])
 			EVAL(stage);
 			TRUTH(ok);				
 		}
+		bool isLengthNormalise = string(argv[1]) == "generate_contour009";
 		string model = ARGS_STRING(model);
 		string inputFilename = ARGS_STRING(input_file);
 		string likelihoodFilename = ARGS_STRING(likelihood_file);
@@ -2156,6 +2158,7 @@ int main(int argc, char *argv[])
 		int divisor = ARGS_INT_DEF(divisor,4);	
 		int induceParameters_wmax = ARGS_INT_DEF(induceParameters.wmax,18);
 		int threadCount = ARGS_INT_DEF(threads,1);
+		double entropyMinimum = ARGS_DOUBLE(entropy_minimum);
 		if (ok)
 		{
 			ok = ok && model.size();
@@ -2258,7 +2261,8 @@ int main(int argc, char *argv[])
             auto& lengths = activeA.historySlicesLength;
 			double lnwmax = std::log(induceParameters_wmax);
 			double interval = scale/size;
-			std::size_t lengthMax = 0;
+			std::size_t lengthMax = 1;
+			if (!isLengthNormalise)
 			{
 				for (auto& pp : lengths)
 					lengthMax = std::max(lengthMax,pp.second);
@@ -2294,7 +2298,7 @@ int main(int argc, char *argv[])
 			mark = Clock::now();
 			for (std::size_t t = 0; t < threadCount; t++)
 				threads.push_back(std::thread(
-                    [threadCount,valencyFixed,
+                    [threadCount,valencyFixed,entropyMinimum,
 					sizeX,sizeY,size,&record,valency,valencyFactor,n,vv,rr,
 					drmul,&dr,&cv,cap,&sizes,&lengths,lnwmax,&actsPotsCoord,
 					&likelihoodResults,&lengthResults] (int t)
@@ -2305,27 +2309,30 @@ int main(int argc, char *argv[])
 								{
 									Record recordSub(record,size,size,x,y);
 									Record recordValent = valencyFixed ? recordSub.valentFixed(valency) : recordSub.valent(valency,valencyFactor);
-									auto& arr1 = *recordValent.arr;	
-									SizeUCharStructList jj;
-									jj.reserve(n);
-									for (std::size_t i = 0; i < n-1; i++)
-									{
-										SizeUCharStruct qq;
-										qq.uchar = arr1[i];	
-										qq.size = vv[i];
-										if (qq.uchar)
-											jj.push_back(qq);
-									}
-									{
-										SizeUCharStruct qq;
-										qq.uchar = rr[n-1];	
-										qq.size = vv[n-1];
-										if (qq.uchar)
-											jj.push_back(qq);
-									}
-									auto ll = drmul(jj,dr,cap);	
 									std::size_t slice = 0;
-									if (ll && ll->size()) slice = ll->back();				
+									if (entropyMinimum <= 0.0 || recordValent.entropy() >=entropyMinimum)
+									{
+										auto& arr1 = *recordValent.arr;	
+										SizeUCharStructList jj;
+										jj.reserve(n);
+										for (std::size_t i = 0; i < n-1; i++)
+										{
+											SizeUCharStruct qq;
+											qq.uchar = arr1[i];	
+											qq.size = vv[i];
+											if (qq.uchar)
+												jj.push_back(qq);
+										}
+										{
+											SizeUCharStruct qq;
+											qq.uchar = rr[n-1];	
+											qq.size = vv[n-1];
+											if (qq.uchar)
+												jj.push_back(qq);
+										}
+										auto ll = drmul(jj,dr,cap);	
+										if (ll && ll->size()) slice = ll->back();
+									}
 									auto length = lengths[slice];
 									auto likelihood = (std::log(sizes[slice]) - std::log(sizes[cv[slice]]) + lnwmax)/lnwmax;
 									likelihoodResults[z] = likelihood;
@@ -2339,6 +2346,12 @@ int main(int argc, char *argv[])
 			for (auto& t : threads)
 				t.join();
 			applyTime += ((Sec)(Clock::now() - mark)).count();	
+			if (isLengthNormalise)
+			{
+				lengthMax = 1;
+				for (auto length : lengthResults)
+					lengthMax = std::max(lengthMax,length);
+			}	
 			std::map<std::size_t,double> positions;
 			{
 				std::vector<std::size_t> slices;
