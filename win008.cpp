@@ -854,76 +854,85 @@ void Win008::act()
 			}
 			std::sort(actsPotsCoord.rbegin(), actsPotsCoord.rend());
 			std::vector<std::tuple<std::size_t,double,double,double,std::size_t,std::size_t>> actsPotsCoordTop;
+			actsPotsCoordTop.reserve(_eventSize);
+			for (std::size_t k = 0; k < actsPotsCoord.size() && actsPotsCoordTop.size() < _eventSize; k++)	
 			{
-				QPainter framePainter(&_image);
+				auto t = actsPotsCoord[k];
+				auto posX = std::get<2>(t);
+				auto posY = std::get<3>(t);	
+				auto x = std::get<4>(t);
+				auto y = std::get<5>(t);
+				if (_recordUniqueSize || _entropyMinimum > 0.0)
+				{
+					Record recordSub(record,_size,_size,x,y);
+					Record recordValent = _valencyFixed ? recordSub.valentFixed(_valency) : recordSub.valent(_valency,_valencyFactor);
+					if (_recordUniqueSize)
+					{
+						auto recordHash = recordValent.hash();
+						if (_recordUniqueSet.count(recordHash))
+							continue;		
+						while (_recordUniqueQueue.size() >= _recordUniqueSize)
+						{
+							_recordUniqueSet.erase(_recordUniqueQueue.front());
+							_recordUniqueQueue.pop();
+						}
+						_recordUniqueSet.insert(recordHash);
+						_recordUniqueQueue.push(recordHash);
+					}
+					if (_entropyMinimum > 0.0 && recordValent.entropy() < _entropyMinimum)
+						continue;
+				}					
+				double d2 = _scale * _separation * _scale * _separation;
+				bool separate = true;
+				for (auto t1 : actsPotsCoordTop)
+				{
+					auto posX1 = std::get<2>(t1);
+					auto posY1 = std::get<3>(t1);	
+					auto d12 = (posX1 - posX) * (posX1 - posX) + (posY1 - posY) * (posY1 - posY);
+					if (d12 < d2)
+					{
+						separate = false;
+						break;
+					}
+				}
+				if (separate)
+					actsPotsCoordTop.push_back(t);
+			}
+			QPainter framePainter(&_image);
+			if (gui)
+			{
 				framePainter.setPen(Qt::darkGray);
 				framePainter.drawRect(
 					centreX * _captureWidth - scaleX * _captureHeight / 2.0, 
 					centreY * _captureHeight - scaleY * _captureHeight / 2.0, 
 					scaleX * _captureHeight,
 					scaleY * _captureHeight);
-					actsPotsCoordTop.reserve(_eventSize);
-				for (std::size_t k = 0; k < actsPotsCoord.size() && actsPotsCoordTop.size() < _eventSize; k++)	
-				{
-					auto t = actsPotsCoord[k];
-					auto posX = std::get<2>(t);
-					auto posY = std::get<3>(t);	
-					double d2 = _scale * _separation * _scale * _separation;
-					bool separate = true;
-					for (auto t1 : actsPotsCoordTop)
-					{
-						auto posX1 = std::get<2>(t1);
-						auto posY1 = std::get<3>(t1);	
-						auto d12 = (posX1 - posX) * (posX1 - posX) + (posY1 - posY) * (posY1 - posY);
-						if (d12 < d2)
-						{
-							separate = false;
-							break;
-						}
-					}
-					if (separate)
-					{
-						actsPotsCoordTop.push_back(t);
-						if (actsPotsCoordTop.size() == 1)
-							framePainter.setPen(Qt::white);		
-						else
-							framePainter.setPen(Qt::gray);
-						framePainter.drawRect(
-							posX * _captureWidth - _scale * _captureHeight / 2.0, 
-							posY * _captureHeight - _scale * _captureHeight / 2.0, 
-							_scale * _captureHeight,
-							_scale * _captureHeight);
-					}
-				}
-				if (actsPotsCoordTop.size())
-				{
-					_centreX = std::get<2>(actsPotsCoordTop.front());
-					_centreY = std::get<3>(actsPotsCoordTop.front());	
-				}
 			}
-			// EVAL(_centreX);
-			// EVAL(_centreY);
+			bool centered = false;
 			for (auto t : actsPotsCoordTop)
 			{
+				auto posX = std::get<2>(t);
+				auto posY = std::get<3>(t);	
 				auto x = std::get<4>(t);
 				auto y = std::get<5>(t);
 				Record recordSub(record,_size,_size,x,y);
 				Record recordValent = _valencyFixed ? recordSub.valentFixed(_valency) : recordSub.valent(_valency,_valencyFactor);
-				if (_recordUniqueSize)
+				if (!centered)
 				{
-					auto recordHash = recordValent.hash();
-					if (_recordUniqueSet.count(recordHash))
-						continue;		
-					while (_recordUniqueQueue.size() >= _recordUniqueSize)
-					{
-						_recordUniqueSet.erase(_recordUniqueQueue.front());
-						_recordUniqueQueue.pop();
-					}
-					_recordUniqueSet.insert(recordHash);
-					_recordUniqueQueue.push(recordHash);
+					_centreX = posX;
+					_centreY = posY;	
+					centered = true;
+					if (gui)
+						framePainter.setPen(Qt::white);		
 				}
-				if (_entropyMinimum > 0.0 && recordValent.entropy() < _entropyMinimum)
-					continue;		
+				else if (gui)
+					framePainter.setPen(Qt::gray);
+				if (gui)
+					framePainter.drawRect(
+						posX * _captureWidth - _scale * _captureHeight / 2.0, 
+						posY * _captureHeight - _scale * _captureHeight / 2.0, 
+						_scale * _captureHeight,
+						_scale * _captureHeight);
 				auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
 				if (!_updateDisable)
 					_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
@@ -1080,8 +1089,8 @@ void Win008::act()
 					continue;	
 				if (!centered)
 				{
-					_centreX = std::get<2>(t);
-					_centreY = std::get<3>(t);	
+					_centreX = posX;
+					_centreY = posY;	
 					centered = true;
 					if (gui)
 						framePainter.setPen(Qt::white);		
