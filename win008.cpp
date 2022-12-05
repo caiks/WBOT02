@@ -749,8 +749,9 @@ void Win008::act()
 				eventCount++;		
 			}
 		}
-		else if (_mode == "mode004")
+		else if (_mode == "mode004" || _mode == "mode007")
 		{
+			bool isSizePotential = _mode == "mode007";
 			auto scaleX = _centreRangeX * 2.0 + _scale;
 			auto scaleY = _centreRangeY * 2.0 + _scale;
 			auto sizeX = (std::size_t)(scaleX * _size / _scale);
@@ -780,7 +781,7 @@ void Win008::act()
 				threads.reserve(_threadCount);
 				for (std::size_t t = 0; t < _threadCount; t++)
 					threads.push_back(std::thread(
-						[&actor, &activeA,
+						[isSizePotential, &actor, &activeA,
 						centreX, centreY, scaleX, scaleY, sizeX, sizeY, interval, &record,
 						&actsPotsCoord] (int t)
 						{
@@ -839,7 +840,9 @@ void Win008::act()
 											&& lengths.count(slice) && !fails.count(slice))
 										{
 											auto length = lengths[slice];
-											auto likelihood = (std::log(sizes[slice]) - std::log(sizes[cv[slice]]) + lnwmax)/lnwmax;
+											auto sz = sizes[slice];
+											auto likelihood = (std::log(sz) - std::log(sizes[cv[slice]]) + lnwmax)/lnwmax;
+											if (isSizePotential) likelihood += sz;
 											actsPotsCoord[z] = std::make_tuple(length,likelihood,posX,posY,x,y);
 										}
 										else
