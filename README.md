@@ -923,8 +923,8 @@ model050|0.177|5 scanned potential tiled actual-potential||fixed|48 B&W videos|2
 model051|0.177|5 scanned potential tiled actual-potential||fixed|48 B&W videos|2,656,963|8,079|1.216|15.1|2.94|23|0|30s unique, 12.0 min diagonal, 400 threshold, 1.2 min entropy, no overflow
 model052|0.177|4 randomised||fixed|48 B&W videos|500,000|1,887|0.753|6.7|1.64|11|0|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow
 model053|0.177|4 randomised||fixed|48 B&W videos|500,000|1,910|0.764|6.6|1.58|11|0|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow
-model054|0.177|5 scanned potential tiled actual-potential||fixed|48 B&W videos|3,000,065|12,390|0.826 (1.294|15.5|2.90|24|0|30s unique, 12.0 min diagonal, 1.2 min entropy
-model055|0.177|5 scanned size-potential tiled actual-potential||fixed|48 B&W videos|3,000,000|15,050|1.003 (1.489|14.8|2.92|24|0|30s unique, 12.0 min diagonal, 1.2 min entropy
+model054|0.177|5 scanned potential tiled actual-potential||fixed|48 B&W videos|3,000,065|12,390|0.826 (1.294)|15.5|2.90|24|0|30s unique, 12.0 min diagonal, 1.2 min entropy
+model055|0.177|5 scanned size-potential tiled actual-potential||fixed|48 B&W videos|3,000,000|15,050|1.003 (1.489)|14.8|2.92|24|0|30s unique, 12.0 min diagonal, 1.2 min entropy
 
 The median diagonals for the actor 2 *models* were consistently in the range 23-27, and the maximum diagonals were consistently in the the range 37-39.
 
