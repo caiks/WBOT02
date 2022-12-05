@@ -1040,29 +1040,15 @@ void Win008::act()
 					}
 				}
 			std::sort(actsPotsCoordTop.rbegin(), actsPotsCoordTop.rend());
+			QPainter framePainter(&_image);
+			if (gui)
 			{
-				QPainter framePainter(&_image);
 				framePainter.setPen(Qt::darkGray);
 				framePainter.drawRect(
 					centreX * _captureWidth - scaleX * _captureHeight / 2.0, 
 					centreY * _captureHeight - scaleY * _captureHeight / 2.0, 
 					scaleX * _captureHeight,
 					scaleY * _captureHeight);
-				for (std::size_t k = 0; k < actsPotsCoordTop.size() && k < _eventSize; k++)	
-				{
-					auto t = actsPotsCoordTop[k];
-					auto posX = std::get<2>(t);
-					auto posY = std::get<3>(t);							
-					if (k == 0)
-						framePainter.setPen(Qt::white);		
-					else
-						framePainter.setPen(Qt::gray);
-					framePainter.drawRect(
-						posX * _captureWidth - _scale * _captureHeight / 2.0, 
-						posY * _captureHeight - _scale * _captureHeight / 2.0, 
-						_scale * _captureHeight,
-						_scale * _captureHeight);
-				}
 			}
 			bool centered = false;
 			for (std::size_t k = 0; k < actsPotsCoordTop.size() && eventCount < _eventSize; k++)	
@@ -1071,6 +1057,8 @@ void Win008::act()
 				auto t = actsPotsCoordTop[k];
 				// EVAL(std::get<0>(t));
 				// EVAL(std::get<1>(t));
+				auto posX = std::get<2>(t);
+				auto posY = std::get<3>(t);		
 				auto x = std::get<4>(t);
 				auto y = std::get<5>(t);
 				Record recordSub(record,_size,_size,x,y);
@@ -1095,14 +1083,23 @@ void Win008::act()
 					_centreX = std::get<2>(t);
 					_centreY = std::get<3>(t);	
 					centered = true;
+					if (gui)
+						framePainter.setPen(Qt::white);		
 				}
+				else if (gui)
+					framePainter.setPen(Qt::gray);
+				if (gui)
+					framePainter.drawRect(
+						posX * _captureWidth - _scale * _captureHeight / 2.0, 
+						posY * _captureHeight - _scale * _captureHeight / 2.0, 
+						_scale * _captureHeight,
+						_scale * _captureHeight);
 				auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
 				if (!_updateDisable)
 					_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
 				this->eventId++;		
 				eventCount++;		
 			}
-
 		}
 		if (!_updateDisable)
 		{
