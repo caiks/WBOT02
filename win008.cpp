@@ -105,6 +105,7 @@ Win008::Win008(const std::string& configA,
 		_mediaStart = ARGS_INT_DEF(media_start,10000);
 		_playbackRate = ARGS_DOUBLE(playback_rate);
 		_mediaRetry = ARGS_BOOL(retry_media);
+		_guiFrameRed = ARGS_BOOL(red_frame);
 		_updateDisable = ARGS_BOOL(disable_update);
 		_activeLogging = ARGS_BOOL(logging_active);
 		_activeSummary = ARGS_BOOL(summary_active);
@@ -923,10 +924,10 @@ void Win008::act()
 					_centreY = posY;	
 					centered = true;
 					if (gui)
-						framePainter.setPen(Qt::white);		
+						framePainter.setPen(_guiFrameRed ? Qt::red : Qt::white);		
 				}
 				else if (gui)
-					framePainter.setPen(Qt::gray);
+					framePainter.setPen(_guiFrameRed ? Qt::magenta : Qt::gray);
 				if (gui)
 					framePainter.drawRect(
 						posX * _captureWidth - _scale * _captureHeight / 2.0, 
@@ -1093,10 +1094,10 @@ void Win008::act()
 					_centreY = posY;	
 					centered = true;
 					if (gui)
-						framePainter.setPen(Qt::white);		
+						framePainter.setPen(_guiFrameRed ? Qt::red : Qt::white);		
 				}
 				else if (gui)
-					framePainter.setPen(Qt::gray);
+					framePainter.setPen(_guiFrameRed ? Qt::magenta : Qt::gray);
 				if (gui)
 					framePainter.drawRect(
 						posX * _captureWidth - _scale * _captureHeight / 2.0, 

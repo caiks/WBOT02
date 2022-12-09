@@ -78,6 +78,7 @@ private:
 	std::size_t _position;	
 	double _playbackRate;
 	bool _mediaRetry;
+	bool _guiFrameRed;
 
 	std::shared_ptr<Alignment::ActiveSystem> _system;
 	std::shared_ptr<Alignment::System> _uu;
