@@ -75,6 +75,7 @@ private:
 	std::size_t _videoEnd;	
 	std::size_t _mediaStart;	
 	bool _isSeekable;
+	bool _doSeek;
 	std::size_t _position;	
 	double _playbackRate;
 	bool _mediaRetry;

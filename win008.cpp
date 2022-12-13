@@ -103,6 +103,7 @@ Win008::Win008(const std::string& configA,
 		_videoStart = ARGS_INT_DEF(video_start,120);
 		_videoEnd = ARGS_INT_DEF(video_end,30);
 		_mediaStart = ARGS_INT_DEF(media_start,10000);
+		_doSeek = ARGS_BOOL(do_seek);
 		_playbackRate = ARGS_DOUBLE(playback_rate);
 		_mediaRetry = ARGS_BOOL(retry_media);
 		_guiFrameRed = ARGS_BOOL(red_frame);
@@ -435,7 +436,7 @@ void Win008::mediaStateChanged(QMediaPlayer::MediaStatus state)
 {
     if (state == QMediaPlayer::LoadedMedia)
     {
-		_isSeekable = _mediaPlayer->isSeekable();
+		_isSeekable = _doSeek && _mediaPlayer->isSeekable();
 		if (_isSeekable)
 			_mediaPlayer->setPosition(_position);
         disconnect(_mediaPlayer, &QMediaPlayer::mediaStatusChanged, 0, 0);
@@ -503,7 +504,7 @@ void Win008::capture()
 		LOG string.str() UNLOG
 	}
 	this->act();
-	_ui->labelImage->setPixmap(QPixmap::fromImage(_image));	
+	_ui->labelImage->setPixmap(QPixmap::fromImage(_image));
 	{
 		std::stringstream string;
 		string << "centre: (" << std::setprecision(3) << _centreX << "," << _centreY << ")";
