@@ -103,6 +103,7 @@ Win007::Win007(const std::string& configA,
 		_interactive = ARGS_BOOL(interactive);
 		_interactiveExamples = ARGS_BOOL(interactive_examples);
 		_interactiveEntropies = ARGS_BOOL(interactive_entropies);
+		_guiFrameRed = ARGS_BOOL(red_frame);
 		_updateDisable = ARGS_BOOL(disable_update);
 		_activeLogging = ARGS_BOOL(logging_active);
 		_activeSummary = ARGS_BOOL(summary_active);
@@ -160,6 +161,7 @@ Win007::Win007(const std::string& configA,
 		_scanSize = ARGS_INT_DEF(scan_size,1);	
 		_threadCount = ARGS_INT_DEF(threads,1);	
 		_separation = ARGS_DOUBLE_DEF(separation,0.5);
+		_entropyMinimum = ARGS_DOUBLE(entropy_minimum);
 	}
 	// add dynamic GUI
 	if (_interactive)
@@ -540,16 +542,14 @@ void Win007::act()
 						_centreX + (centreRandomX * _captureHeight / _captureWidth), 
 						_centreY + centreRandomY, 
 						_size, _size, _divisor, _divisor);
-					Record recordValent = record.valent(_valency);
+					Record recordValent = _valencyFixed ? record.valentFixed(_valency) : record.valent(_valency,_valencyFactor);
+					if (_entropyMinimum > 0.0 && recordValent.entropy() < _entropyMinimum)
+						continue;
 					auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
-					_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
+					if (!_updateDisable)
+						_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
 					this->eventId++;		
 					eventCount++;		
-				}
-				if (!_active->update(_updateParameters))
-				{
-					this->terminate = true;	
-					return;
 				}
 			}
 			else if (_mode == "mode002")
@@ -564,7 +564,7 @@ void Win007::act()
 						_centreX + (centreRandomX * _captureHeight / _captureWidth), 
 						_centreY + centreRandomY, 
 						_size, _size, _divisor, _divisor);
-					records.push_back(record.valent(_valency));	
+					records.push_back(_valencyFixed ? record.valentFixed(_valency) : record.valent(_valency,_valencyFactor));	
 				}
 				std::vector<std::pair<double,std::size_t>> likelihoodsRecord;		
 				{		
@@ -609,15 +609,14 @@ void Win007::act()
 				for (std::size_t k = 0; k < _eventSize && k < _scanSize; k++)	
 				{
 					std::size_t m =  likelihoodsRecord.size() > k ? likelihoodsRecord[k].second : k;
-					auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, records[m]);
-					_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
+					auto& record = records[m];
+					if (_entropyMinimum > 0.0 && record.entropy() < _entropyMinimum)
+						continue;	
+					auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, record);
+					if (!_updateDisable)
+						_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
 					this->eventId++;		
 					eventCount++;		
-				}
-				if (!_active->update(_updateParameters))
-				{
-					this->terminate = true;	
-					return;
 				}
 			}
 			else if (_mode == "mode003")
@@ -632,7 +631,7 @@ void Win007::act()
 						_centreX + (centreRandomX * _captureHeight / _captureWidth), 
 						_centreY + centreRandomY, 
 						_size, _size, _divisor, _divisor);
-					records.push_back(record.valent(_valency));	
+					records.push_back(_valencyFixed ? record.valentFixed(_valency) : record.valent(_valency,_valencyFactor));	
 				}
 				std::vector<std::pair<std::pair<std::size_t,double>,std::size_t>> actsPotsRecord;
 				{		
@@ -680,19 +679,19 @@ void Win007::act()
 				for (std::size_t k = 0; k < _eventSize && k < _scanSize; k++)	
 				{
 					std::size_t m =  actsPotsRecord.size() > k ? actsPotsRecord[k].second : k;
-					auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, records[m]);
-					_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
+					auto& record = records[m];
+					if (_entropyMinimum > 0.0 && record.entropy() < _entropyMinimum)
+						continue;	
+					auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, record);
+					if (!_updateDisable)
+						_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
 					this->eventId++;		
 					eventCount++;		
 				}
-				if (!_active->update(_updateParameters))
-				{
-					this->terminate = true;	
-					return;
-				}
 			}
-			else if (_mode == "mode004")
+			else if (_mode == "mode004" || _mode == "mode007")
 			{
+				bool isSizePotential = _mode == "mode007";
                 auto scaleX = _centreRangeX * 2.0 + _scale;
                 auto scaleY = _centreRangeY * 2.0 + _scale;
 				auto sizeX = (std::size_t)(scaleX * _size / _scale);
@@ -722,7 +721,7 @@ void Win007::act()
 					threads.reserve(_threadCount);
 					for (std::size_t t = 0; t < _threadCount; t++)
 						threads.push_back(std::thread(
-							[&actor, &activeA,
+							[isSizePotential, &actor, &activeA,
 							centreX, centreY, scaleX, scaleY, sizeX, sizeY, interval, &record,
 							&actsPotsCoord] (int t)
 							{
@@ -781,7 +780,9 @@ void Win007::act()
 												&& lengths.count(slice) && !fails.count(slice))
 											{
 												auto length = lengths[slice];
-												auto likelihood = (std::log(sizes[slice]) - std::log(sizes[cv[slice]]) + lnwmax)/lnwmax;
+												auto sz = sizes[slice];
+												auto likelihood = (std::log(sz) - std::log(sizes[cv[slice]]) + lnwmax)/lnwmax;
+												if (isSizePotential) likelihood += sz;
 												actsPotsCoord[z] = std::make_tuple(length,likelihood,posX,posY,x,y);
 											}
 											else
@@ -793,79 +794,75 @@ void Win007::act()
 				}
                 std::sort(actsPotsCoord.rbegin(), actsPotsCoord.rend());
 				std::vector<std::tuple<std::size_t,double,double,double,std::size_t,std::size_t>> actsPotsCoordTop;
+				actsPotsCoordTop.reserve(_eventSize);
+				for (std::size_t k = 0; k < actsPotsCoord.size() && actsPotsCoordTop.size() < _eventSize; k++)	
 				{
-					QImage image2 = image.copy();
-					QPainter framePainter(&image2);
-					framePainter.setPen(Qt::darkGray);
-					framePainter.drawRect(
-						centreX * _captureWidth - scaleX * _captureHeight / 2.0, 
-						centreY * _captureHeight - scaleY * _captureHeight / 2.0, 
-						scaleX * _captureHeight,
-						scaleY * _captureHeight);
-					actsPotsCoordTop.reserve(_eventSize);
-					for (std::size_t k = 0; k < actsPotsCoord.size() && actsPotsCoordTop.size() < _eventSize; k++)	
+					auto t = actsPotsCoord[k];
+					auto posX = std::get<2>(t);
+					auto posY = std::get<3>(t);	
+					auto x = std::get<4>(t);
+					auto y = std::get<5>(t);
+					if (_entropyMinimum > 0.0)
 					{
-						auto t = actsPotsCoord[k];
-						auto posX = std::get<2>(t);
-						auto posY = std::get<3>(t);	
-						double d2 = _scale * _separation * _scale * _separation;
-						bool separate = true;
-						for (auto t1 : actsPotsCoordTop)
+						Record recordSub(record,_size,_size,x,y);
+						Record recordValent = _valencyFixed ? recordSub.valentFixed(_valency) : recordSub.valent(_valency,_valencyFactor);
+						if (_entropyMinimum > 0.0 && recordValent.entropy() < _entropyMinimum)
+							continue;
+					}					
+					double d2 = _scale * _separation * _scale * _separation;
+					bool separate = true;
+					for (auto t1 : actsPotsCoordTop)
+					{
+						auto posX1 = std::get<2>(t1);
+						auto posY1 = std::get<3>(t1);	
+						auto d12 = (posX1 - posX) * (posX1 - posX) + (posY1 - posY) * (posY1 - posY);
+						if (d12 < d2)
 						{
-							auto posX1 = std::get<2>(t1);
-							auto posY1 = std::get<3>(t1);	
-							auto d12 = (posX1 - posX) * (posX1 - posX) + (posY1 - posY) * (posY1 - posY);
-							if (d12 < d2)
-							{
-								separate = false;
-								break;
-							}
-						}
-						if (separate)
-						{
-							actsPotsCoordTop.push_back(t);
-							// EVAL(k);	
-							// auto length = std::get<0>(t);
-							// auto likelihood = std::get<1>(t);
-							// EVAL(length);
-							// EVAL(likelihood);							
-							if (actsPotsCoordTop.size() == 1)
-								framePainter.setPen(Qt::white);		
-							else
-								framePainter.setPen(Qt::gray);
-							framePainter.drawRect(
-								posX * _captureWidth - _scale * _captureHeight / 2.0, 
-								posY * _captureHeight - _scale * _captureHeight / 2.0, 
-								_scale * _captureHeight,
-								_scale * _captureHeight);
+							separate = false;
+							break;
 						}
 					}
-					_ui->labelImage->setPixmap(QPixmap::fromImage(image2));	
-					if (actsPotsCoordTop.size())
-					{
-						_centreX = std::get<2>(actsPotsCoordTop.front());
-						_centreY = std::get<3>(actsPotsCoordTop.front());	
-					}
+					if (separate)
+						actsPotsCoordTop.push_back(t);
 				}
-				// EVAL(_centreX);
-				// EVAL(_centreY);
+				QImage image2 = image.copy();
+				QPainter framePainter(&image2);
+				framePainter.setPen(Qt::darkGray);
+				framePainter.drawRect(
+					centreX * _captureWidth - scaleX * _captureHeight / 2.0, 
+					centreY * _captureHeight - scaleY * _captureHeight / 2.0, 
+					scaleX * _captureHeight,
+					scaleY * _captureHeight);
+				bool centered = false;
 				for (auto t : actsPotsCoordTop)
 				{
+					auto posX = std::get<2>(t);
+					auto posY = std::get<3>(t);	
 					auto x = std::get<4>(t);
 					auto y = std::get<5>(t);
 					Record recordSub(record,_size,_size,x,y);
 					Record recordValent = _valencyFixed ? recordSub.valentFixed(_valency) : recordSub.valent(_valency,_valencyFactor);
+					if (!centered)
+					{
+						_centreX = posX;
+						_centreY = posY;	
+						centered = true;
+						framePainter.setPen(_guiFrameRed ? Qt::red : Qt::white);		
+					}
+					else
+						framePainter.setPen(_guiFrameRed ? Qt::magenta : Qt::gray);
+					framePainter.drawRect(
+						posX * _captureWidth - _scale * _captureHeight / 2.0, 
+						posY * _captureHeight - _scale * _captureHeight / 2.0, 
+						_scale * _captureHeight,
+						_scale * _captureHeight);
 					auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
 					if (!_updateDisable)
 						_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
 					this->eventId++;		
 					eventCount++;		
 				}
-				if (!_updateDisable && !_active->update(_updateParameters))
-				{
-					this->terminate = true;	
-					return;
-				}
+				_ui->labelImage->setPixmap(QPixmap::fromImage(image2));	
 			}
 			else if (_mode == "mode005" || _mode == "mode006")
 			{
@@ -976,61 +973,56 @@ void Win007::act()
 						}
 					}
                 std::sort(actsPotsCoordTop.rbegin(), actsPotsCoordTop.rend());
-				{
-					QImage image2 = image.copy();
-					QPainter framePainter(&image2);
-					framePainter.setPen(Qt::darkGray);
-					framePainter.drawRect(
-						centreX * _captureWidth - scaleX * _captureHeight / 2.0, 
-						centreY * _captureHeight - scaleY * _captureHeight / 2.0, 
-						scaleX * _captureHeight,
-						scaleY * _captureHeight);
-					for (std::size_t k = 0; k < actsPotsCoordTop.size() && k < _eventSize; k++)	
-					{
-						auto t = actsPotsCoordTop[k];
-						auto posX = std::get<2>(t);
-						auto posY = std::get<3>(t);							
-						if (k == 0)
-							framePainter.setPen(Qt::white);		
-						else
-							framePainter.setPen(Qt::gray);
-						framePainter.drawRect(
-							posX * _captureWidth - _scale * _captureHeight / 2.0, 
-							posY * _captureHeight - _scale * _captureHeight / 2.0, 
-							_scale * _captureHeight,
-							_scale * _captureHeight);
-					}
-					_ui->labelImage->setPixmap(QPixmap::fromImage(image2));	
-					if (actsPotsCoordTop.size())
-					{
-						_centreX = std::get<2>(actsPotsCoordTop.front());
-						_centreY = std::get<3>(actsPotsCoordTop.front());	
-					}
-				}
-				// EVAL(_centreX);
-				// EVAL(_centreY);
-				for (std::size_t k = 0; k < actsPotsCoordTop.size() && k < _eventSize; k++)	
+				QImage image2 = image.copy();
+				QPainter framePainter(&image2);
+				framePainter.setPen(Qt::darkGray);
+				framePainter.drawRect(
+					centreX * _captureWidth - scaleX * _captureHeight / 2.0, 
+					centreY * _captureHeight - scaleY * _captureHeight / 2.0, 
+					scaleX * _captureHeight,
+					scaleY * _captureHeight);
+				bool centered = false;
+				for (std::size_t k = 0; k < actsPotsCoordTop.size() && eventCount < _eventSize; k++)	
 				{
 					// EVAL(k);
 					auto t = actsPotsCoordTop[k];
 					// EVAL(std::get<0>(t));
 					// EVAL(std::get<1>(t));
+					auto posX = std::get<2>(t);
+					auto posY = std::get<3>(t);		
 					auto x = std::get<4>(t);
 					auto y = std::get<5>(t);
 					Record recordSub(record,_size,_size,x,y);
 					Record recordValent = _valencyFixed ? recordSub.valentFixed(_valency) : recordSub.valent(_valency,_valencyFactor);
+					if (_entropyMinimum > 0.0 && recordValent.entropy() < _entropyMinimum)
+						continue;	
+					if (!centered)
+					{
+						_centreX = posX;
+						_centreY = posY;	
+						centered = true;
+						framePainter.setPen(_guiFrameRed ? Qt::red : Qt::white);		
+					}
+					else
+						framePainter.setPen(_guiFrameRed ? Qt::magenta : Qt::gray);
+					framePainter.drawRect(
+						posX * _captureWidth - _scale * _captureHeight / 2.0, 
+						posY * _captureHeight - _scale * _captureHeight / 2.0, 
+						_scale * _captureHeight,
+						_scale * _captureHeight);
 					auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
 					if (!_updateDisable)
 						_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
 					this->eventId++;		
 					eventCount++;		
 				}
-				if (!_updateDisable && !_active->update(_updateParameters))
-				{
-					this->terminate = true;	
-					return;
-				}
+				_ui->labelImage->setPixmap(QPixmap::fromImage(image2));	
 			}
+			if (!_updateDisable && !_active->update(_updateParameters))
+			{
+				this->terminate = true;	
+				return;
+			}			
 		}
 		// representations
 		{		

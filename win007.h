@@ -75,10 +75,11 @@ private:
 	bool _modeLogging;
 	std::size_t _modeLoggingFactor;
 	bool _modeTracing;
+	bool _updateDisable;
 	bool _interactive;
 	bool _interactiveExamples;
 	bool _interactiveEntropies;
-	bool _updateDisable;
+	bool _guiFrameRed;
 
 	std::shared_ptr<Alignment::ActiveSystem> _system;
 	std::shared_ptr<Alignment::System> _uu;
@@ -129,6 +130,7 @@ private:
 	std::size_t _threadCount;
 	double _separation;
 	std::size_t _eventIdPrev;
+	double _entropyMinimum;
 
 };
 #endif // WIN007_H
