@@ -262,7 +262,8 @@ int main(int argc, char *argv[])
 		int stage = 0;
 		string model = string(argv[2]);
 		std::size_t depth = argc >= 4 ? atoi(argv[3]) : 5;
-		std::size_t wmax = argc >= 5 ? atoi(argv[4]) : 18;
+		std::size_t wmax = argc >= 5 ? atoi(argv[4]) : 0;
+		bool flip = argc >= 6;
 		
 		Active activeA;
 		activeA.logging = true;		
@@ -292,14 +293,13 @@ int main(int argc, char *argv[])
 		}		
 		if (ok)
 		{
-			double lnwmax = std::log(wmax);
 			auto& dr = *activeA.decomp;		
 			auto& sizes = activeA.historySlicesSize;
 			for (auto fud : fuds)		
 			{
 				auto& fs = dr.fuds[fud];
 				auto parent = fs.parent;
-				std::cout << fud << ", " << parent << ", " << fs.children.size() << "\t";
+				double lnwmax = std::log(wmax ? wmax : fs.children.size());
 				std::vector<std::pair<double,std::size_t>> slices;
 				for (auto slice : fs.children)		
 				{
@@ -307,9 +307,12 @@ int main(int argc, char *argv[])
 					slices.push_back(std::make_pair(likelihood,slice));
 				}
 				std::sort(slices.rbegin(), slices.rend());
+				if (flip)
+					std::cout << std::setprecision(3) << slices.front().first << "; ";
+				std::cout << fud << ", " << activeA.historySlicesLength[parent] << ", " << parent << ", " << fs.children.size();
 				for (auto& pp : slices)
 				{
-					std::cout << "(" << std::setprecision(3) << pp.first << ", " << pp.second << ")\t";
+					std::cout << "\t(" << std::setprecision(3) << pp.first << ", " << pp.second << ")\t";
 				}
 				std::cout << std::endl;
 			}
