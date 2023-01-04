@@ -784,7 +784,7 @@ with `actor.json` -
  
 ![actor002_model010_Sam_001](images/actor002_model010_Sam_001.png) 
 
-Now `actor002` differs from `actor001`; instead of the array of representations for all of the scales that we see in `actor001`, we are able to see more details of the position within the *model* of the current *slice*. 
+Now `actor002` differs from `actor001`; instead of the array of representations for all of the scales that we see in `actor001`, we are able to see more details of the position that the current fixed scale *slice* has within the *model*. 
 
 The first row shows, from right to left, (i) the greyscale record of the frame at the current centre and scale (highlighted in a white bounding box above), (ii) the bucketed or regular interval *valency* record, and (iii) the representation and *likelihood* of the record's *slice*. In general, depending on the length of its *model* path and its *likelihood*, the representation of the *slice* will resemble the greyscale record in terms of its light and dark regions. 
 
@@ -858,7 +858,7 @@ In this scene from 'Citizen Kane' the mode 4 focus has found a hotspot just abov
 
 ![actor002_model041_Film_Noir_014](images/actor002_model041_Film_Noir_014.png) 
 
-Some of the examples also look like foreheads just above an eye, and the *slice* path length is 20, so the classification is quite specialised and finds a lot of similar images.
+Some of the examples also look like foreheads just above an eye, and the *slice* path length is 20, so the classification is quite specialised and finds a lot of similar images. (Note that the very high *likelihoods* of some of the ancestor *slices* may be because of a side-effect of mode 4 that ignores *on-diagonal* siblings. This behaviour is altered in modes 6 and 7, described below, in order to restore the balance of the *models*.)
 
 The fixed intervals of the `valentFixed` algorithm produce better results with Film Noir videos because of the high contrast used by the cinematographers. The bucketing of the `valent` method tended to magnify small variations in low contrast areas of background or textures. This caused the *modelling* to be distracted away from interesting foreground objects.
 
@@ -871,11 +871,7 @@ Here we have added the entropy below the second and third records in the top row
 
 <!-- TODO 
 
-Do actor 2 for likelihood. Only need one current frame visible for a single active. Idea is to experiment with different scans. The displayed frame under user control need not be an event, only part of the scan.
-
-Actor 2 GUI will have current slice, 10 valent actual and 256 actual and colour actual in the first row. The top 5 siblings are in the next row, excluding the current, in descending order of likelihood. The likelihoods are shown. The last 5 ancestors are shown in the third row along with likelihoods. Statistics of the model and timings below that.
-
-What are the siblings for the slices that seem to be images? Are they also the same image but translated? Only slightly e.g. alarm clock for model 9 - not translated but ringing differently, or at 1:03 of Sam. Show the relations nearest a browsed slice. Perhaps a decomp browser.
+The displayed frame can be moved under user control by removing the mode. Do some examples of moving around and mention hotspots. Perhaps add a box to show where the frame is.
 
 -->
 
@@ -1020,6 +1016,8 @@ In spite of being twice the model, the leaf slices only increase from 108,597 to
 Mode increases from 16 to 20 and the max from 25 to 30, and the mean from 15.9 to 18.9, so the statistics seem to similar as expected.
 
 Model 49 is definitely less likely to focues on bodies and faces than model 48. Model 47 is not quite as good at faces and bodies as 48 but is better than 49. The higher frequencies of faces and bodies seems to be overshadowed by interesting background patterns. Even if model 50 is no better than model 49 we still seem to have a model that focuses prefereably on the things that interest us. With multi-scale and multi-level and perhaps dynamics we can perhaps increase the focus on human-interesting objects more intensely. README
+
+describe the size-potential fix in modes 6 and 7, referenced above
 
 -->
 
