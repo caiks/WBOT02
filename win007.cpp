@@ -1018,6 +1018,18 @@ void Win007::act()
 				}
 				_ui->labelImage->setPixmap(QPixmap::fromImage(image2));	
 			}
+			else
+			{
+				QImage image2 = image.copy();
+				QPainter framePainter(&image2);
+				framePainter.setPen(_guiFrameRed ? Qt::red : Qt::white);
+				framePainter.drawRect(
+					_centreX * _captureWidth - _scale * _captureHeight / 2.0, 
+					_centreY * _captureHeight - _scale * _captureHeight / 2.0, 
+					_scale * _captureHeight,
+					_scale * _captureHeight);		
+				_ui->labelImage->setPixmap(QPixmap::fromImage(image2));						
+			}
 			if (!_updateDisable && !_active->update(_updateParameters))
 			{
 				this->terminate = true;	
