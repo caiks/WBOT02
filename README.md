@@ -868,10 +868,61 @@ The `valentFixed` algorithm was a step forward but we found that the *models* we
 
 Here we have added the entropy below the second and third records in the top row, and below each of the example records in the second row. The entropies are not to be confused with the *likelihoods* underneath the representations elsewhere. In this example, the entropies are all quite high. The highest is grey-scale record (third in the top row) at 4.188. This is as expected because of its *valency* of 256, which is much greater than the 10-*valent* *substrate*. The entropies also help us distinguish between very similar but not identical *events*, such as the five examples on the right.
 
+The `actor002` browser can operate without snapping to a hotspot by not specifying a mode in the configuration. For example, `actor.json` -
+```
+{
+	"interval" : 250,
+	"x" : 870,
+	"width" : 560,
+	"model_initial" : "model036",
+	"mode" : "mode004",
+	"event_size" : 1,
+	"threads" : 6,
+	"valency_fixed" : true,
+	"scale" : 0.177,
+	"range_centreX" : 0.04425,
+	"range_centreY" :0.04425,
+	"interactive" : true,
+	"interactive_examples" : true,
+	"multiplier" : 1,
+	"label_size" : 16,
+	"disable_update" : true,
+	"summary_active" : false,
+	"logging_action" : false,
+	"warning_action" : false
+}
+```
+![actor002_model055_Film_Noir_004](images/actor002_model055_Film_Noir_004.png) 
+
+As in `actor001`, the user can use the mouse to change the centre, or use the arrow keys (and space to return to the middle). The frame at the centre is highlighted with a red or white rectangle. In the example above, which uses *model* 55, we show a *slice* with a *decomposition* path of length 20, but we can easily move off the hotspot. For example, to the left the next *slice* is 
+
+![actor002_model055_Film_Noir_006](images/actor002_model055_Film_Noir_006.png) 
+
+Now the path length is only 6. The *slice* is *off-diagonal* with only 2 examples which bear little resemblence to each other.
+
+To the right it is 
+
+![actor002_model055_Film_Noir_007](images/actor002_model055_Film_Noir_007.png) 
+
+Here the path is longer at 8 and the *slice* is *on-diagonal* with plenty of examples, some of which include faces. This *slice* and the one to the left share the same 5 ancestors from the root. So they are quite closely related to each other in the *model*.
+
+Above it is 
+
+![actor002_model055_Film_Noir_008](images/actor002_model055_Film_Noir_008.png) 
+
+It shares 4 ancestors with the previous two *slices*. It is *off-diagonal* with no examples.
+
+And below it is
+
+![actor002_model055_Film_Noir_009](images/actor002_model055_Film_Noir_009.png) 
+
+The final *slice* shares only 2 ancestors with the previous *slices*. So it is least related. It is *off-diagonal* with only one example.
+
+Clearly in this case the browser allows us to demonstrate that the hotspot is quite isolated and the surrounding *model* far less developed. By searching for hotspots, the *model* has a higher growth rate and longer paths to the point at which features are beginning to be classified together. By browsing we can judge how well classified the *slices* are, and whether the configuration of the current *substrate*, active and mode is in practice reducing the *volume*.  
 
 <!-- TODO 
 
-The displayed frame can be moved under user control by removing the mode. Do some examples of moving around and mention hotspots. Perhaps add a box to show where the frame is.
+Describe contour maps and generated representations as other model analysis technique.
 
 -->
 
