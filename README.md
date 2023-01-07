@@ -920,9 +920,97 @@ The final *slice* shares only 2 ancestors with the previous *slices*. So it is l
 
 Clearly in this case the browser allows us to demonstrate that the hotspot is quite isolated and the surrounding *model* far less developed. By searching for hotspots, the *model* has a higher growth rate and longer paths to the point at which features are beginning to be classified together. By browsing we can judge how well classified the *slices* are, and whether the configuration of the current *substrate*, active and mode is in practice reducing the *volume*. 
 
-There are numerous snapshots of the `actor002` browser in various modes for different *models* in the [WBOT02 repository](https://github.com/caiks/WBOT02/images).
+There are numerous snapshots of the `actor002` browser in various modes for different *models* in the `images` subdirectory of the [WBOT02 repository](https://github.com/caiks/WBOT02/tree/main/images).
 
 #### Model analysis tools
+
+##### view_active_concise
+
+We can dump some of the statistics of an active given a *model*, for example 
+
+```
+cd ~/WBOT02_ws
+./WBOT02 view_active_concise model055
+
+model: model055
+concise: true
+model055        load    file name: model055.ac  time 7.30521s
+ok: true
+activeA.name: model055
+activeA.underlyingEventUpdateds: {3000000}
+activeA.historySize: 1000000
+activeA.historyOverflow: true
+activeA.historyEvent: 1
+sizeA: 1000000
+activeA.historyEvent: 1
+activeA.continousIs: true
+activeA.continousHistoryEventsEvent: {(1,2000001)}
+activeA.historySliceCachingIs: true
+activeA.historySliceCumulativeIs: true
+activeA.historySlicesSize.size(): 121515
+activeA.historySlicesLength.size(): 136555
+activeA.historySlicesSlicesSizeNext.size(): 100697
+activeA.historySlicesSliceSetPrev.size(): 100823
+lengthsDist: {(2,18),(3,38),(4,117),(5,226),(6,425),(7,799),(8,1400),(9,2462),(10,3947),(11,6201),(12,9102),(13,12446),(14,15461),(15,17272),(16,16489),(17,13755),(18,10150),(19,6317),(20,3282),(21,1282),(22,238),(23,42),(24,36)}
+lengthsCount: 121505
+lengthsMean: 14.7936
+lengthsDeviation: 2.9219
+lengthsSkewness: -0.397247
+lengthsKurtosisExcess: 0.274909
+lengthsHyperSkewness: -4.06495
+hr->dimension: 1601
+hr->size: 1000000
+activeA.underlyingSlicesParent.size(): 0
+activeA.bits: 16
+activeA.var: 340480
+activeA.varSlice: 398718
+activeA.induceThreshold: 200
+activeA.induceVarExclusions: {}
+activeA.historySparse->size: 1000000
+activeA.underlyingSlicesParent.size(): 0
+activeA.historySlicesSetEvent.size(): 38337
+activeA.induceSlices: {}
+activeA.induceSliceFailsSize: {}
+activeA.frameUnderlyings: []
+activeA.frameHistorys: []
+activeA.decomp->fuds.size(): 15050
+activeA.decomp->fudRepasSize: 280416
+(double)activeA.decomp->fuds.size() * activeA.induceThreshold / sizeA: 3.01
+activeA.decomp: true
+```
+In this case the `activeA.historySize` is 1m, but the latest *event* id (`activeA.underlyingEventUpdateds`) is 3m, so the active is well into overflow.
+
+`activeA.decomp->fuds.size()` shows the number of *fuds* in the *model*. The growth rate `activeA.decomp->fuds.size() * activeA.induceThreshold / sizeA` is shown as 3.01 here, but of course, this is a fraction of the *history size* so the growth rate is really only 1.00. See the discussion below on *model* logs for analysis of growth rates before and after overflow.
+
+The path length statistics of the *model* itself are summarised in this section -
+```
+lengthsDist: {(2,18),(3,38),(4,117),(5,226),(6,425),(7,799),(8,1400),(9,2462),(10,3947),(11,6201),(12,9102),(13,12446),(14,15461),(15,17272),(16,16489),(17,13755),(18,10150),(19,6317),(20,3282),(21,1282),(22,238),(23,42),(24,36)}
+lengthsCount: 121505
+lengthsMean: 14.7936
+lengthsDeviation: 2.9219
+lengthsSkewness: -0.397247
+lengthsKurtosisExcess: 0.274909
+lengthsHyperSkewness: -4.06495
+```
+`lengthsCount` is the number of leaf *slices*, whether they have *events* or not. It is equal to the *model partition* cardinality.
+
+`lengthsDist` shows the distribution of the lengths of the paths of the leaf *slices*. The modal length for *model* 55 above is 15. The maximum length is 24.
+
+`lengthsMean` is mean path length. In this case 14.8, very similar to the modal length. The `lengthsDeviation` is the standard deviation and the remaining statistics at the higher moments. In the example above, the higher moments are quite low, so the path length distribution is quite normal.
+
+##### view_decomp
+
+##### Model logs
+
+<!-- TODO 
+
+growth rates
+
+diagonals
+-->
+
+##### generate_contour
+
 
 <!-- TODO 
 
