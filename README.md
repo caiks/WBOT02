@@ -922,6 +922,13 @@ Clearly in this case the browser allows us to demonstrate that the hotspot is qu
 
 There are numerous snapshots of the `actor002` browser in various modes for different *models* in the `images` subdirectory of the [WBOT02 repository](https://github.com/caiks/WBOT02/tree/main/images).
 
+
+<!-- TODO 
+
+do description of running actor 3
+
+-->
+
 #### Model analysis tools
 
 ##### view_active_concise
@@ -1064,12 +1071,117 @@ In this case the *alignments* seem to be persistent. There are only rare cases w
 
 ##### Model logs
 
-<!-- TODO 
+Most of the *models* discussed in this section have been created using `actor003` in non-interactive mode. For example, *model* 55 was created thus -
 
-growth rates
+```
+cd ~/WBOT02_build
+make
 
-diagonals
--->
+```
+
+`model055.json` -
+```
+{
+	"model" : "model055",
+	"video_sources" : [
+		"videos/No Man's Woman (1955) [oLiwhrvkMEU].webm",
+...
+		"videos/Twelve O'Clock High 1949  Gregory Peck, Hugh Marlowe & Dean Jagger [OMh4h2_ts68].webm"],
+	"interval" : 250,
+	"playback_rate" : 3.0,
+	"retry_media" : true,
+	"checkpointing" : true,
+	"mode" : "mode006",
+	"unique_records" : 333,
+	"entropy_minimum" : 1.2,
+	"valency_fixed" : true,
+	"event_size" : 5,
+	"threads" : 7,
+	"activeSize" : 1000000,
+	"induceThreadCount" : 7,
+	"induceParameters.diagonalMin" : 12.0,
+	"scale" : 0.177,
+	"range_centreX" : 0.236,
+	"range_centreY" :0.177,
+	"event_maximum" : 3000000,
+	"gui" : false,
+	"logging_event" : true,
+	"logging_event_factor" : 1000,
+	"summary_active" : true,
+	"logging_action" : true,
+	"logging_action_factor" : 10000000
+}
+```
+The command line is directed into a log file `model055.log` -
+```
+cd ~/WBOT02_ws
+./WBOT02 actor003 model055.json >>model055.log 2>&1
+
+```
+We can tail the log file to monitor progress -
+```
+cd ~/WBOT02_ws
+tail -f model055.log
+
+```
+`model055.log` -
+```
+qt.qpa.plugin: Could not find the Qt platform plugin "wayland" in ""
+actor	status: initialised
+actor	source	file:videos/No Man's Woman (1955) [oLiwhrvkMEU].webm
+actor	next video index: 1
+actor	seekable: false	duration: 4206721
+actor	position	120075
+actor	captured	0.005404s
+actor	updated	0.026004s
+model055	induce summary	slice: 0	diagonal: 35.7622	fud cardinality: 1	model cardinality: 19	fuds per threshold: 1
+model055	induce summary	slice: 131074	diagonal: 33.121	fud cardinality: 2	model cardinality: 36	fuds per threshold: 1.25
+model055	induce summary	slice: 131082	diagonal: 35.1616	fud cardinality: 3	model cardinality: 51	fuds per threshold: 1.34831
+model055	induce summary	slice: 131086	diagonal: 33.5801	fud cardinality: 4	model cardinality: 75	fuds per threshold: 1.35593
+model055	induce summary	slice: 131091	diagonal: 33.2048	fud cardinality: 5	model cardinality: 90	fuds per threshold: 1.38889
+...
+```
+Depending on the JSON configuration, the log file can record the *fud diagonals*. If we do some regular expression manipulation and sort by *diagonal* we can obtain the minimum, median and maximum -
+```
+14.9695	fud cardinality: 8696	model cardinality: 159563	fuds per threshold: 1.7392
+15.2501	fud cardinality: 12652	model cardinality: 234991	fuds per threshold: 2.5304
+...
+27.5866	fud cardinality: 717	model cardinality: 12803	fuds per threshold: 1.50505
+...
+40.7378	fud cardinality: 14011	model cardinality: 260910	fuds per threshold: 2.8022
+41.1601	fud cardinality: 16	model cardinality: 269	fuds per threshold: 1.39373
+```
+Also, the log file can give us the *model* growth rates (in *fuds* per *size* per threshold) at different stages -
+```
+actor	event id: 999216	time 0.0880728s
+model055	induce summary	slice: 194695	diagonal: 21.6981	fud cardinality: 7444	model cardinality: 136041	fuds per threshold: 1.48942
+model055	induce summary	slice: 166348	diagonal: 34.4661	fud cardinality: 7445	model cardinality: 136067	fuds per threshold: 1.48938
+actor	checkpointing
+model055	dump	file name: model055.ac	time 114.645s
+actor	dump	file name: model055.rep	time 64.1691s
+actor	event id: 1000031
+...
+actor	event id: 1499006	time 0.0705724s
+model055	induce summary	slice: 268220	diagonal: 27.9756	fud cardinality: 10138	model cardinality: 187385	fuds per threshold: 2.0276
+model055	induce summary	slice: 192568	diagonal: 20.7197	fud cardinality: 10139	model cardinality: 187404	fuds per threshold: 2.0278
+model055	induce summary	slice: 171878	diagonal: 29.8202	fud cardinality: 10140	model cardinality: 187422	fuds per threshold: 2.028
+actor	event id: 1500009	time 0.0624675s
+actor	checkpointing
+model055	dump	file name: model055.ac	time 117.756s
+actor	dump	file name: model055.rep	time 11.6039s
+actor	event id: 1500039
+...
+```
+In this case overflow occurs after 1m *events*. If we take the expected *fud* cardinality after overflow to grow at the natural logarithm of the *event* cardinality we can see if the actual growth is as expected. In this case the growth runs slightly behind -
+
+million-events|actual fuds|1+ln(million-events)|expected fuds|difference|difference percent
+---|---|---|---|---|---
+1|7445|1.000|7445|0|0.00%
+1.5|10140|1.405|10464|-324|-3.09%
+2|12145|1.693|12605|-460|-3.65%
+2.5|13711|1.916|14267|-556|-3.90%
+3|15050|2.099|15624|-574|-3.67%
+
 
 ##### generate_contour
 
