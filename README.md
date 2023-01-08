@@ -1182,9 +1182,79 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 2.5|13711|1.916|14267|-556|-3.90%
 3|15050|2.099|15624|-574|-3.67%
 
-
 ##### generate_contour
 
+Useful though it is to compare the statistics of different *models* it is also desirable to have qualitative comparisons. One way to do this is to *apply* a *model* to test images. The `generate_contour009` tool scans an image to obtain the *slice* at each pixel step. From this we can generate further images to obtain information about how the *model* is behaving at each location of the given image.
+
+For example, we ran `generate_contour009` configured with `contour.json`,
+```
+cd ~/WBOT02_ws
+./WBOT02 generate_contour009 contour.json
+
+```
+where `contour.json` is
+```
+{
+	"model" : "model055",
+	"threads" : 8,
+	"valency_fixed" : true,
+	"entropy_minimum" : 1.2,
+	"scale" : 0.177,
+	"range_centreX" : 0.786,
+	"range_centreY" :0.425,
+	"input_file" : "contour005.png",
+	"length_file" : "contour005_055_minent_length.png",
+	"likelihood_file" : "contour005_055_minent_likelihood.png",
+	"position_file" : "contour005_055_minent_position.png",
+	"length_position_file" : "contour005_055_minent_len_position.png",
+	"representation_file" : "contour005_055_minent_representation.png"
+}
+```
+The input images and contour images for many of the *models* is in the [WBOT02_ws repository](https://github.com/caiks/WBOT02_ws).
+
+In this example, the input image is 
+
+![contour005](images/contour005.png) 
+
+First let us examine the `length_file` -
+
+![contour005_055_minent_length](images/contour005_055_minent_length.png) 
+
+Here we show the lengths of the *slice* path at each point with the brightness of the pixel in proportion to the length as a fraction of the maximum length. So the bright locations may be thought of as hotspots where the *model* is particularly specialised. In this case we can see hotspots around the edges of the man's face and shoulders. In the example above we restrict the generated image only to those regions where the frame entropy is not less than the minimim of 1.2. We can generate the image without the minimum entropy -
+
+![contour005_055_length](images/contour005_055_length.png) 
+
+We can still see hotspots around the face, but these are less prominent than hotspots in low entropy regions. (In this case *model* 55 was run with the minimum entropy restriction in place to increase the frequency of more interesting images such as facial features, which would otherwise be ignored in favour of dark corners or cloudy skies.) 
+
+The *likelihoods* at each point are also generated in the `likelihood_file` -
+
+![contour005_055_minent_likelihood](images/contour005_055_minent_likelihood.png) 
+
+This image is less useful in characterising the *model*, but indicates where the *model* could develop next if *modelling* were to continue.
+
+In order to see how closely related the *slices* are in the *decomposition* tree, we ordered the *slice* paths by *size-slice* pair and generated a colour depending on where the current *slice* appears in the ordered list. *Slices* that are closely related have similar colours using this method. The degree of similarity varies with the distance between hues. In this example the generated `position_file` is 
+
+![contour005_055_minent_position](images/contour005_055_minent_position.png) 
+
+This image clearly shows the parts which the *model* considers similar. For example, the areas around the eyes, nose and mouth are closely related. The path lengths and positions can be combined into a joint image in the `length_position_file` -
+
+![contour005_055_minent_len_position](images/contour005_055_minent_len_position.png) 
+
+Without the minimum entropy restriction the `length_position_file` is 
+
+![contour005_055_len_position](images/contour005_055_len_position.png) 
+
+Finally the `generate_contour009` tool can generate a new image based on the *slice* representations in `representation_file` -
+
+![contour005_055_minent_representation](images/contour005_055_minent_representation.png) 
+
+The representations overlap, so they are displayed with the representations of *slices* with the longest paths and *likelihoods* shown last. In this way the representations image is the closest to how the *model* 'sees' the given image.
+
+We can compare the representations image to one for *model* 58 which at half the scale of *model* 55 -
+
+![contour005_058_minent_representation](images/contour005_058_minent_representation.png) 
+
+Clearly the smaller scale *model* captures smaller features more closely.
 
 <!-- TODO 
 
