@@ -143,6 +143,11 @@ cd ~/WBOT02_ws
 ./WBOT02 actor001
 
 ```
+This [tool](https://nicolargo.github.io/glances/) is useful for monitoring the system during *modelling* runs -
+```
+sudo apt install -y glances
+
+```
 To obtain the YouTube videos discussed in connection with `actor003` below, install `yt-dlp`,
 ```
 sudo add-apt-repository ppa:yt-dlp/stable
@@ -922,12 +927,74 @@ Clearly in this case the browser allows us to demonstrate that the hotspot is qu
 
 There are numerous snapshots of the `actor002` browser in various modes for different *models* in the `images` subdirectory of the [WBOT02 repository](https://github.com/caiks/WBOT02/tree/main/images).
 
+Most of the *models* discussed in this section have been created using `actor003` in non-interactive mode. Let us consider *model* 55 for example. The configuration file is 
+`model055.json` -
+```
+{
+	"model" : "model055",
+	"video_sources" : [
+		"videos/No Man's Woman (1955) [oLiwhrvkMEU].webm",
+...
+		"videos/Twelve O'Clock High 1949  Gregory Peck, Hugh Marlowe & Dean Jagger [OMh4h2_ts68].webm"],
+	"interval" : 250,
+	"playback_rate" : 3.0,
+	"retry_media" : true,
+	"checkpointing" : true,
+	"mode" : "mode006",
+	"unique_records" : 333,
+	"entropy_minimum" : 1.2,
+	"valency_fixed" : true,
+	"event_size" : 5,
+	"threads" : 7,
+	"activeSize" : 1000000,
+	"induceThreadCount" : 7,
+	"induceParameters.diagonalMin" : 12.0,
+	"scale" : 0.177,
+	"range_centreX" : 0.236,
+	"range_centreY" :0.177,
+	"event_maximum" : 3000000,
+	"gui" : false,
+	"logging_event" : true,
+	"logging_event_factor" : 1000,
+	"summary_active" : true,
+	"logging_action" : true,
+	"logging_action_factor" : 10000000
+}
+```
+The command line runs `actor003` with the `model055.json` configuration file. The output is directed into a log file `model055.log` -
+```
+cd ~/WBOT02_ws
+./WBOT02 actor003 model055.json >>model055.log 2>&1
 
-<!-- TODO 
+```
+We can tail the log file to monitor progress -
+```
+cd ~/WBOT02_ws
+tail -f model055.log
 
-do description of running actor 3
+```
+In the cases where the active *history* was 1m *events* or less, the *models* were usually run on a Windows laptop with 8 logical processors and 8GB of memory running Ubuntu 22 under WSL. For active configurations requiring more *history* the *models* were usually run in the cloud.
 
--->
+If the *history* is too large to run in the `actor002` browser it can be *resized*, for example -
+```
+cd ~/WBOT02_ws
+./WBOT02 resize_tidy model048 model048c 1000000
+model: model048
+model_new: model048c
+tidy: true
+size: 1000000
+model048        load    file name: model048.ac  time 569.765s
+stage: 1
+ok: true
+stage: 2
+ok: true
+stage: 3
+ok: true
+model048c       dump    file name: model048c.ac time 2.10195s
+stage: 4
+ok: true
+```
+Note that the *resize* assumes no overflow and only the initial *events* are copied. Of course, many of the example *events* will be lost in the cut and so the browser occasionally has no examples at all for some *slices* while browsing.
 
 #### Model analysis tools
 
@@ -1071,59 +1138,8 @@ In this case the *alignments* seem to be persistent. There are only rare cases w
 
 ##### Model logs
 
-Most of the *models* discussed in this section have been created using `actor003` in non-interactive mode. For example, *model* 55 was created thus -
+The logs of the *models* of the `actor003` runs can be analysed too. For example, *model* 55 -
 
-```
-cd ~/WBOT02_build
-make
-
-```
-
-`model055.json` -
-```
-{
-	"model" : "model055",
-	"video_sources" : [
-		"videos/No Man's Woman (1955) [oLiwhrvkMEU].webm",
-...
-		"videos/Twelve O'Clock High 1949  Gregory Peck, Hugh Marlowe & Dean Jagger [OMh4h2_ts68].webm"],
-	"interval" : 250,
-	"playback_rate" : 3.0,
-	"retry_media" : true,
-	"checkpointing" : true,
-	"mode" : "mode006",
-	"unique_records" : 333,
-	"entropy_minimum" : 1.2,
-	"valency_fixed" : true,
-	"event_size" : 5,
-	"threads" : 7,
-	"activeSize" : 1000000,
-	"induceThreadCount" : 7,
-	"induceParameters.diagonalMin" : 12.0,
-	"scale" : 0.177,
-	"range_centreX" : 0.236,
-	"range_centreY" :0.177,
-	"event_maximum" : 3000000,
-	"gui" : false,
-	"logging_event" : true,
-	"logging_event_factor" : 1000,
-	"summary_active" : true,
-	"logging_action" : true,
-	"logging_action_factor" : 10000000
-}
-```
-The command line is directed into a log file `model055.log` -
-```
-cd ~/WBOT02_ws
-./WBOT02 actor003 model055.json >>model055.log 2>&1
-
-```
-We can tail the log file to monitor progress -
-```
-cd ~/WBOT02_ws
-tail -f model055.log
-
-```
 `model055.log` -
 ```
 qt.qpa.plugin: Could not find the Qt platform plugin "wayland" in ""
@@ -1172,7 +1188,7 @@ actor	dump	file name: model055.rep	time 11.6039s
 actor	event id: 1500039
 ...
 ```
-In this case overflow occurs after 1m *events*. If we take the expected *fud* cardinality after overflow to grow at the natural logarithm of the *event* cardinality we can see if the actual growth is as expected. In this case the growth runs slightly behind -
+In this case overflow occurs after 1m *events*. If we take the expected *fud* cardinality after overflow to grow at the natural logarithm of the *event* cardinality, because of the binomial complexity of the *decomposition*, we can see if the actual growth is as expected. In this case the growth runs slightly behind -
 
 million-events|actual fuds|1+ln(million-events)|expected fuds|difference|difference percent
 ---|---|---|---|---|---
