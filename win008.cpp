@@ -942,9 +942,10 @@ void Win008::act()
 				eventCount++;		
 			}
 		}
-		else if (_mode == "mode005" || _mode == "mode006")
+		else if (_mode == "mode005" || _mode == "mode006" || _mode == "mode008")
 		{
-			bool isSizePotential = _mode == "mode006";
+			bool isSizePotential = _mode == "mode006" || _mode == "mode008";
+			bool isActiveSizePotential = _mode == "mode008";
 			auto scaleX = _centreRangeX * 2.0 + _scale;
 			auto scaleY = _centreRangeY * 2.0 + _scale;
 			auto sizeX = (std::size_t)(scaleX * _size / _scale);
@@ -980,11 +981,12 @@ void Win008::act()
 					threads.reserve(_threadCount);
 					for (std::size_t t = 0; t < _threadCount; t++)
 						threads.push_back(std::thread(
-							[isSizePotential, &actor, &activeA, n, vv, 
+							[isSizePotential, isActiveSizePotential, &actor, &activeA, n, vv, 
 							centreX, centreY, scaleX, scaleY, sizeX, sizeY, interval, &record, tx, ty,
 							&actsPotsCoord] (int t)
 							{
 								auto drmul = listVarValuesDecompFudSlicedRepasPathSlice_u;
+								auto& slices = activeA.historySlicesSetEvent;
 								auto& sizes = activeA.historySlicesSize;
 								auto& lengths = activeA.historySlicesLength;
 								auto& fails = activeA.induceSliceFailsSize;
@@ -1028,7 +1030,13 @@ void Win008::act()
 												auto length = lengths[slice];
 												auto sz = sizes[slice];
 												auto likelihood = (std::log(sz) - std::log(sizes[cv[slice]]) + lnwmax)/lnwmax;
-												if (isSizePotential) likelihood += sz;
+												if (isActiveSizePotential)
+												{
+													if (slices.count(slice))
+														likelihood += slices[slice].size();
+												}
+												else if (isSizePotential) 
+													likelihood += sz;
 												actsPotsCoord[z] = std::make_tuple(length,likelihood,posX,posY,x,y);
 											}
 											else
