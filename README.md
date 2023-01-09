@@ -729,18 +729,6 @@ None of the *models* with only one frame (5, 6 and 7) have induce lags. There is
 
 Note that the `actor001` *models* were all subject to a bug in the record `valent` bucketing which meant that the first *value* was too infrequent and the last *value* was too frequent. Thus the *valency* was more like 9 than 10.  Qualitatively, however, the *models* still seem to work quite well. The `actor002` *models* were all corrected nonetheless.
 
-<!-- TODO 
-
-For model 8 there are 20/28 hotspots > 0.5 every 20s of the first episode at (0.5,0.5) and 10/28 in episode 2. At (0.562,0.562) there are 14/28 hotspots and 10/28 in episode 2. So pretty random. Do the same for fixed - model 2 at (0.5,0.5) has 19/28 episode 1 and 18/28 episode 2. So there probably is an advantage for the fixed. However, even for random there is at least a 50% chance a location is a hotspot.
-
-Scenes from the credits have nearly uniformly high likelihoods (> 0.5) and the slice is usually right. Scenes from the first series have variable results. The slices are wrong quite frequently, although perhaps show a scene which is one of the stock backgrounds but does not have the object in the foreground, such as a bus moving along a road. Scenes from other series usually have low likelihoods and often the slices are only approximate or completely wrong.  
-
-don't seem to be able to show anything convincing by browsing, but the likelihoods of the randomised model around faces seem to be higher than in non-decript areas in general e.g. FS1_1_1m40s_008_1.png
-
-cf CAIKS4 202205310940
-
--->
-
 #### actor002 and actor003 description
 
 In `actor001` the fixed position *models* had many identical *events* in a *slice* from the repetition of the opening introduction sequence and the closing credit sequence, and from pauses in the action. Some *slices* might even be identical to a single *event*. We would like to compare these *models* to those created in random or other modes. To see what is going on in a *model*, the `actor002` GUI displays the representations and *likelihoods* of the ancestors and siblings of the current centre's *slice*. It can also optionally display some example *events* from the *slice*.
@@ -1272,13 +1260,15 @@ We can compare the representations image to one for *model* 58 which at half the
 
 Clearly the smaller scale *model* captures smaller features more closely.
 
+#### actor002 and actor003 models
+
+The scales in `actor001` were integral powers of a half, i.e. 1.0, 0.5, 0.25 and 0.125. 
+
 <!-- TODO 
 
-Describe contour maps and generated representations as other model analysis technique.
+cf 202212200915 re possible scales
 
 -->
-
-#### actor002 and actor003 models
 
 This summarises the *model* results for both `actor002` and `actor003` -
 
