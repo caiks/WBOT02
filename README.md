@@ -1176,7 +1176,7 @@ actor	dump	file name: model055.rep	time 11.6039s
 actor	event id: 1500039
 ...
 ```
-In this case overflow occurs after 1m *events*. If we take the expected *fud* cardinality after overflow to grow at the natural logarithm of the *event* cardinality, because of the binomial complexity of the *decomposition*, we can see if the actual growth is as expected. In this case the growth runs slightly behind -
+In this case overflow occurs after 1m *events*. If we assume that the fraction of *slices* at the *induce* threshold is in inverse proportion to the *event* cardinality, the expected *fud* cardinality after overflow will be proportional to the integral, i.e. the natural logarithm of the *event* cardinality. In this case the growth runs slightly behind -
 
 million-events|actual fuds|1+ln(million-events)|expected fuds|difference|difference percent
 ---|---|---|---|---|---
@@ -1262,13 +1262,9 @@ Clearly the smaller scale *model* captures smaller features more closely.
 
 #### actor002 and actor003 models
 
-The scales in `actor001` were integral powers of a half, i.e. 1.0, 0.5, 0.25 and 0.125. 
+The scales in `actor001` were integral powers of a half, `(1/2)^x`, i.e. 1.0, 0.5, 0.25 and 0.125. In the following we expand the set of scales to half-integral powers of a half, i.e. 1.0, 0.707, 0.5, 0.354, 0.25, 0.177, 0.125, 0.088 and 0.0625 (= 1/16). At the smallest scale of 1/16th, a 30 pixel frame size corresponds to a 480 pixel image height. 
 
-<!-- TODO 
-
-cf 202212200915 re possible scales
-
--->
+We considered a set of scales based on perspectival ratios at fixed distances. The length of the image on the retina of the height of a distant object would be proportional to the inverse tangent of the inverse distance, `atan(1/x)`. For large distances, the inverse distance, `1/x`, is a close approximation. When compared to powers of a half, `(1/2)^x`, however, the two measures diverge at larger distances. The complexity of a scene might be said to be in proportion to the area of a frame, rather than the length of its side, so directors of films perhaps do not place the actors at random distances, but have larger intervals at further distances. For this reason, we use scales of powers of a half.
 
 This summarises the *model* results for both `actor002` and `actor003` -
 
@@ -1318,7 +1314,7 @@ model056|0.177|5 scanned size-potential tiled actual-potential|6|fixed 5-valent|
 model057|0.354|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|15,433|1.003 (1.480)|15.5|3.21|25|0|30s unique, 12.0 min diagonal, 1.2 min entropy
 model058|0.088|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|13,999|0.933 (1.447)|15.4|2.97|25|0|30s unique, 12.0 min diagonal, 1.2 min entropy
 
-The median diagonals for the actor 2 *models* were consistently in the range 23-27, and the maximum diagonals were consistently in the the range 37-39.
+The table above does not show the median and maximum diagonals. The median diagonals for the actor 2 *models* were consistently around 23-27, and the maximum diagonals were consistently around 37-39.
 
 <!-- TODO 
 
