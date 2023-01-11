@@ -1176,7 +1176,7 @@ actor	dump	file name: model055.rep	time 11.6039s
 actor	event id: 1500039
 ...
 ```
-In this case overflow occurs after 1m *events*. If we assume that the fraction of *slices* at the *induce* threshold is in inverse proportion to the *event* cardinality, the expected *fud* cardinality after overflow will be proportional to the integral, i.e. the natural logarithm of the *event* cardinality. In this case the growth runs slightly behind -
+In this case overflow occurs after 1m *events*. If we assume that the number of *slices* at or near the *induce* threshold decreases in inverse proportion to the *event* cardinality after overflow, the expected *fud* cardinality will be proportional to the integral, i.e. the natural logarithm, of the *event* cardinality. In this case the growth runs slightly behind -
 
 million-events|actual fuds|1+ln(million-events)|expected fuds|difference|difference percent
 ---|---|---|---|---|---
