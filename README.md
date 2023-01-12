@@ -1319,6 +1319,12 @@ The table above does not show the median and maximum diagonals. The median diago
 
 <!-- TODO 
 
+Discuss interval between 40ms i.e. 25 FPS and 250ms ie 4 FPS. In model 55 it is `"interval" : 250` in actor 8 it is at least the interval because we check the position has changed by at least this much, if not exactly when seekable.
+
+Scanning models run in parallel threads.
+
+The min entropy models never have failed slices (47 onward). Unique events may reduce the fails. The max path length is much shorter once min entropy is introduced. This suggests that there are still many potential alignments still to be found even on the longest paths.
+
 Noticeable difference between the fixed and randomised, probably because the randomised is now uniformly random rather than around 5 fixed events. Also the long lags in actor 1 meant that the slices were larger and would be better modelled. 
 
 The `0.354 = 1/2^1.5` scale seems to do better. And 0.25 is better still. `0.177 = 1/2^2.5` is the highest, but is getting down to the resolution of the animation.
