@@ -984,6 +984,36 @@ ok: true
 ```
 Note that the *resize* assumes no overflow and only the initial *events* are copied. Of course, many of the example *events* will be lost in the cut and so the browser occasionally has no examples at all for some *slices* while browsing.
 
+`actor002` is implemented in `Win007` and `actor003` is implemented in `Win008`. Both are derived from `actor001` which is implemented in `Win006`.
+
+Like the `Win006` constructor, the `Win008` constructor begins by parsing the given JSON file. Most of the parameters of `Win006` are included and are described in [actor001 description](#actor001) above. There are new parameters for (i) checkpointing, (ii) video and media, (iii) tiling and scanning, and (iv)
+ unique records and minimimum entropy.
+ 
+The constructor then creates the dynamic parts of the GUI but for `Win008` these consist only of labels for the the centre, event id, the *fud* cardinality and the failed *slice* count. 
+ 
+The constructor then creates the active structure. This is the same as for `Win006` but in addition if there is an initial *model* it is induced so that failed *slices* are retried.
+
+Having constructed the actor the `QMediaPlayer` is started if a video or video list is specified, otherwise a timer is set to call `Win008::capture`. Usually `actor003` runs with a video or video list. A single video can be specified, e.g. `"video_source" : "videos/pp--33Lscn6sk.mp4"`. A list of videos can be specified, e.g.
+```
+	"video_sources" : [
+		"videos/No Man's Woman (1955) [oLiwhrvkMEU].webm",
+		"videos/Pickup On South Street 1953 .E ab bn cr cs e f k sp tk [AmgEytYLH7A].webm",
+		"videos/Scarlet Street  (1945) Edward G. Robinson [RRLwI2xk__c].webm",
+		"videos/Temptation (1946) [A8yruBUND0Y].webm",
+		"videos/The 27th Day REMASTERED _ Full Movie _ Gene Barry _ Valerie French _ George Voskovec [YMmUzchdAtk].webm",
+		"videos/The Alfred Hitchcock Hour - 'One of the Family' (1965) Lilia Skala, Kathryn Hays, Jeremy Slate [sMCedRBOYbQ].webm",
+		"videos/THE ALFRED HITCHCOCK HOUR - 'WHAT REALLY HAPPENED' Anne Francis Guest Stars 1-11-1963. [YT PREMIER]. [kdIQAXvSr4Q].webm",
+		"videos/The Flame (1947) [-89gDgAed7k].webm",
+		"videos/The Stranger (1946)  Edward G. Robinson [yGShhuuuiJ0].webm",
+		"videos/The Woman In The Window 1944 [wOQeqcPocsQ].webm"],
+```
+
+<!-- TODO 
+
+Discuss interval between 40ms i.e. 25 FPS and 250ms ie 4 FPS. In model 55 it is `"interval" : 250` in actor 8 it is at least the interval because we check the position has changed by at least this much, if not exactly when seekable.
+
+-->
+
 #### Model analysis tools
 
 ##### view_active_concise
@@ -1318,8 +1348,6 @@ model059|0.177|5 scanned active-size-potential tiled actual-potential|7|fixed|48
 The table above does not show the median and maximum diagonals. The median diagonals for the actor 2 *models* were consistently around 23-27, and the maximum diagonals were consistently around 37-39.
 
 <!-- TODO 
-
-Discuss interval between 40ms i.e. 25 FPS and 250ms ie 4 FPS. In model 55 it is `"interval" : 250` in actor 8 it is at least the interval because we check the position has changed by at least this much, if not exactly when seekable.
 
 Scanning models run in parallel threads.
 
