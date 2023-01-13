@@ -915,7 +915,7 @@ Clearly in this case the browser allows us to demonstrate that the hotspot is qu
 
 There are numerous snapshots of the `actor002` browser in various modes for different *models* in the `images` subdirectory of the [WBOT02 repository](https://github.com/caiks/WBOT02/tree/main/images).
 
-Most of the *models* discussed in this section have been created using `actor003` in non-interactive mode. Let us consider *model* 55 for example. The configuration file is 
+Most of the *models* discussed in this section have been created using `actor003` in non-interactive mode (`"gui" : false`). Let us consider *model* 55 for example. The configuration file is 
 `model055.json` -
 ```
 {
@@ -984,16 +984,18 @@ ok: true
 ```
 Note that the *resize* assumes no overflow and only the initial *events* are copied. Of course, many of the example *events* will be lost in the cut and so the browser occasionally has no examples at all for some *slices* while browsing.
 
-`actor002` is implemented in `Win007` and `actor003` is implemented in `Win008`. Both are derived from `actor001` which is implemented in `Win006`.
+`actor002` is implemented in `Win007` and `actor003` is implemented in `Win008`. Both are similar to `actor001` which is implemented in `Win006`.
 
 Like the `Win006` constructor, the `Win008` constructor begins by parsing the given JSON file. Most of the parameters of `Win006` are included and are described in [actor001 description](#actor001) above. There are new parameters for (i) checkpointing, (ii) video and media, (iii) tiling and scanning, and (iv)
  unique records and minimimum entropy.
  
 The constructor then creates the dynamic parts of the GUI but for `Win008` these consist only of labels for the the centre, event id, the *fud* cardinality and the failed *slice* count. 
  
-The constructor then creates the active structure. This is the same as for `Win006` but in addition if there is an initial *model* it is induced so that failed *slices* are retried.
+The constructor then creates the active structure. This is the same as for `Win006` but in addition if there is an initial *model* it is induced so that *slices* over the threshold are brought up to date.
 
-Having constructed the actor the `QMediaPlayer` is started if a video or video list is specified, otherwise a timer is set to call `Win008::capture`. Usually `actor003` runs with a video or video list. A single video can be specified, e.g. `"video_source" : "videos/pp--33Lscn6sk.mp4"`. A list of videos can be specified, e.g.
+Having constructed the active, the `QMediaPlayer` is started if a video or video list is specified. Eventually the sequence of callbacks calls `Win008::capture`. If no video or video list is specified, a timer is set to call `Win008::capture` directly. 
+
+Usually `actor003` runs with a video or video list. A single video can be specified, e.g. `"video_source" : "videos/pp--33Lscn6sk.mp4"`. Alternatively a list of videos can be specified, e.g.
 ```
 	"video_sources" : [
 		"videos/No Man's Woman (1955) [oLiwhrvkMEU].webm",
@@ -1007,12 +1009,27 @@ Having constructed the actor the `QMediaPlayer` is started if a video or video l
 		"videos/The Stranger (1946)  Edward G. Robinson [yGShhuuuiJ0].webm",
 		"videos/The Woman In The Window 1944 [wOQeqcPocsQ].webm"],
 ```
+If the actor reaches the end of the video list, it starts again from the beginning.
 
-<!-- TODO 
+The `Win008` destructor is called when the user closes the window or, more usually, when the maximum event has been exceeded. The destructor calls the `dump` method which writes the *slice*-representation map to a `.rep` file and then dumps the active. 
 
-Discuss interval between 40ms i.e. 25 FPS and 250ms ie 4 FPS. In model 55 it is `"interval" : 250` in actor 8 it is at least the interval because we check the position has changed by at least this much, if not exactly when seekable.
+The `Win008::capture` method first obtains either the media player's current image or the screen grab image. It then calls the `Win008::act` method which processes the image according to the mode. The `capture` then updates the GUI and sets a timer with the the interval specified in the parameters, e.g. `"interval" : 250`. If the act mode is quick the interval is usually 40ms i.e. 25 FPS. For the long running scan modes the interval is usually 250ms i.e. 4 FPS.
 
--->
+The `Win008::act` method's task is to process the image according to the mode and choose the next centre (the 'action'). Having checked that the actor is not terminating and the maximum event (`event_maximum`) is not exceeded, `act` runs the mode logic, if a mode is specified. The modes will be discussed in the [*model* discussion below](#actor003_models). Then, if the update is not disabled (`disable_update`), the active is first updated and then induced. Next, the representations are updated. Then, if `checkpointing` is set and the `checkpoint_interval` (default: 100,000 *events*) is exceeded, a representations and active dump is done by calling`Win008::dump`. Finally `Win008::act` updates the logs.
+
+The `QMediaPlayer` wraps various different video decoder implementations and sometimes it hangs or crashes. Hence the need for checkpointing intermediate dumps. If the media player fails before the normal termination, then actor can be restarted with the same JSON configuration plus an initial *model*, e.g. `"model_initial" : "model059"` and optionally an index for the place to start at in the video list, e.g. `"video_index" : 4`. The next video index is written to the log whenever a new video starts. Look for the `next video index` before the last successful checkpoint, e.g.
+```
+actor	source	file:videos/Shield For Murder (1954) [5NGRKhD2A_Y].webm
+actor	next video index: 4
+actor	seekable: false	duration: 4897761
+actor	event id: 2845797	time 0.0739202s
+...
+model059	induce summary	slice: 324776	diagonal: 31.447	fud cardinality: 16365	model cardinality: 304905	fuds per threshold: 3.273
+actor	checkpointing
+model059	dump	file name: model059.ac	time 46.3447s
+actor	dump	file name: model059.rep	time 81.7794s
+actor	event id: 2900046
+```
 
 #### Model analysis tools
 
@@ -1289,6 +1306,8 @@ We can compare the representations image to one for *model* 58 which at half the
 ![contour005_058_minent_representation](images/contour005_058_minent_representation.png) 
 
 Clearly the smaller scale *model* captures smaller features more closely.
+
+<a name="actor003_models"></a>
 
 #### actor002 and actor003 models
 
