@@ -313,6 +313,8 @@ In this case the capture takes around 10 -30 ms.
 
 We made a couple of experiments with capturing frames from videos, `video001` and `video002`. The intention was to use the playlist of youtube videos from the [Kinetics dataset](https://www.deepmind.com/open-source/kinetics), which are a set of categorised videos of activities. Many of the videos, however, were filmed with quite a low resolution and so it is difficult to ensure that low scale frames are such that the cells are not all highly interpolated in any particular video. That is, many of the videos are very blurry at smaller scales. The capture process itself and automating a playlist were both difficult tasks too. For `actor001` and `actor002` we concentrated on grabbing videos from the screen and obtaining the videos from high resolution sources. Later on, in `actor003`, we successfully automated learning from a playlist of videos to allow headless *modelling* in the cloud.
 
+<a name="Records_and_representations"></a>
+
 #### Records and representations
 
 Now let us consider scaled and centered average brightness records and their representations. The `Record` class is defined in `dev.h`. It represents a rectangular frame of a part or the whole of an image. It is defined by horizontal and vertical lengths or scales (fractions of 1) and a centre coordinate (a pair of fractions of 1). It consists of a two dimensional array of cells of integral value between 0 (dark) and 255 (light). It has persistence methods and a method to convert it to an *event*, i.e. a `HistoryRepa` of *size* 1 of a *substrate* consisting of (i) *variables* for each cell of a given cell *valency*, plus (ii) a scale *variable* of a given scale *valency*. 
@@ -857,6 +859,8 @@ Some of the examples also look like foreheads just above an eye, and the *slice*
 
 The fixed intervals of the `valentFixed` algorithm produce better results with Film Noir videos because of the high contrast used by the cinematographers. The bucketing of the `valent` method tended to magnify small variations in low contrast areas of background or textures. This caused the *modelling* to be distracted away from interesting foreground objects.
 
+<a name="interactive_entropies"></a>
+
 The `valentFixed` algorithm was a step forward but we found that the *models* were still tending to be very interested in the infinite variations of black that are a feature of Film Noir. Later *models* (47 onward) set a minimum value for the entropy of the record in order to exclude slightly varying areas of background, especially dark corners of interiors or light areas of sky. In order to judge what entropy level to use we can show the entropy of the record in the GUI by setting `interactive_entropies` in the configuration, e.g.
 
 ![actor002_model050_Film_Noir_003](images/actor002_model050_Film_Noir_003.png) 
@@ -988,12 +992,19 @@ Note that the *resize* assumes no overflow and only the initial *events* are cop
 
 `actor002` is implemented in `Win007` and `actor003` is implemented in `Win008`. Both are similar to `actor001` which is implemented in `Win006`.
 
-Like the `Win006` constructor, the `Win008` constructor begins by parsing the given JSON file. Most of the parameters of `Win006` are included and are described in [actor001 description](#actor001) above. There are new parameters for (i) checkpointing, (ii) video and media, (iii) tiling and scanning, and (iv)
- unique records and minimimum entropy.
+Like the `Win006` constructor, the `Win007` and `Win008` constructors begin by parsing the given JSON file. Most of the parameters of `Win006` are included and are described in [actor001 description](#actor001) above. There are new parameters for (i) checkpointing, (ii) video and media, (iii) tiling and scanning, and (iv) unique records and minimimum entropy.
  
 The constructor then creates the dynamic parts of the GUI but for `Win008` these consist only of labels for the the centre, event id, the *fud* cardinality and the failed *slice* count. 
  
-The constructor then creates the active structure. This is the same as for `Win006` but in addition if there is an initial *model* it is induced so that *slices* over the threshold are brought up to date.
+The constructor then creates the active structure. This is the same as for `Win006`. In `Win008` if there is an initial *model* it is induced so that *slices* over the threshold are brought up to date.
+
+After this point `Win007` and `Win008` diverge somewhat.
+
+The `Win007` constructor then starts a separate active induce thread. The constructor then finishes by setting a timer for `Win007::act`. The main thread will call `Win007::act` at regular intervals. `Win007::act` runs the mode and active update. This means that sometimes the active induce thread can lag behind with a number of *slices* over the threshold ready for *induction*.
+
+`Win007::act` begins by grabbing a screen image. See [actor001 description](actor001). TODO
+
+
 
 Having constructed the active, the `QMediaPlayer` is started if a video or video list is specified. Eventually the sequence of callbacks calls `Win008::capture`. If no video or video list is specified, a timer is set to call `Win008::capture` directly. 
 
@@ -1399,12 +1410,12 @@ Intermediate between the quantitative and qualitative are the contour images. Se
 
 ##### Random models
 
-*Models* 10-14 run in `mode001` which is a random mode. Here the TODO
+*Models* 10-14 run in `mode001` which is the pure random mode. `event_size` *events* are taken from each image with the frame centres randomly chosen in a area +/- `random_centreX` and  +/- `random_centreY` about the centre of the image `(0.5,0.5)`. A record is constructed and bucketed for the frame. See [Records and representations](#Records_and_representations) above for details. 
 
-first 2 hours of 
-https://www.bbc.co.uk/iplayer/episode/p08phyzv/fireman-sam-series-1-1-kite?seriesId=b00kr5w3
+If `entropy_minimum` is set to some non-zero positive real number, e.g. `"entropy_minimum" : 1.2`, records with lower entropies will be rejected. See also the discussion about [browsing entropies](#interactive_entropies) above. Note that the `entropy_minimum` functionality is only used after *model* 47, when it was noticed that interesting features such as faces were being ignored in favour of the dark corners so common in Film Noir.
 
-model010.json -
+*Model* 10 runs in `actor002` grabbing the screen from first 2 hours of 
+[Fireman Sam](https://www.bbc.co.uk/iplayer/episode/p08phyzv/fireman-sam-series-1-1-kite?seriesId=b00kr5w3) with configuration `model010.json` -
 ```
 {
 	"model" : "model010",
@@ -1424,6 +1435,15 @@ model010.json -
 ```
 
 Screenshots from *model* 10 are included in the discussion of [interactive browsing](#model010), above. TODO None of them look like mirror frames.
+
+Model 34 onwards - TODO
+
+first `actor003` model 
+
+Model 39 onwards - TODO
+
+If `unique_records` is set to an non-zero integer, e.g. `"unique_records" : 333`, the list of previous records are compared for uniqueness. That is, in this example the current record must be unique amongst the previous 333 records in order for it not to be rejected. The idea is to prevent pauses in the action or relatively still areas of background from causing the *slices* to fill up with only a few distinct *events*. Note that in these examples the `unique_records` functionality is only used after *model* 39. It is useful in later modes and is not really necessary for modes with a large random element.
+
 
 
 <!-- TODO 
