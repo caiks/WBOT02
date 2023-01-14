@@ -583,7 +583,7 @@ This reminds us of the vastness of the *volume* of the *substrate* compared to t
 
 This table summarises the results from the `actor001` *models* -
 
-model|scales|frame position|events|fuds|fuds/sz/thrshld|median diagonal|max diagonal|lagging fuds
+model|scales|frame position|events|fuds|fuds per size per thrshld|median diagonal|max diagonal|lagging fuds
 ---|---|---|---|---|---|---|---|---
 model001|1.0, 0.5, 0.25, 0.125|centred|720,000|2817|0.7825|31.8063|41.4185|66
 model005|1.0|1 centred|180,000|684|0.761591|33.4245|41.2544|0
@@ -784,6 +784,8 @@ The first row shows, from right to left, (i) the greyscale record of the frame a
 In the second row the sibling *slice* representations and their *likelihoods* are shown in descending order of *likelihood* or, equivalently, *slice size*. If there are too many siblings, the number of missing siblings is shown at the right. Note that the current *slice* is not necessarily the most *likely*  of the siblings, so it might not be the first in the sequence. Note also, that there are usually two or more siblings that are *on-diagonal* (i.e. with high *likelihoods*), with the others far *off-diagonal*  (i.e. with low *likelihoods*). If the mode is scanning for potential *likelihood*, the *slice* will usually be at the beginning of the siblings. 
 
 The third row shows the ancestor *slices*, with the current *slice* shown first, then its parent, grandparent, great-grandparent, et cetera to the root *slice*. If there are too many ancestors the number of missing ancestors is shown at the right.  If all of the ancestors are visible, the sequence shows from right to left the increasing specialisation of the *slice* along its path through the *model*, from the most general at the root, which is the average of all *events*, to the *slice* itself at the leaf.
+
+<a name="model010"></a>
  
 To show a selection of example *events* from the current *slice*, set `interactive_examples` in the configuration. (We can also set `multiplier` to 1 to show smaller images of the example *events*.) For example, `actor.json` -
 ```
@@ -1033,6 +1035,8 @@ actor	event id: 2900046
 
 #### Model analysis tools
 
+<a name="view_active_concise"></a>
+
 ##### view_active_concise
 
 We can dump some of the statistics of an active given a *model*, for example 
@@ -1106,6 +1110,8 @@ lengthsHyperSkewness: -4.06495
 `lengthsDist` shows the distribution of the lengths of the paths of the leaf *slices*. The modal length is 15 for *model* 55 above. The maximum length is 24.
 
 `lengthsMean` is mean path length. In this case it is 14.8, very similar to the modal length. The `lengthsDeviation` is the standard deviation and the remaining statistics are the higher moments. In the example above, the hyper-skew is quite high suggesting a slight preponderance of short paths, but otherwise the path length distribution is fairly normal.
+
+<a name="view_decomp"></a>
 
 ##### view_decomp
 
@@ -1233,6 +1239,8 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 2.5|13711|1.916|14267|-556|-3.90%
 3|15050|2.099|15624|-574|-3.67%
 
+<a name="generate_contour"></a>
+
 ##### generate_contour
 
 Useful though it is to compare the statistics of different *models* it is also desirable to have qualitative comparisons. One way to do this is to *apply* a *model* to test images. The `generate_contour009` tool scans an image to obtain the *slice* at each pixel step. From this we can generate further images to obtain information about how the *model* is behaving at each location of the given image.
@@ -1311,6 +1319,8 @@ Clearly the smaller scale *model* captures smaller features more closely.
 
 #### actor002 and actor003 models
 
+##### Scales
+
 The scales in `actor001` were integral powers of a half, `(1/2)^x`, i.e. 1.0, 0.5, 0.25 and 0.125. In the following we expand the set of scales to half-integral powers of a half, i.e. 1.0, 0.707, 0.5, 0.354, 0.25, 0.177, 0.125, 0.088 and 0.0625 (= 1/16). At the smallest scale of 1/16th, a 30 pixel frame size corresponds to a 480 pixel image height. 
 
 We considered a set of scales based on perspectival ratios at fixed distances. The length of the image on the retina of the height of a distant object would be proportional to the inverse tangent of the inverse distance, `atan(1/x)`. (For large distances, the inverse distance, `1/x`, is a close approximation.) When compared to powers of a half, `(1/2)^x`, however, the two measures diverge at larger distances. The complexity of a scene might be said to be in proportion to the area of a frame, rather than the length of its side, so directors of films perhaps do not place the actors at random distances, but have larger intervals at further distances. Also, to represent a uniform coverage of random distances would require many more intervals, and therefore proportionally more compute. For these reasons, we use scales of powers of a half. This table shows the distances equivalent to the half-integral powers of a half measure -
@@ -1326,9 +1336,11 @@ scale|2^(-x/2)|1/tan(2^(-x/2))
 7|0.0884|11.3
 8|0.0625|16.0
 
+##### Model table
+
 This summarises the *model* results for both `actor002` and `actor003` -
 
-model|scales|mode|mode id|valency|domain|events|fuds|fuds/evts/ths (at 1m)|mean length|std dev length|max length|fails|notes
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|fails|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---
 model010|0.5|4 randomised|1|bucketed|Fireman Sam|720,000|2,567|0.713|6.82|1.83|12||25 FPS
 model011|0.354|4 randomised|1|bucketed|Fireman Sam|720,000|2,699|0.750|7.22|1.91|12||
@@ -1375,7 +1387,44 @@ model057|0.354|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W vi
 model058|0.088|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|13,999|0.933 (1.447)|15.4|2.97|25|0|30s unique, 12.0 min diagonal, 1.2 min entropy
 model059|0.177|5 scanned active-size-potential tiled actual-potential|7|fixed|48 B&W videos|3,000,000|16,735|1.116 (1.501)|15.2|2.77|23|0|30s unique, 12.0 min diagonal, 1.2 min entropy
 
-The table above does not show the median and maximum diagonals. The median diagonals for the actor 2 *models* were consistently around 23-27, and the maximum diagonals were consistently around 37-39.
+The table above does not show the median and maximum *diagonals*. The median *diagonals* for the actor 2 *models* were consistently around 23-27, and the maximum *diagonals* were consistently around 37-39.
+
+In general, the *model* growth rate (*fuds* per *event* per threshold) is the quantitative guide for development, but other *model* statistics - path length mean, standard deviation and higher moments, and path length maximum - help us to judge whether the *model* is well balanced or distorted. See the *model* tool [view_active_concise](#view_active_concise) above. We can also gain some understanding of the structure using *model* tool [view_decomp](#view_decomp). 
+
+Qualitative measures such as how well the *slices* capture, say, eyes or mouths, are harder to judge. In the examples below we include screenshots of the browser, but the selection is always vulnerable to subjective biases. 
+
+Intermediate between the quantitative and qualitative are the contour images. See [generate_contour](#generate_contour) above.
+
+<a name="Random_models"></a>
+
+##### Random models
+
+*Models* 10-14 run in `mode001` which is a random mode. Here the TODO
+
+first 2 hours of 
+https://www.bbc.co.uk/iplayer/episode/p08phyzv/fireman-sam-series-1-1-kite?seriesId=b00kr5w3
+
+model010.json -
+```
+{
+	"model" : "model010",
+	"interval" : 40,
+	"mode" : "mode001",
+	"event_size" : 4,
+	"random_centreX" : 0.1,
+	"random_centreY" : 0.25,
+	"event_maximum" : 720001,
+	"lag_threshold" : 5,
+	"motion_detection_threshold" : 25,
+	"logging_event" : true,
+	"logging_event_factor" : 1000,
+	"warning_action" : true,
+	"summary_active" : true
+}
+```
+
+Screenshots from *model* 10 are included in the discussion of [interactive browsing](#model010), above. TODO None of them look like mirror frames.
+
 
 <!-- TODO 
 
