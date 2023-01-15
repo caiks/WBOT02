@@ -1414,7 +1414,7 @@ Intermediate between the quantitative and qualitative are the contour images. Se
 
 ##### Random models
 
-*Models* 10-14 run in `mode001` which is the pure random mode. `event_size` *events* are taken from each image with the frame centres randomly chosen in a area +/- `random_centreX` and  +/- `random_centreY` about the centre of the image `(0.5,0.5)`. A record is constructed and bucketed for the frame. See [Records and representations](#Records_and_representations) above for details. 
+*Models* 10-14 run in `mode001` which is the pure random mode of [`actor001`](#actor001). `event_size` *events* are taken from each image with the frame centres randomly chosen in a area +/- `random_centreX` and  +/- `random_centreY` about the centre of the image `(0.5,0.5)`. A record is constructed and bucketed for the frame. See [Records and representations](#Records_and_representations) above for details. 
 
 If `entropy_minimum` is set to some non-zero positive real number, e.g. `"entropy_minimum" : 1.2`, records with lower entropies will be rejected. See also the discussion about [browsing entropies](#interactive_entropies) above. Note that the `entropy_minimum` functionality is only used after *model* 47, when it was noticed that interesting features such as faces were being ignored in favour of the dark corners so common in Film Noir.
 
@@ -1426,7 +1426,7 @@ If `entropy_minimum` is set to some non-zero positive real number, e.g. `"entrop
 	"interval" : 40,
 	"mode" : "mode001",
 	"event_size" : 4,
-	"random_centreX" : 0.1,
+	"random_centreX" : 0.41,
 	"random_centreY" : 0.25,
 	"event_maximum" : 720001,
 	"lag_threshold" : 5,
@@ -1438,7 +1438,13 @@ If `entropy_minimum` is set to some non-zero positive real number, e.g. `"entrop
 }
 ```
 
-Screenshots from *model* 10 are included in the discussion of [interactive browsing](#model010), above. TODO None of them look like mirror frames.
+Screenshots from *model* 10 are included in the discussion of [interactive browsing](#model010), above. The *slices* do not yet seem to capture features. The examples are only related by their areas of light and dark.
+
+10,11,12,13 differ in their scales but all have similar growth rates, means and std devs, so clearly smaller models are fairly scale invariant - possibly because common foreground features are at various distances, but more likely is that smaller models are still distinguishing between various distributions of light and dark, mainly with a lighter centre
+
+14 is the same as 12 but with a higher threshold, however we see the growth rate decline slightly.
+
+generate_contour closely related to scanning. Show the 10-13 maps for Sam and perhaps alarm clock. Model 13 contour maps finally show outlines of objects such as mirror. So we proceed with this scale in different modes. TODO 
 
 Model 34 onwards - TODO
 
