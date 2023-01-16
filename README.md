@@ -1502,6 +1502,10 @@ The growth rate declines slightly, so we proceeded with the default threshold.
 
 In order to see if there is some qualitative difference between *models* 10 to 13, we would like to try to judge if *likely* locations are clustered for different images. That is, we want to show the various measures of *likelihood* density over an image. See [generate_contour](#generate_contour) above for a description of how we did this.
 
+Given this image -
+
+![contour001](images/contour001.png) 
+
 The path length, or actual *likelihood*, image for *model* 10 is rather random looking -
 
 ![contour001_010_length](images/contour001_010_length.png) 
@@ -1526,13 +1530,17 @@ This is the *likelihood* image for *model* 13 -
 
 ![contour001_013_likelihood](images/contour001_013_likelihood.png) 
 
-TODO do the position maps
+The combined path length and *slice* position image for *model* 13 clearly shows that a *model* is forming -
 
-We can see that the *likelihoods*, whether actual or potential, are beginning to cluster. That is, there are certain locations where the *model* is most developed and it is these areas that we should concentrate on. Most of the *models* that follow are at the same scale of 0.177. 
+![contour001_013_len_position](images/contour001_013_len_position.png) 
 
-It seems, however, as though the *likelihood* landscape is fragmented and discrete rather than smooth. So the term 'contour map', which suggests gradients and local maxima and minima, may be something of a misnomer. For example, iterative 'golf ball' searches seem unlikely to be very useful. Whatever the local behaviour, the *likelihood* maps above do give a qualitative clue as to the direction we should take.
+(Note that the complex *modelling* of some rather uniform background areas is probably exaggerated by the bucketing done by the `Record::valent` function.)
 
-The implied representation for *model* 13, by contrast, is not yet very promising -
+We can clearly see that the *likelihoods*, whether actual or potential, are beginning to cluster into hotspots. That is, there are certain locations where the *model* is most developed and it is these areas that we should concentrate on. Most of the *models* that follow are at the same scale of 0.177. 
+
+It seems, however, that the *likelihood* landscape is fragmented and discrete rather than smooth. So the term 'contour map', which suggests gradients and local maxima and minima, may be something of a misnomer. This suggests that iterative 'golf ball' searches are unlikely to be very useful and that a scanning approach will be necessary. Whatever the local behaviour, the *likelihood* maps above do give a qualitative clue as to the direction we should take.
+
+The implied representation for *model* 13, by contrast, shows that the *model* is still at a very general stage -
 
 ![contour001_013_representation](images/contour001_013_representation.png) 
 
