@@ -760,7 +760,7 @@ with `actor.json` -
 	"interval" : 250,
 	"x" : 870,
 	"width" : 560,
-	"model_initial" : "model010",
+	"model_initial" : "model013",
 	"mode" : "mode004",
 	"event_size" : 5,
 	"threads" : 6,
@@ -777,7 +777,7 @@ with `actor.json` -
 ```
 (Note that if there is no description here of a configuration parameter, the code can be examined in `win007.cpp` and `win008.cpp`.) Here is an example from Fireman Sam captured in the opening sequence of the first episode -
  
-![actor002_model010_Sam_001](images/actor002_model010_Sam_001.png) 
+![actor002_model013_Sam_001](images/actor002_model013_Sam_001.png) 
 
 Now `actor002` differs from `actor001`; instead of the array of representations for all of the scales that we see in `actor001`, we are able to see more details of the position that the current fixed scale *slice* has within the *model*. 
 
@@ -787,7 +787,7 @@ In the second row the sibling *slice* representations and their *likelihoods* ar
 
 The third row shows the ancestor *slices*, with the current *slice* shown first, then its parent, grandparent, great-grandparent, et cetera to the root *slice*. If there are too many ancestors the number of missing ancestors is shown at the right.  If all of the ancestors are visible, the sequence shows from right to left the increasing specialisation of the *slice* along its path through the *model*, from the most general at the root, which is the average of all *events*, to the *slice* itself at the leaf.
 
-<a name="model010"></a>
+<a name="model013"></a>
  
 To show a selection of example *events* from the current *slice*, set `interactive_examples` in the configuration. (We can also set `multiplier` to 1 to show smaller images of the example *events*.) For example, `actor.json` -
 ```
@@ -795,7 +795,7 @@ To show a selection of example *events* from the current *slice*, set `interacti
 	"interval" : 250,
 	"x" : 870,
 	"width" : 560,
-	"model_initial" : "model010",
+	"model_initial" : "model013",
 	"mode" : "mode004",
 	"event_size" : 5,
 	"threads" : 6,
@@ -813,15 +813,15 @@ To show a selection of example *events* from the current *slice*, set `interacti
 	"warning_action" : false
 }
 ```
-![actor002_model010_Sam_002](images/actor002_model010_Sam_002.png) 
+![actor002_model013_Sam_002](images/actor002_model013_Sam_002.png) 
 
 The examples row is inserted between the top row and the siblings row. There are as many example representations as can be fitted in the available images (defined by `label_size` in the configuration). If the *slice* has more *events* than the available images, they are taken at regular intervals from the *slice*.
 
-In the Fireman Sam example above we can see the *slice* matches the greyscale record only very roughly. The bucketing of the *valency* record has exaggerated the slightly varying brightness of the wallpaper to the right of the mirror frame, and so the *slice* has matched a dark area in the top right which is really just an artefact of the `valent` algorithm. 
+In the Fireman Sam example above we can see the *slice* representation matches the greyscale record only very roughly.
 
-There are two *on-diagonal* siblings in this case, with the current *slice* being the larger of the two. *On-diagonal* siblings usually resemble each other except for where the *derived alignment* of their *fud* forks the divergence. The *on-diagonal* siblings are usually still very generalised, depending on the length of their path, while the *off-diagonal* siblings look like the ghostly mixtures of the few *events* they contain.
+There are two *on-diagonal* siblings in this case, with a third somewhat off the *diagonal*. The current *slice* has the largest *likelihood*. *On-diagonal* siblings usually resemble each other except for where the *derived alignment* of their *fud* forks the divergence. The *on-diagonal* siblings are usually still very generalised, depending on the length of their path, while the *off-diagonal* siblings look like the ghostly mixtures of the few *events* they contain.
 
-In the Fireman Sam example above we can see that the examples vary a lot, but they all have darker areas on the left hand margin and at the top right. None of them look like mirror frames.
+In the Fireman Sam example above we can see that the examples vary a lot, but they all have darker areas at the top right. Only two look like eyes but neither are at quite the correct position.
  
 We can examine the same image with a *model* that uses the `valentFixed` algorithm instead. For example, `actor.json` -
 ```
@@ -829,14 +829,11 @@ We can examine the same image with a *model* that uses the `valentFixed` algorit
 	"interval" : 250,
 	"x" : 870,
 	"width" : 560,
-	"model_initial" : "model036",
-	"mode" : "mode004",
+	"model_initial" : "model013",
 	"event_size" : 1,
 	"threads" : 6,
 	"valency_fixed" : true,
 	"scale" : 0.177,
-	"range_centreX" : 0.04425,
-	"range_centreY" :0.04425,
 	"interactive" : true,
 	"interactive_examples" : true,
 	"multiplier" : 1,
@@ -847,9 +844,9 @@ We can examine the same image with a *model* that uses the `valentFixed` algorit
 	"warning_action" : false
 }
 ```
-![actor002_model010_Sam_003](images/actor002_model010_Sam_003.png) 
+![actor002_model013_Sam_003](images/actor002_model013_Sam_003.png) 
 
-We introduced the `valentFixed` algorithm when we switched from Fireman Sam to Film Noir (see *model* 25 and after, below). We can see that the examples above are from the Film Noir films rather than Fireman Sam, but the *slice* has matched the darker area in the top left correctly.
+We introduced the `valentFixed` algorithm when we switched from Fireman Sam to Film Noir (see *model* 25 and after, below). The *slice* path length is now somewhat shorter. We can see from that the examples above that the *slice* has matched the darker area in the top right correctly, although not as well as the `valent` algorithm on which this *model* was trained.
 
 In this scene from 'Citizen Kane' the mode 4 focus has found a hotspot just above the woman's left eye using *model* 41 -
 
@@ -1294,7 +1291,7 @@ First let us examine the `length_file` -
 
 ![contour005_055_minent_length](images/contour005_055_minent_length.png) 
 
-Here we show the lengths of the *slice* path at each point with the brightness of the pixel in proportion to the length as a fraction of the maximum length. So the bright locations may be thought of as hotspots where the *model* is particularly specialised. In this case we can see hotspots around the edges of the man's face and shoulders. In the example above we restrict the generated image only to those regions where the frame entropy is not less than the minimim of 1.2. We can generate the image without the minimum entropy -
+Here we show the lengths of the *slice* path in the *decomposition* at each point with the brightness of the pixel in proportion to the length as a fraction of the maximum length. So the bright locations may be thought of as hotspots where the *model* is particularly specialised. In this case we can see hotspots around the edges of the man's face and shoulders. In the example above we restrict the generated image only to those regions where the frame entropy is not less than the minimim of 1.2. We can generate the image without the minimum entropy -
 
 ![contour005_055_length](images/contour005_055_length.png) 
 
@@ -1414,7 +1411,7 @@ Intermediate between the quantitative and qualitative are the contour images. Se
 
 ##### Random models
 
-*Models* 10-14 run in `mode001` which is the pure random mode of [`actor001`](#actor001). `event_size` *events* are taken from each image with the frame centres randomly chosen in a area +/- `random_centreX` and  +/- `random_centreY` about the centre of the image `(0.5,0.5)`. A record is constructed and bucketed for the frame. See [Records and representations](#Records_and_representations) above for details. 
+*Models* 10-14 run in `mode001` which is the pure random mode of [`actor001`](#actor001). `event_size` *events* are taken from each image with the frame centres randomly chosen in a area +/- `random_centreX` and  +/- `random_centreY` about the centre of the image `(0.5,0.5)`. The frame's scale is fixed by the `scale` parameter, which defaults to 0.5. The scales are successive decreases in half integral powers of two from *model* 10 with a scale of 0.5 to *model* 13 with a scale of 0.177. A record is constructed and bucketed for the frame. See [Records and representations](#Records_and_representations) above for details. 
 
 If `entropy_minimum` is set to some non-zero positive real number, e.g. `"entropy_minimum" : 1.2`, records with lower entropies will be rejected. See also the discussion about [browsing entropies](#interactive_entropies) above. Note that the `entropy_minimum` functionality is only used after *model* 47, when it was noticed that interesting features such as faces were being ignored in favour of the dark corners so common in Film Noir.
 
@@ -1428,21 +1425,91 @@ If `entropy_minimum` is set to some non-zero positive real number, e.g. `"entrop
 	"event_size" : 4,
 	"random_centreX" : 0.41,
 	"random_centreY" : 0.25,
-	"event_maximum" : 720001,
+	"event_maximum" : 720000,
 	"lag_threshold" : 5,
 	"motion_detection_threshold" : 25,
 	"logging_event" : true,
 	"logging_event_factor" : 1000,
-	"warning_action" : true,
+	"warning_action" : false,
 	"summary_active" : true
 }
 ```
+We can browse in `actor002` with the following `actor.json` -
+```
+{
+	"interval" : 250,
+	"x" : 870,
+	"width" : 560,
+	"model_initial" : "model010",
+	"threads" : 6,
+	"interactive" : true,
+	"interactive_examples" : true,
+	"multiplier" : 1,
+	"label_size" : 16,
+	"disable_update" : true
+}
+```
+![actor002_model010_Sam_001](images/actor002_model010_Sam_001.png) 
 
-Screenshots from *model* 10 are included in the discussion of [interactive browsing](#model010), above. The *slices* do not yet seem to capture features. The examples are only related by their areas of light and dark.
+The *slices* do not yet seem to capture features. The examples are only related by their areas of light and dark. Browsing around suggests that near the root *slices* the representations mainly have a light centre and tend to *classified* by the arrangement of brightness around the periphery of the frame.
 
-10,11,12,13 differ in their scales but all have similar growth rates, means and std devs, so clearly smaller models are fairly scale invariant - possibly because common foreground features are at various distances, but more likely is that smaller models are still distinguishing between various distributions of light and dark, mainly with a lighter centre
+This is the configuration for *model* 13, `model013.json` -
+```
+{
+	"model" : "model013",
+	"interval" : 40,
+	"mode" : "mode001",
+	"scale" : 0.177,
+	"event_size" : 4,
+	"random_centreX" : 0.549,
+	"random_centreY" : 0.412,
+	"event_maximum" : 720000,
+	"lag_threshold" : 5,
+	"motion_detection_threshold" : 25,
+	"logging_event" : true,
+	"logging_event_factor" : 1000,
+	"warning_action" : false,
+	"summary_active" : true
+}
+```
+Screenshots from *model* 13 are included in the discussion of [interactive browsing](#model013), above, for example -
 
-14 is the same as 12 but with a higher threshold, however we see the growth rate decline slightly.
+![actor002_model013_Sam_002](images/actor002_model013_Sam_002.png) 
+
+As can be seen in the table above, *models* 10, 11, 12 and 13 differ only in their scales but all have similar growth rates, means and deviations. So it seems that, from a statistical point of view, these small *models*, of mean *decomposition* path length of only around 7, are fairly scale invariant. Possibly this is because common foreground features are at varying distances, but a more likely reason is that the *models* are still at the stage of distinguishing between only very general distributions of light and dark. 
+
+*Model* 14 is the same as 12 but with a higher threshold (1000 instead of the default of 200), `model014.json` -
+```
+{
+	"model" : "model014",
+	"interval" : 40,
+	"mode" : "mode001",
+	"induceThreshold" : 1000,
+	"scale" : 0.25,
+	"event_size" : 4,
+	"random_centreX" : 0.5,
+	"random_centreY" : 0.375,
+	"event_maximum" : 720000,
+	"lag_threshold" : 5,
+	"motion_detection_threshold" : 25,
+	"logging_event" : true,
+	"logging_event_factor" : 1000,
+	"warning_action" : false,
+	"summary_active" : true
+}
+```
+The growth rate declines slightly, so we proceeded with the default threshold.
+
+In order to see if there is some qualitative difference between *models* 10 to 13, we would like to try to judge if *likely* locations are clustered for different images. That is, we want to show the *likelihood* density over an image. See [generate_contour](#generate_contour) above for a description of how we did this.
+
+For an input image of 
+
+![contour001](images/contour001.png) 
+
+The path length, or actual *likelihood*, image for *model* 10 is rather random looking -
+
+![contour001_010_length](images/contour001_010_length.png) 
+
 
 generate_contour closely related to scanning. Show the 10-13 maps for Sam and perhaps alarm clock. Model 13 contour maps finally show outlines of objects such as mirror. So we proceed with this scale in different modes. TODO 
 
