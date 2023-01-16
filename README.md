@@ -1502,10 +1502,6 @@ The growth rate declines slightly, so we proceeded with the default threshold.
 
 In order to see if there is some qualitative difference between *models* 10 to 13, we would like to try to judge if *likely* locations are clustered for different images. That is, we want to show the various measures of *likelihood* density over an image. See [generate_contour](#generate_contour) above for a description of how we did this.
 
-For an input image of 
-
-![contour001](images/contour001.png) 
-
 The path length, or actual *likelihood*, image for *model* 10 is rather random looking -
 
 ![contour001_010_length](images/contour001_010_length.png) 
@@ -1514,8 +1510,24 @@ The *likelihood*, which is also called potential *likelihood*, image for *model*
 
 ![contour001_010_likelihood](images/contour001_010_likelihood.png) 
 
+The path length image for *model* 11 shows signs of structure -
 
-generate_contour closely related to scanning. Show the 10-13 maps for Sam and perhaps alarm clock. Model 13 contour maps finally show outlines of objects such as mirror. So we proceed with this scale in different modes. TODO 
+![contour001_011_length](images/contour001_011_length.png) 
+
+*Model* 12 has more structure still -
+
+![contour001_012_length](images/contour001_012_length.png) 
+
+The path length image for *model* 13 is beginning to show the outline of Sam's hat and of the mirror behind -
+
+![contour001_013_length](images/contour001_013_length.png) 
+
+This is the *likelihood* image for *model* 13 - 
+
+![contour001_013_likelihood](images/contour001_013_likelihood.png) 
+
+We can see that the *likelihoods*, whether actual or potential, are beginning to cluster. That is, there are certain locations where the *model* is most developed and it is these areas that we should concentrate on. Most of the *models* that follow are at the same scale of 0.177.
+
 
 Model 34 onwards - TODO
 
