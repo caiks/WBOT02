@@ -1360,10 +1360,10 @@ model012|0.25|4 randomised|1|bucketed|Fireman Sam|720,000|2,664|0.740|7.23|38.23
 model014|0.25|4 randomised|1|bucketed|Fireman Sam|720,000|492|0.683|5.40|1.61|9||1000 threshold
 model013|0.177|4 randomised|1|bucketed|Fireman Sam|720,000|2,719|0.755|7.19|1.91|13||
 model015|0.177|4 potential|2|bucketed|Fireman Sam|720,000|4,131|1.148|9.49|1.72|14||20 randomised
+model019|0.177|4 potential|2|bucketed|Fireman Sam|1,000,000|5,738|1.148|9.81|1.76|15||20 randomised
 model016|0.177|4 actual-potential|3|bucketed|Fireman Sam|720,000|3,014|0.838|10.13|1.87|14||20 randomised
 model018|0.177|4 actual-potential|3|bucketed|Fireman Sam|1,000,000|4,194|0.839|10.48|1.88|15||20 randomised
 model017|0.177|10 scanned actual-potential|3,4|bucketed|Fireman Sam|1,000,000|4,397|0.880|11.58|2.83|20||4 FPS
-model019|0.177|4 potential|2|bucketed|Fireman Sam|1,000,000|5,738|1.148|9.81|1.76|15||20 randomised
 model020|0.177|10 scanned actual-potential|3,4|bucketed|Fireman Sam|1,000,000|5,526|1.106|10.76|2.75|19|
 model021|0.177|10 scanned actual-potential|4|bucketed|Fireman Sam|720,000|3,389|0.942|13.83|2.83|21|
 model022|0.177|10 scanned actual-potential|4|bucketed|Fireman Sam|1,000,000|4,729|0.946|14.41|2.87|22|
@@ -1526,8 +1526,23 @@ This is the *likelihood* image for *model* 13 -
 
 ![contour001_013_likelihood](images/contour001_013_likelihood.png) 
 
-We can see that the *likelihoods*, whether actual or potential, are beginning to cluster. That is, there are certain locations where the *model* is most developed and it is these areas that we should concentrate on. Most of the *models* that follow are at the same scale of 0.177.
+TODO do the position maps
 
+We can see that the *likelihoods*, whether actual or potential, are beginning to cluster. That is, there are certain locations where the *model* is most developed and it is these areas that we should concentrate on. Most of the *models* that follow are at the same scale of 0.177. 
+
+It seems, however, as though the *likelihood* landscape is fragmented and discrete rather than smooth. So the term 'contour map', which suggests gradients and local maxima and minima, may be something of a misnomer. For example, iterative 'golf ball' searches seem unlikely to be very useful. Whatever the local behaviour, the *likelihood* maps above do give a qualitative clue as to the direction we should take.
+
+The implied representation for *model* 13, by contrast, is not yet very promising -
+
+![contour001_013_representation](images/contour001_013_representation.png) 
+
+
+
+<a name="Scanned_models"></a>
+
+##### Scanned models
+
+generate_contour closely related to scanning.
 
 Model 34 onwards - TODO
 
