@@ -1544,13 +1544,20 @@ The implied representation for *model* 13, by contrast, shows that the *model* i
 
 ![contour001_013_representation](images/contour001_013_representation.png) 
 
+The growth rate of around 0.75 *fuds* per *size* per threshold is well below the theoretical maximum of 2.0 for a perfectly efficient allocation of *events* over a *bivalent diagonalised decomposition*. So as well as larger *models* we would like modes with higher growth rates. 
 
+In addition to higher growth rates, we would like to avoid duplication within the *model* of fairly similar regions around hotspots. That is, we would like to see very localised hotspots with very long path lengths at the hotspot itself and very short path lengths nearby and in-between. In this way we will avoid 'wasting' *history* on endlessly duplicated but poorly resolved features. In the path length map for *model* 13 above, the brightness is fairly uniform with small variations. We would like to see more a constellation of point-like instensities. In a sense, this is the opposite to convolution - instead of weighting every location equally, we focus on a handful of places that carry the most information, thereby shrinking the vast *substrate volume*.
 
 <a name="Scanned_models"></a>
 
 ##### Scanned models
 
 generate_contour closely related to scanning.
+
+performance challenge
+
+Perhaps the attention mechanism can set the frame based on scanning the buffer for size and position to find the longest path model like hotspot scan in WOTBOT.
+
 
 Model 34 onwards - TODO
 
