@@ -1451,7 +1451,7 @@ We can browse in `actor002` with the following `actor.json` -
 ```
 ![actor002_model010_Sam_001](images/actor002_model010_Sam_001.png) 
 
-The *slices* do not yet seem to capture features. The examples are only related by their areas of light and dark. Browsing around suggests that near the root *slices* the representations mainly have a light centre and tend to *classified* by the arrangement of brightness around the periphery of the frame.
+The *slices* do not yet capture features. The examples are only related by their areas of light and dark. Browsing around suggests that near the root *slices* the representations mainly have a light centre and tend to *classified* by the arrangement of brightness around the periphery of the frame.
 
 This is the configuration for *model* 13, `model013.json` -
 ```
@@ -1476,9 +1476,9 @@ Screenshots from *model* 13 are included in the discussion of [interactive brows
 
 ![actor002_model013_Sam_002](images/actor002_model013_Sam_002.png) 
 
-As can be seen in the table above, *models* 10, 11, 12 and 13 differ only in their scales but all have similar growth rates, means and deviations. So it seems that, from a statistical point of view, these small *models*, of mean *decomposition* path length of only around 7, are fairly scale invariant. Possibly this is because common foreground features are at varying distances, but a more likely reason is that the *models* are still at the stage of distinguishing between only very general distributions of light and dark. 
+As can be seen in the table above, *models* 10, 11, 12 and 13 differ in their scales but all have similar growth rates, means and deviations. So it seems that, from a statistical point of view, these small *models*, of mean *decomposition* path length of only around 7, are fairly scale invariant. Possibly this is because common foreground features are at varying distances, but a more likely reason is that the *models* are still at the stage of distinguishing between only very general distributions of light and dark. 
 
-*Model* 14 is the same as 12 but with a higher threshold (1000 instead of the default of 200), `model014.json` -
+*Model* 14 is the same as 12 but with a higher threshold of 1000 instead of the default of 200, `model014.json` -
 ```
 {
 	"model" : "model014",
@@ -1500,7 +1500,7 @@ As can be seen in the table above, *models* 10, 11, 12 and 13 differ only in the
 ```
 The growth rate declines slightly, so we proceeded with the default threshold.
 
-In order to see if there is some qualitative difference between *models* 10 to 13, we would like to try to judge if *likely* locations are clustered for different images. That is, we want to show the *likelihood* density over an image. See [generate_contour](#generate_contour) above for a description of how we did this.
+In order to see if there is some qualitative difference between *models* 10 to 13, we would like to try to judge if *likely* locations are clustered for different images. That is, we want to show the various measures of *likelihood* density over an image. See [generate_contour](#generate_contour) above for a description of how we did this.
 
 For an input image of 
 
@@ -1509,6 +1509,10 @@ For an input image of
 The path length, or actual *likelihood*, image for *model* 10 is rather random looking -
 
 ![contour001_010_length](images/contour001_010_length.png) 
+
+The *likelihood*, which is also called potential *likelihood*, image for *model* 10 is no less random looking - 
+
+![contour001_010_likelihood](images/contour001_010_likelihood.png) 
 
 
 generate_contour closely related to scanning. Show the 10-13 maps for Sam and perhaps alarm clock. Model 13 contour maps finally show outlines of objects such as mirror. So we proceed with this scale in different modes. TODO 
