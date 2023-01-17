@@ -1348,6 +1348,8 @@ scale|2^(-x/2)|1/tan(2^(-x/2))
 7|0.0884|11.3
 8|0.0625|16.0
 
+<a name="Model_table"></a>
+
 ##### Model table
 
 This summarises the *model* results for both `actor002` and `actor003` -
@@ -1547,7 +1549,30 @@ The growth rate of around 0.75 *fuds* per *size* per threshold is well below the
 
 In addition to higher growth rates, we would like to avoid duplication within the *model* of slightly translated but fairly similar regions around hotspots. That is, we would like to see very localised hotspots with very long path lengths at the hotspot itself and very short path lengths nearby and in-between. In this way we will avoid 'wasting' *history* on endlessly duplicated but poorly resolved features. In the path length map for *model* 13 above, the brightness is fairly uniform with small variations. We would like to see more of a constellation of point-like instensities. In a sense, this is the opposite to convolution - instead of weighting every location equally, we focus on a handful of places that carry the most information, thereby shrinking the vast *substrate volume*.
 
-*Model* 15 runs in `mode002` which is a potential-*likelihood* random mode. TODO
+To focus the growth in hotspots we can take a large set of frames from random locations and filter them for high *likelihood* before adding them as *events*. In `mode002` for each record of a `scan_size` set of random frames we *apply* the current *model* to determine the *slice*. Then we calculate the potential-*likelihood* from the *slice size* and the parent *slice size* according to this measure: `(ln(slice_size) - ln(parent_size) + ln(WMAX)) / ln(WMAX)`. The top `event_size` of these then become *events*. 
+
+*Model* 15 runs in `actor002` grabbing the screen from first 2 hours of 
+[Fireman Sam](https://www.bbc.co.uk/iplayer/episode/p08phyzv/fireman-sam-series-1-1-kite?seriesId=b00kr5w3) with configuration `model015.json` -
+```
+{
+	"model" : "model015",
+	"interval" : 40,
+	"mode" : "mode002",
+	"scale" : 0.177,
+	"event_size" : 4,
+	"scan_size" : 20,
+	"random_centreX" : 0.549,
+	"random_centreY" : 0.412,
+	"event_maximum" : 720001,
+	"lag_threshold" : 5,
+	"motion_detection_threshold" : 25,
+	"logging_event" : true,
+	"logging_event_factor" : 1005,
+	"warning_action" : true,
+	"summary_active" : true
+}
+```
+The configuration is the same as for *model* 13 apart from the mode. The growth rate, however, has increased considerably from 0.755 to 1.148 *fuds* per *size* per threshold. The mean path length has from 7.19 to 9.49.
 
 <a name="Scanned_models"></a>
 
