@@ -1399,7 +1399,7 @@ model057|0.354|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W vi
 model058|0.088|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|13,999|0.933 (1.447)|15.4|2.97|25|0|30s unique, 12.0 min diagonal, 1.2 min entropy
 model059|0.177|5 scanned active-size-potential tiled actual-potential|7|fixed|48 B&W videos|3,000,000|16,735|1.116 (1.501)|15.2|2.77|23|0|30s unique, 12.0 min diagonal, 1.2 min entropy
 
-The table above does not show the median and maximum *diagonals*. The median *diagonals* for the actor 2 *models* were consistently around 23-27, and the maximum *diagonals* were consistently around 37-39.
+The table above does not show the median and maximum *diagonals*. The median *diagonals* for the actor 2 and actor 3 *models* were consistently around 23-27, and the maximum *diagonals* were consistently around 37-39.
 
 In general, the *model* growth rate (*fuds* per *event* per threshold) is the quantitative guide for development, but other *model* statistics - path length mean, standard deviation and higher moments, and path length maximum - help us to judge whether the *model* is well balanced or distorted. See the *model* tool [view_active_concise](#view_active_concise) above. We can also gain some understanding of the structure using *model* tool [view_decomp](#view_decomp). 
 
@@ -1411,9 +1411,9 @@ Intermediate between the quantitative and qualitative are the contour images. Se
 
 ##### Random models
 
-*Models* 10-14 run in `mode001` which is the pure random mode of [`actor001`](#actor001). `event_size` *events* are taken from each image with the frame centres randomly chosen in a area +/- `random_centreX` and  +/- `random_centreY` about the centre of the image `(0.5,0.5)`. The frame's scale is fixed by the `scale` parameter, which defaults to 0.5. The scales are successive decreases in half integral powers of two from *model* 10 with a scale of 0.5 to *model* 13 with a scale of 0.177. A record is constructed and bucketed for the frame. See [Records and representations](#Records_and_representations) above for details. 
+*Models* 10-14 run in `mode001` which is the pure random mode of [`actor001`](#actor001). `event_size` *events* are taken from each image with the frame centres randomly chosen in a area +/- `random_centreX` and  +/- `random_centreY` about the centre of the image `(0.5,0.5)`. The frame's scale is fixed by the `scale` parameter, which defaults to 0.5. The *model* scales used are successive half-integral powers of half from *model* 10 with a scale of 0.5 to *model* 13 with a scale of 0.177. A record is constructed and bucketed by decile for the frame. See [Records and representations](#Records_and_representations) above for details. 
 
-If `entropy_minimum` is set to some non-zero positive real number, e.g. `"entropy_minimum" : 1.2`, records with lower entropies will be rejected. See also the discussion about [browsing entropies](#interactive_entropies) above. Note that the `entropy_minimum` functionality is only used after *model* 47, when it was noticed that interesting features such as faces were being ignored in favour of the dark corners so common in Film Noir.
+*Models* 10-14 all ran until the `event_maximum` of 720,000 *events* was reached so that the *model* growth rates could be compared. 
 
 *Model* 10 runs in `actor002` grabbing the screen from first 2 hours of 
 [Fireman Sam](https://www.bbc.co.uk/iplayer/episode/p08phyzv/fireman-sam-series-1-1-kite?seriesId=b00kr5w3) with configuration `model010.json` -
@@ -1441,7 +1441,6 @@ We can browse in `actor002` with the following `actor.json` -
 	"x" : 870,
 	"width" : 560,
 	"model_initial" : "model010",
-	"threads" : 6,
 	"interactive" : true,
 	"interactive_examples" : true,
 	"multiplier" : 1,
@@ -1451,7 +1450,7 @@ We can browse in `actor002` with the following `actor.json` -
 ```
 ![actor002_model010_Sam_001](images/actor002_model010_Sam_001.png) 
 
-The *slices* do not yet capture features. The examples are only related by their areas of light and dark. Browsing around suggests that near the root *slices* the representations mainly have a light centre and tend to *classified* by the arrangement of brightness around the periphery of the frame.
+The *slices* do not yet capture features. The examples are only related by their areas of light and dark. Browsing around suggests that near the root *slices* the representations mainly have a light centre and tend to be *classified* by the arrangement of brightness around the periphery of the frame.
 
 This is the configuration for *model* 13, `model013.json` -
 ```
@@ -1476,9 +1475,9 @@ Screenshots from *model* 13 are included in the discussion of [interactive brows
 
 ![actor002_model013_Sam_002](images/actor002_model013_Sam_002.png) 
 
-As can be seen in the table above, *models* 10, 11, 12 and 13 differ in their scales but all have similar growth rates, means and deviations. So it seems that, from a statistical point of view, these small *models*, of mean *decomposition* path length of only around 7, are fairly scale invariant. Possibly this is because common foreground features are at varying distances, but a more likely reason is that the *models* are still at the stage of distinguishing between only very general distributions of light and dark. 
+As can be seen in the table above, *models* 10, 11, 12 and 13 differ in their scales but all have similar growth rates, means and deviations. So it seems that, from a statistical point of view, these small *models*, of mean *decomposition* path length of only around 7, are fairly scale invariant. Possibly this is because common foreground features are at varying distances, but a more likely reason is that the *models* are still at an early stage of distinguishing between only very general distributions of light and dark. 
 
-*Model* 14 is the same as 12 but with a higher threshold of 1000 instead of the default of 200, `model014.json` -
+*Model* 14 has the same scale and configuration as *model* 12 except for a higher threshold of 1000 instead of the default of 200, `model014.json` -
 ```
 {
 	"model" : "model014",
@@ -1498,7 +1497,7 @@ As can be seen in the table above, *models* 10, 11, 12 and 13 differ in their sc
 	"summary_active" : true
 }
 ```
-The growth rate declines slightly, so we proceeded with the default threshold.
+The growth rate declines slightly from 0.740 to 0.683, so we proceeded with the default threshold.
 
 In order to see if there is some qualitative difference between *models* 10 to 13, we would like to try to judge if *likely* locations are clustered for different images. That is, we want to show the various measures of *likelihood* density over an image. See [generate_contour](#generate_contour) above for a description of how we did this.
 
@@ -1538,15 +1537,15 @@ The combined path length and *slice* position image for *model* 13 clearly shows
 
 We can clearly see that the *likelihoods*, whether actual or potential, are beginning to cluster into hotspots. That is, there are certain locations where the *model* is most developed and it is these areas that we should concentrate on. Most of the *models* that follow are at the same scale of 0.177. 
 
-It seems, however, that the *likelihood* landscape is fragmented and discrete rather than smooth. So the term 'contour map', which suggests gradients and local maxima and minima, may be something of a misnomer. This suggests that iterative 'golf ball' searches are unlikely to be very useful and that a scanning approach will be necessary. Whatever the local behaviour, the *likelihood* maps above do give a qualitative clue as to the direction we should take.
+It seems, however, that the *likelihood* landscape is fragmented and discrete rather than smooth. So the term 'contour map', which suggests gradients and local maxima and minima, may be something of a misnomer. This suggests that iterative 'golf ball' optima searches are unlikely to be very useful and that a brute force scanning approach will be necessary. Whatever the local behaviour, the *likelihood* maps above do give a qualitative clue as to the direction we should take.
 
 The implied representation for *model* 13, by contrast, shows that the *model* is still at a very general stage -
 
 ![contour001_013_representation](images/contour001_013_representation.png) 
 
-The growth rate of around 0.75 *fuds* per *size* per threshold is well below the theoretical maximum of 2.0 for a perfectly efficient allocation of *events* over a *bivalent diagonalised decomposition*. So as well as larger *models* we would like modes with higher growth rates. 
+The growth rate of around 0.75 *fuds* per *size* per threshold is well below the theoretical maximum of 2.0 for a perfectly efficient *classification* of *events* over a *bivalent diagonalised decomposition*. So as well as larger *models* we would like modes with higher growth rates. 
 
-In addition to higher growth rates, we would like to avoid duplication within the *model* of fairly similar regions around hotspots. That is, we would like to see very localised hotspots with very long path lengths at the hotspot itself and very short path lengths nearby and in-between. In this way we will avoid 'wasting' *history* on endlessly duplicated but poorly resolved features. In the path length map for *model* 13 above, the brightness is fairly uniform with small variations. We would like to see more a constellation of point-like instensities. In a sense, this is the opposite to convolution - instead of weighting every location equally, we focus on a handful of places that carry the most information, thereby shrinking the vast *substrate volume*.
+In addition to higher growth rates, we would like to avoid duplication within the *model* of slightly translated but fairly similar regions around hotspots. That is, we would like to see very localised hotspots with very long path lengths at the hotspot itself and very short path lengths nearby and in-between. In this way we will avoid 'wasting' *history* on endlessly duplicated but poorly resolved features. In the path length map for *model* 13 above, the brightness is fairly uniform with small variations. We would like to see more of a constellation of point-like instensities. In a sense, this is the opposite to convolution - instead of weighting every location equally, we focus on a handful of places that carry the most information, thereby shrinking the vast *substrate volume*.
 
 <a name="Scanned_models"></a>
 
@@ -1557,6 +1556,10 @@ generate_contour closely related to scanning.
 performance challenge
 
 Perhaps the attention mechanism can set the frame based on scanning the buffer for size and position to find the longest path model like hotspot scan in WOTBOT.
+
+
+If `entropy_minimum` is set to some non-zero positive real number, e.g. `"entropy_minimum" : 1.2`, records with lower entropies will be rejected. See also the discussion about [browsing entropies](#interactive_entropies) above. Note that the `entropy_minimum` functionality is only used after *model* 47, when it was noticed that interesting features such as faces were being ignored in favour of the dark corners so common in Film Noir.
+
 
 
 Model 34 onwards - TODO
