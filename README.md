@@ -1477,7 +1477,7 @@ Screenshots from *model* 13 are included in the discussion of [interactive brows
 
 ![actor002_model013_Sam_002](images/actor002_model013_Sam_002.png) 
 
-As can be seen in the table above, *models* 10, 11, 12 and 13 differ in their scales but all have similar growth rates, means and deviations. So it seems that, from a statistical point of view, these small *models*, of mean *decomposition* path length of only around 7, are fairly scale invariant. Possibly this is because common foreground features are at varying distances, but a more likely reason is that the *models* are still at an early stage of distinguishing between only very general distributions of light and dark. 
+As can be seen in the [table](#Model_table) above, *models* 10, 11, 12 and 13 differ in their scales but all have similar growth rates, means and deviations. So it seems that, from a statistical point of view, these small *models*, of mean *decomposition* path length of only around 7, are fairly scale invariant. Possibly this is because common foreground features are at varying distances, but a more likely reason is that the *models* are still at an early stage of distinguishing between only very general distributions of light and dark. 
 
 *Model* 14 has the same scale and configuration as *model* 12 except for a higher threshold of 1000 instead of the default of 200, `model014.json` -
 ```
@@ -1549,7 +1549,7 @@ The growth rate of around 0.75 *fuds* per *size* per threshold is well below the
 
 In addition to higher growth rates, we would like to avoid duplication within the *model* of slightly translated but fairly similar regions around hotspots. That is, we would like to see very localised hotspots with very long path lengths at the hotspot itself and very short path lengths nearby and in-between. In this way we will avoid 'wasting' *history* on endlessly duplicated but poorly resolved features. In the path length map for *model* 13 above, the brightness is fairly uniform with small variations. We would like to see more of a constellation of point-like instensities. In a sense, this is the opposite to convolution - instead of weighting every location equally, we focus on a handful of places that carry the most information, thereby shrinking the vast *substrate volume*.
 
-To focus the growth in hotspots we can take a large set of frames from random locations and filter them for high *likelihood* before adding them as *events*. In `mode002` for each record of a `scan_size` set of random frames we *apply* the current *model* to determine the *slice*. Then we calculate the potential-*likelihood* from the *slice size* and the parent *slice size* according to this measure: `(ln(slice_size) - ln(parent_size) + ln(WMAX)) / ln(WMAX)`. The top `event_size` of these then become *events*. 
+In order to focus the growth in hotspots, one option is to take a large set of frames from random locations and filter them for high *likelihood* before adding them as *events*. In `mode002`, for each record of a `scan_size` set of random frames we *apply* the current *model* to determine the *slice*. Then we calculate the potential-*likelihood* from the *slice size* and the parent *slice size* according to this measure: `(ln(slice_size) - ln(parent_size) + ln(WMAX)) / ln(WMAX)`. The top `event_size` records then become *events*. 
 
 *Model* 15 runs in `actor002` grabbing the screen from first 2 hours of 
 [Fireman Sam](https://www.bbc.co.uk/iplayer/episode/p08phyzv/fireman-sam-series-1-1-kite?seriesId=b00kr5w3) with configuration `model015.json` -
@@ -1572,7 +1572,52 @@ To focus the growth in hotspots we can take a large set of frames from random lo
 	"summary_active" : true
 }
 ```
-The configuration is the same as for *model* 13 apart from the mode. The growth rate, however, has increased considerably from 0.755 to 1.148 *fuds* per *size* per threshold. The mean path length has from 7.19 to 9.49.
+The configuration is the same as for *model* 13 apart from the mode. The growth rate, however, has increased considerably from 0.755 to 1.148 *fuds* per *size* per threshold. The mean path length has increased from 7.19 to 9.49 *slices*. Qualitatively, the path length image appears to have sharpened constrasts -
+
+![contour001_015_length](images/contour001_015_length.png) 
+
+This is the combined length and position image -
+
+![contour001_015_len_position](images/contour001_015_len_position.png) 
+
+We can also look at another image,
+
+![contour002](images/contour002.png) 
+
+and compare *model* 13,
+
+![contour002_013_length](images/contour002_013_length.png) 
+
+to *model* 15,
+
+![contour002_015_length](images/contour002_015_length.png) 
+
+Here again the contrasts have increased. That is, mode 2 potential *likelihood* appears to increase the path length in certain interesting places. Given that the overall *model* is larger, these increases do not necessarily come at a cost of decreases elsewhere. 
+
+*Model* 19 starts with initial *model* 15 and carries on until 1 million *events*,  `model019.json` -
+```
+{
+	"model" : "model019",
+	"interval" : 40,
+	"model_initial" : "model015",
+	"mode" : "mode002",
+	"scale" : 0.177,
+	"event_size" : 4,
+	"scan_size" : 20,
+	"random_centreX" : 0.549,
+	"random_centreY" : 0.412,
+	"event_maximum" : 1000000,
+	"lag_threshold" : 5,
+	"motion_detection_threshold" : 25,
+	"interactive" : false,
+	"logging_event" : true,
+	"logging_event_factor" : 1000,
+	"summary_active" : true,
+	"logging_action" : false,
+	"warning_action" : false
+}
+```
+As can be seen from the [table](#Model_table) above, the growth rate remains the same with the *fuds* increasing from 4131 to 5738. The mean path length increases slightly from 9.49 to 9.81 *slices*. If we consider the *model* size to vary exponentially with the path length, we can calculate that `2.40^9.49 = 4131` which implies that the expected path length increase is to 9.86. The actual increase is to 9.81. This difference and the slightly increased deviation suggests that some of the increased *model* has lengthened longer paths disproportionately.
 
 <a name="Scanned_models"></a>
 
