@@ -1479,6 +1479,17 @@ Screenshots from *model* 13 are included in the discussion of [interactive brows
 
 As can be seen in the [table](#Model_table) above, *models* 10, 11, 12 and 13 differ in their scales but all have similar growth rates, means and deviations. So it seems that, from a statistical point of view, these small *models*, of mean *decomposition* path length of only around 7, are fairly scale invariant. Possibly this is because common foreground features are at varying distances, but a more likely reason is that the *models* are still at an early stage of distinguishing between only very general distributions of light and dark. 
 
+The path length statistics of *model* 13, for example, show that the random mode *model* path lengths are almost normally distributed -
+```
+lengthsDist: {(2,42),(3,498),(4,1431),(5,2634),(6,4336),(7,4216),(8,4247),(9,3352),(10,2037),(11,733),(12,119),(13,12)}
+lengthsCount: 23657
+lengthsMean: 7.19284
+lengthsDeviation: 1.91787
+lengthsSkewness: -0.00739362
+lengthsKurtosisExcess: -0.50628
+lengthsHyperSkewness: -0.0498156
+```
+
 *Model* 14 has the same scale and configuration as *model* 12 except for a higher threshold of 1000 instead of the default of 200, `model014.json` -
 ```
 {
@@ -1576,6 +1587,17 @@ In order to focus the growth in hotspots, one option is to take a large set of f
 ```
 The configuration is the same as for *model* 13 apart from the mode. The growth rate, as can been seen in the [table](#Model_table) above, has increased considerably from 0.755 to 1.148 *fuds* per *size* per threshold. The mean path length has increased from 7.19 to 9.49 *slices*. If we consider the *model* size to vary exponentially with the path length, we can calculate the multiplier at each step to be 3.00 for *model* 13 and 2.40 for *model* 15. This reduction is becase the preferential selection of larger *slices* in the potential *likelihood* mode tends to choose *on-diagonal slices*, thus producing fewer children *fuds*.
 
+The path length statistics for *model* 15 are as follows -
+```
+lengthsCount: 35184
+lengthsMean: 9.49196
+lengthsDeviation: 1.72428
+lengthsSkewness: -0.588466
+lengthsKurtosisExcess: 0.62416
+lengthsHyperSkewness: -6.49092
+```
+Compared to *model* 13, the kurtosis has turned positive, suggesting fatter tails. There is also a sharply negative hyper-skew, which suggests that the overall longer mean is partly at the expense of more very short paths.
+
 Qualitatively, the path length image appears to have sharpened constrasts -
 
 ![contour001_015_length](images/contour001_015_length.png) 
@@ -1596,7 +1618,7 @@ to *model* 15,
 
 ![contour002_015_length](images/contour002_015_length.png) 
 
-Here again the contrasts have increased. Areas that were dark seem to be darker still - even completely ignored. Similarly, areas that were light are now lighter still. That is, mode 2 potential *likelihood* appears to increase the path length in certain interesting places. Given that the overall *model* is larger, these increases do not necessarily come at a cost of decreases elsewhere, but the dark areas suggest that there are relative decreases at least.
+Here again the contrasts have increased. Areas that were dark seem to be darker still - even completely ignored. Similarly, areas that were light are now lighter still. That is, mode 2 potential *likelihood* appears to increase the path length in certain interesting places. Given that the overall *model* is larger, these increases do not necessarily come at a cost of decreases elsewhere, but the dark areas and the hyper-skew statistic suggest that there are relative decreases at least.
 
 *Model* 19 starts with initial *model* 15 and carries on until 1 million *events*,  `model019.json` -
 ```
@@ -1621,16 +1643,7 @@ Here again the contrasts have increased. Areas that were dark seem to be darker 
 	"warning_action" : false
 }
 ```
-As can be seen from the [table](#Model_table) above, the growth rate remains the same with the *fuds* increasing from 4131 to 5738. The mean path length increases from 9.49 to 9.81 *slices*. The multiplier at each step for *model* 15 is 2.40. If this were to continue for *model* 19 the expected path length would be 9.86. The actual increase is to 9.81, which implies the multiplier has increased to 2.42 overall. This increase in the multiplier suggests that the *alignments* of later *slices* have decreased slightly. The median *diagonal* of *model* 15 is 25.75, but the median *diagonal* of *model* 19 is slightly larger at 25.85, so rather than the *alignments* decreasing it may be that the *model* has become slightly more normally distributed with fewer longer paths. This is suggested by the higher moments. *Model* 15 -
-```
-lengthsCount: 35184
-lengthsMean: 9.49196
-lengthsDeviation: 1.72428
-lengthsSkewness: -0.588466
-lengthsKurtosisExcess: 0.62416
-lengthsHyperSkewness: -6.49092
-```
-*Model* 19 -
+As can be seen from the [table](#Model_table) above, the growth rate remains the same with the *fuds* increasing from 4131 to 5738. The mean path length increases from 9.49 to 9.81 *slices*. The multiplier at each step for *model* 15 is 2.40. If this were to continue for *model* 19 the expected path length would be 9.86. The actual increase is to 9.81, which implies the multiplier has increased to 2.42 overall. This increase in the multiplier suggests that the *alignments* of later *slices* have decreased slightly. The median *diagonal* of *model* 15 is 25.75, but the median *diagonal* of *model* 19 is slightly larger at 25.85, so rather than the *alignments* decreasing it may be that the *model* has become slightly more normally distributed with fewer very short paths. This is suggested by the higher moments -
 ```
 lengthsCount: 48730
 lengthsMean: 9.81016
@@ -1639,6 +1652,75 @@ lengthsSkewness: -0.580769
 lengthsKurtosisExcess: 0.568218
 lengthsHyperSkewness: -6.29521
 ```
+
+`mode003` is very similar to `mode002`. Instead of sorting the randomly chosen records by *likelihood* alone, they are sorted first by *slice* path length and then by *likelihood*. This is called actual-potential *likelihood*. We expect that the *model* will be smaller, but that the average path lengths will be longer and possibly the contour map will have more contrast and better resolved hotspots.
+
+*Model* 16 runs in `actor002` grabbing the screen from first 2 hours of 
+[Fireman Sam](https://www.bbc.co.uk/iplayer/episode/p08phyzv/fireman-sam-series-1-1-kite?seriesId=b00kr5w3) with configuration `model016.json` -
+```
+{
+	"model" : "model016",
+	"interval" : 40,
+	"mode" : "mode003",
+	"scale" : 0.177,
+	"event_size" : 4,
+	"scan_size" : 20,
+	"random_centreX" : 0.549,
+	"random_centreY" : 0.412,
+	"event_maximum" : 720001,
+	"lag_threshold" : 5,
+	"motion_detection_threshold" : 25,
+	"logging_event" : true,
+	"logging_event_factor" : 999,
+	"warning_action" : false,
+	"summary_active" : true
+}
+```
+The configuration is identical to *model* 15 except for the mode. The growth rate, as can been seen in the [table](#Model_table) above, has decreased, relative to potential *likelihood* *model* 15, to 0.838 *fuds* per *size* per threshold, but is is still higher than the 0.755 of random mode *model* 13. The mean path length, however, has increased to 10.13 *slices*, which implies a multiplier of 2.21, considerably less than the 2.40 of *model* 15. This, and the higher standard deviation and more negative hyper-skew, suggests that the *model* is narrower and longer -
+```
+lengthsCount: 25801
+lengthsMean: 10.1378
+lengthsDeviation: 1.86794
+lengthsSkewness: -0.669883
+lengthsKurtosisExcess: 0.677749
+lengthsHyperSkewness: -7.46805
+```
+Qualitatively, the constrasts in the path length image have increased again -
+
+![contour001_016_length](images/contour001_016_length.png) 
+
+and
+
+![contour002_016_length](images/contour002_016_length.png) 
+
+It seems that selecting for longer paths does concentrate the *model* into hotspots, especially along edges such as around Sam's ear. The improvement, however, is partly at the cost of smaller *models* because of the reduced growth rate.
+
+*Model* 18 starts with initial *model* 16 and carries on until 1 million *events*,  `model018.json` -
+```
+{
+	"model" : "model018",
+	"interval" : 40,
+	"model_initial" : "model016",
+	"mode" : "mode003",
+	"scale" : 0.177,
+	"event_size" : 4,
+	"scan_size" : 20,
+	"random_centreX" : 0.549,
+	"random_centreY" : 0.412,
+	"event_maximum" : 1000000,
+	"lag_threshold" : 5,
+	"motion_detection_threshold" : 25,
+	"interactive" : false,
+	"logging_event" : true,
+	"logging_event_factor" : 1000,
+	"summary_active" : true,
+	"logging_action" : false,
+	"warning_action" : false
+}
+```
+The growth rate and multiplier are almost the same as for *model* 16. Again, the statistics show that *model* 18 is slightly more normal.
+
+
 
 <a name="Scanned_models"></a>
 
@@ -1649,6 +1731,11 @@ generate_contour closely related to scanning.
 performance challenge
 
 Perhaps the attention mechanism can set the frame based on scanning the buffer for size and position to find the longest path model like hotspot scan in WOTBOT.
+
+
+model 29 - tiled
+
+It is not just the growth rate we should be interested in, but also removing fairly similar parts of the model from neighbouring hotspots. We must have spatial gaps between hotspots. That is the common facial saccade hotspots should form a small set. So, once a region's complete scan includes a very long path slice even if it's likelihood is low then the scan moves to surrounding regions. Do we need to cache path length too? Region size depends on scale.
 
 
 Model 34 onwards - TODO
