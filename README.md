@@ -1545,6 +1545,8 @@ The implied representation for *model* 13, by contrast, shows that the *model* i
 
 ![contour001_013_representation](images/contour001_013_representation.png) 
 
+Note that the *slice* representations do not merge very smoothly. This is probably because the `Record::valent` method, which buckets brightnesses into quantiles, tends to exaggerate contrasts.
+
 The growth rate of around 0.75 *fuds* per *size* per threshold is well below the theoretical maximum of 2.0 for a perfectly efficient *classification* of *events* over a *bivalent diagonalised decomposition*. So as well as larger *models* we would like modes with higher growth rates. 
 
 In addition to higher growth rates, we would like to avoid duplication within the *model* of slightly translated but fairly similar regions around hotspots. That is, we would like to see very localised hotspots with very long path lengths at the hotspot itself and very short path lengths nearby and in-between. In this way we will avoid 'wasting' *history* on endlessly duplicated but poorly resolved features. In the path length map for *model* 13 above, the brightness is fairly uniform with small variations. We would like to see more of a constellation of point-like instensities. In a sense, this is the opposite to convolution - instead of weighting every location equally, we focus on a handful of places that carry the most information, thereby shrinking the vast *substrate volume*.
@@ -1617,7 +1619,7 @@ Here again the contrasts have increased. That is, mode 2 potential *likelihood* 
 	"warning_action" : false
 }
 ```
-As can be seen from the [table](#Model_table) above, the growth rate remains the same with the *fuds* increasing from 4131 to 5738. The mean path length increases slightly from 9.49 to 9.81 *slices*. If we consider the *model* size to vary exponentially with the path length, we can calculate that `2.40^9.49 = 4131` which implies that the expected path length increase is to 9.86. The actual increase is to 9.81. This difference and the slightly increased deviation suggests that some of the increased *model* has lengthened longer paths disproportionately.
+As can be seen from the [table](#Model_table) above, the growth rate remains the same with the *fuds* increasing from 4131 to 5738. The mean path length increases slightly from 9.49 to 9.81 *slices*. If we consider the *model* size to vary exponentially with the path length, we can calculate the multiplier at each step to be 2.40 for *model* 15. If this were to continue for *model* 19 the expected path length would be 9.86. The actual increase is to 9.81, which implies the multiplier has increased to 2.42. This increase in the multiplier suggests that the *alignments* of later *slices* have decreased slightly. 
 
 <a name="Scanned_models"></a>
 
