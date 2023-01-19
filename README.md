@@ -1551,7 +1551,7 @@ The growth rate of around 0.75 *fuds* per *size* per threshold is well below the
 
 In addition to higher growth rates, we would like to avoid duplication within the *model* of slightly translated but fairly similar regions around hotspots. That is, we would like to see very localised hotspots with very long path lengths at the hotspot itself and very short path lengths nearby and in-between. In this way we will avoid 'wasting' *history* on endlessly duplicated but poorly resolved features. In the path length map for *model* 13 above, the brightness is fairly uniform with small variations. We would like to see more of a constellation of point-like instensities. In a sense, this is the opposite to convolution - instead of weighting every location equally, we focus on a handful of places that carry the most information, thereby shrinking the vast *substrate volume*.
 
-In order to focus the growth in hotspots, one option is to take a large set of frames from random locations and filter them for high *likelihood* before adding them as *events*. In `mode002`, for each record of a `scan_size` set of random frames we *apply* the current *model* to determine the *slice*. Then we calculate the potential-*likelihood* from the *slice size* and the parent *slice size* according to this measure: `(ln(slice_size) - ln(parent_size) + ln(WMAX)) / ln(WMAX)`. The top `event_size` records then become *events*. 
+In order to focus the growth in hotspots, one option is to take a large set of frames from random locations and filter them for high *likelihood* before adding them as *events*. In `mode002`, for each record of a `scan_size` set of random frames we *apply* the current *model* to determine the *slice*. Then we calculate the potential *likelihood* from the *slice size* and the parent *slice size* according to this measure: `(ln(slice_size) - ln(parent_size) + ln(WMAX)) / ln(WMAX)`. The top `event_size` records then become *events*. 
 
 *Model* 15 runs in `actor002` grabbing the screen from first 2 hours of 
 [Fireman Sam](https://www.bbc.co.uk/iplayer/episode/p08phyzv/fireman-sam-series-1-1-kite?seriesId=b00kr5w3) with configuration `model015.json` -
@@ -1574,7 +1574,9 @@ In order to focus the growth in hotspots, one option is to take a large set of f
 	"summary_active" : true
 }
 ```
-The configuration is the same as for *model* 13 apart from the mode. The growth rate, however, has increased considerably from 0.755 to 1.148 *fuds* per *size* per threshold. The mean path length has increased from 7.19 to 9.49 *slices*. Qualitatively, the path length image appears to have sharpened constrasts -
+The configuration is the same as for *model* 13 apart from the mode. The growth rate, as can been seen in the [table](#Model_table) above, has increased considerably from 0.755 to 1.148 *fuds* per *size* per threshold. The mean path length has increased from 7.19 to 9.49 *slices*. If we consider the *model* size to vary exponentially with the path length, we can calculate the multiplier at each step to be 3.00 for *model* 13 and 2.40 for *model* 15. This reduction is becase the preferential selection of larger *slices* in the potential *likelihood* mode tends to choose *on-diagonal slices*, thus producing fewer children *fuds*.
+
+Qualitatively, the path length image appears to have sharpened constrasts -
 
 ![contour001_015_length](images/contour001_015_length.png) 
 
@@ -1594,7 +1596,7 @@ to *model* 15,
 
 ![contour002_015_length](images/contour002_015_length.png) 
 
-Here again the contrasts have increased. That is, mode 2 potential *likelihood* appears to increase the path length in certain interesting places. Given that the overall *model* is larger, these increases do not necessarily come at a cost of decreases elsewhere. 
+Here again the contrasts have increased. Areas that were dark seem to be darker still - even completely ignored. Similarly, areas that were light are now lighter still. That is, mode 2 potential *likelihood* appears to increase the path length in certain interesting places. Given that the overall *model* is larger, these increases do not necessarily come at a cost of decreases elsewhere, but the dark areas suggest that there are relative decreases at least.
 
 *Model* 19 starts with initial *model* 15 and carries on until 1 million *events*,  `model019.json` -
 ```
@@ -1619,7 +1621,24 @@ Here again the contrasts have increased. That is, mode 2 potential *likelihood* 
 	"warning_action" : false
 }
 ```
-As can be seen from the [table](#Model_table) above, the growth rate remains the same with the *fuds* increasing from 4131 to 5738. The mean path length increases slightly from 9.49 to 9.81 *slices*. If we consider the *model* size to vary exponentially with the path length, we can calculate the multiplier at each step to be 2.40 for *model* 15. If this were to continue for *model* 19 the expected path length would be 9.86. The actual increase is to 9.81, which implies the multiplier has increased to 2.42. This increase in the multiplier suggests that the *alignments* of later *slices* have decreased slightly. 
+As can be seen from the [table](#Model_table) above, the growth rate remains the same with the *fuds* increasing from 4131 to 5738. The mean path length increases from 9.49 to 9.81 *slices*. The multiplier at each step for *model* 15 is 2.40. If this were to continue for *model* 19 the expected path length would be 9.86. The actual increase is to 9.81, which implies the multiplier has increased to 2.42 overall. This increase in the multiplier suggests that the *alignments* of later *slices* have decreased slightly. The median *diagonal* of *model* 15 is 25.75, but the median *diagonal* of *model* 19 is slightly larger at 25.85, so rather than the *alignments* decreasing it may be that the *model* has become slightly more normally distributed with fewer longer paths. This is suggested by the higher moments. *Model* 15 -
+```
+lengthsCount: 35184
+lengthsMean: 9.49196
+lengthsDeviation: 1.72428
+lengthsSkewness: -0.588466
+lengthsKurtosisExcess: 0.62416
+lengthsHyperSkewness: -6.49092
+```
+*Model* 19 -
+```
+lengthsCount: 48730
+lengthsMean: 9.81016
+lengthsDeviation: 1.76252
+lengthsSkewness: -0.580769
+lengthsKurtosisExcess: 0.568218
+lengthsHyperSkewness: -6.29521
+```
 
 <a name="Scanned_models"></a>
 
