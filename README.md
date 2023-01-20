@@ -1361,12 +1361,16 @@ model011|0.354|4 randomised|1|bucketed|Fireman Sam|720,000|2,699|0.750|7.22|1.91
 model012|0.25|4 randomised|1|bucketed|Fireman Sam|720,000|2,664|0.740|7.23|38.2333|12||
 model014|0.25|4 randomised|1|bucketed|Fireman Sam|720,000|492|0.683|5.40|1.61|9||1000 threshold
 model013|0.177|4 randomised|1|bucketed|Fireman Sam|720,000|2,719|0.755|7.19|1.91|13||
+model036|0.177|4 randomised|1|fixed|12 B&W videos|500,000|1,931|0.772|7.20|2.00|17|6|
+model052|0.177|4 randomised|1|fixed|48 B&W videos|500,000|1,887|0.753|6.7|1.64|11|0|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow
+model053|0.177|4 randomised|1|fixed|48 B&W videos|500,000|1,910|0.764|6.6|1.58|11|0|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow
 model015|0.177|4 potential|2|bucketed|Fireman Sam|720,000|4,131|1.148|9.49|1.72|14||20 randomised
 model019|0.177|4 potential|2|bucketed|Fireman Sam|1,000,000|5,738|1.148|9.81|1.76|15||20 randomised
+model038|0.177|4 potential|2|fixed|12 B&W videos|500,000|2,488|0.995|9.04|2.12|18|7|20 randomised
 model016|0.177|4 actual-potential|3|bucketed|Fireman Sam|720,000|3,014|0.838|10.13|1.87|14||20 randomised
 model018|0.177|4 actual-potential|3|bucketed|Fireman Sam|1,000,000|4,194|0.839|10.48|1.88|15||20 randomised
 model017|0.177|10 scanned actual-potential|3,4|bucketed|Fireman Sam|1,000,000|4,397|0.880|11.58|2.83|20||4 FPS
-model020|0.177|10 scanned actual-potential|3,4|bucketed|Fireman Sam|1,000,000|5,526|1.106|10.76|2.75|19|
+model020|0.177|10 scanned actual-potential|2,4|bucketed|Fireman Sam|1,000,000|5,526|1.106|10.76|2.75|19|
 model021|0.177|10 scanned actual-potential|4|bucketed|Fireman Sam|720,000|3,389|0.942|13.83|2.83|21|
 model022|0.177|10 scanned actual-potential|4|bucketed|Fireman Sam|1,000,000|4,729|0.946|14.41|2.87|22|
 model023|0.177|10 scanned actual-potential|4|bucketed|Fireman Sam|1,300,000|5,488|0.845 (0.946)|14.66|2.89|22|
@@ -1379,9 +1383,7 @@ model030|0.177|5 scanned potential tiled actual-potential|5|fixed|Film Noir|527,
 model031|0.177|5 scanned potential tiled actual-potential|5|fixed|Film Noir|452,255|3,197|1.414|14.62|3.73|32|31|12.0 min diagonal
 model034|0.177|5 scanned potential tiled actual-potential|5|fixed|10 B&W videos|527,045|3,846|1.459|15.17|4.40|35|21|first actor003 model
 model035|0.177|5 scanned potential tiled actual-potential|5|fixed|14 B&W videos|1,000,000|7,069|1.414|15.92|3.50|35|16|
-model036|0.177|4 randomised|1|fixed|12 B&W videos|500,000|1,931|0.772|7.20|2.00|17|6|
 model037|0.177|5 scanned potential tiled actual-potential|1,5|fixed|12 B&W videos|1,000,000|6,033|1.207|12.60|5.11|35|60|two modes at 7 and 15
-model038|0.177|4 potential|2|fixed|12 B&W videos|500,000|2,488|0.995|9.04|2.12|18|7|20 randomised
 model039|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|1,000,000|7,214|1.443|16.42|5.40|46|43|30s unique
 model040|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|2,000,000|12,262|1.226 (1.443)|17.77|6.01|54|72|30s unique
 model041|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|2,656,962|14,079|1.060 (1.443)|18.30|6.61|62|102|30s unique
@@ -1392,8 +1394,6 @@ model048|0.177|5 scanned potential tiled actual-potential|5|fixed 5-valent|48 B&
 model049|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,964|36,146|1.360|16.7|2.87|28|0|30s unique, 12.0 min diagonal, 100 threshold, 1.2 min entropy, no overflow
 model050|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,962|16,980|1.278|15.3|2.78|23|0|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow
 model051|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,963|8,079|1.216|15.1|2.94|23|0|30s unique, 12.0 min diagonal, 400 threshold, 1.2 min entropy, no overflow
-model052|0.177|4 randomised|1|fixed|48 B&W videos|500,000|1,887|0.753|6.7|1.64|11|0|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow
-model053|0.177|4 randomised|1|fixed|48 B&W videos|500,000|1,910|0.764|6.6|1.58|11|0|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow
 model054|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|3,000,065|12,390|0.826 (1.294)|15.5|2.90|24|0|30s unique, 12.0 min diagonal, 1.2 min entropy
 model055|0.177|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|15,050|1.003 (1.489)|14.8|2.92|24|0|30s unique, 12.0 min diagonal, 1.2 min entropy
 model056|0.177|5 scanned size-potential tiled actual-potential|6|fixed 5-valent|48 B&W videos|3,000,000|34,859|1.162 (1.643)|19.7|4.02|32|0|30s unique, 12.0 min diagonal, 0.8 min entropy
@@ -1558,6 +1558,10 @@ The implied representation for *model* 13, by contrast, shows that the *model* i
 
 Note that the *slice* representations do not merge very smoothly. This is probably because the `Record::valent` method, which buckets brightnesses into quantiles, tends to exaggerate contrasts.
 
+
+TODO 36 and 52/53 (same config - wanted to see if the model significantly different)
+
+
 The growth rate of around 0.75 *fuds* per *size* per threshold is well below the theoretical maximum of 2.0 for a perfectly efficient *classification* of *events* over a *bivalent diagonalised decomposition*. So as well as larger *models* we would like modes with higher growth rates. 
 
 In addition to higher growth rates, we would like to avoid duplication within the *model* of slightly translated but fairly similar regions around hotspots. That is, we would like to see very localised hotspots with very long path lengths at the hotspot itself and very short path lengths nearby and in-between. In this way we will avoid 'wasting' *history* on endlessly duplicated but poorly resolved features. In the path length map for *model* 13 above, the brightness is fairly uniform with small variations. We would like to see more of a constellation of point-like instensities. In a sense, this is the opposite to convolution - instead of weighting every location equally, we focus on a handful of places that carry the most information, thereby shrinking the vast *substrate volume*.
@@ -1653,6 +1657,8 @@ lengthsKurtosisExcess: 0.568218
 lengthsHyperSkewness: -6.29521
 ```
 
+TODO 38
+
 `mode003` is very similar to `mode002`. Instead of sorting the randomly chosen records by *likelihood* alone, they are sorted first by *slice* path length and then by *likelihood*. This is called actual-potential *likelihood*. We expect that the *model* will be smaller, but that the average path lengths will be longer and possibly the contour map will have more contrast and better resolved hotspots.
 
 *Model* 16 runs in `actor002` grabbing the screen from first 2 hours of 
@@ -1720,11 +1726,17 @@ It seems that selecting for longer paths does concentrate the *model* into hotsp
 ```
 The growth rate and multiplier are almost the same as for *model* 16. Again, the statistics show that *model* 18 is slightly more normal.
 
-
+TODO model 60
 
 <a name="Scanned_models"></a>
 
 ##### Scanned models
+
+mode 4
+
+check that 21-24 all have same multiplier
+
+growth rates of models 17 and 20 with a different mode initial are intermediate.
 
 generate_contour closely related to scanning.
 
