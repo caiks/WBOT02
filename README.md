@@ -823,7 +823,7 @@ There are two *on-diagonal* siblings in this case, with a third somewhat off the
 
 In the Fireman Sam example above we can see that the examples vary a lot, but they all have darker areas at the top right. Only two look like eyes but neither are at quite the correct position.
  
-We can examine the same image with a *model* that uses the `valentFixed` algorithm instead. For example, `actor.json` -
+We can examine the same image with the same *model* but using the `valentFixed` algorithm instead. For example, `actor.json` -
 ```
 {
 	"interval" : 250,
@@ -1558,9 +1558,123 @@ The implied representation for *model* 13, by contrast, shows that the *model* i
 
 Note that the *slice* representations do not merge very smoothly. This is probably because the `Record::valent` method, which buckets brightnesses into quantiles, tends to exaggerate contrasts.
 
+To examine the difference between the `Record::valent` quantile method and the  `Record::valentFixed` regular interval method, *model* 36 was run in random mode 1 in `actor003` with 12 Film Noir videos using the following configuration, `model036.json` -
+```
+{
+	"model" : "model036",
+	"video_sources" : [
+		"videos/No Man's Woman (1955) [oLiwhrvkMEU].webm",
+...
+		"videos/The Woman In The Window 1944 [wOQeqcPocsQ].webm"],
+	"interval" : 250,
+	"playback_rate" : 3.0,
+	"mode" : "mode001",
+	"valency_fixed" : true,
+	"event_size" : 4,
+	"threads" : 7,
+	"induceThreadCount" : 7,
+	"scale" : 0.177,
+	"random_centreX" : 0.549,
+	"random_centreY" : 0.412,
+	"event_maximum" : 500000,
+	"gui" : false,
+	"logging_event" : true,
+	"logging_event_factor" : 1000,
+	"summary_active" : true,
+	"logging_action" : true,
+	"logging_action_factor" : 20
+}
+```
+The growth rate of 0.772 is a little higher than *model* 13. The mean path length and deviation happen to be very similar, but there are only 500,000 *events* instead of 720,000 *events*. If we consider the *model* size to vary exponentially with the path length, we can calculate the multiplier at each step to be 3.00 for *model* 13 and 2.86 for *model* 36. These are the statistics -
+```
+lengthsDist: {(2,30),(3,298),(4,962),(5,1887),(6,2469),(7,2607),(8,2616),(9,2328),(10,1177),(11,386),(12,78),(13,53),(14,23),(15,22),(16,4),(17,5)}
+lengthsCount: 14945
+lengthsMean: 7.2012
+lengthsDeviation: 1.99541
+lengthsSkewness: 0.1987
+lengthsKurtosisExcess: 0.14558
+lengthsHyperSkewness: 3.80436
+```
+The hyper-skew is considerably higher and the maximum path length is also higher. These statistics, along with the lower multiplier, suggest that the *model* is narrower and longer than *model* 13. This difference is possibly because of the higher frequency of low entropy frames and especially very dark frames. These are more likely to be in *on-diagonal slices* in fairly specialised parts of the *model*. We can see this qualitatively if we examine how this image from Citizen Kane,
 
-TODO 36 and 52/53 (same config - wanted to see if the model significantly different)
+![contour004](images/contour004.png) 
 
+appears to *model* 36 -
+
+![contour004_036_len_position](images/contour004_036_len_position.png) 
+
+We can see that darker areas are *modelled* together in the areas coloured yellow in this case. Also these dark areas are more highlighted in the contour map signifying longer paths.
+
+*Model* 52 has mostly the same configuration as *model* 36, but in addition we added some constraints on the selection of *events*.
+
+If `unique_records` is set to an non-zero integer, e.g. `"unique_records" : 333`, the list of previous records are compared for uniqueness. That is, in this example the current record must be unique amongst the previous 333 records in order for it not to be rejected. The idea is to prevent pauses in the action or relatively still areas of background from causing the *slices* to fill up with only a few distinct *events*. 
+
+If `entropy_minimum` is set to some non-zero positive real number, e.g. `"entropy_minimum" : 1.2`, records with lower entropies will be rejected. See also the discussion about [browsing entropies](#interactive_entropies) above. Note that the `entropy_minimum` functionality is only used after *model* 47, when it was noticed that interesting features such as faces were being ignored in favour of the dark corners so common in Film Noir.
+
+*Model* 52 also constrains the minimum *diagonal* to be 12.0. This number was choosen to be at the minimum of the distribution of *diagonals*. The idea is to avoid the mostly small*alignments* that are caused purely by the *shuffled histogram*.
+
+*Model* 52 was run in random mode 1 in `actor003` with 48 Film Noir videos using the following configuration, `model052.json` -
+```
+{
+	"model" : "model052",
+	"video_sources" : [
+		"videos/No Man's Woman (1955) [oLiwhrvkMEU].webm",
+...
+		"videos/Twelve O'Clock High 1949  Gregory Peck, Hugh Marlowe & Dean Jagger [OMh4h2_ts68].webm"],
+	"interval" : 250,
+	"playback_rate" : 3.0,
+	"retry_media" : true,
+	"checkpointing" : true,
+	"mode" : "mode001",
+	"unique_records" : 333,
+	"entropy_minimum" : 1.2,
+	"valency_fixed" : true,
+	"event_size" : 4,
+	"threads" : 7,
+	"activeSize" : 500000,
+	"induceThreadCount" : 7,
+	"induceParameters.diagonalMin" : 12.0,
+	"scale" : 0.177,
+	"random_centreX" : 0.548,
+	"random_centreY" : 0.411,
+	"event_maximum" : 500000,
+	"gui" : false,
+	"logging_event" : true,
+	"logging_event_factor" : 1000,
+	"summary_active" : true,
+	"logging_action" : true,
+	"logging_action_factor" : 100
+}
+```
+These are the path length statistics -
+```
+lengthsDist: {(2,1),(3,229),(4,935),(5,2844),(6,3238),(7,3214),(8,2549),(9,1720),(10,585),(11,76)}
+lengthsCount: 15391
+lengthsMean: 6.70086
+lengthsDeviation: 1.63718
+lengthsSkewness: 0.124128
+lengthsKurtosisExcess: -0.572394
+lengthsHyperSkewness: 0.68236
+```
+The growth rate of 0.753 is more in line with *model* 13 which was trained on the Fireman Sam videos rather than the Film Noir videos. The *slice* step multiplier is now 3.08, also close to *model* 13. The hyper-skew is smaller suggesting that the *model* is now much more normal. The darker areas are still *modelled* together (in blue and turquoise in this case), but the brightness of the contour map is more even which suggests that there are fewer very long *slice* paths - 
+
+![contour004_052_len_position](images/contour004_052_len_position.png) 
+
+*Model* 53 is a re-run to *model* 52 to see how sensitive the *model* is to randomness. The growth rate is slightly higher, but the mean path length is slightly lower, so the multiplier is highly higher at 3.13. These are the statistics -
+```
+lengthsDist: {(2,20),(3,227),(4,1131),(5,2560),(6,3530),(7,3284),(8,2702),(9,1665),(10,328),(11,44)}
+lengthsCount: 15491
+lengthsMean: 6.62178
+lengthsDeviation: 1.58436
+lengthsSkewness: 0.0174681
+lengthsKurtosisExcess: -0.522234
+lengthsHyperSkewness: 0.0158004
+```
+We can see that the hyper-skew is very small now suggesting that *model* 53 is even more normal than *model* 52. This is the contour map -
+
+![contour004_053_len_position](images/contour004_053_len_position.png) 
+
+The colouring of the *model* is different from *model* 52, but these two *models* are certainly more similar to each other than they are to *model* 36, so clearly the extra constraints are important for the Film Noir fixed *valency* experiments.
 
 The growth rate of around 0.75 *fuds* per *size* per threshold is well below the theoretical maximum of 2.0 for a perfectly efficient *classification* of *events* over a *bivalent diagonalised decomposition*. So as well as larger *models* we would like modes with higher growth rates. 
 
@@ -1589,7 +1703,7 @@ In order to focus the growth in hotspots, one option is to take a large set of f
 	"summary_active" : true
 }
 ```
-The configuration is the same as for *model* 13 apart from the mode. The growth rate, as can been seen in the [table](#Model_table) above, has increased considerably from 0.755 to 1.148 *fuds* per *size* per threshold. The mean path length has increased from 7.19 to 9.49 *slices*. If we consider the *model* size to vary exponentially with the path length, we can calculate the multiplier at each step to be 3.00 for *model* 13 and 2.40 for *model* 15. This reduction is becase the preferential selection of larger *slices* in the potential *likelihood* mode tends to choose *on-diagonal slices*, thus producing fewer children *fuds*.
+The configuration is the same as for *model* 13 apart from the mode. The growth rate, as can been seen in the [table](#Model_table) above, has increased considerably from 0.755 to 1.148 *fuds* per *size* per threshold. The mean path length has increased from 7.19 to 9.49 *slices*. The multiplier at each step is 2.40 for *model* 15 compared to 3.00 for *model* 13. This reduction is becase the preferential selection of larger *slices* in the potential *likelihood* mode tends to choose *on-diagonal slices*, thus producing fewer children *fuds*.
 
 The path length statistics for *model* 15 are as follows -
 ```
@@ -1647,7 +1761,7 @@ Here again the contrasts have increased. Areas that were dark seem to be darker 
 	"warning_action" : false
 }
 ```
-As can be seen from the [table](#Model_table) above, the growth rate remains the same with the *fuds* increasing from 4131 to 5738. The mean path length increases from 9.49 to 9.81 *slices*. The multiplier at each step for *model* 15 is 2.40. If this were to continue for *model* 19 the expected path length would be 9.86. The actual increase is to 9.81, which implies the multiplier has increased to 2.42 overall. This increase in the multiplier suggests that the *alignments* of later *slices* have decreased slightly. The median *diagonal* of *model* 15 is 25.75, but the median *diagonal* of *model* 19 is slightly larger at 25.85, so rather than the *alignments* decreasing it may be that the *model* has become slightly more normally distributed with fewer very short paths. This is suggested by the higher moments -
+As can be seen from the [table](#Model_table) above, the growth rate remains the same with the *fuds* increasing from 4131 to 5738. The mean path length increases from 9.49 to 9.81 *slices*. The multiplier at each step for *model* 15 is 2.40. If this were to continue for *model* 19 the expected path length would be 9.86. The actual increase is to 9.81, which implies the multiplier has increased to 2.42 overall. This increase in the multiplier would suggest that the *alignments* of later *slices* have decreased slightly. The median *diagonal* of *model* 15 is 25.75, but the median *diagonal* of *model* 19 is slightly larger at 25.85, so rather than the *alignments* decreasing it may be that the *model* has become slightly more normally distributed with fewer very short paths. This is suggested by the higher moments -
 ```
 lengthsCount: 48730
 lengthsMean: 9.81016
@@ -1657,7 +1771,7 @@ lengthsKurtosisExcess: 0.568218
 lengthsHyperSkewness: -6.29521
 ```
 
-TODO 38
+TODO 38 cf model 36
 
 `mode003` is very similar to `mode002`. Instead of sorting the randomly chosen records by *likelihood* alone, they are sorted first by *slice* path length and then by *likelihood*. This is called actual-potential *likelihood*. We expect that the *model* will be smaller, but that the average path lengths will be longer and possibly the contour map will have more contrast and better resolved hotspots.
 
@@ -1755,13 +1869,6 @@ Model 34 onwards - TODO
 first `actor003` model 
 
 Model 39 onwards - TODO
-
-If `unique_records` is set to an non-zero integer, e.g. `"unique_records" : 333`, the list of previous records are compared for uniqueness. That is, in this example the current record must be unique amongst the previous 333 records in order for it not to be rejected. The idea is to prevent pauses in the action or relatively still areas of background from causing the *slices* to fill up with only a few distinct *events*. Note that in these examples the `unique_records` functionality is only used after *model* 39. It is useful in later modes and is not really necessary for modes with a large random element.
-
-
-If `entropy_minimum` is set to some non-zero positive real number, e.g. `"entropy_minimum" : 1.2`, records with lower entropies will be rejected. See also the discussion about [browsing entropies](#interactive_entropies) above. Note that the `entropy_minimum` functionality is only used after *model* 47, when it was noticed that interesting features such as faces were being ignored in favour of the dark corners so common in Film Noir.
-
-
 
 <!-- TODO 
 
