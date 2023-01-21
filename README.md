@@ -1603,7 +1603,7 @@ appears to *model* 36 -
 
 ![contour004_036_len_position](images/contour004_036_len_position.png) 
 
-We can see that darker areas are *modelled* together in the areas coloured yellow in this case. Also these dark areas are more highlighted in the contour map signifying longer paths.
+We can see that darker areas of the original image are *modelled* together in the areas coloured yellow in this case. Also these dark areas are brighter in the contour map signifying longer paths.
 
 *Model* 52 has mostly the same configuration as *model* 36, but in addition we added some constraints on the selection of *events*.
 
@@ -1611,7 +1611,7 @@ If `unique_records` is set to an non-zero integer, e.g. `"unique_records" : 333`
 
 If `entropy_minimum` is set to some non-zero positive real number, e.g. `"entropy_minimum" : 1.2`, records with lower entropies will be rejected. See also the discussion about [browsing entropies](#interactive_entropies) above. Note that the `entropy_minimum` functionality is only used after *model* 47, when it was noticed that interesting features such as faces were being ignored in favour of the dark corners so common in Film Noir.
 
-*Model* 52 also constrains the minimum *diagonal* to be 12.0. This number was choosen to be at the minimum of the distribution of *diagonals*. The idea is to avoid the mostly small*alignments* that are caused purely by the *shuffled histogram*.
+*Model* 52 also constrains the minimum *diagonal* to be 12.0. This number was choosen to be at the minimum of the distribution of *diagonals*. The idea is to avoid the mostly small *alignments* that are caused purely by the *shuffled histogram*.
 
 *Model* 52 was run in random mode 1 in `actor003` with 48 Film Noir videos using the following configuration, `model052.json` -
 ```
@@ -1656,7 +1656,7 @@ lengthsSkewness: 0.124128
 lengthsKurtosisExcess: -0.572394
 lengthsHyperSkewness: 0.68236
 ```
-The growth rate of 0.753 is more in line with *model* 13 which was trained on the Fireman Sam videos rather than the Film Noir videos. The *slice* step multiplier is now 3.08, also close to *model* 13. The hyper-skew is smaller suggesting that the *model* is now much more normal. The darker areas are still *modelled* together (in blue and turquoise in this case), but the brightness of the contour map is more even which suggests that there are fewer very long *slice* paths - 
+The growth rate of 0.753 is more in line with *model* 13 which was trained on the Fireman Sam videos rather than the Film Noir videos. The *slice* step multiplier is now 3.08, also close to *model* 13. The hyper-skew is smaller suggesting that the *model* is now much more normal. The darker areas are still *modelled* together (in blue and turquoise in this case), but the brightness of the contour map is more even. This suggests that there are fewer very long *slice* paths - 
 
 ![contour004_052_len_position](images/contour004_052_len_position.png) 
 
@@ -1676,9 +1676,13 @@ We can see that the hyper-skew is very small now suggesting that *model* 53 is e
 
 The colouring of the *model* is different from *model* 52, but these two *models* are certainly more similar to each other than they are to *model* 36, so clearly the extra constraints are important for the Film Noir fixed *valency* experiments.
 
-The growth rate of around 0.75 *fuds* per *size* per threshold is well below the theoretical maximum of 2.0 for a perfectly efficient *classification* of *events* over a *bivalent diagonalised decomposition*. So as well as larger *models* we would like modes with higher growth rates. 
+The growth rate of around 0.75 *fuds* per *size* per threshold is well below the theoretical maximum of 2.0 for a perfectly efficient *classification* of *events* over a *bivalent diagonalised decomposition*. So, as well as larger *models*, we would like modes with higher growth rates. 
 
-In addition to higher growth rates, we would like to avoid duplication within the *model* of slightly translated but fairly similar regions around hotspots. That is, we would like to see very localised hotspots with very long path lengths at the hotspot itself and very short path lengths nearby and in-between. In this way we will avoid 'wasting' *history* on endlessly duplicated but poorly resolved features. In the path length map for *model* 13 above, the brightness is fairly uniform with small variations. We would like to see more of a constellation of point-like instensities. In a sense, this is the opposite to convolution - instead of weighting every location equally, we focus on a handful of places that carry the most information, thereby shrinking the vast *substrate volume*.
+In addition to higher growth rates, we would like to avoid duplication within the *model* of slightly translated but fairly similar regions around hotspots. That is, we would like to see very localised hotspots with very long path lengths at the hotspot itself and very short path lengths nearby and in-between. In this way we will avoid 'wasting' *history* on endlessly duplicated but poorly resolved features. In the path length maps for the random mode *models* above, the brightness is fairly uniform with small variations. We would like to see more of a constellation of point-like instensities. In a sense, this is the opposite to convolution - instead of weighting every location equally, we focus on a handful of places that carry the most information, thereby shrinking the vast *substrate volume*.
+
+<a name="Filtered_random_models"></a>
+
+##### Filtered random models
 
 In order to focus the growth in hotspots, one option is to take a large set of frames from random locations and filter them for high *likelihood* before adding them as *events*. In `mode002`, for each record of a `scan_size` set of random frames we *apply* the current *model* to determine the *slice*. Then we calculate the potential *likelihood* from the *slice size* and the parent *slice size* according to this measure: `(ln(slice_size) - ln(parent_size) + ln(WMAX)) / ln(WMAX)`. The top `event_size` records then become *events*. 
 
@@ -1714,7 +1718,7 @@ lengthsSkewness: -0.588466
 lengthsKurtosisExcess: 0.62416
 lengthsHyperSkewness: -6.49092
 ```
-Compared to *model* 13, the kurtosis has turned positive, suggesting fatter tails. There is also a sharply negative hyper-skew, which suggests that the overall longer mean is partly at the expense of more very short paths.
+Compared to *model* 13, the kurtosis has turned positive, suggesting fatter tails. There is also a large negative hyper-skew, which suggests that the overall longer mean is partly at the expense of more very short paths.
 
 Qualitatively, the path length image appears to have sharpened constrasts -
 
@@ -1736,7 +1740,7 @@ to *model* 15,
 
 ![contour002_015_length](images/contour002_015_length.png) 
 
-Here again the contrasts have increased. Areas that were dark seem to be darker still - even completely ignored. Similarly, areas that were light are now lighter still. That is, mode 2 potential *likelihood* appears to increase the path length in certain interesting places. Given that the overall *model* is larger, these increases do not necessarily come at a cost of decreases elsewhere, but the dark areas and the hyper-skew statistic suggest that there are relative decreases at least.
+Here again the contour contrasts have increased. Parts that were dull seem to be duller still - even completely ignored. Similarly, parts that were bright are now brighter still. That is, mode 2 potential *likelihood* appears to increase the path length in certain interesting places. Given that the overall *model* is larger, these increases do not necessarily come at a cost of decreases elsewhere, but the dull areas and the hyper-skew statistic suggest that there are relative decreases at least.
 
 *Model* 19 starts with initial *model* 15 and carries on until 1 million *events*,  `model019.json` -
 ```
@@ -1761,7 +1765,7 @@ Here again the contrasts have increased. Areas that were dark seem to be darker 
 	"warning_action" : false
 }
 ```
-As can be seen from the [table](#Model_table) above, the growth rate remains the same with the *fuds* increasing from 4131 to 5738. The mean path length increases from 9.49 to 9.81 *slices*. The multiplier at each step for *model* 15 is 2.40. If this were to continue for *model* 19 the expected path length would be 9.86. The actual increase is to 9.81, which implies the multiplier has increased to 2.42 overall. This increase in the multiplier would suggest that the *alignments* of later *slices* have decreased slightly. The median *diagonal* of *model* 15 is 25.75, but the median *diagonal* of *model* 19 is slightly larger at 25.85, so rather than the *alignments* decreasing it may be that the *model* has become slightly more normally distributed with fewer very short paths. This is suggested by the higher moments -
+As can be seen from the [table](#Model_table) above, the growth rate remains the same with the *fuds* increasing from 4131 to 5738. The mean path length increases from 9.49 to 9.81 *slices*. The multiplier at each step for *model* 15 is 2.40. If this were to continue for *model* 19 the expected path length would be 9.86. The actual increase is to 9.81, which implies the multiplier has increased to 2.42 overall. This increase in the multiplier would suggest that the *alignments* of later *slices* have decreased slightly. The median *diagonal* of *model* 15 is 25.75, but the median *diagonal* of *model* 19 is actually slightly larger at 25.85, so rather than the *alignments* decreasing it may be that the *model* has become slightly more normally distributed with fewer very short paths. This is suggested by the higher moments -
 ```
 lengthsCount: 48730
 lengthsMean: 9.81016
@@ -1771,7 +1775,45 @@ lengthsKurtosisExcess: 0.568218
 lengthsHyperSkewness: -6.29521
 ```
 
-TODO 38 cf model 36
+In the same way that we ran *model* 36 to see the effect of the `Record::valentFixed` regular interval method compared to the quantile `Record::valent` method of random mode *model* 13, we have also run *model* 38 in potential *likelihood* mode 2 with fixed *valency* to see the effect compared to *model* 15. It was run in `actor003` with 12 Film Noir videos using the following configuration, `model038.json` -
+```
+{
+	"model" : "model038",
+	"video_sources" : [
+		"videos/No Man's Woman (1955) [oLiwhrvkMEU].webm",
+...
+		"videos/The Woman In The Window 1944 [wOQeqcPocsQ].webm"],
+	"interval" : 250,
+	"playback_rate" : 3.0,
+	"mode" : "mode002",
+	"valency_fixed" : true,
+	"event_size" : 4,
+	"scan_size" : 20,
+	"threads" : 7,
+	"induceThreadCount" : 7,
+	"scale" : 0.177,
+	"random_centreX" : 0.549,
+	"random_centreY" : 0.412,
+	"event_maximum" : 500000,
+	"gui" : false,
+	"logging_event" : true,
+	"logging_event_factor" : 1000,
+	"summary_active" : true,
+	"logging_action" : true,
+	"logging_action_factor" : 20
+}
+```
+The growth rate of 0.995 is a lower than *model* 15, but the multiplier at 2.37 is very similar. The path length statistics for *model* 38 are as follows -
+```
+lengthsDist: {(1,4),(2,28),(3,95),(4,274),(5,545),(6,1095),(7,2139),(8,3213),(9,3518),(10,3326),(11,2406),(12,1338),(13,536),(14,181),(15,63),(16,17),(17,8),(18,12)}
+lengthsCount: 18798
+lengthsMean: 9.03969
+lengthsDeviation: 2.12513
+lengthsSkewness: -0.0742126
+lengthsKurtosisExcess: 0.337508
+lengthsHyperSkewness: -0.0980822
+```
+The *model* appears to be much more normal than *model* 15, resembling the normal random mode *models* 52 and 53, which were also fixed but required extra constraints. It seems that the filtering of *events* in the potential *likelihood* mode is less susceptible to low entropy frames when using the fixed *valency* method, while still increasing the concentration of hotspots.
 
 `mode003` is very similar to `mode002`. Instead of sorting the randomly chosen records by *likelihood* alone, they are sorted first by *slice* path length and then by *likelihood*. This is called actual-potential *likelihood*. We expect that the *model* will be smaller, but that the average path lengths will be longer and possibly the contour map will have more contrast and better resolved hotspots.
 
@@ -1847,6 +1889,8 @@ TODO model 60
 ##### Scanned models
 
 mode 4
+
+mention the tiles are equal to half a frame - ie the region around a hotspot is of the sam magnitude as the scale 
 
 check that 21-24 all have same multiplier
 
