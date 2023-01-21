@@ -1362,13 +1362,14 @@ model012|0.25|4 randomised|1|bucketed|Fireman Sam|720,000|2,664|0.740|7.23|38.23
 model014|0.25|4 randomised|1|bucketed|Fireman Sam|720,000|492|0.683|5.40|1.61|9||1000 threshold
 model013|0.177|4 randomised|1|bucketed|Fireman Sam|720,000|2,719|0.755|7.19|1.91|13||
 model036|0.177|4 randomised|1|fixed|12 B&W videos|500,000|1,931|0.772|7.20|2.00|17|6|
-model052|0.177|4 randomised|1|fixed|48 B&W videos|500,000|1,887|0.753|6.7|1.64|11|0|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow
-model053|0.177|4 randomised|1|fixed|48 B&W videos|500,000|1,910|0.764|6.6|1.58|11|0|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow
+model052|0.177|4 randomised|1|fixed|48 B&W videos|500,000|1,887|0.753|6.7|1.64|11|0|30s unique, 12.0 min diagonal, 1.2 min entropy
+model053|0.177|4 randomised|1|fixed|48 B&W videos|500,000|1,910|0.764|6.6|1.58|11|0|30s unique, 12.0 min diagonal, 1.2 min entropy
 model015|0.177|4 potential|2|bucketed|Fireman Sam|720,000|4,131|1.148|9.49|1.72|14||20 randomised
 model019|0.177|4 potential|2|bucketed|Fireman Sam|1,000,000|5,738|1.148|9.81|1.76|15||20 randomised
 model038|0.177|4 potential|2|fixed|12 B&W videos|500,000|2,488|0.995|9.04|2.12|18|7|20 randomised
 model016|0.177|4 actual-potential|3|bucketed|Fireman Sam|720,000|3,014|0.838|10.13|1.87|14||20 randomised
 model018|0.177|4 actual-potential|3|bucketed|Fireman Sam|1,000,000|4,194|0.839|10.48|1.88|15||20 randomised
+model060|0.177|4 actual-potential|3|fixed|48 B&W videos|800,000|3,643|0.910|15.7|2.86|22|0|30s unique, 12.0 min diagonal, 1.2 min entropy TODO
 model017|0.177|10 scanned actual-potential|3,4|bucketed|Fireman Sam|1,000,000|4,397|0.880|11.58|2.83|20||4 FPS
 model020|0.177|10 scanned actual-potential|2,4|bucketed|Fireman Sam|1,000,000|5,526|1.106|10.76|2.75|19|
 model021|0.177|10 scanned actual-potential|4|bucketed|Fireman Sam|720,000|3,389|0.942|13.83|2.83|21|
@@ -1882,7 +1883,52 @@ It seems that selecting for longer paths does concentrate the *model* into hotsp
 ```
 The growth rate and multiplier are almost the same as for *model* 16. Again, the statistics show that *model* 18 is slightly more normal.
 
-TODO model 60
+Again, to test fixed *valency* we made another experiment in *model* 60 but with the extra constraints of minimum entropy, minimum *diagonal* and unique frames. More importantly than that, we strengthened the filtering from a factor of 1 in 5 to 1 in 400. This was in order to see if actual-potential *likelihood* mode 3 could run as efficiently as the scanning modes, [discussed below](#Scanned_models). It ran with 48 Film Noir videos using the following configuration, `model060.json` -
+```
+{
+	"model" : "model060",
+	"video_sources" : [
+		"videos/No Man's Woman (1955) [oLiwhrvkMEU].webm",
+...
+		"videos/Twelve O'Clock High 1949  Gregory Peck, Hugh Marlowe & Dean Jagger [OMh4h2_ts68].webm"],
+	"interval" : 100,
+	"playback_rate" : 3.0,
+	"retry_media" : true,
+	"checkpointing" : true,
+	"video_index" : 0,
+	"mode" : "mode003",
+	"unique_records" : 333,
+	"entropy_minimum" : 1.2,
+	"valency_fixed" : true,
+	"activeSize" : 1000000,
+	"induceParameters.diagonalMin" : 12.0,
+	"scale" : 0.177,
+	"event_size" : 5,
+	"scan_size" : 2000,
+	"random_centreX" : 0.549,
+	"random_centreY" : 0.412,
+	"event_maximum" : 3000000,
+	"gui" : false,
+	"logging_event" : true,
+	"logging_event_factor" : 1000,
+	"summary_active" : true,
+	"logging_action" : true,
+	"logging_action_factor" : 10000000
+}
+```
+TODO *Model* 60 has a higher growth rate than *model* 16 and has a much lower multiplier of only 1.69. These are the statistics -
+```
+lengthsDist: {(1,9),(2,11),(3,30),(4,49),(5,81),(6,131),(7,173),(8,216),(9,379),(10,578),(11,841),(12,1261),(13,1769),(14,2632),(15,3719),(16,4551),(17,4909),(18,4357),(19,2738),(20,1000),(21,137),(22,36)}
+lengthsCount: 29607
+lengthsMean: 15.6732
+lengthsDeviation: 2.86098
+lengthsSkewness: -1.09431
+lengthsKurtosisExcess: 1.79001
+lengthsHyperSkewness: -13.3688
+```
+Kurtosis is higher
+
+TODO multiplier table model 55 has only 1.91
 
 <a name="Scanned_models"></a>
 
