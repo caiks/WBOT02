@@ -1354,53 +1354,53 @@ scale|2^(-x/2)|1/tan(2^(-x/2))
 
 This summarises the *model* results for both `actor002` and `actor003` -
 
-model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|fails|notes
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model010|0.5|4 randomised|1|bucketed|Fireman Sam|720,000|2,567|0.713|6.82|1.83|12||25 FPS
-model011|0.354|4 randomised|1|bucketed|Fireman Sam|720,000|2,699|0.750|7.22|1.91|12||
-model012|0.25|4 randomised|1|bucketed|Fireman Sam|720,000|2,664|0.740|7.23|38.2333|12||
-model014|0.25|4 randomised|1|bucketed|Fireman Sam|720,000|492|0.683|5.40|1.61|9||1000 threshold
-model013|0.177|4 randomised|1|bucketed|Fireman Sam|720,000|2,719|0.755|7.19|1.91|13||
-model036|0.177|4 randomised|1|fixed|12 B&W videos|500,000|1,931|0.772|7.20|2.00|17|6|
-model052|0.177|4 randomised|1|fixed|48 B&W videos|500,000|1,887|0.753|6.7|1.64|11|0|30s unique, 12.0 min diagonal, 1.2 min entropy
-model053|0.177|4 randomised|1|fixed|48 B&W videos|500,000|1,910|0.764|6.6|1.58|11|0|30s unique, 12.0 min diagonal, 1.2 min entropy
-model015|0.177|4 potential|2|bucketed|Fireman Sam|720,000|4,131|1.148|9.49|1.72|14||20 randomised
-model019|0.177|4 potential|2|bucketed|Fireman Sam|1,000,000|5,738|1.148|9.81|1.76|15||20 randomised
-model038|0.177|4 potential|2|fixed|12 B&W videos|500,000|2,488|0.995|9.04|2.12|18|7|20 randomised
-model016|0.177|4 actual-potential|3|bucketed|Fireman Sam|720,000|3,014|0.838|10.13|1.87|14||20 randomised
-model018|0.177|4 actual-potential|3|bucketed|Fireman Sam|1,000,000|4,194|0.839|10.48|1.88|15||20 randomised
-model060|0.177|4 actual-potential|3|fixed|48 B&W videos|800,000|3,643|0.910|15.7|2.86|22|0|30s unique, 12.0 min diagonal, 1.2 min entropy TODO
-model017|0.177|10 scanned actual-potential|3,4|bucketed|Fireman Sam|1,000,000|4,397|0.880|11.58|2.83|20||4 FPS
-model020|0.177|10 scanned actual-potential|2,4|bucketed|Fireman Sam|1,000,000|5,526|1.106|10.76|2.75|19|
-model021|0.177|10 scanned actual-potential|4|bucketed|Fireman Sam|720,000|3,389|0.942|13.83|2.83|21|
-model022|0.177|10 scanned actual-potential|4|bucketed|Fireman Sam|1,000,000|4,729|0.946|14.41|2.87|22|
-model023|0.177|10 scanned actual-potential|4|bucketed|Fireman Sam|1,300,000|5,488|0.845 (0.946)|14.66|2.89|22|
-model024|0.177|10 scanned actual-potential|4|bucketed|Fireman Sam|1,700,000|6,172|0.726 (0.946)|14.84|2.90|22|
-model025|0.177|10 scanned actual-potential|4|fixed|Film Noir|865,170|5,283|1.221|18.73|7.35|50|179|
-model027|0.177|10 scanned actual-potential|4|bucketed|Film Noir|759,760|3,757|0.989|14.14|3.13|24|12|
-model028|0.177|10 scanned actual-potential|4|bucketed|Film Noir|659,550|3,203|0.971|14.84|3.14|27|49|
-model029|0.177|5 scanned potential tiled actual-potential|5|bucketed|Film Noir|526,345|3,386|1.287|13.49|2.60|23|2|
-model030|0.177|5 scanned potential tiled actual-potential|5|fixed|Film Noir|527,045|3,816|1.448|15.56|3.74|31|27|
-model031|0.177|5 scanned potential tiled actual-potential|5|fixed|Film Noir|452,255|3,197|1.414|14.62|3.73|32|31|12.0 min diagonal
-model034|0.177|5 scanned potential tiled actual-potential|5|fixed|10 B&W videos|527,045|3,846|1.459|15.17|4.40|35|21|first actor003 model
-model035|0.177|5 scanned potential tiled actual-potential|5|fixed|14 B&W videos|1,000,000|7,069|1.414|15.92|3.50|35|16|
-model037|0.177|5 scanned potential tiled actual-potential|1,5|fixed|12 B&W videos|1,000,000|6,033|1.207|12.60|5.11|35|60|two modes at 7 and 15
-model039|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|1,000,000|7,214|1.443|16.42|5.40|46|43|30s unique
-model040|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|2,000,000|12,262|1.226 (1.443)|17.77|6.01|54|72|30s unique
-model041|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|2,656,962|14,079|1.060 (1.443)|18.30|6.61|62|102|30s unique
-model045|0.177|5 scanned potential tiled actual-potential|5|fixed 5-valent|48 B&W videos|2,656,963|34,557|1.300 (1.643)|20.2|5.09|44|297|30s unique, 12.0 min diagonal, 100 threshold
-model046|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,965|13,432|1.011 (1.406)|16.8|4.49|36|67|30s unique, 12.0 min diagonal
-model047|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,963|13,688|1.030 (1.364)|15.9|3.07|25|0|30s unique, 12.0 min diagonal, 1.2 min entropy
-model048|0.177|5 scanned potential tiled actual-potential|5|fixed 5-valent|48 B&W videos|2,656,965|38,124|1.434|18.9|3.43|30|0|30s unique, 12.0 min diagonal, 100 threshold, 0.8 min entropy, no overflow
-model049|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,964|36,146|1.360|16.7|2.87|28|0|30s unique, 12.0 min diagonal, 100 threshold, 1.2 min entropy, no overflow
-model050|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,962|16,980|1.278|15.3|2.78|23|0|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow
-model051|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,963|8,079|1.216|15.1|2.94|23|0|30s unique, 12.0 min diagonal, 400 threshold, 1.2 min entropy, no overflow
-model054|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|3,000,065|12,390|0.826 (1.294)|15.5|2.90|24|0|30s unique, 12.0 min diagonal, 1.2 min entropy
-model055|0.177|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|15,050|1.003 (1.489)|14.8|2.92|24|0|30s unique, 12.0 min diagonal, 1.2 min entropy
-model056|0.177|5 scanned size-potential tiled actual-potential|6|fixed 5-valent|48 B&W videos|3,000,000|34,859|1.162 (1.643)|19.7|4.02|32|0|30s unique, 12.0 min diagonal, 0.8 min entropy
-model057|0.354|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|15,433|1.003 (1.480)|15.5|3.21|25|0|30s unique, 12.0 min diagonal, 1.2 min entropy
-model058|0.088|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|13,999|0.933 (1.447)|15.4|2.97|25|0|30s unique, 12.0 min diagonal, 1.2 min entropy
-model059|0.177|5 scanned active-size-potential tiled actual-potential|7|fixed|48 B&W videos|3,000,000|16,735|1.116 (1.501)|15.2|2.77|23|0|30s unique, 12.0 min diagonal, 1.2 min entropy
+model010|0.5|4 randomised|1|bucketed|Fireman Sam|720,000|2,567|0.713|6.82|1.83|12|3.16|25 FPS
+model011|0.354|4 randomised|1|bucketed|Fireman Sam|720,000|2,699|0.75|7.22|1.91|12|2.99|
+model012|0.25|4 randomised|1|bucketed|Fireman Sam|720,000|2,664|0.74|7.23|1.91|12|2.98|
+model014|0.25|4 randomised|1|bucketed|Fireman Sam|720,000|492|0.683|5.4|1.61|9|3.15|1000 threshold
+model013|0.177|4 randomised|1|bucketed|Fireman Sam|720,000|2,719|0.755|7.19|1.91|13|3.00|
+model036|0.177|4 randomised|1|fixed|12 B&W videos|500,000|1,931|0.772|7.2|2|17|2.86|
+model052|0.177|4 randomised|1|fixed|48 B&W videos|500,000|1,887|0.753|6.7|1.64|11|3.08|30s unique, 12.0 min diagonal, 1.2 min entropy
+model053|0.177|4 randomised|1|fixed|48 B&W videos|500,000|1,910|0.764|6.6|1.58|11|3.14|30s unique, 12.0 min diagonal, 1.2 min entropy
+model015|0.177|4 potential|2|bucketed|Fireman Sam|720,000|4,131|1.148|9.49|1.72|14|2.40|20 randomised
+model019|0.177|4 potential|2|bucketed|Fireman Sam|1,000,000|5,738|1.148|9.81|1.76|15|2.42|20 randomised
+model038|0.177|4 potential|2|fixed|12 B&W videos|500,000|2,488|0.995|9.04|2.12|18|2.37|20 randomised
+model016|0.177|4 actual-potential|3|bucketed|Fireman Sam|720,000|3,014|0.838|10.13|1.87|14|2.21|20 randomised
+model018|0.177|4 actual-potential|3|bucketed|Fireman Sam|1,000,000|4,194|0.839|10.48|1.88|15|2.22|20 randomised
+model060|0.177|4 actual-potential|3|fixed|48 B&W videos|1,000,000|4,550|0.91|16|2.87|22|1.69|30s unique, 12.0 min diagonal, 1.2 min entropy
+model017|0.177|10 scanned actual-potential|3,4|bucketed|Fireman Sam|1,000,000|4,397|0.88|11.58|2.83|20|2.06|4 FPS
+model020|0.177|10 scanned actual-potential|2,4|bucketed|Fireman Sam|1,000,000|5,526|1.106|10.76|2.75|19|2.23|
+model021|0.177|10 scanned actual-potential|4|bucketed|Fireman Sam|720,000|3,389|0.942|13.83|2.83|21|1.80|
+model022|0.177|10 scanned actual-potential|4|bucketed|Fireman Sam|1,000,000|4,729|0.946|14.41|2.87|22|1.80|
+model023|0.177|10 scanned actual-potential|4|bucketed|Fireman Sam|1,300,000|5,488|0.845 (0.946)|14.66|2.89|22|1.80|
+model024|0.177|10 scanned actual-potential|4|bucketed|Fireman Sam|1,700,000|6,172|0.726 (0.946)|14.84|2.9|22|1.80|
+model025|0.177|10 scanned actual-potential|4|fixed|Film Noir|865,170|5,283|1.221|18.73|7.35|50|1.58|
+model027|0.177|10 scanned actual-potential|4|bucketed|Film Noir|759,760|3,757|0.989|14.14|3.13|24|1.79|
+model028|0.177|10 scanned actual-potential|4|bucketed|Film Noir|659,550|3,203|0.971|14.84|3.14|27|1.72|
+model029|0.177|5 scanned potential tiled actual-potential|5|bucketed|Film Noir|526,345|3,386|1.287|13.49|2.6|23|1.83|
+model030|0.177|5 scanned potential tiled actual-potential|5|fixed|Film Noir|527,045|3,816|1.448|15.56|3.74|31|1.70|
+model031|0.177|5 scanned potential tiled actual-potential|5|fixed|Film Noir|452,255|3,197|1.414|14.62|3.73|32|1.74|12.0 min diagonal
+model034|0.177|5 scanned potential tiled actual-potential|5|fixed|10 B&W videos|527,045|3,846|1.459|15.17|4.4|35|1.72|first actor003 model
+model035|0.177|5 scanned potential tiled actual-potential|5|fixed|14 B&W videos|1,000,000|7,069|1.414|15.92|3.5|35|1.74|
+model037|0.177|5 scanned potential tiled actual-potential|1,5|fixed|12 B&W videos|1,000,000|6,033|1.207|12.6|5.11|35|2.00|two modes at 7 and 15
+model039|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|1,000,000|7,214|1.443|16.42|5.4|46|1.72|30s unique
+model040|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|2,000,000|12,262|1.226 (1.443)|17.77|6.01|54|1.70|30s unique
+model041|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|2,656,962|14,079|1.060 (1.443)|18.3|6.61|62|1.69|30s unique
+model045|0.177|5 scanned potential tiled actual-potential|5|fixed 5-valent|48 B&W videos|2,656,963|34,557|1.300 (1.643)|20.2|5.09|44|1.68|30s unique, 12.0 min diagonal, 100 threshold
+model046|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,965|13,432|1.011 (1.406)|16.8|4.49|36|1.76|30s unique, 12.0 min diagonal
+model047|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,963|13,688|1.030 (1.364)|15.9|3.07|25|1.82|30s unique, 12.0 min diagonal, 1.2 min entropy
+model048|0.177|5 scanned potential tiled actual-potential|5|fixed 5-valent|48 B&W videos|2,656,965|38,124|1.434|18.9|3.43|30|1.75|30s unique, 12.0 min diagonal, 100 threshold, 0.8 min entropy, no overflow
+model049|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,964|36,146|1.36|16.7|2.87|28|1.87|30s unique, 12.0 min diagonal, 100 threshold, 1.2 min entropy, no overflow
+model050|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,962|16,980|1.278|15.3|2.78|23|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow
+model051|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,963|8,079|1.216|15.1|2.94|23|1.81|30s unique, 12.0 min diagonal, 400 threshold, 1.2 min entropy, no overflow
+model054|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|3,000,065|12,390|0.826 (1.294)|15.5|2.9|24|1.84|30s unique, 12.0 min diagonal, 1.2 min entropy
+model055|0.177|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|15,050|1.003 (1.489)|14.8|2.92|24|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy
+model056|0.177|5 scanned size-potential tiled actual-potential|6|fixed 5-valent|48 B&W videos|3,000,000|34,859|1.162 (1.643)|19.7|4.02|32|1.70|30s unique, 12.0 min diagonal, 0.8 min entropy
+model057|0.354|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|15,433|1.003 (1.480)|15.5|3.21|25|1.86|30s unique, 12.0 min diagonal, 1.2 min entropy
+model058|0.088|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|13,999|0.933 (1.447)|15.4|2.97|25|1.86|30s unique, 12.0 min diagonal, 1.2 min entropy
+model059|0.177|5 scanned active-size-potential tiled actual-potential|7|fixed|48 B&W videos|3,000,000|16,735|1.116 (1.501)|15.2|2.77|23|1.90|30s unique, 12.0 min diagonal, 1.2 min entropy
 
 The table above does not show the median and maximum *diagonals*. The median *diagonals* for the actor 2 and actor 3 *models* were consistently around 23-27, and the maximum *diagonals* were consistently around 37-39.
 
@@ -1916,19 +1916,19 @@ Again, to test fixed *valency* we made another experiment in *model* 60 but with
 	"logging_action_factor" : 10000000
 }
 ```
-TODO *Model* 60 has a higher growth rate than *model* 16 and has a much lower multiplier of only 1.69. These are the statistics -
+*Model* 60 has a higher growth rate than *model* 16 and has a much lower multiplier of only 1.69. These are the statistics -
 ```
-lengthsDist: {(1,9),(2,11),(3,30),(4,49),(5,81),(6,131),(7,173),(8,216),(9,379),(10,578),(11,841),(12,1261),(13,1769),(14,2632),(15,3719),(16,4551),(17,4909),(18,4357),(19,2738),(20,1000),(21,137),(22,36)}
-lengthsCount: 29607
-lengthsMean: 15.6732
-lengthsDeviation: 2.86098
-lengthsSkewness: -1.09431
-lengthsKurtosisExcess: 1.79001
-lengthsHyperSkewness: -13.3688
+lengthsDist: {(1,9),(2,10),(3,41),(4,49),(5,80),(6,136),(7,187),(8,227),(9,432),(10,608),(11,864),(12,1510),(13,1979),(14,2933),(15,4189),(16,5364),(17,6043),(18,5798),(19,4369),(20,1911),(21,433),(22,91)}
+lengthsCount: 37263
+lengthsMean: 16.0253
+lengthsDeviation: 2.86887
+lengthsSkewness: -1.07932
+lengthsKurtosisExcess: 1.79519
+lengthsHyperSkewness: -13.4868
 ```
-Kurtosis is higher
+Kurtosis is higher and hyper-skew is highly negative.
 
-TODO multiplier table model 55 has only 1.91
+TODO multiplier table model 55 has only 1.91. Model 25, which is scanned potential is 1.58
 
 <a name="Scanned_models"></a>
 
