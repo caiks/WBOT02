@@ -1404,7 +1404,11 @@ model059|0.177|5 scanned active-size-potential tiled actual-potential|7|fixed|48
 
 The table above does not show the median and maximum *diagonals*. The median *diagonals* for the actor 2 and actor 3 *models* were consistently around 23-27, and the maximum *diagonals* were consistently around 37-39.
 
-In general, the *model* growth rate (*fuds* per *event* per threshold) is the quantitative guide for development, but other *model* statistics - path length mean, standard deviation and higher moments, and path length maximum - help us to judge whether the *model* is well balanced or distorted. See the *model* tool [view_active_concise](#view_active_concise) above. We can also gain some understanding of the structure using *model* tool [view_decomp](#view_decomp). 
+In general, the *model* growth rate (*fuds* per *event* per threshold) is the quantitative guide for development, but other *model* statistics - path length mean, standard deviation and higher moments, and path length maximum - help us to judge whether the *model* is well balanced or distorted. See the *model* tool [view_active_concise](#view_active_concise) above. 
+
+In addition, we have also added a 'multiplier' measure. If we consider the *model* size `s` to vary exponentially with the path length `l`, we can calculate the base multiplier at each step as `exp(ln(s)/l)`. *Models* with low multiplier tend to be long and narrow - their modes tend to add *events* to *on-diagonal slices*, meaning that there are fewer children *fuds*.
+
+We can also gain some understanding of the structure using *model* tool [view_decomp](#view_decomp). 
 
 Qualitative measures such as how well the *slices* capture, say, eyes or mouths, are harder to judge. In the examples below we include screenshots of the browser, but the selection is always vulnerable to subjective biases. 
 
@@ -1586,7 +1590,7 @@ To examine the difference between the `Record::valent` quantile method and the  
 	"logging_action_factor" : 20
 }
 ```
-The growth rate of 0.772 is a little higher than *model* 13. The mean path length and deviation happen to be very similar, but there are only 500,000 *events* instead of 720,000 *events*. If we consider the *model* size to vary exponentially with the path length, we can calculate the multiplier at each step to be 3.00 for *model* 13 and 2.86 for *model* 36. These are the statistics -
+The growth rate of 0.772 is a little higher than *model* 13. The mean path length and deviation happen to be very similar, but there are only 500,000 *events* instead of 720,000 *events*. The multiplier at each step is 3.00 for *model* 13 but reduces a little to 2.86 for *model* 36. These are the statistics -
 ```
 lengthsDist: {(2,30),(3,298),(4,962),(5,1887),(6,2469),(7,2607),(8,2616),(9,2328),(10,1177),(11,386),(12,78),(13,53),(14,23),(15,22),(16,4),(17,5)}
 lengthsCount: 14945
@@ -1676,6 +1680,12 @@ We can see that the hyper-skew is very small now suggesting that *model* 53 is e
 ![contour004_053_len_position](images/contour004_053_len_position.png) 
 
 The colouring of the *model* is different from *model* 52, but these two *models* are certainly more similar to each other than they are to *model* 36, so clearly the extra constraints are important for the Film Noir fixed *valency* experiments.
+
+There is still much progress required to be truly representative, however -
+
+<a name="contour004_053_representation"></a>
+
+![contour004_053_representation](images/contour004_053_representation.png) 
 
 The growth rate of around 0.75 *fuds* per *size* per threshold is well below the theoretical maximum of 2.0 for a perfectly efficient *classification* of *events* over a *bivalent diagonalised decomposition*. So, as well as larger *models*, we would like modes with higher growth rates. 
 
@@ -1814,7 +1824,9 @@ lengthsSkewness: -0.0742126
 lengthsKurtosisExcess: 0.337508
 lengthsHyperSkewness: -0.0980822
 ```
-The *model* appears to be much more normal than *model* 15, resembling the normal random mode *models* 52 and 53, which were also fixed but required extra constraints. It seems that the filtering of *events* in the potential *likelihood* mode is less susceptible to low entropy frames when using the fixed *valency* method, while still increasing the concentration of hotspots.
+The *model* appears to be much more normal than *model* 15, resembling the normal random mode *models* 52 and 53, which were also fixed but required extra constraints. It seems that the filtering of *events* in the potential *likelihood* mode is less susceptible to low entropy frames when using the fixed *valency* method, while still increasing the concentration of hotspots. The similar multiplier, at least, suggests that we can expect the hotspots to be more concentrated than random mode - 
+
+![contour004_038_minent_len_position](images/contour004_038_minent_len_position.png) 
 
 `mode003` is very similar to `mode002`. Instead of sorting the randomly chosen records by *likelihood* alone, they are sorted first by *slice* path length and then by *likelihood*. This is called actual-potential *likelihood*. We expect that the *model* will be smaller, but that the average path lengths will be longer and possibly the contour map will have more contrast and better resolved hotspots.
 
@@ -1926,9 +1938,15 @@ lengthsSkewness: -1.07932
 lengthsKurtosisExcess: 1.79519
 lengthsHyperSkewness: -13.4868
 ```
-Kurtosis is higher and hyper-skew is highly negative.
+Kurtosis is higher and hyper-skew is highly negative. The very low multiplier and the non-normal *model* suggests that we can expect the hotspots to be very concentrated - 
 
-TODO multiplier table model 55 has only 1.91. Model 25, which is scanned potential is 1.58
+![contour004_060_minent_len_position](images/contour004_060_minent_len_position.png) 
+
+This is indeed the case. In fact the hotspots are now perhaps too widely spaced to be representative -
+
+![contour004_060_representation](images/contour004_060_representation.png) 
+
+It is, however, considerably better than for random *model* 53 [above](#contour004_053_representation).
 
 <a name="Scanned_models"></a>
 
