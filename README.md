@@ -1369,7 +1369,7 @@ model019|0.177|4 potential|2|bucketed|Fireman Sam|1,000,000|5,738|1.148|9.81|1.7
 model038|0.177|4 potential|2|fixed|12 B&W videos|500,000|2,488|0.995|9.04|2.12|18|2.37|20 randomised
 model016|0.177|4 actual-potential|3|bucketed|Fireman Sam|720,000|3,014|0.838|10.13|1.87|14|2.21|20 randomised
 model018|0.177|4 actual-potential|3|bucketed|Fireman Sam|1,000,000|4,194|0.839|10.48|1.88|15|2.22|20 randomised
-model060|0.177|4 actual-potential|3|fixed|48 B&W videos|1,000,000|4,550|0.91|16|2.87|22|1.69|30s unique, 12.0 min diagonal, 1.2 min entropy
+model060|0.177|5 actual-potential|3|fixed|48 B&W videos|1,000,000|4,550|0.91|16|2.87|22|1.69|2000 randomised, 30s unique, 12.0 min diagonal, 1.2 min entropy
 model017|0.177|10 scanned actual-potential|3,4|bucketed|Fireman Sam|1,000,000|4,397|0.88|11.58|2.83|20|2.06|4 FPS
 model020|0.177|10 scanned actual-potential|2,4|bucketed|Fireman Sam|1,000,000|5,526|1.106|10.76|2.75|19|2.23|
 model021|0.177|10 scanned actual-potential|4|bucketed|Fireman Sam|720,000|3,389|0.942|13.83|2.83|21|1.80|
@@ -1942,11 +1942,18 @@ Kurtosis is higher and hyper-skew is highly negative. The very low multiplier an
 
 ![contour004_060_minent_len_position](images/contour004_060_minent_len_position.png) 
 
-This is indeed the case. In fact the hotspots are now perhaps too widely spaced to be representative -
+This is indeed the case. The representation also looks considerably better than the representation for random *model* 53 [above](#contour004_053_representation) -
 
 ![contour004_060_representation](images/contour004_060_representation.png) 
 
-It is, however, considerably better than for random *model* 53 [above](#contour004_053_representation).
+Even so, the hotspots are now perhaps so widely spaced the the *model* is perhaps not rich enough to capture frequent features that are not top frequent. If we compare the *model* position maps without the length brightness, we can see that random mode *model* 53,
+
+![contour004_053_position](images/contour004_053_position.png) 
+
+seems to be considerably more complex than actual-potential *likelihood* mode *model* 60 -
+
+![contour004_060_position](images/contour004_060_position.png) 
+
 
 <a name="Scanned_models"></a>
 
@@ -1959,6 +1966,8 @@ mention the tiles are equal to half a frame - ie the region around a hotspot is 
 check that 21-24 all have same multiplier
 
 growth rates of models 17 and 20 with a different mode initial are intermediate.
+
+Probably want a multiplier around 2 ie both on-diagonal, as well as regular spaced hotspots. Too small a multiplier suggests frequent siblings are being ignored.
 
 generate_contour closely related to scanning.
 
