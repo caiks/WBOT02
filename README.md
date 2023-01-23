@@ -1976,7 +1976,7 @@ lengthsSkewness: 0.81324
 lengthsKurtosisExcess: 0.306415
 lengthsHyperSkewness: 6.05574
 ```
-The mean path length has jumped to 18.7 with a maximum of 50 - by far the highest seen by this stage. There is a high deviation and positive skew. Looking at the length map suggests, however, that much of the *model* is concentrated on the dark regions -
+The mean path length has jumped to 18.7 with a modal length considerably less at 15, but with a maximum length of 50 - by far the highest seen by this stage. There is a high deviation and positive skew. Looking at the length map suggests, however, that much of the *model* is concentrated on the dark regions -
 
 ![contour004_025_len_position](images/contour004_025_len_position.png) 
 
@@ -1984,8 +1984,9 @@ Like *model* 60, *model* 25 does not appear to be as detailed in high entropy ar
 
 ![contour004_025_position](images/contour004_025_position.png) 
 
+Possibly adding the unique frame and minimum entropy constraints would make the *model* more representative of below maximum frequency features, but the *model* would probably be no more normal than *model* 60. 
 
-mode 4
+To make a more balanced *model* able to capture frequent features we introduce the idea of tiling. We will still scan a range much larger than a single frame, but rather than finding the top hotspots in the whole area, we will choose a top hotspot for per tile, where a tile defaults to a quarter of a frame. Tiling modes aim to solve the convolution problem but without the excessive focus on very frequent features.
 
 mention the tiles are equal to half a frame - ie the region around a hotspot is of the sam magnitude as the scale 
 
