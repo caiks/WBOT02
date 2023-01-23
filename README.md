@@ -1964,7 +1964,26 @@ Scanned actual-potential *likelihood* mode (4) first takes from the image a reco
 
 This process is highly compute intensive so the work is split into threads. The time taken depends on the configuration. Larger scans may require processing in the cloud.
 
-The results for various configurations can be seen in the [table](#Model_table) above. 
+The results for various configurations can be seen in the [table](#Model_table) above. All mode 4 use the quantile *valency* (or 'bucketed') `Record::valent` method except for *model* 25 which uses fixed *valency*  `Record::valentFixed`. The bucketed results have a multiplier of around 1.8, which is considerably lower than the bucketed non-scanned actual-potential *likelihood* mode (3) multiplier of around 2.2. The fixed *model* 25 also has a lower multiplier of 1.58 compared to 1.69 for *model* 60, although note that *model* 25 does not have the minimum entropy constraint.
+
+*Model* 25 also has the highest growth rate so far of 1.221 as well as the lowest multiplier. These are the statistics -
+```
+lengthsDist: {(1,6),(2,13),(3,23),(4,42),(5,105),(6,152),(7,285),(8,409),(9,626),(10,994),(11,1306),(12,1673),(13,1963),(14,1948),(15,2081),(16,1991),(17,1829),(18,1579),(19,1483),(20,1332),(21,1131),(22,938),(23,892),(24,782),(25,739),(26,607),(27,585),(28,572),(29,492),(30,428),(31,456),(32,375),(33,301),(34,288),(35,323),(36,260),(37,173),(38,144),(39,95),(40,64),(41,41),(42,60),(43,12),(44,6),(45,8),(46,3),(47,3),(48,7),(49,3),(50,3)}
+lengthsCount: 29631
+lengthsMean: 18.7286
+lengthsDeviation: 7.35214
+lengthsSkewness: 0.81324
+lengthsKurtosisExcess: 0.306415
+lengthsHyperSkewness: 6.05574
+```
+The mean path length has jumped to 18.7 with a maximum of 50 - by far the highest seen by this stage. There is a high deviation and positive skew. Looking at the length map suggests, however, that much of the *model* is concentrated on the dark regions -
+
+![contour004_025_len_position](images/contour004_025_len_position.png) 
+
+Like *model* 60, *model* 25 does not appear to be as detailed in high entropy areas as random mode *models* -
+
+![contour004_025_position](images/contour004_025_position.png) 
+
 
 mode 4
 
