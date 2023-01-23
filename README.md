@@ -1954,10 +1954,15 @@ seems to be considerably more complex than actual-potential *likelihood* mode *m
 
 ![contour004_060_position](images/contour004_060_position.png) 
 
-
 <a name="Scanned_models"></a>
 
 ##### Scanned models
+
+The very high filter ratio of the actual-potential *likelihood* mode (3) *model* 60 of 1 to 400 reduces the *decomposition* path step multiplier to the smallest seen so far. This suggests that in the limit a complete scan of the all of the frames within the random range would give us the smallest possible multiplier. Scanned actual-potential *likelihood* mode (4) takes from the image a record equal to the entire scanning area and then scans for each sub-record of *substrate*. For each sub-record it *applies* the *model* to determine the *slice* and thence the actual-potential *likelihood* pair. Then this large list is sorted and the topmost frames are taken for *events* with the proviso that the centres of the frames are at least a certain fixed fraction of a frame apart from each other. The `separation` parameter defines this distance. It defaults to half of a frame. The set of topmost frames are highlighted if the GUI is visible. The top frame's centre then becomes the centre for the next scan. 
+
+This process is highly compute intensive so the work is split into threads. The time taken depends on the configuration. Larger scans may require processing in the cloud.
+
+The results for various configurations can be seen in the [table](#Model_table) above. 
 
 mode 4
 
@@ -1965,7 +1970,9 @@ mention the tiles are equal to half a frame - ie the region around a hotspot is 
 
 check that 21-24 all have same multiplier
 
-growth rates of models 17 and 20 with a different mode initial are intermediate.
+growth rates of models 17 and 20 with a different mode initial are intermediate. Remove them?
+
+remove the models with sizes not equal to 1m? Simply ignore them. Ignore all bucketed scanned.
 
 Probably want a multiplier around 2 ie both on-diagonal, as well as regular spaced hotspots. Too small a multiplier suggests frequent siblings are being ignored.
 
@@ -1974,6 +1981,8 @@ generate_contour closely related to scanning.
 performance challenge
 
 Perhaps the attention mechanism can set the frame based on scanning the buffer for size and position to find the longest path model like hotspot scan in WOTBOT.
+
+Model 60 does not seem very rich. Compare position maps. Suggests case for tiling - don't want too much concentration of hotspots.
 
 
 model 29 - tiled
