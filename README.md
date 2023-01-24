@@ -1901,7 +1901,7 @@ It seems that selecting for longer paths does concentrate the *model* into hotsp
 ```
 The growth rate and multiplier are almost the same as for *model* 16. Again, the statistics show that *model* 18 is slightly more normal.
 
-Again, to test fixed *valency* we made another experiment in *model* 60 but with the extra constraints of minimum entropy, minimum *diagonal* and unique frames. More importantly than that, we strengthened the filtering from a factor of 1 in 5 to 1 in 400. This was in order to see if actual-potential *likelihood* mode 3 could run as efficiently as the scanning modes, [discussed below](#Scanned_models). It ran with 48 Film Noir videos using the following configuration, `model060.json` -
+Again, to test fixed *valency* we made another experiment in *model* 60 but with the extra constraints of minimum entropy, minimum *diagonal* and unique frames. More importantly than that, we strengthened the filtering from a factor of 5 to 1 to 400 to 1. This was in order to see if actual-potential *likelihood* mode 3 could run as efficiently as the scanning modes, [discussed below](#Scanned_models). It ran with 48 Film Noir videos using the following configuration, `model060.json` -
 ```
 {
 	"model" : "model060",
@@ -1970,7 +1970,7 @@ Scanned actual-potential *likelihood* mode (4) first takes from the image a reco
 
 This process is highly compute intensive so the work is split into threads. The time taken depends on the configuration. Larger scans may require processing in the cloud.
 
-*Model* 25 runs in `actor002` grabbing the screen and starting around 2 minutes into this [youtube Film Noir video list](https://www.youtube.com/watch?v=wOQeqcPocsQ&list=PLuxkWJnOMvb1idkvh5ovFAopTXu4PhOjV&index=3). This is the configuration for *model* 25 -
+*Model* 25 runs in `actor002`, grabbing the screen. It was started around 2 minutes into this [youtube Film Noir video list](https://www.youtube.com/watch?v=wOQeqcPocsQ&list=PLuxkWJnOMvb1idkvh5ovFAopTXu4PhOjV&index=3). This is the configuration for *model* 25 -
 ```
 {
 	"model" : "model025",
@@ -1995,11 +1995,11 @@ This process is highly compute intensive so the work is split into threads. The 
 	"warning_action" : false
 }
 ```
-There are around `106 * 80 = 8,480` *model applications*. Of these the top 10 frames are selected for *modelling*. This ratio is around twice that of non-scanned  *model* 60, but scan area is localised to the centre, so is more path dependent on the action.
+The scan consists of `106 * 80 = 8,480` *model applications*. Of these, the top 10 actual-potential *likelihood* *slices* are selected for *modelling*. The factor of 840 to 1 is more than twice that of the non-scanned *model* 60, but the scan area is more localised to the centre, so the *model* is more path dependent on the action as the centre moves around.
 
-The results for various configurations can be seen in the [table](#Model_table) above. All mode 4 *models* use the quantile *valency* (or 'bucketed') `Record::valent` method except for *model* 25 which uses the fixed *valency*  `Record::valentFixed` method. The bucketed results have multipliers of around 1.8, which is considerably lower than the bucketed non-scanned actual-potential *likelihood* mode (3) *model* multipliers of around 2.2. The fixed *model* 25 also has a lower multiplier of 1.58 compared to 1.69 for *model* 60, although note that *model* 25 does not have the minimum entropy constraint.
+The results for various configurations can be seen in the [table](#Model_table) above. All mode 4 *models* use the quantile *valency* (or 'bucketed') `Record::valent` method except for *model* 25 which uses the fixed *valency*  `Record::valentFixed` method. The bucketed results have multipliers of around 1.8, which is considerably lower than the bucketed non-scanned actual-potential *likelihood* mode (3) *model* multipliers of around 2.2. (Note that *models* 17 and 20 have initial *models* in non-scanned actual-potential *likelihood* mode and potential *likelihood* mode respectively, and so have intermediate multipliers.) The fixed *model* 25 also has a lower multiplier of 1.58 compared to 1.69 for *model* 60, although note that *model* 25 does not have the minimum entropy constraint. 
 
-*Model* 25 also has the highest growth rate so far of 1.221 as well as the lowest multiplier. These are the *slice* path length statistics -
+The scanned actual-potential *likelihood* mode (4) growth rates tend to be similar to those of the non-scanned actual-potential *likelihood* mode (3) *models* with the exception of *model* 25 which has the highest growth rate so far of 1.221 as well as the lowest multiplier. These are the *slice* path length statistics -
 ```
 lengthsDist: {(1,6),(2,13),(3,23),(4,42),(5,105),(6,152),(7,285),(8,409),(9,626),(10,994),(11,1306),(12,1673),(13,1963),(14,1948),(15,2081),(16,1991),(17,1829),(18,1579),(19,1483),(20,1332),(21,1131),(22,938),(23,892),(24,782),(25,739),(26,607),(27,585),(28,572),(29,492),(30,428),(31,456),(32,375),(33,301),(34,288),(35,323),(36,260),(37,173),(38,144),(39,95),(40,64),(41,41),(42,60),(43,12),(44,6),(45,8),(46,3),(47,3),(48,7),(49,3),(50,3)}
 lengthsCount: 29631
@@ -2026,6 +2026,8 @@ Possibly adding the unique frame and minimum entropy constraints would make the 
 To make a more balanced *model* able to capture frequent features we introduce the idea of tiling. We will still scan a range much larger than a single frame, but rather than finding the top hotspots in the whole scan area, we will choose a top hotspot per tile, where a tile defaults to a quarter of a frame. Once we have identified each tile's hotspot we use mode 2 potential *likelihood* to select the topmost of these hotspots for *modelling*. In this way we expect the growth will be higher then for scanned actual-potential *likelihood* mode (4), but the multiplier will be similar or a little higher (although not so high as the random mode *models*) and the *model* will be more normally distributed. Tiling modes aim to solve the convolution problem but without excessive focus on very frequent features nor excessive negligence of moderately infrequent features.
 
 mention the tiles are equal to half a frame - ie the region around a hotspot is of the sam magnitude as the scale 
+
+the resultant videos are often run in mode 4 scan for demo purposes with a small scan area of one tile for snapping manual browsing to a feature
 
 check that 21-24 all have same multiplier
 
