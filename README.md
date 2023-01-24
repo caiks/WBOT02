@@ -1331,9 +1331,9 @@ Clearly the smaller scale *model* captures smaller features more closely.
 
 #### actor002 and actor003 models
 
-Now let us consider some of the *models* obtained by `actor002` and `actor003`. Unlike the `actor001` *models* we have varied both the training data and the *modelling* modes and configuration. Later on we will be experimenting with different *substrates* and active structures. There is a gradual accumulation of understanding with each new experiment. So the order of the *models*, which is roughly given by the *model* number, is not necessarily the order in which the issues are presented below. Later information raised questions about earlier experiments and suggested refinements thereof. This also means that it is soemtimes difficult to make hard and fast conclusions, even if there is a definite sense of progress.
+Now let us consider some of the *models* obtained by `actor002` and `actor003`. Unlike the `actor001` *models* we have varied both the training data and the *modelling* modes and configurations. Later on we will be experimenting with different *substrates* and active structures. There is a gradual accumulation of understanding with each new experiment. So the order of the *models*, which is roughly given by the *model* number, is not necessarily the order in which the issues are presented below. Later information raised questions about earlier experiments and suggested refinements thereof. This also means that it is sometimes difficult to make hard and fast conclusions, even if there is a definite sense of progress.
 
-Note that a selection of screenshots and contour maps are included in the discussion below, but this is only a subset available in the [WBOT02 repository images subdirectory](images) and the [WBOT02 workspace repository](https://github.com/caiks/WBOT02_ws).
+Note that a selection of screenshots and contour maps are included in the discussion below, but this is only a subset of the images available in the [WBOT02 repository images subdirectory](images) and the [WBOT02 workspace repository](https://github.com/caiks/WBOT02_ws).
 
 ##### Scales
 
@@ -1970,7 +1970,7 @@ Scanned actual-potential *likelihood* mode (4) first takes from the image a reco
 
 This process is highly compute intensive so the work is split into threads. The time taken depends on the configuration. Larger scans may require processing in the cloud.
 
-The results for various configurations can be seen in the [table](#Model_table) above. All mode 4 *models* use the quantile *valency* (or 'bucketed') `Record::valent` method except for *model* 25 which uses the fixed *valency*  `Record::valentFixed` method. The bucketed results have a multiplier of around 1.8, which is considerably lower than the bucketed non-scanned actual-potential *likelihood* mode (3) *model* multipliers of around 2.2. The fixed *model* 25 also has a lower multiplier of 1.58 compared to 1.69 for *model* 60, although note that *model* 25 does not have the minimum entropy constraint.
+The results for various configurations can be seen in the [table](#Model_table) above. All mode 4 *models* use the quantile *valency* (or 'bucketed') `Record::valent` method except for *model* 25 which uses the fixed *valency*  `Record::valentFixed` method. The bucketed results have multipliers of around 1.8, which is considerably lower than the bucketed non-scanned actual-potential *likelihood* mode (3) *model* multipliers of around 2.2. The fixed *model* 25 also has a lower multiplier of 1.58 compared to 1.69 for *model* 60, although note that *model* 25 does not have the minimum entropy constraint.
 
 *Model* 25 also has the highest growth rate so far of 1.221 as well as the lowest multiplier. These are the *slice* path length statistics -
 ```
@@ -1990,13 +1990,13 @@ Like *model* 60, *model* 25 does not appear to be as detailed in high entropy ar
 
 ![contour004_025_position](images/contour004_025_position.png) 
 
-Possibly adding the unique frame and minimum entropy constraints would make the *model* more representative of below maximum frequency features, but the *model* would probably be no more normal than *model* 60. 
+Possibly adding the unique frame and minimum entropy constraints would make the *model* more representative of below maximum frequency features by removing the emphasis on very long paths. The hyper-skew, however, might go from very positive to very negative, and the *model* would probably be no more normal than *model* 60.
 
 <a name="Tiled_scanned_models"></a>
 
 ##### Tiled scanned models
 
-To make a more balanced *model* able to capture frequent features we introduce the idea of tiling. We will still scan a range much larger than a single frame, but rather than finding the top hotspots in the whole area, we will choose a top hotspot for per tile, where a tile defaults to a quarter of a frame. Tiling modes aim to solve the convolution problem but without the excessive focus on very frequent features.
+To make a more balanced *model* able to capture frequent features we introduce the idea of tiling. We will still scan a range much larger than a single frame, but rather than finding the top hotspots in the whole scan area, we will choose a top hotspot per tile, where a tile defaults to a quarter of a frame. Once we have identified each tile's hotspot we use mode 2 potential *likelihood* to select the topmost of these hotspots for *modelling*. In this way we expect the growth will be higher then for scanned actual-potential *likelihood* mode (4), but the multiplier will be similar or a little higher (although not so high as the random mode *models*) and the *model* will be more normally distributed. Tiling modes aim to solve the convolution problem but without excessive focus on very frequent features nor excessive negligence of moderately infrequent features.
 
 mention the tiles are equal to half a frame - ie the region around a hotspot is of the sam magnitude as the scale 
 
