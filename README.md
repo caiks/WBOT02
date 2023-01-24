@@ -1995,6 +1995,7 @@ This process is highly compute intensive so the work is split into threads. The 
 	"warning_action" : false
 }
 ```
+There are around `106 * 80 = 8,480` *model applications*. Of these the top 10 frames are selected for *modelling*. This ratio is around twice that of non-scanned  *model* 60, but scan area is localised to the centre, so is more path dependent on the action.
 
 The results for various configurations can be seen in the [table](#Model_table) above. All mode 4 *models* use the quantile *valency* (or 'bucketed') `Record::valent` method except for *model* 25 which uses the fixed *valency*  `Record::valentFixed` method. The bucketed results have multipliers of around 1.8, which is considerably lower than the bucketed non-scanned actual-potential *likelihood* mode (3) *model* multipliers of around 2.2. The fixed *model* 25 also has a lower multiplier of 1.58 compared to 1.69 for *model* 60, although note that *model* 25 does not have the minimum entropy constraint.
 
