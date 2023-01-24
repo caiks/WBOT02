@@ -1331,6 +1331,10 @@ Clearly the smaller scale *model* captures smaller features more closely.
 
 #### actor002 and actor003 models
 
+Now let us consider some of the *models* obtained by `actor002` and `actor003`. Unlike the `actor001` *models* we have varied both the training data and the *modelling* modes and configuration. Later on we will be experimenting with different *substrates* and active structures. There is a gradual accumulation of understanding with each new experiment. So the order of the *models*, which is roughly given by the *model* number, is not necessarily the order in which the issues are presented below. Later information raised questions about earlier experiments and suggested refinements thereof. This also means that it is soemtimes difficult to make hard and fast conclusions, even if there is a definite sense of progress.
+
+Note that a selection of screenshots and contour maps are included in the discussion below, but this is only a subset available in the [WBOT02 repository images subdirectory](images) and the [WBOT02 workspace repository](https://github.com/caiks/WBOT02_ws).
+
 ##### Scales
 
 The scales in `actor001` were integral powers of a half, `(1/2)^x`, i.e. 1.0, 0.5, 0.25 and 0.125. In the following we expand the set of scales to half-integral powers of a half, i.e. 1.0, 0.707, 0.5, 0.354, 0.25, 0.177, 0.125, 0.088 and 0.0625 (= 1/16). At the smallest scale of 1/16th, a 30 pixel frame size corresponds to a 480 pixel image height. 
@@ -1966,9 +1970,9 @@ Scanned actual-potential *likelihood* mode (4) first takes from the image a reco
 
 This process is highly compute intensive so the work is split into threads. The time taken depends on the configuration. Larger scans may require processing in the cloud.
 
-The results for various configurations can be seen in the [table](#Model_table) above. All mode 4 use the quantile *valency* (or 'bucketed') `Record::valent` method except for *model* 25 which uses fixed *valency*  `Record::valentFixed`. The bucketed results have a multiplier of around 1.8, which is considerably lower than the bucketed non-scanned actual-potential *likelihood* mode (3) multiplier of around 2.2. The fixed *model* 25 also has a lower multiplier of 1.58 compared to 1.69 for *model* 60, although note that *model* 25 does not have the minimum entropy constraint.
+The results for various configurations can be seen in the [table](#Model_table) above. All mode 4 *models* use the quantile *valency* (or 'bucketed') `Record::valent` method except for *model* 25 which uses the fixed *valency*  `Record::valentFixed` method. The bucketed results have a multiplier of around 1.8, which is considerably lower than the bucketed non-scanned actual-potential *likelihood* mode (3) *model* multipliers of around 2.2. The fixed *model* 25 also has a lower multiplier of 1.58 compared to 1.69 for *model* 60, although note that *model* 25 does not have the minimum entropy constraint.
 
-*Model* 25 also has the highest growth rate so far of 1.221 as well as the lowest multiplier. These are the statistics -
+*Model* 25 also has the highest growth rate so far of 1.221 as well as the lowest multiplier. These are the *slice* path length statistics -
 ```
 lengthsDist: {(1,6),(2,13),(3,23),(4,42),(5,105),(6,152),(7,285),(8,409),(9,626),(10,994),(11,1306),(12,1673),(13,1963),(14,1948),(15,2081),(16,1991),(17,1829),(18,1579),(19,1483),(20,1332),(21,1131),(22,938),(23,892),(24,782),(25,739),(26,607),(27,585),(28,572),(29,492),(30,428),(31,456),(32,375),(33,301),(34,288),(35,323),(36,260),(37,173),(38,144),(39,95),(40,64),(41,41),(42,60),(43,12),(44,6),(45,8),(46,3),(47,3),(48,7),(49,3),(50,3)}
 lengthsCount: 29631
@@ -1978,7 +1982,7 @@ lengthsSkewness: 0.81324
 lengthsKurtosisExcess: 0.306415
 lengthsHyperSkewness: 6.05574
 ```
-The mean path length has jumped to 18.7 with a modal length considerably less at 15, but with a maximum length of 50 - by far the highest seen by this stage. There is a high deviation and positive skew. Looking at the length map suggests, however, that much of the *model* is concentrated on the dark regions -
+The mean path length has jumped to 18.7 with a modal length considerably less at 15, but with a maximum length of 50 - by far the highest seen by this stage. These statistics are confirmed by a high deviation and large positive skew. Looking at the length map suggests, however, that much of the *model* is concentrated on the dark regions -
 
 ![contour004_025_len_position](images/contour004_025_len_position.png) 
 
