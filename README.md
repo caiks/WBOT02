@@ -1687,6 +1687,8 @@ There is still much progress required to be truly representative, however -
 
 ![contour004_053_representation](images/contour004_053_representation.png) 
 
+The position maps for *models* 52 and 52 show a certain amount of repetition or echoing of the head and neck *modelling* with the translations of the same order of magnitude as the frame. This is probably due to *slices* on different sides of a feature being only distantly related to each other, i.e. the shared common ancestor is near the root. Instead of a gradual transition of relatedness there seems to be a sudden distancing at a certain boundary as can be seen in the change in hue. This is probably because the common ancestor's children *slices* have different central features, e.g. very dark or very light.
+
 The growth rate of around 0.75 *fuds* per *size* per threshold is well below the theoretical maximum of 2.0 for a perfectly efficient *classification* of *events* over a *bivalent diagonalised decomposition*. So, as well as larger *models*, we would like modes with higher growth rates. 
 
 In addition to higher growth rates, we would like to avoid duplication within the *model* of slightly translated but fairly similar regions around hotspots. That is, we would like to see very localised hotspots with very long path lengths at the hotspot itself and very short path lengths nearby and in-between. In this way we will avoid 'wasting' *history* on endlessly duplicated but poorly resolved features. In the path length maps for the random mode *models* above, the brightness is fairly uniform with small variations. We would like to see more of a constellation of point-like instensities. In a sense, this is the opposite to convolution - instead of weighting every location equally, we focus on a handful of places that carry the most information, thereby shrinking the vast *substrate volume*.
@@ -1985,6 +1987,10 @@ Like *model* 60, *model* 25 does not appear to be as detailed in high entropy ar
 ![contour004_025_position](images/contour004_025_position.png) 
 
 Possibly adding the unique frame and minimum entropy constraints would make the *model* more representative of below maximum frequency features, but the *model* would probably be no more normal than *model* 60. 
+
+<a name="Tiled_scanned_models"></a>
+
+##### Tiled scanned models
 
 To make a more balanced *model* able to capture frequent features we introduce the idea of tiling. We will still scan a range much larger than a single frame, but rather than finding the top hotspots in the whole area, we will choose a top hotspot for per tile, where a tile defaults to a quarter of a frame. Tiling modes aim to solve the convolution problem but without the excessive focus on very frequent features.
 
