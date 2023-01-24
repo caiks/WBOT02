@@ -1970,6 +1970,32 @@ Scanned actual-potential *likelihood* mode (4) first takes from the image a reco
 
 This process is highly compute intensive so the work is split into threads. The time taken depends on the configuration. Larger scans may require processing in the cloud.
 
+*Model* 25 runs in `actor002` grabbing the screen and starting around 2 minutes into this [youtube Film Noir video list](https://www.youtube.com/watch?v=wOQeqcPocsQ&list=PLuxkWJnOMvb1idkvh5ovFAopTXu4PhOjV&index=3). This is the configuration for *model* 25 -
+```
+{
+	"model" : "model025",
+	"interval" : 125,
+	"x" : 870,
+	"width" : 560,
+	"mode" : "mode004",
+	"valency_fixed" : true,
+	"event_size" : 10,
+	"threads" : 6,
+	"scale" : 0.177,
+	"range_centreX" : 0.236,
+	"range_centreY" :0.177,
+	"event_maximum" : 1000000,
+	"lag_threshold" : 3,
+	"motion_detection_threshold" : 25,
+	"interactive" : false,
+	"logging_event" : true,
+	"logging_event_factor" : 1000,
+	"summary_active" : true,
+	"logging_action" : false,
+	"warning_action" : false
+}
+```
+
 The results for various configurations can be seen in the [table](#Model_table) above. All mode 4 *models* use the quantile *valency* (or 'bucketed') `Record::valent` method except for *model* 25 which uses the fixed *valency*  `Record::valentFixed` method. The bucketed results have multipliers of around 1.8, which is considerably lower than the bucketed non-scanned actual-potential *likelihood* mode (3) *model* multipliers of around 2.2. The fixed *model* 25 also has a lower multiplier of 1.58 compared to 1.69 for *model* 60, although note that *model* 25 does not have the minimum entropy constraint.
 
 *Model* 25 also has the highest growth rate so far of 1.221 as well as the lowest multiplier. These are the *slice* path length statistics -
