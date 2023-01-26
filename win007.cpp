@@ -103,6 +103,7 @@ Win007::Win007(const std::string& configA,
 		_interactive = ARGS_BOOL(interactive);
 		_interactiveExamples = ARGS_BOOL(interactive_examples);
 		_interactiveEntropies = ARGS_BOOL(interactive_entropies);
+		_guiLengthMaximum = ARGS_INT(length_maximum);
 		_guiFrameRed = ARGS_BOOL(red_frame);
 		_updateDisable = ARGS_BOOL(disable_update);
 		_activeLogging = ARGS_BOOL(logging_active);
@@ -1187,6 +1188,7 @@ void Win007::act()
 			auto rr = hr->arr;	
 			auto rr1 = hr1->arr;	
 			auto& sizes = activeA.historySlicesSize;
+			auto& lengths = activeA.historySlicesLength;
 			auto& dr = *activeA.decomp;		
 			auto& cv = dr.mapVarParent();
 			auto& vi = dr.mapVarInt();
@@ -1202,6 +1204,11 @@ void Win007::act()
 			auto ll = drmul(jj,dr,cap);	
 			if (ll && ll->size())
 				slice = ll->back();
+			if (_guiLengthMaximum)
+			{
+				while (lengths[slice] > _guiLengthMaximum)
+					slice = cv[slice];					
+			}
 			// ancestors
 			if (cv.count(slice) && sizes.count(slice))
 			{
