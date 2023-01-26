@@ -787,6 +787,10 @@ In the second row the sibling *slice* representations and their *likelihoods* ar
 
 The third row shows the ancestor *slices*, with the current *slice* shown first, then its parent, grandparent, great-grandparent, et cetera to the root *slice*. If there are too many ancestors the number of missing ancestors is shown at the right.  If all of the ancestors are visible, the sequence shows from right to left the increasing specialisation of the *slice* along its path through the *model*, from the most general at the root, which is the average of all *events*, to the *slice* itself at the leaf.
 
+The user can limit the path lengths of the *slices* by adding `length_maximum` parameter. This allows browsing near the root *fud*. For example, in this case the parameter is set to 1 -
+
+![actor002_model036_Film_Noir_001](images/actor002_model036_Film_Noir_001.png) 
+
 <a name="model013"></a>
  
 To show a selection of example *events* from the current *slice*, set `interactive_examples` in the configuration. (We can also set `multiplier` to 1 to show smaller images of the example *events*.) For example, `actor.json` -
@@ -1691,7 +1695,19 @@ There is still much progress required to be truly representative, however -
 
 ![contour004_053_representation](images/contour004_053_representation.png) 
 
-The position maps for *models* 52 and 52 show a certain amount of repetition or echoing of the head and neck *modelling* with the translations of the same order of magnitude as the frame. This is probably due to *slices* on different sides of a feature being only distantly related to each other, i.e. the shared common ancestor is near the root. Instead of a gradual transition of relatedness there seems to be a sudden distancing at a certain boundary as can be seen in the change in hue. This is probably because the common ancestor's children *slices* have different central features, e.g. very dark or very light.
+The position maps for *models* 52 and 52 show a certain amount of repetition or echoing of the head and neck *modelling* with the translations of the same order of magnitude as the frame. This is probably due to *slices* on different sides of a feature being only distantly related to each other, i.e. the shared common ancestor is near the root. Instead of a gradual transition of relatedness there seems to be a sudden distancing at a certain boundary as can be seen in the change in hue. This is probably because the common ancestor's children *slices* have different central features, e.g. different foci of attention. If we browse the two *models* at the root with the added configuration `"length_maximum" : 1` in `actor002` we can see that the initial randomness has produced somewhat different outcomes. In *model* 52, there are three *on-diagonal* siblings -
+
+![actor002_model052_Film_Noir_001](images/actor002_model052_Film_Noir_001.png) 
+
+In *model* 53, there are four *on-diagonal* siblings, with more lopsidedness -
+ 
+![actor002_model053_Film_Noir_001](images/actor002_model053_Film_Noir_001.png) 
+
+If we browse *model* 36 we can see that without the minimum entropy constraint there are much greater contrasts between its three *on-diagonal* siblings -
+
+![actor002_model036_Film_Noir_001](images/actor002_model036_Film_Noir_001.png) 
+
+That is, even at the root of the *decomposition*, we can see that the minimum entropy *models* resemble each other more than they resemble *model* 36.
 
 The growth rate of around 0.75 *fuds* per *size* per threshold is well below the theoretical maximum of 2.0 for a perfectly efficient *classification* of *events* over a *bivalent diagonalised decomposition*. So, as well as larger *models*, we would like modes with higher growth rates. 
 
