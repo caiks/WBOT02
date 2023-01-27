@@ -1669,7 +1669,7 @@ lengthsSkewness: 0.124128
 lengthsKurtosisExcess: -0.572394
 lengthsHyperSkewness: 0.68236
 ```
-The growth rate of 0.753 is more in line with *model* 13 which was trained on the Fireman Sam videos rather than the Film Noir videos. The *slice* step multiplier is now 3.08, also close to *model* 13. The hyper-skew is smaller suggesting that the *model* is now much more normal. The darker areas are still *modelled* together (in blue and turquoise in this case), but the brightness of the contour map is more even. This suggests that there are fewer very long *slice* paths - 
+The growth rate of 0.753 is more in line with *model* 13 which was trained on the Fireman Sam videos rather than the Film Noir videos. The *slice* step multiplier is now 3.08, also close to *model* 13. The hyper-skew is smaller than that of *model* 36, suggesting that the *model* is now much more normal. The darker areas are still *modelled* together (in blue and turquoise in this case), but the brightness of the contour map is more even. This suggests that there are fewer very long *slice* paths - 
 
 ![contour004_052_len_position](images/contour004_052_len_position.png) 
 
@@ -1687,15 +1687,9 @@ We can see that the hyper-skew is very small now suggesting that *model* 53 is e
 
 ![contour004_053_len_position](images/contour004_053_len_position.png) 
 
-The colouring of the *model* is different from *model* 52, but these two *models* are certainly more similar to each other than they are to *model* 36, so clearly the extra constraints are important for the Film Noir fixed *valency* experiments.
+The colouring of the *model* in the position map is different from *model* 52, but these two *models* are certainly more similar to each other than they are to *model* 36, so clearly the extra constraints are important for the Film Noir fixed *valency* experiments. 
 
-There is still much progress required to be truly representative, however -
-
-<a name="contour004_053_representation"></a>
-
-![contour004_053_representation](images/contour004_053_representation.png) 
-
-The position maps for *models* 52 and 52 show a certain amount of repetition or echoing of the head and neck *modelling* with the translations of the same order of magnitude as the frame. This is probably due to *slices* on different sides of a feature being only distantly related to each other, i.e. the shared common ancestor is near the root. Instead of a gradual transition of relatedness there seems to be a sudden distancing at a certain boundary as can be seen in the change in hue. This is probably because the common ancestor's children *slices* have different central features, e.g. different foci of attention. If we browse the two *models* at the root with the added configuration `"length_maximum" : 1` in `actor002` we can see that the initial randomness has produced somewhat different outcomes. In *model* 52, there are three *on-diagonal* siblings -
+We can also see this if we browse the two *models* at the root with the added configuration `"length_maximum" : 1` in `actor002` we can see that the initial randomness has produced somewhat different outcomes. In *model* 52, there are three *on-diagonal* siblings -
 
 ![actor002_model052_Film_Noir_001](images/actor002_model052_Film_Noir_001.png) 
 
@@ -1708,6 +1702,14 @@ If we browse *model* 36 we can see that without the minimum entropy constraint t
 ![actor002_model036_Film_Noir_001](images/actor002_model036_Film_Noir_001.png) 
 
 That is, even at the root of the *decomposition*, we can see that the minimum entropy *models* resemble each other more than they resemble *model* 36.
+
+There is still much progress required, however, as can be seen by the representation of *model* 53 -
+
+<a name="contour004_053_representation"></a>
+
+![contour004_053_representation](images/contour004_053_representation.png) 
+
+The position maps for *models* 52 and 52 show a certain amount of repetition or echoing of the head and neck *modelling* with translations of the same order of magnitude as the frame. This is probably due to *slices* on different sides of a feature being only distantly related to each other, i.e. the shared common ancestor is near the root. Gradual transitions of relatedness give way to a sudden distancing at a certain boundary as can be seen in the change in hue. This is probably because the common ancestor's children *slices* have differing gross brightness distribution. 
 
 The growth rate of around 0.75 *fuds* per *size* per threshold is well below the theoretical maximum of 2.0 for a perfectly efficient *classification* of *events* over a *bivalent diagonalised decomposition*. So, as well as larger *models*, we would like modes with higher growth rates. 
 
