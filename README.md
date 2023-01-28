@@ -1547,6 +1547,8 @@ The path length image for *model* 11 shows signs of structure -
 
 ![contour001_012_length](images/contour001_012_length.png) 
 
+<a name="contour001_013_length"></a>
+
 The path length image for *model* 13 is beginning to show the outline of Sam's hat and of the mirror behind -
 
 ![contour001_013_length](images/contour001_013_length.png) 
@@ -1613,6 +1615,8 @@ The hyper-skew is considerably higher and the maximum path length is also higher
 ![contour004](images/contour004.png) 
 
 appears to *model* 36 -
+
+<a name="contour004_036_len_position"></a>
 
 ![contour004_036_len_position](images/contour004_036_len_position.png) 
 
@@ -1689,7 +1693,7 @@ We can see that the hyper-skew is very small now suggesting that *model* 53 is e
 
 The colouring of the *model* in the position map is different from *model* 52, but these two *models* are certainly more similar to each other than they are to *model* 36, so clearly the extra constraints are important for the Film Noir fixed *valency* experiments. 
 
-We can also see this if we browse the two *models* at the root with the added configuration `"length_maximum" : 1` in `actor002` we can see that the initial randomness has produced somewhat different outcomes. In *model* 52, there are three *on-diagonal* siblings -
+We can also see this if we browse the two *models* at the root with the added configuration `"length_maximum" : 1` in `actor002` - the initial randomness has produced somewhat different outcomes. In *model* 52, there are three *on-diagonal* siblings -
 
 ![actor002_model052_Film_Noir_001](images/actor002_model052_Film_Noir_001.png) 
 
@@ -1697,21 +1701,25 @@ In *model* 53, there are four *on-diagonal* siblings, with more lopsidedness -
  
 ![actor002_model053_Film_Noir_001](images/actor002_model053_Film_Noir_001.png) 
 
-If we browse *model* 36 we can see that without the minimum entropy constraint there are much greater contrasts between its three *on-diagonal* siblings -
+If we browse *model* 36, however, we can see that without the minimum entropy constraint there are much greater contrasts between its three *on-diagonal* siblings -
 
 ![actor002_model036_Film_Noir_001](images/actor002_model036_Film_Noir_001.png) 
 
 That is, even at the root of the *decomposition*, we can see that the minimum entropy *models* resemble each other more than they resemble *model* 36.
 
-TODO mention that the root siblings might explain why we get quite sharp lines in the length images - the lines occur where the point-like concentration of underlying is that put the slice in off-diagonal siblings.
+The position maps for *models* 52 and 52 show a certain amount of repetition or echoing of the head and neck *modelling* with translations of the same order of magnitude as the frame. This is probably due to *slices* on different sides of a feature being only distantly related to each other, i.e. the shared common ancestor is near the root. Gradual transitions of relatedness give way to a sudden distancing at a certain boundary as can be seen in the change in hue. This is probably because the common ancestor's children *slices* have differing gross brightness distribution. 
 
-There is still much progress required, however, as can be seen by the representation of *model* 53 -
+Browsing the root *fud* children *slices* also gives us a clue as to what might explain the quite sharp dull outlines that formed in the length map when we came to the scale used by *model* 13 [above](#contour001_013_length). We can conjecture that the lines occur where the coincidence of the point-like concentration of the root *fud's* *underlying*, which is so evident in some of the *off-diagonal* sibling representations, push the *model* briefly *off-diagonal* into *slices* with low *size*. That is, the root *fud* does not appear to have its *underlying* scattered throughout the frame, but concentrated at the highest *alignments*,
+
+![actor002_model036_Film_Noir_001_extract](images/actor002_model036_Film_Noir_001_extract.png) 
+
+So, as we move across the boundaries between highly related *slices* we sometimes come across these *off-diagonal slices* which are likely to be in shorter paths. The infrequency of these *slices* means that the gradients of the map are steep and only briefly discontinuous.
+
+Although our experiments with scales, the bucketing of *values* and with the minimum entropy, etc, are making some progress, we are still far short of a perfect *model* as can be seen by the representation of *model* 53 -
 
 <a name="contour004_053_representation"></a>
 
 ![contour004_053_representation](images/contour004_053_representation.png) 
-
-The position maps for *models* 52 and 52 show a certain amount of repetition or echoing of the head and neck *modelling* with translations of the same order of magnitude as the frame. This is probably due to *slices* on different sides of a feature being only distantly related to each other, i.e. the shared common ancestor is near the root. Gradual transitions of relatedness give way to a sudden distancing at a certain boundary as can be seen in the change in hue. This is probably because the common ancestor's children *slices* have differing gross brightness distribution. 
 
 The growth rate of around 0.75 *fuds* per *size* per threshold is well below the theoretical maximum of 2.0 for a perfectly efficient *classification* of *events* over a *bivalent diagonalised decomposition*. So, as well as larger *models*, we would like modes with higher growth rates. 
 
@@ -1850,9 +1858,9 @@ lengthsSkewness: -0.0742126
 lengthsKurtosisExcess: 0.337508
 lengthsHyperSkewness: -0.0980822
 ```
-The *model* appears to be much more normal than *model* 15, resembling the normal random mode *models* 52 and 53, which were also fixed but required extra constraints. It seems that the filtering of *events* in the potential *likelihood* mode is less susceptible to low entropy frames when using the fixed *valency* method, while still increasing the concentration of hotspots. The similar multiplier, at least, suggests that we can expect the hotspots to be more concentrated than random mode - 
+The *model* appears to be much more normal than *model* 15, resembling the normal random mode *models* 52 and 53, which were also fixed *valency* but required extra constraints. It seems that the filtering of *events* in the potential *likelihood* mode is less susceptible to low entropy frames when using the fixed *valency* method, while still increasing the concentration of hotspots. The similar multiplier, at least, suggests that we can expect the hotspots to be more concentrated than [random mode *model* 36](#contour004_036_len_position) - 
 
-![contour004_038_minent_len_position](images/contour004_038_minent_len_position.png) 
+![contour004_038_len_position](images/contour004_038_len_position.png) 
 
 `mode003` is very similar to `mode002`. Instead of sorting the randomly chosen records by *likelihood* alone, they are sorted first by *slice* path length and then by *likelihood*. This is called actual-potential *likelihood*. We expect that the *model* will be smaller, but that the average path lengths will be longer and possibly the contour map will have more contrast and better resolved hotspots.
 
@@ -1972,11 +1980,11 @@ This is indeed the case. The representation also looks considerably better than 
 
 ![contour004_060_representation](images/contour004_060_representation.png) 
 
-Even so, the hotspots are now perhaps so widely spaced the the *model* is perhaps not rich enough to capture frequent features that are not top frequent. If we compare the *model* position maps without the length brightness, we can see that random mode *model* 53,
+Even so, the hotspots are now so widely spaced that the *model* is perhaps not rich enough to capture frequent features that are not the topmost frequent. If we compare the *model* position maps without the length brightness, we can see that random mode *model* 53,
 
 ![contour004_053_position](images/contour004_053_position.png) 
 
-seems to be considerably more complex than actual-potential *likelihood* mode *model* 60 -
+seems to be somewhat more complex than actual-potential *likelihood* mode *model* 60 -
 
 ![contour004_060_position](images/contour004_060_position.png) 
 
