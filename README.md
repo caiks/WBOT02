@@ -1713,7 +1713,9 @@ Browsing the root *fud* children *slices* also gives us a clue as to what might 
 
 ![actor002_model036_Film_Noir_001_extract](images/actor002_model036_Film_Noir_001_extract.png) 
 
-So, as we move across the boundaries between highly related *slices* we sometimes come across these *off-diagonal slices* which are likely to be in shorter paths. The infrequency of these *slices* means that the gradients of the map are steep and only briefly discontinuous.
+So, as we move across the boundaries between highly related *slices* we sometimes come across these *off-diagonal slices* which are likely to be in shorter paths. The infrequency of *events* in these *slices* means that the gradients of the map are steep and only briefly discontinuous. 
+
+Note that a two *level model* would be less likely to have its ultimate *underlying* concentrated in one region. Its *alignments* would be more global - distributed between regions across the frame. We will consider two *level models* later in the discussion.
 
 Although our experiments with scales, the bucketing of *values* and with the minimum entropy, etc, are making some progress, we are still far short of a perfect *model* as can be seen by the representation of *model* 53 -
 
@@ -2172,6 +2174,8 @@ Mode increases from 16 to 20 and the max from 25 to 30, and the mean from 15.9 t
 Model 49 is definitely less likely to focues on bodies and faces than model 48. Model 47 is not quite as good at faces and bodies as 48 but is better than 49. The higher frequencies of faces and bodies seems to be overshadowed by interesting background patterns. Even if model 50 is no better than model 49 we still seem to have a model that focuses prefereably on the things that interest us. With multi-scale and multi-level and perhaps dynamics we can perhaps increase the focus on human-interesting objects more intensely. README
 
 describe the size-potential fix in modes 6 and 7, referenced above
+
+two *level models*
 
 -->
 
