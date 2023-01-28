@@ -1703,6 +1703,8 @@ If we browse *model* 36 we can see that without the minimum entropy constraint t
 
 That is, even at the root of the *decomposition*, we can see that the minimum entropy *models* resemble each other more than they resemble *model* 36.
 
+TODO mention that the root siblings might explain why we get quite sharp lines in the length images - the lines occur where the point-like concentration of underlying is that put the slice in off-diagonal siblings.
+
 There is still much progress required, however, as can be seen by the representation of *model* 53 -
 
 <a name="contour004_053_representation"></a>
