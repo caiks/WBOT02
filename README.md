@@ -1866,7 +1866,7 @@ The *model* appears to be much more normal than *model* 15, resembling the norma
 
 ![contour004_038_len_position](images/contour004_038_len_position.png) 
 
-This does seem to be the case. The smaller range of hues suggests that the concentration is narrowing and lengthening the *model*, probably by removing simple spatial translations.
+This does seem to be the case. The smaller range of hues suggests that the concentration is narrowing and lengthening the *model* by removing *off-diagonal* siblings.
 
 <a name="Actual-potential_filtered_random_models"></a>
 
@@ -1998,7 +1998,7 @@ seems to be somewhat more complex than actual-potential *likelihood* mode *model
 
 ![contour004_060_position](images/contour004_060_position.png) 
 
-As in the case of potential *likelihood* *model* 38 [above](#Actual-contour004_038_len_position), the smaller range of hues suggests that the concentration is narrowing and lengthening the *model*. Perhaps, however, as well as removing simple spatial translations, we are also beginning to remove some detail.
+As in the case of potential *likelihood* *model* 38 [above](#Actual-contour004_038_len_position), the smaller range of hues suggests that the concentration is narrowing and lengthening the *model*. In the case of actual-potential *likelihood* mode, some of the removed *model* will be simple spatial translations as well as *off-diagonal* siblings. Perhaps, however, we are going too far and are also beginning to remove some interesting detail.
 
 <a name="Scanned_models"></a>
 
