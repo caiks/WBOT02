@@ -2076,9 +2076,9 @@ Possibly adding the unique frame and minimum entropy constraints would make the 
 
 ##### Tiled scanned models
 
-In order to make a more balanced *model* able to capture frequent features, we introduce the idea of tiling. We will still scan a range much larger than a single frame but, rather than finding the top hotspots in the whole scan area, we will choose a top hotspot per tile where a tile defaults to a quarter of a frame. Once we have identified each tile's hotspot we use mode 2 potential *likelihood* to select the topmost of these hotspots for *modelling*. In this way we expect the growth will be higher then for scanned actual-potential *likelihood* mode (4), but the multiplier will be similar or a little higher (although not so high as the random mode *models*) and the *model* will be more normally distributed. The *bivalent* or *trivalent diagonals* often seen in *induction* (e.g. these [root *fuds*](#root_fud_browse)) suggests an ideal multiplier of around 2. Tiling modes aim to solve the convolution problem but without excessive focus on very frequent features nor excessive negligence of moderately infrequent features.
+In order to make a more balanced *model* able to capture frequent features, we introduce the idea of tiling. We will still scan a range much larger than a single frame but, rather than finding the top hotspots in the whole scan area, we will choose a top hotspot per tile where a tile defaults to a quarter of a frame. Once we have identified each tile's hotspot we use mode 2 potential *likelihood* to select the topmost of these hotspots for *modelling*. In this way we expect the growth will be higher then for scanned actual-potential *likelihood* mode (4), but the multiplier will be similar or a little higher (although not so high as the random mode *models*) and the *model* will be more normally distributed. The *bivalent* or *trivalent diagonals* often seen in *induction* (e.g. these [root *fuds*](#root_fud_browse)) suggests an ideal multiplier of around 2. Too small a multiplier suggests frequent siblings are being ignored. Too high a multiplier will dent growth and so produce smaller *models*. Tiling modes aim to solve the convolution problem but without excessive focus on very frequent features nor excessive negligence of moderately infrequent features.
 
-This desire for a balance between reducing the convolution *volume* and having good representations explains why we default the tiles to half a frame - the region around the hotspot is of the same magnitude as the scale of the frame. 
+This desire for a balance between reducing the convolution *volume* and having good representations by regularly spacing hotspots is the reason the tiles default to half a frame - the region around the hotspot will then be of the same magnitude as the scale of the features that can be captured by a frame. 
 
 TODO -
 
@@ -2086,12 +2086,9 @@ model 29 - tiled
 
 the resultant videos are often run in mode 4 scan for demo purposes with a small scan area of one tile for snapping manual browsing to a feature
 
-Probably want a multiplier around 2 ie both on-diagonal, as well as regular spaced hotspots. Too small a multiplier suggests frequent siblings are being ignored.
+Probably want a multiplier around 2 ie both on-diagonal, as well as regular spaced hotspots. 
 
 performance challenge
-
-It is not just the growth rate we should be interested in, but also removing fairly similar parts of the model from neighbouring hotspots. We must have spatial gaps between hotspots. That is the common facial saccade hotspots should form a small set. So, once a region's complete scan includes a very long path slice even if it's likelihood is low then the scan moves to surrounding regions. Do we need to cache path length too? Region size depends on scale.
-
 
 Model 34 onwards - TODO
 
