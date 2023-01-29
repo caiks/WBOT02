@@ -1696,6 +1696,8 @@ The colouring of the *model* in the position map is different from *model* 52, b
 
 We can also see this if we browse the two *models* at the root with the added configuration `"length_maximum" : 1` in `actor002` - the initial randomness has produced somewhat different outcomes. In *model* 52, there are three *on-diagonal* siblings -
 
+<a name="root_fud_browse"></a>
+
 ![actor002_model052_Film_Noir_001](images/actor002_model052_Film_Noir_001.png) 
 
 In *model* 53, there are four *on-diagonal* siblings, with more lopsidedness -
@@ -2005,9 +2007,9 @@ As in the case of potential *likelihood* *model* 38 [above](#Actual-contour004_0
 
 ##### Scanned models
 
-The very high filter ratio of the actual-potential *likelihood* mode (3) *model* 60 of 1 to 400 reduces the *decomposition* path step multiplier to the smallest seen so far (1.69). This suggests that in the limit a complete scan of the all of the frames within the random range would yield us the smallest possible multiplier. 
+The very high filter ratio of the actual-potential *likelihood* mode (3) *model* 60 of 1 to 400 reduces the *decomposition* path step multiplier to the smallest seen so far (1.69). This suggests that in the limit a complete scan of the all of the frames within the random range would yield us the smallest possible multiplier but still have high *model* growth. In other words, we will systematically search for the best locations for wotbot's attention.
 
-Scanned actual-potential *likelihood* mode (4) first takes from the image a record equal to the entire scanning area. Then the *model* is *applied* to each *substrate* sub-record of the scan record in order to determine the *slice* of that frame and thence the actual-potential *likelihood* pair. Then the list of frames is sorted and the topmost are taken for *events*. To avoid a cluster of frames around the most *likely* hotspot, the selection is constrained such that the centres of the frames are at least a certain fixed fraction of a frame apart from each other. The `separation` parameter defines this distance. It defaults to half of a frame. The set of topmost frames are highlighted if the GUI is visible. The top frame's centre then becomes the centre for the next scan. 
+The implementation of the scanned actual-potential *likelihood* mode (4) was based on the implementation of the [generate_contour](#generate_contour) functionality described above. Mode 4 first takes a record equal to the entire scanning area from the given image. Then the current *model* is *applied* to each *substrate* sub-record of the scan record in order to determine the *slice* of that frame and thence the actual-potential *likelihood* pair. Then the list of frames is sorted and the topmost are taken for *events*. To avoid a cluster of frames around the most *likely* hotspot, the selection is constrained such that the centres of the frames are at least a certain fixed fraction of a frame apart from each other. The `separation` parameter defines this distance. It defaults to half of a frame. The set of topmost frames are highlighted if the GUI is visible. The top frame's centre then becomes the centre for the next scan. 
 
 This process is highly compute intensive so the work is split into threads. The time taken depends on the configuration. Larger scans may require processing in the cloud.
 
@@ -2074,30 +2076,19 @@ Possibly adding the unique frame and minimum entropy constraints would make the 
 
 ##### Tiled scanned models
 
-In order to make a more balanced *model* able to capture frequent features, we introduce the idea of tiling. We will still scan a range much larger than a single frame but, rather than finding the top hotspots in the whole scan area, we will choose a top hotspot per tile where a tile defaults to a quarter of a frame. Once we have identified each tile's hotspot we use mode 2 potential *likelihood* to select the topmost of these hotspots for *modelling*. In this way we expect the growth will be higher then for scanned actual-potential *likelihood* mode (4), but the multiplier will be similar or a little higher (although not so high as the random mode *models*) and the *model* will be more normally distributed. Tiling modes aim to solve the convolution problem but without excessive focus on very frequent features nor excessive negligence of moderately infrequent features.
+In order to make a more balanced *model* able to capture frequent features, we introduce the idea of tiling. We will still scan a range much larger than a single frame but, rather than finding the top hotspots in the whole scan area, we will choose a top hotspot per tile where a tile defaults to a quarter of a frame. Once we have identified each tile's hotspot we use mode 2 potential *likelihood* to select the topmost of these hotspots for *modelling*. In this way we expect the growth will be higher then for scanned actual-potential *likelihood* mode (4), but the multiplier will be similar or a little higher (although not so high as the random mode *models*) and the *model* will be more normally distributed. The *bivalent* or *trivalent diagonals* often seen in *induction* (e.g. these [root *fuds*](#root_fud_browse)) suggests an ideal multiplier of around 2. Tiling modes aim to solve the convolution problem but without excessive focus on very frequent features nor excessive negligence of moderately infrequent features.
 
 This desire for a balance between reducing the convolution *volume* and having good representations explains why we default the tiles to half a frame - the region around the hotspot is of the same magnitude as the scale of the frame. 
 
+TODO -
+
+model 29 - tiled
+
 the resultant videos are often run in mode 4 scan for demo purposes with a small scan area of one tile for snapping manual browsing to a feature
-
-check that 21-24 all have same multiplier
-
-growth rates of models 17 and 20 with a different mode initial are intermediate. Remove them?
-
-remove the models with sizes not equal to 1m? Simply ignore them. Ignore all bucketed scanned.
 
 Probably want a multiplier around 2 ie both on-diagonal, as well as regular spaced hotspots. Too small a multiplier suggests frequent siblings are being ignored.
 
-generate_contour closely related to scanning.
-
 performance challenge
-
-Perhaps the attention mechanism can set the frame based on scanning the buffer for size and position to find the longest path model like hotspot scan in WOTBOT.
-
-Model 60 does not seem very rich. Compare position maps. Suggests case for tiling - don't want too much concentration of hotspots.
-
-
-model 29 - tiled
 
 It is not just the growth rate we should be interested in, but also removing fairly similar parts of the model from neighbouring hotspots. We must have spatial gaps between hotspots. That is the common facial saccade hotspots should form a small set. So, once a region's complete scan includes a very long path slice even if it's likelihood is low then the scan moves to surrounding regions. Do we need to cache path length too? Region size depends on scale.
 
