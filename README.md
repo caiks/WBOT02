@@ -1224,6 +1224,7 @@ Depending on the JSON configuration, the log file can record the *fud diagonals*
 40.7378	fud cardinality: 14011	model cardinality: 260910	fuds per threshold: 2.8022
 41.1601	fud cardinality: 16	model cardinality: 269	fuds per threshold: 1.39373
 ```
+<a name="growth_rates"></a>
 Also, the log file can give us the *model* growth rates (in *fuds* per *size* per threshold) at different stages -
 ```
 actor	event id: 999216	time 0.0880728s
@@ -2039,6 +2040,16 @@ The scan consists of `106 * 80 = 8,480` *model applications*. Of these, the top 
 
 The results for various configurations can be seen in the [table](#Model_table) above. All mode 4 *models* use the quantile *valency* (or 'bucketed') `Record::valent` method except for *model* 25 which uses the fixed *valency*  `Record::valentFixed` method. The bucketed results have multipliers of around 1.8, which is considerably lower than the bucketed non-scanned actual-potential *likelihood* mode (3) *model* multipliers of around 2.2. (Note that *models* 17 and 20 have initial *models* in non-scanned actual-potential *likelihood* mode and potential *likelihood* mode respectively, and so have intermediate multipliers.) The fixed *model* 25 also has a lower multiplier of 1.58 compared to 1.69 for *model* 60, although note that *model* 25 does not have the minimum entropy constraint. 
 
+*Models* 21 to 24 are a series of experiments with bucketed *valency* that were trained on the Fireman Sam videos. Their configurations are all the same apart from increasing `event_maximum`. The active *history size* is 1 million *events*. Neither *models* 21 nor 22 overflow; their growth rates are very similar at 0.942 and 0.946 respectively. Both *models* 23 and 24 overflow; their growth rates decline somewhat faster than expected -
+
+million-events|actual fuds|1+ln(million-events)|expected fuds|difference|difference percent
+---|---|---|---|---|---
+1|4729|1.000|4729|0|0.00%
+1.3|5488|1.262|5970|-482|-8.07%
+1.7|6172|1.531|7238|-1066|-14.73%
+
+See the [discussion above](#growth_rates). The multipliers of all four *models* remain constant at 1.80. This suggests that there remains more *alignments* still to be found even on the longest paths.
+
 The scanned actual-potential *likelihood* mode (4) growth rates tend to be similar to those of the non-scanned actual-potential *likelihood* mode (3) *models* with the exception of *model* 25 which has the highest growth rate so far of 1.221 as well as the lowest multiplier. These are the *slice* path length statistics -
 ```
 lengthsDist: {(1,6),(2,13),(3,23),(4,42),(5,105),(6,152),(7,285),(8,409),(9,626),(10,994),(11,1306),(12,1673),(13,1963),(14,1948),(15,2081),(16,1991),(17,1829),(18,1579),(19,1483),(20,1332),(21,1131),(22,938),(23,892),(24,782),(25,739),(26,607),(27,585),(28,572),(29,492),(30,428),(31,456),(32,375),(33,301),(34,288),(35,323),(36,260),(37,173),(38,144),(39,95),(40,64),(41,41),(42,60),(43,12),(44,6),(45,8),(46,3),(47,3),(48,7),(49,3),(50,3)}
@@ -2063,9 +2074,9 @@ Possibly adding the unique frame and minimum entropy constraints would make the 
 
 ##### Tiled scanned models
 
-To make a more balanced *model* able to capture frequent features we introduce the idea of tiling. We will still scan a range much larger than a single frame, but rather than finding the top hotspots in the whole scan area, we will choose a top hotspot per tile, where a tile defaults to a quarter of a frame. Once we have identified each tile's hotspot we use mode 2 potential *likelihood* to select the topmost of these hotspots for *modelling*. In this way we expect the growth will be higher then for scanned actual-potential *likelihood* mode (4), but the multiplier will be similar or a little higher (although not so high as the random mode *models*) and the *model* will be more normally distributed. Tiling modes aim to solve the convolution problem but without excessive focus on very frequent features nor excessive negligence of moderately infrequent features.
+In order to make a more balanced *model* able to capture frequent features, we introduce the idea of tiling. We will still scan a range much larger than a single frame but, rather than finding the top hotspots in the whole scan area, we will choose a top hotspot per tile where a tile defaults to a quarter of a frame. Once we have identified each tile's hotspot we use mode 2 potential *likelihood* to select the topmost of these hotspots for *modelling*. In this way we expect the growth will be higher then for scanned actual-potential *likelihood* mode (4), but the multiplier will be similar or a little higher (although not so high as the random mode *models*) and the *model* will be more normally distributed. Tiling modes aim to solve the convolution problem but without excessive focus on very frequent features nor excessive negligence of moderately infrequent features.
 
-mention the tiles are equal to half a frame - ie the region around a hotspot is of the sam magnitude as the scale 
+This desire for a balance between reducing the convolution *volume* and having good representations explains why we default the tiles to half a frame - the region around the hotspot is of the same magnitude as the scale of the frame. 
 
 the resultant videos are often run in mode 4 scan for demo purposes with a small scan area of one tile for snapping manual browsing to a feature
 
