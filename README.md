@@ -1727,9 +1727,9 @@ The growth rate of around 0.75 *fuds* per *size* per threshold is well below the
 
 In addition to higher growth rates, we would like to avoid duplication within the *model* of slightly translated but fairly similar regions around hotspots. That is, we would like to see very localised hotspots with very long path lengths at the hotspot itself and very short path lengths nearby and in-between. In this way we will avoid 'wasting' *history* on endlessly duplicated but poorly resolved features. In the path length maps for the random mode *models* above, the brightness is fairly uniform with small variations. We would like to see more of a constellation of point-like instensities. In a sense, this is the opposite to convolution - instead of weighting every location equally, we focus on a handful of places that carry the most information, thereby shrinking the vast *substrate volume*.
 
-<a name="Filtered_random_models"></a>
+<a name="Potential_filtered_random_models"></a>
 
-##### Filtered random models
+##### Potential filtered random models
 
 In order to focus the growth in hotspots, one option is to take a large set of frames from random locations and filter them for high *likelihood* before adding them as *events*. In `mode002`, for each record of a `scan_size` set of random frames we *apply* the current *model* to determine the *slice*. Then we calculate the potential *likelihood* from the *slice size* and the parent *slice size* according to this measure: `(ln(slice_size) - ln(parent_size) + ln(WMAX)) / ln(WMAX)`. The top `event_size` records then become *events*. 
 
@@ -1862,7 +1862,15 @@ lengthsHyperSkewness: -0.0980822
 ```
 The *model* appears to be much more normal than *model* 15, resembling the normal random mode *models* 52 and 53, which were also fixed *valency* but required extra constraints. It seems that the filtering of *events* in the potential *likelihood* mode is less susceptible to low entropy frames when using the fixed *valency* method, while still increasing the concentration of hotspots. The similar multiplier, at least, suggests that we can expect the hotspots to be more concentrated than [random mode *model* 36](#contour004_036_len_position) - 
 
+<a name="Actual-contour004_038_len_position"></a>
+
 ![contour004_038_len_position](images/contour004_038_len_position.png) 
+
+This does seem to be the case. The smaller range of hues suggests that the concentration is narrowing and lengthening the *model*, probably by removing simple spatial translations.
+
+<a name="Actual-potential_filtered_random_models"></a>
+
+##### Actual-potential filtered random models
 
 `mode003` is very similar to `mode002`. Instead of sorting the randomly chosen records by *likelihood* alone, they are sorted first by *slice* path length and then by *likelihood*. This is called actual-potential *likelihood*. We expect that the *model* will be smaller, but that the average path lengths will be longer and possibly the contour map will have more contrast and better resolved hotspots.
 
@@ -1989,6 +1997,8 @@ Even so, the hotspots are now so widely spaced that the *model* is perhaps not r
 seems to be somewhat more complex than actual-potential *likelihood* mode *model* 60 -
 
 ![contour004_060_position](images/contour004_060_position.png) 
+
+As in the case of potential *likelihood* *model* 38 [above](#Actual-contour004_038_len_position), the smaller range of hues suggests that the concentration is narrowing and lengthening the *model*. Perhaps, however, as well as removing simple spatial translations, we are also beginning to remove some detail.
 
 <a name="Scanned_models"></a>
 
