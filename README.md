@@ -2080,6 +2080,8 @@ In order to make a more balanced *model* able to capture frequent features, we i
 
 This desire for a balance between reducing the convolution *volume* and having good representations by regularly spacing hotspots is the reason the tiles default to half a frame - the region around the hotspot will then be of the same magnitude as the scale of the features that can be captured by a frame. 
 
+The experiments in tiled scanned modes carries on the guadualist approach of previous experiments; they usually consist of small changes in the configuration to see what quantitative and qualitative differences there are.
+
 <!-- TODO 
 
 29 has highest growth rate so far, multiplier at 1.83 similar to bucketed models 21 - 24
@@ -2101,6 +2103,8 @@ first `actor003` model
 Model 39 onwards - TODO
 
 Scanning models run in parallel threads. decent demo of scanning
+
+effect of overflow on the modelling rate
 
 The min entropy models never have failed slices (47 onward). Unique events may reduce the fails. The max path length is much shorter once min entropy is introduced. This suggests that there are still many potential alignments still to be found even on the longest paths.
 
