@@ -2080,9 +2080,13 @@ In order to make a more balanced *model* able to capture frequent features, we i
 
 This desire for a balance between reducing the convolution *volume* and having good representations by regularly spacing hotspots is the reason the tiles default to half a frame - the region around the hotspot will then be of the same magnitude as the scale of the features that can be captured by a frame. 
 
-TODO -
+<!-- TODO 
 
-model 29 - tiled
+29 has highest growth rate so far, multiplier at 1.83 similar to bucketed models 21 - 24
+
+29 vs 30 - bucketed vs fixed  - compare multiplier and growth 
+
+30 vs 31 - added min diagonal reduced growth, little effect on multiplier
 
 the resultant videos are often run in mode 4 scan for demo purposes with a small scan area of one tile for snapping manual browsing to a feature
 
@@ -2095,10 +2099,6 @@ Model 34 onwards - TODO
 first `actor003` model 
 
 Model 39 onwards - TODO
-
-<!-- TODO 
-
-Film Noir and fixed buckets
 
 Scanning models run in parallel threads. decent demo of scanning
 
