@@ -2082,7 +2082,7 @@ This desire for a balance between reducing the convolution *volume* and having g
 
 The experiments in tiled scanned modes carries on the guadualist approach of previous experiments; they usually consist of small changes in the configuration to see what quantitative and qualitative differences there are.
 
-<!-- TODO 
+TODO -
 
 29 has highest growth rate so far, multiplier at 1.83 similar to bucketed models 21 - 24
 
@@ -2122,8 +2122,6 @@ developed checkpointing to handle recovery
 
 46 vs 45 - back to 10-valent, lower growth, a little higher multiplier, perhaps compare contour maps to get a qualitative difference
 
-47 vs 46 - added min entropy, 
-
 million-events|actual fuds|1+ln(million-events)|expected fuds|difference|difference percent
 ---|---|---|---|---|---
 1.000|6,995|1.000|6,995|0|0.00%
@@ -2132,8 +2130,22 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 2.500|13,090|1.916|13,404|-314|-2.35%
 2.657|13,432|1.977|13,830|-398|-2.88%
 
+47 vs 46 - added min entropy, growth is reduced, multiplier increases slightly, more normal statistics?, compare qualitative
+
+48 vs 45 - both 5-valent, added min entropy and no overflow - growth is reduced, multiplier increases slightly,  more normal statistics?, compare qualitative
+
+50 vs 48 - back to 10-valent - only diff is valency and min entropy limit,  growth is reduced, multiplier increases slightly, similar stats? compare qualitative
+
+50 vs 47 - only diff is overflow, but fairly different growth over 1m and multiplier
+
+49 vs 50 - 100 threshold - higher growth like 5-valent 48 similar multiplier
+
+51 vs 50 - 400 threshold - higher growth, lower multiplier (more like 47 so perhaps a certain degree of path dependency)
+
+54 vs 47 - same config? - growth closer than 50, similar multiplier, so 50 diff possibly due to path dependency
 
 
+<!-- 
 
 the resultant videos are often run in mode 4 scan for demo purposes with a small scan area of one tile for snapping manual browsing to a feature
 
