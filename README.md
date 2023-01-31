@@ -2086,9 +2086,54 @@ The experiments in tiled scanned modes carries on the guadualist approach of pre
 
 29 has highest growth rate so far, multiplier at 1.83 similar to bucketed models 21 - 24
 
-29 vs 30 - bucketed vs fixed  - compare multiplier and growth 
+29 vs 30 - bucketed vs fixed  - multiplier lower and growth higher. Have some browser screenshots of 30
 
-30 vs 31 - added min diagonal reduced growth, little effect on multiplier
+25 vs 30 - scanned vs tiled - compare length - more interest in the face and head and less in the roof beams. Do a position map to see if the model is richer like random mode models 52 and 53
+
+30 vs 31 - added min diagonal reduced growth, little effect on multiplier, slightly reduced growth
+
+34 vs 30 - 34 is first actor model, otherwise same config as 30 - similar growth and multiplier
+
+34 vs 35 - 35 has a larger history and an expanded set of videos - similar growth and multiplier
+
+37 vs 35 - 37 has a random mode beginning and so has two modal lengths, lower mean and intermediate growth and multiplier. Perhaps look compare the root fuds in the browser
+
+39 vs 35 - adds 333 of unique records ie around 30s, increases mean and growth a little
+
+40 and 41 vs 39 - adds history, overflowing - runs around expectations -
+
+million-events|actual fuds|1+ln(million-events)|expected fuds|difference|difference percent
+---|---|---|---|---|---
+1|7214|1.000|7214|0|0.00%
+2|12262|1.693|12214|48|0.39%
+2.656|14079|1.977|14261|-182|-1.27%
+
+42-45 vs 41 - 5-valent plus expanded set of videos, min diagonal 100 threshold, higher growth of 1.643, multiplier the same, runs ahead of growth expectations -
+
+million-events|actual fuds|1+ln(million-events)|expected fuds|difference|difference percent
+---|---|---|---|---|---
+1.000|16,942|1.000|16,942|0|0.00%
+1.402|22,659|1.338|22,667|-8|-0.03%
+2.224|31,207|1.799|30,484|723|2.37%
+2.600|34,069|1.956|33,130|939|2.83%
+2.656|34,557|1.977|33,491|1066|3.18%
+
+developed checkpointing to handle recovery
+
+46 vs 45 - back to 10-valent, lower growth, a little higher multiplier, perhaps compare contour maps to get a qualitative difference
+
+47 vs 46 - added min entropy, 
+
+million-events|actual fuds|1+ln(million-events)|expected fuds|difference|difference percent
+---|---|---|---|---|---
+1.000|6,995|1.000|6,995|0|0.00%
+1.500|9,762|1.405|9,831|-69|-0.70%
+2.000|11,721|1.693|11,844|-123|-1.03%
+2.500|13,090|1.916|13,404|-314|-2.35%
+2.657|13,432|1.977|13,830|-398|-2.88%
+
+
+
 
 the resultant videos are often run in mode 4 scan for demo purposes with a small scan area of one tile for snapping manual browsing to a feature
 
