@@ -2178,6 +2178,8 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 2.5|14,834|1.916|14,382|452|3.14%
 3|16,735|2.099|15,750|985|6.25%
 
+Tiled scanning and growth in overflow. In the models so far we have only been using around 24 tiles and we are taking 5 events. If we have 6 scales, but take the same number of events we might see growth decline much more slowly. However, it is somewhat surprising that the 1 in 5 potential ratio does not give us some benefit over random. Also model 24 (scanned mode 4) lags far behind so either the alignments are declining at the top of the model or the fact that the children split into half a threshold because actual rather than potential. So the actual tiling depresses growth, but not quite as much as actual scanning. Potential lifts growth both before and after overflow. Higher potential fractions should improve it more.
+
 <!-- 
 
 the resultant videos are often run in mode 4 scan for demo purposes with a small scan area of one tile for snapping manual browsing to a feature
