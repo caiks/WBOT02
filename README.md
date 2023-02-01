@@ -1406,7 +1406,7 @@ model050|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|
 model051|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,963|8,079|1.216|15.1|2.94|23|1.81|30s unique, 12.0 min diagonal, 400 threshold, 1.2 min entropy, no overflow
 model054|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|3,000,065|12,390|0.826 (1.294)|15.5|2.9|24|1.84|30s unique, 12.0 min diagonal, 1.2 min entropy
 model055|0.177|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|15,050|1.003 (1.489)|14.8|2.92|24|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy
-model056|0.177|5 scanned size-potential tiled actual-potential|6|fixed 5-valent|48 B&W videos|3,000,000|34,859|1.162 (1.643)|19.7|4.02|32|1.70|30s unique, 12.0 min diagonal, 0.8 min entropy
+model056|0.177|5 scanned size-potential tiled actual-potential|6|fixed 5-valent|48 B&W videos|3,000,000|34,859|1.162 (1.643)|19.7|4.02|32|1.70|30s unique, 12.0 min diagonal, 100 threshold, 0.8 min entropy
 model057|0.354|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|15,433|1.003 (1.480)|15.5|3.21|25|1.86|30s unique, 12.0 min diagonal, 1.2 min entropy
 model058|0.088|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|13,999|0.933 (1.447)|15.4|2.97|25|1.86|30s unique, 12.0 min diagonal, 1.2 min entropy
 model059|0.177|5 scanned active-size-potential tiled actual-potential|7|fixed|48 B&W videos|3,000,000|16,735|1.116 (1.501)|15.2|2.77|23|1.90|30s unique, 12.0 min diagonal, 1.2 min entropy
@@ -2080,7 +2080,7 @@ In order to make a more balanced *model* able to capture frequent features, we i
 
 This desire for a balance between reducing the convolution *volume* and having good representations by regularly spacing hotspots is the reason the tiles default to half a frame - the region around the hotspot will then be of the same magnitude as the scale of the features that can be captured by a frame. 
 
-The experiments in tiled scanned modes carries on the guadualist approach of previous experiments; they usually consist of small changes in the configuration to see what quantitative and qualitative differences there are.
+The experiments in tiled scanned modes carries on the guadualist approach of previous experiments; they usually consist of small changes in the configuration to see what quantitative and qualitative differences there are. The discussion below will largely be comparisons between *models* of similar configurations. Note, however, that there is a degree of uncertainty in the direction of progress due to a degree of non-repeatability of the *model* runs. The runs are path dependent even in `actor003` video list operation because the Ubuntu 20/22 implementations underlying the Qt media library were asynchronous. So small timing differences lead to initial *history* differences that are magnified by changes in the choice of centres. In fact, given the chaotic sensitivities, it is remarkable how the resultant *models* are nonetheless fairly consistent quantitatively and qualitatively.
 
 TODO -
 
@@ -2108,7 +2108,7 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 2|12262|1.693|12214|48|0.39%
 2.656|14079|1.977|14261|-182|-1.27%
 
-42-45 vs 41 - 5-valent plus expanded set of videos, min diagonal 100 threshold, higher growth of 1.643, multiplier the same, runs ahead of growth expectations -
+42-45 vs 41 - 5-valent plus expanded set of videos, min diagonal 100 threshold, very high growth of 1.643, multiplier the same, runs ahead of growth expectations -
 
 million-events|actual fuds|1+ln(million-events)|expected fuds|difference|difference percent
 ---|---|---|---|---|---
@@ -2132,6 +2132,8 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 
 47 vs 46 - added min entropy, growth is reduced, multiplier increases slightly, more normal statistics?, compare qualitative
 
+48 vs 47 - 5-valent and no overflow, growth higher and lower multiplier suggests that 5-valent is picking up more alignments
+
 48 vs 45 - both 5-valent, added min entropy and no overflow - growth is reduced, multiplier increases slightly,  more normal statistics?, compare qualitative
 
 50 vs 48 - back to 10-valent - only diff is valency and min entropy limit,  growth is reduced, multiplier increases slightly, similar stats? compare qualitative
@@ -2142,8 +2144,39 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 
 51 vs 50 - 400 threshold - higher growth, lower multiplier (more like 47 so perhaps a certain degree of path dependency)
 
-54 vs 47 - same config? - growth closer than 50, similar multiplier, so 50 diff possibly due to path dependency
+54 vs 47 - same config - growth closer than 50, similar multiplier, so 50 diff possibly due to path dependency, check stats are similar too
 
+55 vs 54 - mode 6 - higher growth and multiplier suggests that neglected siblings was having an effect. Perhaps compare the decomp for unbalanced. Check statistics - lower mean, similar deviation
+
+56 vs 55 - 5-valent higher growth and lower multiplier agrees with 48 vs 47
+
+56 vs 48 - mode 6 highest growth rate so far and lower multiplier, so min entropy does not make a nagative impact
+
+57 vs 55 - scale of 0.354, very similar statistics
+
+58 vs 55 - scale of 0.088, slightly reduced growth, similar multiplier
+
+59 vs 55 - mode 7, highest 10-valent growth both to 1m and greater than expected to 3m, similar multiplier
+
+cf model 55 -
+
+million-events|actual fuds|1+ln(million-events)|expected fuds|difference|difference percent
+---|---|---|---|---|---
+1|7445|1.000|7445|0|0.00%
+1.5|10140|1.405|10464|-324|-3.09%
+2|12145|1.693|12605|-460|-3.65%
+2.5|13711|1.916|14267|-556|-3.90%
+3|15050|2.099|15624|-574|-3.67%
+
+So active-size potential does have an advantage of around 10%. The advantage is probably increasing so might be an idead to run to 4 times, but there are decreasing returns of course - would have to run to 7m to triple the model, although would be interesting to test.
+
+million-events|actual fuds|1+ln(million-events)|expected fuds|difference|difference percent
+---|---|---|---|---|---
+1|7,505|1.000|7,505|0|0.00%
+1.5|10,384|1.405|10,548|-164|-1.55%
+2|12,785|1.693|12,707|78|0.61%
+2.5|14,834|1.916|14,382|452|3.14%
+3|16,735|2.099|15,750|985|6.25%
 
 <!-- 
 
