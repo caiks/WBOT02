@@ -2013,7 +2013,7 @@ The very high filter ratio of the actual-potential *likelihood* mode (3) *model*
 
 The implementation of the scanned actual-potential *likelihood* mode (4) was based on the implementation of the [generate_contour](#generate_contour) functionality described above. Mode 4 first takes a record equal to the entire scanning area from the given image. Then the current *model* is *applied* to each *substrate* sub-record of the scan record in order to determine the *slice* of that frame and thence the actual-potential *likelihood* pair. Then the list of frames is sorted and the topmost are taken for *events*. To avoid a cluster of frames around the most *likely* hotspot, the selection is constrained such that the centres of the frames are at least a certain fixed fraction of a frame apart from each other. The `separation` parameter defines this distance. It defaults to half of a frame. The set of topmost frames are highlighted if the GUI is visible. The top frame's centre then becomes the centre for the next scan. 
 
-This process is highly compute intensive so the work is split into threads. The time taken depends on the configuration. Larger scans may require processing in the cloud.
+This process is highly compute intensive so the work is split into parallel threads. The time taken depends on the configuration. Larger scans may require processing in the cloud.
 
 *Model* 25 runs in `actor002`, grabbing the screen. It was started around 2 minutes into this [youtube Film Noir video list](https://www.youtube.com/watch?v=wOQeqcPocsQ&list=PLuxkWJnOMvb1idkvh5ovFAopTXu4PhOjV&index=3). This is the configuration for *model* 25 -
 ```
@@ -2074,15 +2074,82 @@ Like *model* 60, *model* 25 does not appear to be as detailed in high entropy ar
 
 Possibly adding the unique frame and minimum entropy constraints would make the *model* more representative of below maximum frequency features by removing the emphasis on very long paths. The hyper-skew, however, might go from very positive to very negative, and the *model* would probably be no more normal than *model* 60.
 
+From *model* 25 onwards the source images came from Film Noir videos instead of Fireman Sam. We can see that there is a step change between the *models*. This is probably because Fireman Sam is in colour and therefore perhaps has fewer brightness contrasts, reducing the available *alignments* for *modelling*. Also later series of Fireman Sam are CGI and so have even more colours, more detailed backgrounds and more complex rendering in general, distracting from foreground features.
+
 <a name="Tiled_scanned_models"></a>
 
 ##### Tiled scanned models
 
-In order to make a more balanced *model* able to capture frequent features, we introduce the idea of tiling. We will still scan a range much larger than a single frame but, rather than finding the top hotspots in the whole scan area, we will choose a top hotspot per tile where a tile defaults to a square of width equal to a half of a frame. Once we have identified each tile's hotspot we use mode 2 potential *likelihood* to select the topmost of these hotspots for *modelling*. In this way we expect the growth will be higher than for scanned actual-potential *likelihood* mode (4), but the multiplier will be similar or a little higher and the *model* will be more normally distributed. The *bivalent* or *trivalent diagonals* often seen in *induction* (e.g. these [root *fuds*](#root_fud_browse)) suggests an ideal multiplier of around 2, which is below random mode but above scanned potential *likelihood* mode. Too small a multiplier suggests frequent siblings are being ignored. Too high a multiplier will dent growth and so produce smaller *models*. Tiling modes aim to solve the convolution problem but without excessive focus on very frequent features nor excessive negligence of moderately infrequent features.
+In order to make a more balanced *model* able to capture frequent features, we introduce the idea of tiling. We will still scan a range much larger than a single frame but, rather than finding the top hotspots in the whole scan area, we will choose a top hotspot per tile where a tile defaults to a square of width equal to a half of a frame. Once we have identified each tile's hotspot we use mode 2 potential *likelihood* to select the topmost of these hotspots for *modelling*. That is, we use local actual-potential *likelihood* and then global potential *likelihood* to avoid filling the *model* with spatially translated near duplicates, but developing the interesting parts as much as we possibly can with the resources available.
+
+In this way we expect the growth will be higher than for scanned actual-potential *likelihood* mode (4), but the multiplier will be similar or a little higher and the *model* will be more normally distributed. The *bivalent* or *trivalent diagonals* often seen in *induction* (e.g. these [root *fuds*](#root_fud_browse)) suggests an ideal multiplier of around 2, which is below random mode but above scanned potential *likelihood* mode. Too small a multiplier suggests frequent siblings are being ignored. Too high a multiplier will dent growth and so produce smaller *models*. Tiling modes aim to solve the convolution problem but without excessive focus on very frequent features nor excessive negligence of moderately infrequent features.
 
 This desire for a balance between reducing the convolution *volume* and having good representations by regularly spacing hotspots is the reason the tiles default to half a frame - the region around the hotspot will then be of the same magnitude as the scale of the features that can be captured by a frame. 
 
 The experiments in tiled scanned modes carries on the guadualist approach of previous experiments; they usually consist of small changes in the configuration to see what quantitative and qualitative differences there are. The discussion below will largely be comparisons between *models* of similar configurations. Note, however, that there is a degree of uncertainty in the direction of progress due to a degree of non-repeatability of the *model* runs. The runs are path dependent even in `actor003` video list operation because the Ubuntu 20/22 implementations underlying the Qt media library were asynchronous. So small timing differences lead to initial *history* differences that are magnified by changes in the choice of centres. In fact, given the chaotic sensitivities, it is remarkable how the resultant *models* are nonetheless fairly consistent quantitatively and qualitatively.
+
+*Models* generated in tiled modes can be browsed in mode 4 screen grabbing video or stills. In this way the centre will snap to the *slice* with longest path in the scan region. One can choose, say, a scan region of one tile (half a frame height) and so see the *slice* of the local hotspot from where tiled modes would choose *events*. In this example a region of a quarter of a frame height is used in `actor002` -
+
+```
+{
+	"model_initial" : "model050",
+	"interval" : 250,
+	"x" : 870,
+	"width" : 560,
+	"mode" : "mode004",
+	"valency_fixed" : true,
+	"event_size" : 1,
+	"threads" : 6,
+	"induceThreadCount" : 7,
+	"induceParameters.diagonalMin" : 12.0,
+	"scale" : 0.177,
+	"range_centreX" : 0.0295,
+	"range_centreY" :0.022125,
+	"gui" : true,
+	"interactive" : true,
+	"interactive_examples" : true,
+	"interactive_entropies" : true,
+	"multiplier" : 1,
+	"label_size" : 16,
+	"disable_update" : true,
+	"summary_active" : false,
+	"logging_action" : false
+}
+```
+If the scan region is sufficiently small, we can sometimes observe the wotbot tracking foreground objects as they move. Of course, the motion must be slow and without discontinuities and there must be nothing too distracting in the background. 
+
+We can also demonstrate the behaviour of the tiled mode itself by choosing to scan the entire image. Although the motion may be quite jerky, depending on the compute resources, we can often see what interests the wotbot, e.g. with `actor003` this configuration shows the 10 hotspots with the highest potential *likelihoods* -
+```
+{
+	"model_initial" : "model056",
+	"video_sources" : [
+		"videos/No Man's Woman (1955) [oLiwhrvkMEU].webm"],
+	"interval" : 250,
+	"video_start" : 1,
+	"playback_rate" : 1.0,
+	"mode" : "mode007",
+	"unique_records" : 333,
+	"entropy_minimum" : 0.8,
+	"valency_fixed" : true,
+	"valency" : 5,
+	"event_size" : 10,
+	"threads" : 8,
+	"induceThreadCount" : 7,
+	"induceParameters.diagonalMin" : 12.0,
+	"disable_update" : true,
+	"scale" : 0.177,
+	"range_centreX" : 0.75,
+	"range_centreY" :0.411,
+	"gui" : true,
+	"red_frame" : true,
+	"logging_event" : true,
+	"logging_event_factor" : 1000,
+	"summary_active" : true,
+	"logging_action" : false,
+	"logging_action_factor" : 20
+}
+```
+We can often observe stable arrangements of hotspots form during a camera shot.
 
 TODO -
 
@@ -2094,13 +2161,15 @@ TODO -
 
 30 vs 31 - added min diagonal reduced growth, little effect on multiplier, slightly reduced growth
 
-34 vs 30 - 34 is first actor model, otherwise same config as 30 - similar growth and multiplier
+34 vs 30 - 34 is first actor003 model, otherwise same config as 30 - similar growth and multiplier
 
 34 vs 35 - 35 has a larger history and an expanded set of videos - similar growth and multiplier
 
 37 vs 35 - 37 has a random mode beginning and so has two modal lengths, lower mean and intermediate growth and multiplier. Perhaps look compare the root fuds in the browser
 
 39 vs 35 - adds 333 of unique records ie around 30s, increases mean and growth a little
+
+Duplicate removal. Can prevent exact duplicates if we use the motion detector hash for each event and then check the event against the current slice or the most recent slices. Or simply check against the list of the most recent events, so that duplicates are allowed after a suitable interval. Prefer to check the recent slices, but could use a long list of events. Events is easier - use a FIFO queue and a set. Could process before choosing topmost of the mode. First do the browser and get evidence that it is a problem. Duplicate removal. Surely the whole point of centering is to get a lot of similar frames quickly? Similar - but not the same. Removing duplicates might allow unusual events to get more attention. Count the duplicates.
 
 40 and 41 vs 39 - adds history, overflowing - runs around expectations -
 
@@ -2109,6 +2178,10 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 1|7214|1.000|7214|0|0.00%
 2|12262|1.693|12214|48|0.39%
 2.656|14079|1.977|14261|-182|-1.27%
+
+evidence of interesting features. The examples of interactive model 41 in `C:\caiks\WBOT02\images` suggest that lighting is very important as well as scale - so edge detection would be interesting. There are many faces in the examples, but it is rare that a frame is classified with a lot of examples that we would recognise as similar, e.g. actor002_model041_Film_Noir_010.png. Even then, there are many examples which are completely unrelated to faces or eyes. It is clear that the classification is good on broad areas of light and dark, but the model would have to be much larger I think before the facial features would be reliably classified together and even then they would probably be spread over slices that are far apart in the model because of lighting conditions. We can see that scale is very important too - compare actor002_model041_camera_001.png and actor002_model041_camera_002.png, where the images magnification is slightly different.
+
+The very long paths are usually dark black, but there are plenty of hotspots around medium close up faces that are longer than the first mode of 17. There are lots of surfaces and body edges that have longer paths. (Increase the diagonal?) The face slices usually consist of many other non-face events, although it is hard to tell from the off-diagonal siblings. Essentially, the model is recognising faces, but they are buried amongst a lot of other alignments. The lighting of the image is important too - the siblings all have the same brightness. So we must consider edge detection and instantanous motion after multi-scale.
 
 42-45 vs 41 - 5-valent plus expanded set of videos, min diagonal 100 threshold, very high growth of 1.643, multiplier the same, runs ahead of growth expectations -
 
@@ -2134,9 +2207,51 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 2.500|13,090|1.916|13,404|-314|-2.35%
 2.657|13,432|1.977|13,830|-398|-2.88%
 
+model 46 -
+```
+lengthsDist: {(1,1),(2,17),(3,18),(4,31),(5,100),(6,228),(7,375),(8,661),(9,1205),(10,1973),(11,3334),(12,5220),(13,7381),(14,9115),(15,10368),(16,10740),(17,9662),(18,8370),(19,6331),(20,4626),(21,3394),(22,2374),(23,1874),(24,1811),(25,1556),(26,1399),(27,1106),(28,830),(29,652),(30,437),(31,280),(32,213),(33,106),(34,77),(35,54),(36,19)}
+lengthsCount: 95938
+lengthsMean: 16.8148
+lengthsDeviation: 4.48833
+lengthsSkewness: 0.768545
+lengthsKurtosisExcess: 1.05939
+lengthsHyperSkewness: 7.36744
+```
+
 47 vs 46 - added min entropy, growth is reduced, multiplier increases slightly, more normal statistics?, compare qualitative
 
+model 47 -
+```
+lengthsDist: {(1,3),(2,12),(3,20),(4,60),(5,120),(6,236),(7,417),(8,839),(9,1317),(10,2339),(11,3604),(12,5775),(13,8134),(14,10667),(15,13343),(16,14043),(17,13979),(18,12387),(19,9497),(20,6270),(21,3264),(22,1587),(23,503),(24,169),(25,12)}
+lengthsCount: 108597
+lengthsMean: 15.856
+lengthsDeviation: 3.06973
+lengthsSkewness: -0.376717
+lengthsKurtosisExcess: 0.249775
+lengthsHyperSkewness: -3.94355
+```
+
+The min entropy models never have failed slices (47 onward). Unique events may reduce the fails. The max path length is much shorter once min entropy is introduced. This suggests that there are still many potential alignments still to be found even on the longest paths.
+
+Noticeably different statistics between models without and with min entropy. Same mode, but lower deviation and max length and sign of skew has changed and smaller kurtosis - all suggest a more balanced stubbier tree, with more shorter paths (presumably lowish enrtropy/alignments) and fewer longer paths (but perhaps more interesting to us). No fails also suggests that all of the failed slices in the previous model where low entropy. All but 12 of the 1556 slices of length 25 or more were presumably also low entropy.
+
+If model 47 had no overflow, it probably would have had 18,120 fuds at 1.364 fuds/sz/200. Compare this to 5-valent model 48 which had 38,124 fuds at 1.434 fuds/sz/100, or 19,062 equivalently. That is around double. If we assume that min entropies are equivalent, we can conclude that the valency does not have much effect on growth. This seems consistent with the diagonals.
+
 48 vs 47 - 5-valent and no overflow, growth higher and lower multiplier suggests that 5-valent is picking up more alignments
+
+model 48 -
+```
+lengthsDist: {(1,2),(2,3),(3,12),(4,32),(5,49),(6,101),(7,190),(8,358),(9,633),(10,1105),(11,1933),(12,2950),(13,4553),(14,6566),(15,9351),(16,12512),(17,15831),(18,18657),(19,21069),(20,21341),(21,19216),(22,15614),(23,11678),(24,7486),(25,3789),(26,1728),(27,599),(28,121),(29,52),(30,10)}
+lengthsCount: 177541
+lengthsMean: 18.9173
+lengthsDeviation: 3.43071
+lengthsSkewness: -0.418654
+lengthsKurtosisExcess: 0.262438
+lengthsHyperSkewness: -4.25479
+```
+In spite of being twice the model, the leaf slices only increase from 108,597 to 177,541 slices, ie only 60% more. This is because the increase in model was not evenly distributed but concentrated, presumably on the hotspots.
+
+Mode increases from 16 to 20 and the max from 25 to 30, and the mean from 15.9 to 18.9, so the statistics seem to similar as expected.
 
 48 vs 45 - both 5-valent, added min entropy and no overflow - growth is reduced, multiplier increases slightly,  more normal statistics?, compare qualitative
 
@@ -2146,11 +2261,15 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 
 49 vs 50 - 100 threshold - higher growth like 5-valent 48 similar multiplier
 
+Model 49 is definitely less likely to focues on bodies and faces than model 48. Model 47 is not quite as good at faces and bodies as 48 but is better than 49. The higher frequencies of faces and bodies seems to be overshadowed by interesting background patterns. Even if model 50 is no better than model 49 we still seem to have a model that focuses prefereably on the things that interest us. With multi-scale and multi-level and perhaps dynamics we can perhaps increase the focus on human-interesting objects more intensely. README
+
 51 vs 50 - 400 threshold - higher growth, lower multiplier (more like 47 so perhaps a certain degree of path dependency)
 
 54 vs 47 - same config - growth closer than 50, similar multiplier, so 50 diff possibly due to path dependency, check stats are similar too
 
 55 vs 54 - mode 6 - higher growth and multiplier suggests that neglected siblings was having an effect. Perhaps compare the decomp for unbalanced. Check statistics - lower mean, similar deviation
+
+describe the size-potential fix in modes 6 and 7, referenced above
 
 56 vs 55 - 5-valent higher growth and lower multiplier agrees with 48 vs 47
 
@@ -2186,121 +2305,27 @@ Tiled scanning and growth in overflow. In the models so far we have only been us
 
 future developments -
 
+actor 4 - performance challenge, image queues, tile checksums and slice caching
+
 multi-scale - Hot spots and hot scales. Foreground objects are seen at different distances more than background. So multi-scale should increase the frequency.
 
 smaller frame or two level - note that the underlying seems quite localised in the [extract](#actor002_model036_Film_Noir_001_extract) and not necessarily all that centralised. Could also blank out periphery initially to focus in the centre of the frame, but probably best to have small underlying frames in two level. Possibly driven by single level tiled to identify the hot spots and scales.
 
 gradient - both spatial and temporal. Typically more motion around the edges of foreground objects
 
-<!-- 
-
-the resultant videos are often run in mode 4 scan for demo purposes with a small scan area of one tile for snapping manual browsing to a feature
-
-Probably want a multiplier around 2 ie both on-diagonal, as well as regular spaced hotspots. 
-
-performance challenge
-
-Model 34 onwards - TODO
-
-first `actor003` model 
-
-Model 39 onwards - TODO
-
-Scanning models run in parallel threads. decent demo of scanning
-
-effect of overflow on the modelling rate
-
-The min entropy models never have failed slices (47 onward). Unique events may reduce the fails. The max path length is much shorter once min entropy is introduced. This suggests that there are still many potential alignments still to be found even on the longest paths.
-
-Model 23 fuds per events per threshold = 0.845, so has declined from 0.946. If had continued at original rate would have been 6137 fuds, i.e. running at about half the growth rate, at 0.506 fuds/sz/thrshld or 53% of non-overflow rate. The path lengths have not changed much, not half the diff between model 720k (model 17) and 1000k (model 22). So overflow has a large effect. Model 24 growth has declined again, at 0.342 fuds/sz/thrshld or only 36% of non-overflow rate. But note that later series of fireman Sam are CGI and have more colours but perhaps less contrast so often the focus is on the backgrounds rather than the characters or objects.
-
-Could do a likelihood map of an image by scanning and colouring each pixel according to its likelihood, but manual navigation suggests that this would be a very jagged landscape - which poses a question mark over the golf ball approach to scanning. Is a gentle pressure enough to demonstrate intelligence - an ineffable quality which is considerably harder to show than faster model growth? Non likely versus likely modes. Golf ball approach does not work because there is no smooth gradient. Must scan.
-
-contour discussion. do the generate_representation to see if there are noticeable qualitative differences between model 21 and 24 . contour comparisons. Compared to model 16 model 21 has very concentrated hotspots. If we manually move around nearby the model has very short paths.
-
-evidence of interesting features. Browsing around model 27 with a small scan area suggests that the sky will still be interesting in mode 5, but of course filmakers do not focus on the sky very much, so much of the image will be interesting anyway and there is no bias for backgrounds particularly.
-
-Statistics. I think it will be difficult to obtain a good measure of model quality. The higher moments of model 17 (scanned act-pot) are tending to more normal rather than fat RHS tails, which was the intuition. The actor will always be scanning, so much of the model is redundant. We can see this if we run model 17 in mode 4 without update - the slice's path is usually well over the mean length and often at the maximum length (18). But how do we get this 'typical' slice subset. Probably the main statistics are the maximum length and the deviation. Not much difference in the stats between random pot and random act-pot, so try running scanned act-pot over random pot, to see what might be a good fast initial model type.
-
-the potential and actual-potential models demonstrate that the search for model growth can be achieved even without restricting the history size, which we were forced to do in TBOT03.
-
-evidence of interesting features. The examples of interactive model 41 in `C:\caiks\WBOT02\images` suggest that lighting is very important as well as scale - so edge detection would be interesting. There are many faces in the examples, but it is rare that a frame is classified with a lot of examples that we would recognise as similar, e.g. actor002_model041_Film_Noir_010.png. Even then, there are many examples which are completely unrelated to faces or eyes. It is clear that the classification is good on broad areas of light and dark, but the model would have to be much larger I think before the facial features would be reliably classified together and even then they would probably be spread over slices that are far apart in the model because of lighting conditions. We can see that scale is very important too - compare actor002_model041_camera_001.png and actor002_model041_camera_002.png, where the images magnification is slightly different.
-
-The very long paths are usually dark black, but there are plenty of hotspots around medium close up faces that are longer than the first mode of 17. There are lots of surfaces and body edges that have longer paths. (Increase the diagonal?) The face slices usually consist of many other non-face events, although it is hard to tell from the off-diagonal siblings. Essentially, the model is recognising faces, but they are buried amongst a lot of other alignments. The lighting of the image is important too - the siblings all have the same brightness. So we must consider edge detection and instantanous motion after multi-scale.
-
-Duplicate removal. Can prevent exact duplicates if we use the motion detector hash for each event and then check the event against the current slice or the most recent slices. Or simply check against the list of the most recent events, so that duplicates are allowed after a suitable interval. Prefer to check the recent slices, but could use a long list of events. Events is easier - use a FIFO queue and a set. Could process before choosing topmost of the mode. First do the browser and get evidence that it is a problem. Duplicate removal. Surely the whole point of centering is to get a lot of similar frames quickly? Similar - but not the same. Removing duplicates might allow unusual events to get more attention. Count the duplicates.
-
-Scanning. What we really want is local actual-potential and global potential. The actual-potential scan is really to center and scale the frame and so avoid duplicating model because of affine transformations. But we want global potential to maximise the modelling rate. Instead of mode 5 random-topology we could systematic tiling of local scans. That is, a mode 4 variation where we sort actual-potential for each tile and then choose the top tiles by potential. This would have all of the current performance problems, however, and does not allow for scaling. Of course, we did accidentally run model 27 without the valency_factor and this would be an easy change that would improve the modelling rate. There are a lot of parameters associated with random-topology searches too.
-
-"We were able to demonstrate that deliberately searching for interesting or unusual slices, ... can accelerate model growth, at least in the case of limited active history size." Now with WBOT02 we have proved it without constraining size, although the search is a scan and then selection of likely centres.
-
-"wotbot should be able to track it until something else more interesting appears" - put an example of a video and model of the wotbot tracking successfully. Use a model from actor 3, since more reproducible.
-
 The models are still very blurry and so we must try to increase model detail but concentrated in areas interesting to us humans. These are not that much more interesting than clouds and backgrounds. With multi-scale, face hotspots will be more common and that might accelerate model growth there. Also if we have dynamics, the backgrounds will be more separated from heads and bodies - although that will geneally be the case anyway. Once attached to a head the small scan hotspot mode tends to follow it around - so there is a chance that we can parameterise the mode so that the model can be interested in the objects we are too.
-
-model 46 -
-```
-lengthsDist: {(1,1),(2,17),(3,18),(4,31),(5,100),(6,228),(7,375),(8,661),(9,1205),(10,1973),(11,3334),(12,5220),(13,7381),(14,9115),(15,10368),(16,10740),(17,9662),(18,8370),(19,6331),(20,4626),(21,3394),(22,2374),(23,1874),(24,1811),(25,1556),(26,1399),(27,1106),(28,830),(29,652),(30,437),(31,280),(32,213),(33,106),(34,77),(35,54),(36,19)}
-lengthsCount: 95938
-lengthsMean: 16.8148
-lengthsDeviation: 4.48833
-lengthsSkewness: 0.768545
-lengthsKurtosisExcess: 1.05939
-lengthsHyperSkewness: 7.36744
-```
-model 47 -
-```
-lengthsDist: {(1,3),(2,12),(3,20),(4,60),(5,120),(6,236),(7,417),(8,839),(9,1317),(10,2339),(11,3604),(12,5775),(13,8134),(14,10667),(15,13343),(16,14043),(17,13979),(18,12387),(19,9497),(20,6270),(21,3264),(22,1587),(23,503),(24,169),(25,12)}
-lengthsCount: 108597
-lengthsMean: 15.856
-lengthsDeviation: 3.06973
-lengthsSkewness: -0.376717
-lengthsKurtosisExcess: 0.249775
-lengthsHyperSkewness: -3.94355
-```
-
-Noticeably different statistics between models without and with min entropy. Same mode, but lower deviation and max length and sign of skew has changed and smaller kurtosis - all suggest a more balanced stubbier tree, with more shorter paths (presumably lowish enrtropy/alignments) and fewer longer paths (but perhaps more interesting to us). No fails also suggests that all of the failed slices in the previous model where low entropy. All but 12 of the 1556 slices of length 25 or more were presumably also low entropy.
-
-If model 47 had no overflow, it probably would have had 18,120 fuds at 1.364 fuds/sz/200. Compare this to 5-valent model 48 which had 38,124 fuds at 1.434 fuds/sz/100, or 19,062 equivalently. That is around double. If we assume that min entropies are equivalent, we can conclude that the valency does not have much effect on growth. This seems consistent with the diagonals.
-
-model 47 -
-```
-lengthsDist: {(1,3),(2,12),(3,20),(4,60),(5,120),(6,236),(7,417),(8,839),(9,1317),(10,2339),(11,3604),(12,5775),(13,8134),(14,10667),(15,13343),(16,14043),(17,13979),(18,12387),(19,9497),(20,6270),(21,3264),(22,1587),(23,503),(24,169),(25,12)}
-lengthsCount: 108597
-lengthsMean: 15.856
-lengthsDeviation: 3.06973
-lengthsSkewness: -0.376717
-lengthsKurtosisExcess: 0.249775
-lengthsHyperSkewness: -3.94355
-```
-
-model 48 -
-```
-lengthsDist: {(1,2),(2,3),(3,12),(4,32),(5,49),(6,101),(7,190),(8,358),(9,633),(10,1105),(11,1933),(12,2950),(13,4553),(14,6566),(15,9351),(16,12512),(17,15831),(18,18657),(19,21069),(20,21341),(21,19216),(22,15614),(23,11678),(24,7486),(25,3789),(26,1728),(27,599),(28,121),(29,52),(30,10)}
-lengthsCount: 177541
-lengthsMean: 18.9173
-lengthsDeviation: 3.43071
-lengthsSkewness: -0.418654
-lengthsKurtosisExcess: 0.262438
-lengthsHyperSkewness: -4.25479
-```
-In spite of being twice the model, the leaf slices only increase from 108,597 to 177,541 slices, ie only 60% more. This is because the increase in model was not evenly distributed but concentrated, presumably on the hotspots.
-
-Mode increases from 16 to 20 and the max from 25 to 30, and the mean from 15.9 to 18.9, so the statistics seem to similar as expected.
-
-Model 49 is definitely less likely to focues on bodies and faces than model 48. Model 47 is not quite as good at faces and bodies as 48 but is better than 49. The higher frequencies of faces and bodies seems to be overshadowed by interesting background patterns. Even if model 50 is no better than model 49 we still seem to have a model that focuses prefereably on the things that interest us. With multi-scale and multi-level and perhaps dynamics we can perhaps increase the focus on human-interesting objects more intensely. README
-
-describe the size-potential fix in modes 6 and 7, referenced above
-
-two *level models*
-
--->
 
 <a name = "Conclusion"></a>
 
 ### Conclusion
 
 <!-- TODO 
+
+a very jagged landscape - which poses a question mark over the golf ball approach to scanning. Is a gentle pressure enough to demonstrate intelligence - an ineffable quality which is considerably harder to show than faster model growth? Non likely versus likely modes. Golf ball approach does not work because there is no smooth gradient. Must scan.
+
+the potential and actual-potential models demonstrate that the search for model growth can be achieved even without restricting the history size, which we were forced to do in TBOT03.
+
+"We were able to demonstrate that deliberately searching for interesting or unusual slices, ... can accelerate model growth, at least in the case of limited active history size." Now with WBOT02 we have proved it without constraining size, although the search is a scan and then selection of likely centres.
 
 Could do an RGB capture instead of HSV. After all, this is how HB do it. Have to balance resolution, valency and type and bucketing to maximise contrast
 
