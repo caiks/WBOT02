@@ -2155,7 +2155,7 @@ TODO -
 
 29 has highest growth rate so far, multiplier at 1.83 similar to bucketed models 21 - 24
 
-29 vs 30 - bucketed vs fixed  - multiplier lower and growth higher. Have some browser screenshots of 30
+29 vs 30 - bucketed vs fixed  - multiplier lower and growth higher. Growth is consistently high in remaining models. Have some browser screenshots of 30
 
 25 vs 30 - scanned vs tiled - compare length - more interest in the face and head and less in the roof beams. Do a position map to see if the model is richer like random mode models 52 and 53
 
@@ -2163,9 +2163,17 @@ TODO -
 
 34 vs 30 - 34 is first actor003 model, otherwise same config as 30 - similar growth and multiplier
 
+34 Does seem to linger on the edges of heads in medium shots or medium close ups eg 7:06 or 18:02 of 'Pickup On South Street 1953' 
+
 34 vs 35 - 35 has a larger history and an expanded set of videos - similar growth and multiplier
 
+Even though double the size the max length is the same as model 34 at 35, the mean is only 0.7 greater at 15.9227, but the mode is 16 instead  of 14. The deviation is smaller too - this suggests a balanced model. Growth rate is declining slightly, but not much, still very high.
+
 37 vs 35 - 37 has a random mode beginning and so has two modal lengths, lower mean and intermediate growth and multiplier. Perhaps look compare the root fuds in the browser
+
+Added 4102 fuds in the last 500k, so a better rate than model 34 in the second half or than model 35 overall, which suggests that randomising improves the model.
+
+The mean is lower than model 35, but there are two modes at 7 and 15 and the longest path is the same at 35. There are many more fails (60) than model 35.
 
 39 vs 35 - adds 333 of unique records ie around 30s, increases mean and growth a little
 
@@ -2305,15 +2313,40 @@ Tiled scanning and growth in overflow. In the models so far we have only been us
 
 future developments -
 
+Remember that the eventual mobile app will see an environment that might not look very much like Film noir so perhaps we should concentrate less on the substrate and more on the active structure and compute scale, ie we need not have conclusive evidence of face pattern matching before moving on so long as it appears to be doing something interesting.
+
+Before going on to websockets perhaps we could try to aim for signs that faces are being modelled. Let's do what we can with parameterisation and film noir. However we cannot have high expectations - we could well need dynamic, audio, temporal, emotional cues and other higher level models and modes 
+
+model growth in overflow - If the modelling rate is declining we could perhaps swap the positions of old events of recently experienced slices with old events of neglected slices before rolling them off. Or roll off the smaller slice of the oldest and next oldest events. Or the slice with the least likelihood. Or shorter path. Note that the sequence will be wrong if continuous 
+
+Experiment with sizes, scales, valencies and thresholds. 
+
+decreasing thresholds, random initial models (Probably fixed valency is not going to be evenly distributed, so start the model with a random before mode 4 to avoid the small absolute variations of texture and background), tiled driver models
+
+Do a border check to make sure the x and y coordinate diffs are both not less than say 4, to avoid expanding hotspots.
+
 actor 4 - performance challenge, image queues, tile checksums and slice caching
 
 multi-scale - Hot spots and hot scales. Foreground objects are seen at different distances more than background. So multi-scale should increase the frequency.
 
 smaller frame or two level - note that the underlying seems quite localised in the [extract](#actor002_model036_Film_Noir_001_extract) and not necessarily all that centralised. Could also blank out periphery initially to focus in the centre of the frame, but probably best to have small underlying frames in two level. Possibly driven by single level tiled to identify the hot spots and scales.
 
-gradient - both spatial and temporal. Typically more motion around the edges of foreground objects
+gradient - spatial. Film noir tells us that bucketing picks up far too many fine details. Perhaps we should focus on spatial gradient of brightness rather than absolute brightness. This is different from temporal gradients of dynamics and would be more like edge detection. Could have both the absolute brightness and gradient variables, but these would be weakly aligned. The gradients would have a direction or could choose the maximum gradient. The gradients could be on a smaller scale and so would not be so aligned with the absolute. Or they could be at a higher resolution than the brightness variables. Perhaps we should stick closely to what we know about animal eyes, that is a wide range of brightness detection (after scaling adjustment by the pupil, which is already done for us in films to a large degree) and edge detection. https://en.m.wikipedia.org/wiki/Edge_detection Eye seems to have horizontal and vertical gradient detectors. https://www.quora.com/What-cells-in-the-eye-are-responsible-for-edge-detection
+
+
+gradient - temporal. Typically more motion around the edges of foreground objects. Instantaneous delta variables show values for no change, brightening and darkening. Perhaps add gamma i.e. double brightening, oscillating, double lightening. Probably gamma not very interesting, because sensitive to the frame rate and increases valency. Perhaps gamma should be based on degree change in value rather than just on the direction. 
 
 The models are still very blurry and so we must try to increase model detail but concentrated in areas interesting to us humans. These are not that much more interesting than clouds and backgrounds. With multi-scale, face hotspots will be more common and that might accelerate model growth there. Also if we have dynamics, the backgrounds will be more separated from heads and bodies - although that will geneally be the case anyway. Once attached to a head the small scan hotspot mode tends to follow it around - so there is a chance that we can parameterise the mode so that the model can be interested in the objects we are too.
+
+Should we also consider rotations? Perhaps for future but probably won't increase the frequency of interesting features as much as scale. Perhaps a two level coincident model would have the same slice if the underlying models have multi-rotation as well as multi-scale. It could be that there is an automatic adjustment made for head angle for rolls (yaw and pitch are handled by scanning). But seeing things from above or below often includes a rotation so perhaps an object is made of parts and the parts are independent of affine transformation in 3 dimensions ie where parallel lines remain parallel. Perhaps edge detection is a better substrate.
+
+Are there labels for which there might be causal alignments? If so, then can we find some useful conditional model for a demo? 
+
+Label frames that contain emotionally interesting items.  For example if we could manually label frames that contain faces by moving the focus to them. Then we could change the act mode to search preferentially for similar frames, ie descendents of the labelled slices. So unlikely (little act-pot), but emotionally important, models would grow and perhaps become more likely given the focussed history. Have a set of specially labelled slices that are emotionally meaningful to user, eg images of family. In general could have like or not like tags that could be used to search the slice topology for a kind of user reinforcement learning 
+
+smaller scans and use the topology to guess the next centre. Can use the active's topology to choose the next relative location using non-modelled variables representation the change of centre actions. The new actions should be adjusted to the scanned hotspot.
+
+colour substrates
 
 <a name = "Conclusion"></a>
 
