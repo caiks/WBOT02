@@ -1714,6 +1714,8 @@ The position maps for *models* 52 and 52 show a certain amount of repetition or 
 
 Browsing the root *fud* children *slices* also gives us a clue as to what might explain the quite sharp dull outlines that formed in the length map when we came to the scale used by *model* 13 [above](#contour001_013_length). We can conjecture that the lines occur where the coincidence of the point-like concentration of the root *fud's* *underlying*, which is so evident in some of the *off-diagonal* sibling representations, push the *model* briefly *off-diagonal* into *slices* with low *size*. That is, the root *fud* does not appear to have its *underlying* scattered throughout the frame, but concentrated at the highest *alignments*,
 
+<a name="actor002_model036_Film_Noir_001_extract"></a>
+
 ![actor002_model036_Film_Noir_001_extract](images/actor002_model036_Film_Noir_001_extract.png) 
 
 So, as we move across the boundaries between highly related *slices* we sometimes come across these *off-diagonal slices* which are likely to be in shorter paths. The infrequency of *events* in these *slices* means that the gradients of the map are steep and only briefly discontinuous. 
@@ -2118,6 +2120,8 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 2.600|34,069|1.956|33,130|939|2.83%
 2.656|34,557|1.977|33,491|1066|3.18%
 
+Can have low valency and high valency (computed) variables for the same pixel if the variables are shuffle-linked to prevent tautological alignments.
+
 developed checkpointing to handle recovery
 
 46 vs 45 - back to 10-valent, lower growth, a little higher multiplier, perhaps compare contour maps to get a qualitative difference
@@ -2179,6 +2183,14 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 3|16,735|2.099|15,750|985|6.25%
 
 Tiled scanning and growth in overflow. In the models so far we have only been using around 24 tiles and we are taking 5 events. If we have 6 scales, but take the same number of events we might see growth decline much more slowly. However, it is somewhat surprising that the 1 in 5 potential ratio does not give us some benefit over random. Also model 24 (scanned mode 4) lags far behind so either the alignments are declining at the top of the model or the fact that the children split into half a threshold because actual rather than potential. So the actual tiling depresses growth, but not quite as much as actual scanning. Potential lifts growth both before and after overflow. Higher potential fractions should improve it more.
+
+future developments -
+
+multi-scale - Hot spots and hot scales. Foreground objects are seen at different distances more than background. So multi-scale should increase the frequency.
+
+smaller frame or two level - note that the underlying seems quite localised in the [extract](#actor002_model036_Film_Noir_001_extract) and not necessarily all that centralised. Could also blank out periphery initially to focus in the centre of the frame, but probably best to have small underlying frames in two level. Possibly driven by single level tiled to identify the hot spots and scales.
+
+gradient - both spatial and temporal. Typically more motion around the edges of foreground objects
 
 <!-- 
 
