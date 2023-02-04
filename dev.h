@@ -79,7 +79,7 @@ namespace WBOT02
 		
 		double entropy() const;
 		
-		Record valentFixed(std::size_t valency) const;
+		Record valentFixed(std::size_t valency, bool balanced = false) const;
 		
 		Record valent(std::size_t valency, std::size_t factor = 0) const;
 		

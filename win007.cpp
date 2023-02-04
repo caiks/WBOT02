@@ -154,6 +154,8 @@ Win007::Win007(const std::string& configA,
 		_valency = ARGS_INT_DEF(valency,10);	
 		_valencyFactor = ARGS_INT(valency_factor);	
 		_valencyFixed = ARGS_BOOL(valency_fixed);	
+		_valencyBalanced = ARGS_BOOL(valency_balanced);	
+		_valencyFixed |= _valencyBalanced;
 		_size = ARGS_INT_DEF(size,40);	
 		_sizeTile = ARGS_INT_DEF(tile_size,_size/2);	
 		_divisor = ARGS_INT_DEF(divisor,4);	
@@ -543,7 +545,7 @@ void Win007::act()
 						_centreX + (centreRandomX * _captureHeight / _captureWidth), 
 						_centreY + centreRandomY, 
 						_size, _size, _divisor, _divisor);
-					Record recordValent = _valencyFixed ? record.valentFixed(_valency) : record.valent(_valency,_valencyFactor);
+					Record recordValent = _valencyFixed ? record.valentFixed(_valency,_valencyBalanced) : record.valent(_valency,_valencyFactor);
 					if (_entropyMinimum > 0.0 && recordValent.entropy() < _entropyMinimum)
 						continue;
 					auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);
@@ -565,7 +567,7 @@ void Win007::act()
 						_centreX + (centreRandomX * _captureHeight / _captureWidth), 
 						_centreY + centreRandomY, 
 						_size, _size, _divisor, _divisor);
-					records.push_back(_valencyFixed ? record.valentFixed(_valency) : record.valent(_valency,_valencyFactor));	
+					records.push_back(_valencyFixed ? record.valentFixed(_valency,_valencyBalanced) : record.valent(_valency,_valencyFactor));	
 				}
 				std::vector<std::pair<double,std::size_t>> likelihoodsRecord;		
 				{		
@@ -632,7 +634,7 @@ void Win007::act()
 						_centreX + (centreRandomX * _captureHeight / _captureWidth), 
 						_centreY + centreRandomY, 
 						_size, _size, _divisor, _divisor);
-					records.push_back(_valencyFixed ? record.valentFixed(_valency) : record.valent(_valency,_valencyFactor));	
+					records.push_back(_valencyFixed ? record.valentFixed(_valency,_valencyBalanced) : record.valent(_valency,_valencyFactor));	
 				}
 				std::vector<std::pair<std::pair<std::size_t,double>,std::size_t>> actsPotsRecord;
 				{		
@@ -741,6 +743,7 @@ void Win007::act()
 								auto valency = actor._valency;
 								auto valencyFactor = actor._valencyFactor;
 								auto valencyFixed = actor._valencyFixed;
+								auto valencyBalanced = actor._valencyBalanced;
 								auto sizeX1 = sizeX - size;
 								auto sizeY1 = sizeY - size;
 								auto hr = sizesHistoryRepa(actor._scaleValency, valency, size*size);
@@ -753,7 +756,7 @@ void Win007::act()
 										if (z % actor._threadCount == t)
 										{
 											Record recordSub(record,size,size,x,y);
-											Record recordValent = valencyFixed ? recordSub.valentFixed(valency) : recordSub.valent(valency,valencyFactor);
+											Record recordValent = valencyFixed ? recordSub.valentFixed(valency,valencyBalanced) : recordSub.valent(valency,valencyFactor);
 											auto& arr1 = *recordValent.arr;	
 											SizeUCharStructList jj;
 											jj.reserve(n);
@@ -806,7 +809,7 @@ void Win007::act()
 					if (_entropyMinimum > 0.0)
 					{
 						Record recordSub(record,_size,_size,x,y);
-						Record recordValent = _valencyFixed ? recordSub.valentFixed(_valency) : recordSub.valent(_valency,_valencyFactor);
+						Record recordValent = _valencyFixed ? recordSub.valentFixed(_valency,_valencyBalanced) : recordSub.valent(_valency,_valencyFactor);
 						if (_entropyMinimum > 0.0 && recordValent.entropy() < _entropyMinimum)
 							continue;
 					}					
@@ -842,7 +845,7 @@ void Win007::act()
 					auto x = std::get<4>(t);
 					auto y = std::get<5>(t);
 					Record recordSub(record,_size,_size,x,y);
-					Record recordValent = _valencyFixed ? recordSub.valentFixed(_valency) : recordSub.valent(_valency,_valencyFactor);
+					Record recordValent = _valencyFixed ? recordSub.valentFixed(_valency,_valencyBalanced) : recordSub.valent(_valency,_valencyFactor);
 					if (!centered)
 					{
 						_centreX = posX;
@@ -923,12 +926,13 @@ void Win007::act()
 									auto valency = actor._valency;
 									auto valencyFactor = actor._valencyFactor;
 									auto valencyFixed = actor._valencyFixed;
+									auto valencyBalanced = actor._valencyBalanced;
 									for (std::size_t y = ty*sizeTile, z = 0; y < (ty+1)*sizeTile; y++)	
 										for (std::size_t x = tx*sizeTile; x < (tx+1)*sizeTile; x++, z++)
 											if (z % actor._threadCount == t)
 											{
 												Record recordSub(record,size,size,x,y);
-												Record recordValent = valencyFixed ? recordSub.valentFixed(valency) : recordSub.valent(valency,valencyFactor);
+												Record recordValent = valencyFixed ? recordSub.valentFixed(valency,valencyBalanced) : recordSub.valent(valency,valencyFactor);
 												auto& arr1 = *recordValent.arr;	
 												SizeUCharStructList jj;
 												jj.reserve(n);
@@ -994,7 +998,7 @@ void Win007::act()
 					auto x = std::get<4>(t);
 					auto y = std::get<5>(t);
 					Record recordSub(record,_size,_size,x,y);
-					Record recordValent = _valencyFixed ? recordSub.valentFixed(_valency) : recordSub.valent(_valency,_valencyFactor);
+					Record recordValent = _valencyFixed ? recordSub.valentFixed(_valency,_valencyBalanced) : recordSub.valent(_valency,_valencyFactor);
 					if (_entropyMinimum > 0.0 && recordValent.entropy() < _entropyMinimum)
 						continue;	
 					if (!centered)
@@ -1169,7 +1173,7 @@ void Win007::act()
 		Record record(image, 
 			_scale * _captureHeight / _captureWidth, _scale,
 			_centreX, _centreY, _size, _size, _divisor, _divisor);
-		Record recordValent = _valencyFixed ? record.valentFixed(_valency) : record.valent(_valency,_valencyFactor);
+		Record recordValent = _valencyFixed ? record.valentFixed(_valency,_valencyBalanced) : record.valent(_valency,_valencyFactor);
 		auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);	
 		// representations
 		std::size_t slice = 0;

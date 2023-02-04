@@ -124,6 +124,7 @@ private:
 	std::size_t _valency;
 	std::size_t _valencyFactor;
 	bool _valencyFixed;
+	bool _valencyBalanced;
 	std::size_t _size;
 	std::size_t _sizeTile;
 	std::size_t _divisor;

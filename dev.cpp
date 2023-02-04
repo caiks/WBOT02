@@ -145,7 +145,7 @@ std::unique_ptr<ValueList> WBOT02::Record::sorted() const
 	return result;
 }
 
-Record WBOT02::Record::valentFixed(std::size_t valency) const
+Record WBOT02::Record::valentFixed(std::size_t valency, bool balanced) const
 {
 	Record record(*this);
 	if (valency && valency <= 128 && record.arr)
@@ -154,8 +154,50 @@ Record WBOT02::Record::valentFixed(std::size_t valency) const
 		auto arr1 =  arr->data();
 		record.arr = std::make_shared<std::vector<unsigned char>>(size,no_init_alloc<unsigned char>());
 		auto arr2 = record.arr->data();
-		for (std::size_t j = 0; j < size; j++)
-			arr2[j] = arr1[j]*valency/256;
+		if (balanced)
+		{
+			std::size_t av = 0;
+			unsigned char max = 0;
+			std::size_t min = 255;
+			for (std::size_t j = 0; j < size; j++)
+			{
+				auto x = arr1[j];
+				av += x;
+				if (x<min) min = x;
+				if (x>max) max = x;
+			}
+			av /= size;
+			if (av < 127)
+			{
+				std::size_t d = 127-av;
+				for (std::size_t j = 0; j < size; j++)
+				{
+					std::size_t x = arr1[j] + d;
+					if (x<256)
+						arr2[j] = x*valency/256;				
+					else
+						arr2[j] = valency - 1;
+				}
+			}
+			else if (av > 127)
+			{
+				std::size_t d = av-127;
+				for (std::size_t j = 0; j < size; j++)
+				{
+					std::size_t x = arr1[j];
+					if (x>d)
+						arr2[j] = (x-d)*valency/256;				
+					else
+						arr2[j] = 0;
+				}
+			}
+			else
+				for (std::size_t j = 0; j < size; j++)
+					arr2[j] = arr1[j]*valency/256;
+		}
+		else
+			for (std::size_t j = 0; j < size; j++)
+				arr2[j] = arr1[j]*valency/256;
 	}
 	return record;
 }
