@@ -1409,7 +1409,7 @@ model055|0.177|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W vi
 model056|0.177|5 scanned size-potential tiled actual-potential|6|fixed 5-valent|48 B&W videos|3,000,000|34,859|1.162 (1.643)|19.7|4.02|32|1.70|30s unique, 12.0 min diagonal, 100 threshold, 0.8 min entropy
 model057|0.354|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|15,433|1.003 (1.480)|15.5|3.21|25|1.86|30s unique, 12.0 min diagonal, 1.2 min entropy
 model058|0.088|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|13,999|0.933 (1.447)|15.4|2.97|25|1.86|30s unique, 12.0 min diagonal, 1.2 min entropy
-model059|0.177|5 scanned active-size-potential tiled actual-potential|7|fixed|48 B&W videos|3,000,000|16,735|1.116 (1.501)|15.2|2.77|23|1.90|30s unique, 12.0 min diagonal, 1.2 min entropy
+model059|0.177|5 scanned active-size-potential tiled actual-potential|8|fixed|48 B&W videos|3,000,000|16,735|1.116 (1.501)|15.2|2.77|23|1.90|30s unique, 12.0 min diagonal, 1.2 min entropy
 
 The table above does not show the median and maximum *diagonals*. The median *diagonals* for the actor 2 and actor 3 *models* were consistently around 23-27, and the maximum *diagonals* were consistently around 37-39.
 
@@ -2179,6 +2179,8 @@ The mean is lower than model 35, but there are two modes at 7 and 15 and the lon
 
 Duplicate removal. Can prevent exact duplicates if we use the motion detector hash for each event and then check the event against the current slice or the most recent slices. Or simply check against the list of the most recent events, so that duplicates are allowed after a suitable interval. Prefer to check the recent slices, but could use a long list of events. Events is easier - use a FIFO queue and a set. Could process before choosing topmost of the mode. First do the browser and get evidence that it is a problem. Duplicate removal. Surely the whole point of centering is to get a lot of similar frames quickly? Similar - but not the same. Removing duplicates might allow unusual events to get more attention. Count the duplicates.
 
+The reason the centre keeps moving is sometimes that the frame does not move. Should we check for min entropy, then set the centre then check for unique records? Probably best to leave it as it is, so that the centre hovers around places of activity and does not get stuck in static backgrounds.
+
 40 and 41 vs 39 - adds history, overflowing - runs around expectations -
 
 million-events|actual fuds|1+ln(million-events)|expected fuds|difference|difference percent
@@ -2321,7 +2323,7 @@ model growth in overflow - If the modelling rate is declining we could perhaps s
 
 Experiment with sizes, scales, valencies and thresholds. 
 
-decreasing thresholds, random initial models (Probably fixed valency is not going to be evenly distributed, so start the model with a random before mode 4 to avoid the small absolute variations of texture and background), tiled driver models
+decreasing thresholds, random initial models (Probably fixed valency is not going to be evenly distributed, so start the model with a random before mode 4 to avoid the small absolute variations of texture and background, although view_decomp and limited length browsing suggests that the models are still balanced near the root), tiled driver models
 
 Do a border check to make sure the x and y coordinate diffs are both not less than say 4, to avoid expanding hotspots.
 
@@ -2370,5 +2372,7 @@ The things that are interesting to humans and other animals are those that natur
 This behaviour is excellent in the sense that likelihood is a good indicator for future potential, but shows that we need less cluttered frames - the model is quite poor for new scenes. Wotbot needs to be able to be able to identify the different objects independently at smaller scales, while having the overall scene at larger scales too. Should we extend the substrate to allow one full scale frame plus a dynamic variable scale frame? Or should that be arranged in levels, i.e. the higher level has temporal and two underlyings - the full scale scene and the scanned variable scale frame.
 
 Note on how the contour maps enables us to tell where the model is most concentrated for a given scene. Then we can know if our modelling mode and parameters are tending to produce models that are interested in areas that are also interesting to humans, i.e. socially significant areas such as faces.
+
+client-server architecture
 
 -->
