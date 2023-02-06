@@ -2317,6 +2317,10 @@ future developments -
 
 Remember that the eventual mobile app will see an environment that might not look very much like Film noir so perhaps we should concentrate less on the substrate and more on the active structure and compute scale, ie we need not have conclusive evidence of face pattern matching before moving on so long as it appears to be doing something interesting.
 
+Another issue that affects model quality is of course that films do not much look like the visual perceptions of infants. That we are interested in objects as much as people when young as is evident when we observe them playing with toys. Later they cooperate in games but, when youngest, objects and how they move and behave (if agents) is very important. In the small restricted substrate models of wotbot we will be lucky to get concrete evidence of interest in the actors' heads and bodies and, to a lesser extent, the objects typical in the sets and backgrounds, but if we do, this should be convincing evidence of the potential of this approach.
+
+Sports might be a good source of video of the human body in motion as well as inanimate objects. Of course this is very similar to the kinetics videos that Google did.
+
 Before going on to websockets perhaps we could try to aim for signs that faces are being modelled. Let's do what we can with parameterisation and film noir. However we cannot have high expectations - we could well need dynamic, audio, temporal, emotional cues and other higher level models and modes 
 
 model growth in overflow - If the modelling rate is declining we could perhaps swap the positions of old events of recently experienced slices with old events of neglected slices before rolling them off. Or roll off the smaller slice of the oldest and next oldest events. Or the slice with the least likelihood. Or shorter path. Note that the sequence will be wrong if continuous 
@@ -2350,6 +2354,9 @@ labelling slices. We could allow a user to assign a label to a frame while brows
 smaller scans and use the topology to guess the next centre. Can use the active's topology to choose the next relative location using non-modelled variables representation the change of centre actions. The new actions should be adjusted to the scanned hotspot.
 
 colour substrates
+
+induction parameters. Perhaps we could tune the induction parameters so that less of the slice is off-diagonal. The hit to overflow growth would be less. Although note that we do have good growth of around 1.5 with non-overflow growth for the tiled models at present, so there probably isn't a huge amount of scope. Review the view_decomp to guess the average size off-diagonal. With actual-size mode 8 it perhaps does not matter too much because the off-diagonal roll off. On the other hand, events in these slices are then lost forever. Perhaps we could do the remainder slice earlier with a remainder slice size threshold greater than zero. Perhaps we should go for unusual likelihood mode.
+
 
 <a name = "Conclusion"></a>
 
