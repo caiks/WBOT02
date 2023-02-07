@@ -2404,6 +2404,8 @@ Perhaps we should use linked low valency variables so that we can reduce the thr
 
 Would a fourier analysis along horizontal and vertical lines be useful? Would need high valencies and therefore need linked or computed variables. We are going to have this issue for audio. Are the spirals and shapes apparently seen under the influence of LSD directly from edge detection slices? What other hint mechanisms have evolved? Or do these shapes reflect the early abstractions near the root of the model? Perhaps they do have some Fourier transform components, although perhaps implicit rather than explicit. 
 
+Model overflow. We can utilise the active history efficiently by limiting to subtrees which have fewer leaves than the threshold allows. That is, when scanning or searching the topology only descendents from the current ancestor are interesting. If we have multiple actives sharing a model we can have each in charge of different parts. This has the advantage of not needed model synching especially if events not in the submodel are rejected. The activities of the different actives would be very different (except where there are deep duplicates). Of course, if the sets of leaves is large or as the submodel grows, the history will overflow again, but this is perhaps a more efficient way of working. Also, the same active can switch between submodels and switch histories at the same time from storage. Of course, it all depends on the model's degree of agency i.e. its control over what it experiences. A disembodied wotbot without manipulators cannot choose readily. However if a scene changes we could perhaps switch attention.
+
 <a name = "Conclusion"></a>
 
 ### Conclusion
