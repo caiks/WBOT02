@@ -2175,11 +2175,21 @@ Added 4102 fuds in the last 500k, so a better rate than model 34 in the second h
 
 The mean is lower than model 35, but there are two modes at 7 and 15 and the longest path is the same at 35. There are many more fails (60) than model 35.
 
+Does potential exaggerate lopsided fuds in model 37? Use a higher diagonal.
+
+37 seems to be a bit better than 35 at overall shape, although 37 has a smaller model, but 35 is definitely better at eyes and heads. 37 appears to have more sky than 35.
+
+Often distracted by the dark blacks, but if none are visible then it will often find hairlines and face edges in medium close ups when there are several events. It seems like there is quite a lot of interesting model amongst the higher but dull peaks nearby. Perhaps the dull peaks are due to a lot of background duplicates. These dull peaks seem very lopsided - would a high diagonal exclude them?
+
+The deep blacks seem to be less of a problem with model 35 than 37
+
 39 vs 35 - adds 333 of unique records ie around 30s, increases mean and growth a little
 
 Duplicate removal. Can prevent exact duplicates if we use the motion detector hash for each event and then check the event against the current slice or the most recent slices. Or simply check against the list of the most recent events, so that duplicates are allowed after a suitable interval. Prefer to check the recent slices, but could use a long list of events. Events is easier - use a FIFO queue and a set. Could process before choosing topmost of the mode. First do the browser and get evidence that it is a problem. Duplicate removal. Surely the whole point of centering is to get a lot of similar frames quickly? Similar - but not the same. Removing duplicates might allow unusual events to get more attention. Count the duplicates.
 
 The reason the centre keeps moving is sometimes that the frame does not move. Should we check for min entropy, then set the centre then check for unique records? Probably best to leave it as it is, so that the centre hovers around places of activity and does not get stuck in static backgrounds.
+
+Statistics look rather better than 35?
 
 40 and 41 vs 39 - adds history, overflowing - runs around expectations -
 
@@ -2191,7 +2201,13 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 
 evidence of interesting features. The examples of interactive model 41 in `C:\caiks\WBOT02\images` suggest that lighting is very important as well as scale - so edge detection would be interesting. There are many faces in the examples, but it is rare that a frame is classified with a lot of examples that we would recognise as similar, e.g. actor002_model041_Film_Noir_010.png. Even then, there are many examples which are completely unrelated to faces or eyes. It is clear that the classification is good on broad areas of light and dark, but the model would have to be much larger I think before the facial features would be reliably classified together and even then they would probably be spread over slices that are far apart in the model because of lighting conditions. We can see that scale is very important too - compare actor002_model041_camera_001.png and actor002_model041_camera_002.png, where the images magnification is slightly different.
 
+Model 41 has modes at 17, 33, 40, 42, 50, 53, 60, 62.
+
 The very long paths are usually dark black, but there are plenty of hotspots around medium close up faces that are longer than the first mode of 17. There are lots of surfaces and body edges that have longer paths. (Increase the diagonal?) The face slices usually consist of many other non-face events, although it is hard to tell from the off-diagonal siblings. Essentially, the model is recognising faces, but they are buried amongst a lot of other alignments. The lighting of the image is important too - the siblings all have the same brightness. So we must consider edge detection and instantanous motion after multi-scale.
+
+The 30s unique 39 seems to be a little better than 35, with some eyes detected although misplaced. There seems a little bit of improvement in model 41 compared to 39. Doesn't seem to be especially interested in faces, but rather in textures. 
+
+Model 41 appears to suggest that a random initial model is unnecessary.
 
 42-45 vs 41 - 5-valent plus expanded set of videos, min diagonal 100 threshold, very high growth of 1.643, multiplier the same, runs ahead of growth expectations -
 
@@ -2203,11 +2219,15 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 2.600|34,069|1.956|33,130|939|2.83%
 2.656|34,557|1.977|33,491|1066|3.18%
 
+Double the fuds and active slices, but not double the paths. The skewness and kurtosis is much less too - suggests a more balanced tree.
+
+Like model041, model045 is not particularly interested in people but complex areas. Not so interested in the darks as model041. Does seem to hang around bodies and clothes.
+
 Can have low valency and high valency (computed) variables for the same pixel if the variables are shuffle-linked to prevent tautological alignments.
 
 developed checkpointing to handle recovery
 
-46 vs 45 - back to 10-valent, lower growth, a little higher multiplier, perhaps compare contour maps to get a qualitative difference
+46 vs 45 - back to 10-valent plus expanded set of videos, lower growth, a little higher multiplier, perhaps compare contour maps to get a qualitative difference
 
 million-events|actual fuds|1+ln(million-events)|expected fuds|difference|difference percent
 ---|---|---|---|---|---
@@ -2228,6 +2248,12 @@ lengthsKurtosisExcess: 1.05939
 lengthsHyperSkewness: 7.36744
 ```
 
+Compared to model 45, model 46 seems to be be more interested in darks and figures, but perhaps that is simply because the model is less 'complete'. It could, however, be because at the higher valency more detail is resolvable, which explains the darks. Model 45 does seem to be more interested in backgrounds and patterns.
+
+Comparing the contour maps between 45 and 46 we can see that there is a distinct difference in valency with much less detail in the darks and lights.
+
+There does not seem to be much improvement after 1m events or with 48 videos, whether with 5 valency or 10 valency. In 46 some of the larger frames do not have the right distribution, so perhaps not rolling up the values correctly. Model 45 seems to have better representations, although less detailed. Suggests that linked variables might be better, or ordered values. Perhaps we could divide into fewer cells and have more active history.
+
 47 vs 46 - added min entropy, growth is reduced, multiplier increases slightly, more normal statistics?, compare qualitative
 
 model 47 -
@@ -2240,7 +2266,6 @@ lengthsSkewness: -0.376717
 lengthsKurtosisExcess: 0.249775
 lengthsHyperSkewness: -3.94355
 ```
-
 The min entropy models never have failed slices (47 onward). Unique events may reduce the fails. The max path length is much shorter once min entropy is introduced. This suggests that there are still many potential alignments still to be found even on the longest paths.
 
 Noticeably different statistics between models without and with min entropy. Same mode, but lower deviation and max length and sign of skew has changed and smaller kurtosis - all suggest a more balanced stubbier tree, with more shorter paths (presumably lowish enrtropy/alignments) and fewer longer paths (but perhaps more interesting to us). No fails also suggests that all of the failed slices in the previous model where low entropy. All but 12 of the 1556 slices of length 25 or more were presumably also low entropy.
@@ -2313,9 +2338,19 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 
 Tiled scanning and growth in overflow. In the models so far we have only been using around 24 tiles and we are taking 5 events. If we have 6 scales, but take the same number of events we might see growth decline much more slowly. However, it is somewhat surprising that the 1 in 5 potential ratio does not give us some benefit over random. Also model 24 (scanned mode 4) lags far behind so either the alignments are declining at the top of the model or the fact that the children split into half a threshold because actual rather than potential. So the actual tiling depresses growth, but not quite as much as actual scanning. Potential lifts growth both before and after overflow. Higher potential fractions should improve it more.
 
-future developments -
+
+"wotbot should be able to track it until something else more interesting appears" - put an example of a video and model of the wotbot tracking successfully. Use a model from actor 3, since more reproducible.
+
+include demo videos
+
+
+future developments - 
+
+balanced valency -  The current substrate doesn't handle lighting levels or skin tones without perhaps creating whole brightness translated copies of models. Easier to implement than edge detection which is also absolute brightness independent. Perhaps as an analogy to multi-scale we could consider multi-lighting. Perhaps we should do the bucketing based on the larger tiled area. Or perhaps we should detect the overall lighting and simply translate the fixed, with the bottom and top values larger or smaller as needed. Of course, films are set at the lighting levels desired by the director, and the light or dark is meaningful. Edge detection, being relative, in addition to surface might well be better.
 
 Remember that the eventual mobile app will see an environment that might not look very much like Film noir so perhaps we should concentrate less on the substrate and more on the active structure and compute scale, ie we need not have conclusive evidence of face pattern matching before moving on so long as it appears to be doing something interesting.
+
+Also the selection of films might make a difference too - too many dark backgrounds in film noir might make the films unrepresentative of what the mobile app will eventually see. On the other hand films do concentrate the emotional experience which is so important to us. We cannot wait for the years of infant experience even if we could capture it without strapping a camera to an actual child's head.
 
 Another issue that affects model quality is of course that films do not much look like the visual perceptions of infants. That we are interested in objects as much as people when young as is evident when we observe them playing with toys. Later they cooperate in games but, when youngest, objects and how they move and behave (if agents) is very important. In the small restricted substrate models of wotbot we will be lucky to get concrete evidence of interest in the actors' heads and bodies and, to a lesser extent, the objects typical in the sets and backgrounds, but if we do, this should be convincing evidence of the potential of this approach.
 
@@ -2333,15 +2368,17 @@ Do a border check to make sure the x and y coordinate diffs are both not less th
 
 actor 4 - performance challenge, image queues, tile checksums and slice caching
 
-multi-scale - Hot spots and hot scales. Foreground objects are seen at different distances more than background. So multi-scale should increase the frequency.
+multi-scale - Hot spots and hot scales. Foreground objects are seen at different distances more than background. So multi-scale should increase the frequency. the multi-scale model might to better so long as the scales incorporate the range of shots typically used in the B&W films that we have. Measure some heads from the videos for various shots and determine the set of scales necessary.
 
-smaller frame or two level - note that the underlying seems quite localised in the [extract](#actor002_model036_Film_Noir_001_extract) and not necessarily all that centralised. Could also blank out periphery initially to focus in the centre of the frame, but probably best to have small underlying frames in two level. Possibly driven by single level tiled to identify the hot spots and scales.
+smaller frame or two level - note that the underlying seems quite localised in the [extract](#actor002_model036_Film_Noir_001_extract) and not necessarily all that centralised. Could also blank out periphery initially to focus in the centre of the frame, but probably best to have small underlying frames in two level. Possibly driven by single level tiled to identify the hot spots and scales. The choice of the substrate size for the underlying can be suggested by the hotspot scale. If we cannot scan the underlyings because of compute resources we want the underlying model to be fairly insensitive to small translations.
 
-gradient - spatial. Film noir tells us that bucketing picks up far too many fine details. Perhaps we should focus on spatial gradient of brightness rather than absolute brightness. This is different from temporal gradients of dynamics and would be more like edge detection. Could have both the absolute brightness and gradient variables, but these would be weakly aligned. The gradients would have a direction or could choose the maximum gradient. The gradients could be on a smaller scale and so would not be so aligned with the absolute. Or they could be at a higher resolution than the brightness variables. Perhaps we should stick closely to what we know about animal eyes, that is a wide range of brightness detection (after scaling adjustment by the pupil, which is already done for us in films to a large degree) and edge detection. https://en.m.wikipedia.org/wiki/Edge_detection Eye seems to have horizontal and vertical gradient detectors. https://www.quora.com/What-cells-in-the-eye-are-responsible-for-edge-detection
+gradient - spatial. Film noir tells us that bucketing picks up far too many fine details. Perhaps we should focus on spatial gradient of brightness rather than absolute brightness. This is different from temporal gradients of dynamics and would be more like edge detection. Could have both the absolute brightness and gradient variables, but these would be weakly aligned. The gradients would have a direction or could choose the maximum gradient. The gradients could be on a smaller scale and so would not be so aligned with the absolute. Or they could be at a higher resolution than the brightness variables. Perhaps we should stick closely to what we know about animal eyes, that is a wide range of brightness detection (after scaling adjustment by the pupil, which is already done for us in films to a large degree) and edge detection. https://en.m.wikipedia.org/wiki/Edge_detection Eye seems to have horizontal and vertical gradient detectors. https://www.quora.com/What-cells-in-the-eye-are-responsible-for-edge-detection Temporal and spatial gradients could be at a larger scale than the brightness and hue (and saturation). The outline of an object does not have to be exact. The delta can be at a smaller scale than the pixel scale. Edge detection might be too aligned with the corresponding brightness variables - we must link the variables? Edge detection will probably have to be at a high resolution or small scale while brightness and colour should be at larger scales to avoid or at least reduce unwanted alignments because linking won't work - the dependencies are too interconnected. Edge detection should also detect colour gradients and perhaps saturation gradients, or there should be separate edges for these.
 
-gradient - temporal. Typically more motion around the edges of foreground objects. Instantaneous delta variables show values for no change, brightening and darkening. Perhaps add gamma i.e. double brightening, oscillating, double lightening. Probably gamma not very interesting, because sensitive to the frame rate and increases valency. Perhaps gamma should be based on degree change in value rather than just on the direction. 
+gradient - temporal. Typically more motion around the edges of foreground objects. Instantaneous delta variables show values for no change, brightening and darkening. Perhaps add gamma i.e. double brightening, oscillating, double lightening. Probably gamma not very interesting, because sensitive to the frame rate and increases valency. Perhaps gamma should be based on degree change in value rather than just on the direction. Might need instantaneous dynamics to find movement intrinsically interesting. if we have dynamics, the backgrounds will be more separated from heads and bodies
 
 The models are still very blurry and so we must try to increase model detail but concentrated in areas interesting to us humans. These are not that much more interesting than clouds and backgrounds. With multi-scale, face hotspots will be more common and that might accelerate model growth there. Also if we have dynamics, the backgrounds will be more separated from heads and bodies - although that will geneally be the case anyway. Once attached to a head the small scan hotspot mode tends to follow it around - so there is a chance that we can parameterise the mode so that the model can be interested in the objects we are too.
+
+Expect that even with multi-scale and edge detection we will probably still need a temporal higher level slice topology search to make the wotbot behaviour resemble a human. Possibly we will also need audio. The reason is that the features that are interesting to us - moving lips, for example - are often buried on shorter paths along with unrelated events deep in the model.
 
 Should we also consider rotations? Perhaps for future but probably won't increase the frequency of interesting features as much as scale. Perhaps a two level coincident model would have the same slice if the underlying models have multi-rotation as well as multi-scale. It could be that there is an automatic adjustment made for head angle for rolls (yaw and pitch are handled by scanning). But seeing things from above or below often includes a rotation so perhaps an object is made of parts and the parts are independent of affine transformation in 3 dimensions ie where parallel lines remain parallel. Perhaps edge detection is a better substrate.
 
@@ -2362,6 +2399,10 @@ slice transitions. WBOT02 WOTBOT NEURO motor actions. The motor variables are al
 slice transitions. WBOT02 WOTBOT NEURO motor actions. Motor variables may have more than binary valency, but high valencies might not be practical as the number of transitions would have to be more than the valency to make statistical choices, similar to induction threshold being greater than the square of the substrate valency. Could perhaps have 'linked' coarse (high) and fine (low) motor variables. If the values are ordered that simplifies the statistics of the transitions.
 
 slice transitions. WBOT02 WOTBOT NEURO motor actions. In the case of WBOT02 we could have horizontal and vertical motor actions for the centre, bu the valency for an absolute position would be so high that the number of transitions would exceed the induce threshold and the transitions would need to be done at ancestor slices which would be out of date. Could, however, do relative changes at different scales and this might work fine. It would avoid scanning, but would reduce growth. 
+
+Perhaps we should use linked low valency variables so that we can reduce the threshold and have much larger models more quickly. We are going to need something like linked variables anyway for audio (which will rely on fourier analysis) and colour. We probably don't need it for edge detection though.
+
+Would a fourier analysis along horizontal and vertical lines be useful? Would need high valencies and therefore need linked or computed variables. We are going to have this issue for audio. Are the spirals and shapes apparently seen under the influence of LSD directly from edge detection slices? What other hint mechanisms have evolved? Or do these shapes reflect the early abstractions near the root of the model? Perhaps they do have some Fourier transform components, although perhaps implicit rather than explicit. 
 
 <a name = "Conclusion"></a>
 
@@ -2386,5 +2427,7 @@ This behaviour is excellent in the sense that likelihood is a good indicator for
 Note on how the contour maps enables us to tell where the model is most concentrated for a given scene. Then we can know if our modelling mode and parameters are tending to produce models that are interested in areas that are also interesting to humans, i.e. socially significant areas such as faces.
 
 client-server architecture
+
+We can calculate how interested wotbot is first by determining if the current slice is a fail and then by looking at the slice likelihood for interesting or unusual. Show by using emoticons, visible or audible. This will encourage the user to "point it in the general direction of something interesting."
 
 -->
