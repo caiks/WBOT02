@@ -2357,6 +2357,11 @@ colour substrates
 
 induction parameters. Perhaps we could tune the induction parameters so that less of the slice is off-diagonal. The hit to overflow growth would be less. Although note that we do have good growth of around 1.5 with non-overflow growth for the tiled models at present, so there probably isn't a huge amount of scope. Review the view_decomp to guess the average size off-diagonal. With actual-size mode 8 it perhaps does not matter too much because the off-diagonal roll off. On the other hand, events in these slices are then lost forever. Perhaps we could do the remainder slice earlier with a remainder slice size threshold greater than zero. Perhaps we should go for unusual likelihood mode.
 
+slice transitions. WBOT02 WOTBOT NEURO motor actions. The motor variables are all independent as well as orthogonal. There is no motor slice because there are no alignments. Muscles that work in pairs to pull in opposite directions e.g. in the eye or joints, are computed into one variable i.e. the partition equal to the crown or pivot or skeleton. So when it comes to slice transitions each variable can be treated separately when deciding what to do. 
+
+slice transitions. WBOT02 WOTBOT NEURO motor actions. Motor variables may have more than binary valency, but high valencies might not be practical as the number of transitions would have to be more than the valency to make statistical choices, similar to induction threshold being greater than the square of the substrate valency. Could perhaps have 'linked' coarse (high) and fine (low) motor variables. If the values are ordered that simplifies the statistics of the transitions.
+
+slice transitions. WBOT02 WOTBOT NEURO motor actions. In the case of WBOT02 we could have horizontal and vertical motor actions for the centre, bu the valency for an absolute position would be so high that the number of transitions would exceed the induce threshold and the transitions would need to be done at ancestor slices which would be out of date. Could, however, do relative changes at different scales and this might work fine. It would avoid scanning, but would reduce growth. 
 
 <a name = "Conclusion"></a>
 
