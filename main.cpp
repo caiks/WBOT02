@@ -2208,6 +2208,7 @@ int main(int argc, char *argv[])
 		string inputFilename = ARGS_STRING(input_file);
 		string likelihoodFilename = ARGS_STRING(likelihood_file);
 		string lengthFilename = ARGS_STRING(length_file);
+		bool lengthByHue = ARGS_BOOL(length_by_hue);	
 		string positionFilename = ARGS_STRING(position_file);
 		string lengthPositionFilename = ARGS_STRING(length_position_file);
 		string representationFilename = ARGS_STRING(representation_file);
@@ -2221,6 +2222,7 @@ int main(int argc, char *argv[])
 		int valencyFactor = ARGS_INT(valency_factor);	
 		bool valencyFixed = ARGS_BOOL(valency_fixed);	
 		bool valencyBalanced = ARGS_BOOL(valency_balanced);	
+		valencyFixed |= valencyBalanced;
 		int size = ARGS_INT_DEF(size,40);	
 		int divisor = ARGS_INT_DEF(divisor,4);	
 		int induceParameters_wmax = ARGS_INT_DEF(induceParameters.wmax,18);
@@ -2465,11 +2467,25 @@ int main(int argc, char *argv[])
 						brush.setColor(QColor(brightness,brightness,brightness));
 						likelihoodPainter.fillRect(rectangle,brush);					
 					}
+					if (lengthByHue)
+					{
+						QColor colour;
+						int hue = (lengthMax - length) * 300 / lengthMax;
+						int saturation = (likelihood > 0.0 ? likelihood * 127 : 0) + 128;
+						int brightness = 255;
+						colour.setHsv(hue, saturation, brightness);
+						if (length)
+							brush.setColor(colour);
+						else
+							brush.setColor(Qt::black);
+						lengthPainter.fillRect(rectangle,brush);					
+					}
+					else
 					{
 						int brightness = length * 255 / lengthMax;
 						brush.setColor(QColor(brightness,brightness,brightness));
 						lengthPainter.fillRect(rectangle,brush);					
-					}
+					}						
 					{
 						QColor colour;
 						int position = (int)(positions[slice] * 46080);
@@ -2477,7 +2493,10 @@ int main(int argc, char *argv[])
 						int saturation = 128 + position%128;
 						int brightness = 255;
 						colour.setHsv(hue, saturation, brightness);
-						brush.setColor(colour);
+						if (length)
+							brush.setColor(colour);
+						else
+							brush.setColor(Qt::black);
 						positionPainter.fillRect(rectangle,brush);					
 					}
 					{
