@@ -1411,7 +1411,7 @@ model057|0.354|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W vi
 model058|0.088|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|13,999|0.933 (1.447)|15.4|2.97|25|1.86|30s unique, 12.0 min diagonal, 1.2 min entropy
 model059|0.177|5 scanned active-size-potential tiled actual-potential|8|fixed|48 B&W videos|3,000,000|16,735|1.116 (1.501)|15.2|2.77|23|1.90|30s unique, 12.0 min diagonal, 1.2 min entropy
 model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
-
+model062|0.177|5 scanned size-potential tiled actual-potential|6|balanced 5-valent|48 B&W videos|3,000,000|33,612|1.120 (1.634)|18.4|3.7|31|1.76|30s unique, 12.0 min diagonal, 0.8 min entropy
 
 The table above does not show the median and maximum *diagonals*. The median *diagonals* for the actor 2 and actor 3 *models* were consistently around 23-27, and the maximum *diagonals* were consistently around 37-39.
 
@@ -2352,10 +2352,29 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 
 declining quicker than 55
 
+The representations are very different between 55 and 61. The face is considerably better in 61 but shoulders are worse. Most of the interest in the length images seems to be on the face rather than around the edge of the face. The problem with image 5 is that there is a low entropy area in the middle of the face. Perhaps we should have a lower min entropy for balanced.
+
+Again the face representation is better. The position map suggests that the modelling of the face is much more detailed with fewer 'shadows'. The length images certainly look much more like faces with lots of interest below the lip and around the jaw. The greatest interest in 55 is well past to the SW of the chin.
+
 "wotbot should be able to track it until something else more interesting appears" - put an example of a video and model of the wotbot tracking successfully. Use a model from actor 3, since more reproducible.
 
 include demo videos
 
+62 vs 56 - balanced 5-valent vs fixed 5-valent, growth a little down and multiplier a little up but stats very similar. 62 is a little more normal
+
+million-events|actual fuds|1+ln(million-events)|expected fuds|difference|difference percent
+---|---|---|---|---|---
+1|16,335|1.000|16,335|0|0.00%
+1.5|21,768|1.405|22,958|-1190|-5.18%
+2|26,582|1.693|27,658|-1076|-3.89%
+2.5|30,690|1.916|31,303|-613|-1.96%
+3|33,612|2.099|34,281|-669|-1.95%
+
+Representation not as good as 61, in the same way that 56 is not as good as 55, but the face is better than 56. Position does not look as detailed around the face as 61. Hotspots are still on the face. The 62 position is more detailed in the middle of the face and less around the edges compared to 56. The entropy is too high for contour 5, although better than for 56, so sometimes balanced helps with low entropy (would expect to be worse overall).
+
+Conclude that balanced is better than fixed in that it is interested in faces more, although the representations resemble the bucketed more. Also 10-valent is better than 5-valent even though the model is twice as large and the path length is nearly 4 greater. The lower multipliers of 5-valent seem to be specialising in something other than faces.
+
+So far 61 is the best model wrt interesting features.
 
 future developments - 
 
