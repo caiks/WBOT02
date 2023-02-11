@@ -2396,6 +2396,8 @@ Experiment with sizes, scales, valencies and thresholds.
 
 decreasing thresholds, random initial models (Probably fixed valency is not going to be evenly distributed, so start the model with a random before mode 4 to avoid the small absolute variations of texture and background, although view_decomp and limited length browsing suggests that the models are still balanced near the root), tiled driver models
 
+Remodelling. Driver models. If we remodel by inducing a new model from the history, remember that the sample is only representative for the hotspots of the old model. I suppose, however, the new model will only be a tidying up of weakened alignments and lopsidedness, so the new hotspots will proabably be fine and new samples will still be likely and representative.
+
 Do a border check to make sure the x and y coordinate diffs are both not less than say 4, to avoid expanding hotspots.
 
 actor 4 - performance challenge, image queues, tile checksums and slice caching
