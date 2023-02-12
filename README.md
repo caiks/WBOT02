@@ -2270,6 +2270,8 @@ lengthsHyperSkewness: -3.94355
 ```
 The min entropy models never have failed slices (47 onward). Unique events may reduce the fails. The max path length is much shorter once min entropy is introduced. This suggests that there are still many potential alignments still to be found even on the longest paths.
 
+Exclude low entropy events. These do not find hotspots very well and generate vast amounts of useless model especially darks. Similar to the problem of duplicates but not the same. How much modelling time is spent on these areas? Certainly the min diagonal has cut down the max path length.
+
 Noticeably different statistics between models without and with min entropy. Same mode, but lower deviation and max length and sign of skew has changed and smaller kurtosis - all suggest a more balanced stubbier tree, with more shorter paths (presumably lowish enrtropy/alignments) and fewer longer paths (but perhaps more interesting to us). No fails also suggests that all of the failed slices in the previous model where low entropy. All but 12 of the 1556 slices of length 25 or more were presumably also low entropy.
 
 If model 47 had no overflow, it probably would have had 18,120 fuds at 1.364 fuds/sz/200. Compare this to 5-valent model 48 which had 38,124 fuds at 1.434 fuds/sz/100, or 19,062 equivalently. That is around double. If we assume that min entropies are equivalent, we can conclude that the valency does not have much effect on growth. This seems consistent with the diagonals.
@@ -2362,6 +2364,10 @@ Again the face representation is better. The position map suggests that the mode
 
 include demo videos
 
+put screenshots in for model 61
+
+If we can sometimes see eye examples mixed in with unrelated examples that tells us that we have detected only a dark central area not that we have classified eyes at this level. We will have to go one level up to be sure of detecting eyes. 
+
 62 vs 56 - balanced 5-valent vs fixed 5-valent, growth a little down and multiplier a little up but stats very similar. 62 is a little more normal
 
 million-events|actual fuds|1+ln(million-events)|expected fuds|difference|difference percent
@@ -2392,9 +2398,15 @@ Before going on to websockets perhaps we could try to aim for signs that faces a
 
 model growth in overflow - If the modelling rate is declining we could perhaps swap the positions of old events of recently experienced slices with old events of neglected slices before rolling them off. Or roll off the smaller slice of the oldest and next oldest events. Or the slice with the least likelihood. Or shorter path. Note that the sequence will be wrong if continuous 
 
+Perhaps decreasing resolution towards the edge of the frame.
+
 Experiment with sizes, scales, valencies and thresholds. 
 
+Balanced valency. Perhaps we should also consider deviation and normalise such that the extreme values have a reasonable quantile. The problem is that many images are going to be multi-modal, so the normal distribution would be unrepresentative.
+
 decreasing thresholds, random initial models (Probably fixed valency is not going to be evenly distributed, so start the model with a random before mode 4 to avoid the small absolute variations of texture and background, although view_decomp and limited length browsing suggests that the models are still balanced near the root), tiled driver models
+
+Experiment with gradually declining thresholds to avoid a lot of useless non-alignments at the start of the path.
 
 Remodelling. Driver models. If we remodel by inducing a new model from the history, remember that the sample is only representative for the hotspots of the old model. I suppose, however, the new model will only be a tidying up of weakened alignments and lopsidedness, so the new hotspots will proabably be fine and new samples will still be likely and representative.
 
@@ -2408,6 +2420,8 @@ smaller frame or two level - note that the underlying seems quite localised in t
 
 gradient - spatial. Film noir tells us that bucketing picks up far too many fine details. Perhaps we should focus on spatial gradient of brightness rather than absolute brightness. This is different from temporal gradients of dynamics and would be more like edge detection. Could have both the absolute brightness and gradient variables, but these would be weakly aligned. The gradients would have a direction or could choose the maximum gradient. The gradients could be on a smaller scale and so would not be so aligned with the absolute. Or they could be at a higher resolution than the brightness variables. Perhaps we should stick closely to what we know about animal eyes, that is a wide range of brightness detection (after scaling adjustment by the pupil, which is already done for us in films to a large degree) and edge detection. https://en.m.wikipedia.org/wiki/Edge_detection Eye seems to have horizontal and vertical gradient detectors. https://www.quora.com/What-cells-in-the-eye-are-responsible-for-edge-detection Temporal and spatial gradients could be at a larger scale than the brightness and hue (and saturation). The outline of an object does not have to be exact. The delta can be at a smaller scale than the pixel scale. Edge detection might be too aligned with the corresponding brightness variables - we must link the variables? Edge detection will probably have to be at a high resolution or small scale while brightness and colour should be at larger scales to avoid or at least reduce unwanted alignments because linking won't work - the dependencies are too interconnected. Edge detection should also detect colour gradients and perhaps saturation gradients, or there should be separate edges for these. Switch from brightness to gradient using the Sobel method. The gradient (edge detection) can operate with a smaller valency. Apart from edge detection, check to see if there are other neurological processes that we might emulate. Perhaps have a larger substrate for gradient if using a smaller valency Eg 60x60x4 < 40x40x10, not that volume is really comparable. The gradient record will be 2 rows and 2 columns less than the brightness record.
 
+Comparing the contour maps for models 45 and 46 suggests that we need to solve the valency problem and the ordered values problem and we can do that perhaps with linked/computed variables. If we use linked would it obviate the need for gradient methods? We can only tell if we compare so perhaps before moving on to WBOT03 we should experiment with linked.
+
 gradient - temporal. Typically more motion around the edges of foreground objects. Instantaneous delta variables show values for no change, brightening and darkening. Perhaps add gamma i.e. double brightening, oscillating, double lightening. Probably gamma not very interesting, because sensitive to the frame rate and increases valency. Perhaps gamma should be based on degree change in value rather than just on the direction. Might need instantaneous dynamics to find movement intrinsically interesting. if we have dynamics, the backgrounds will be more separated from heads and bodies. audio substrates
 
 The models are still very blurry and so we must try to increase model detail but concentrated in areas interesting to us humans. These are not that much more interesting than clouds and backgrounds. With multi-scale, face hotspots will be more common and that might accelerate model growth there. Also if we have dynamics, the backgrounds will be more separated from heads and bodies - although that will geneally be the case anyway. Once attached to a head the small scan hotspot mode tends to follow it around - so there is a chance that we can parameterise the mode so that the model can be interested in the objects we are too.
@@ -2415,6 +2429,10 @@ The models are still very blurry and so we must try to increase model detail but
 Expect that even with multi-scale and edge detection we will probably still need a temporal higher level slice topology search to make the wotbot behaviour resemble a human. Possibly we will also need audio. The reason is that the features that are interesting to us - moving lips, for example - are often buried on shorter paths along with unrelated events deep in the model.
 
 Should we also consider rotations? Perhaps for future but probably won't increase the frequency of interesting features as much as scale. Perhaps a two level coincident model would have the same slice if the underlying models have multi-rotation as well as multi-scale. It could be that there is an automatic adjustment made for head angle for rolls (yaw and pitch are handled by scanning). But seeing things from above or below often includes a rotation so perhaps an object is made of parts and the parts are independent of affine transformation in 3 dimensions ie where parallel lines remain parallel. Perhaps edge detection is a better substrate.
+
+A multi-scale substrate consisting of underlying local level and spatial gradient (edge detection) would combine linear and surface features. 
+
+Consider Fourier transforms for texture. Perhaps add to underlying local substrate, though probably need to add to a large size substrate in order to pick up higher frequencies. Should it be polar coordinates or Cartesian? Not many textures or patterns in film noir because they are often distracting or difficult to resolve but would be important for wotbot.
 
 Are there labels for which there might be causal alignments? If so, then can we find some useful conditional model for a demo? 
 
@@ -2439,6 +2457,12 @@ Perhaps we should use linked low valency variables so that we can reduce the thr
 Would a fourier analysis along horizontal and vertical lines be useful? Would need high valencies and therefore need linked or computed variables. We are going to have this issue for audio. Are the spirals and shapes apparently seen under the influence of LSD directly from edge detection slices? What other hint mechanisms have evolved? Or do these shapes reflect the early abstractions near the root of the model? Perhaps they do have some Fourier transform components, although perhaps implicit rather than explicit. 
 
 Model overflow. We can utilise the active history efficiently by limiting to subtrees which have fewer leaves than the threshold allows. That is, when scanning or searching the topology only descendents from the current ancestor are interesting. If we have multiple actives sharing a model we can have each in charge of different parts. This has the advantage of not needed model synching especially if events not in the submodel are rejected. The activities of the different actives would be very different (except where there are deep duplicates). Of course, if the sets of leaves is large or as the submodel grows, the history will overflow again, but this is perhaps a more efficient way of working. Also, the same active can switch between submodels and switch histories at the same time from storage. Of course, it all depends on the model's degree of agency i.e. its control over what it experiences. A disembodied wotbot without manipulators cannot choose readily. However if a scene changes we could perhaps switch attention.
+
+We can probably improve the model by a factor by restricting the frame entropy or multi-scale, gradient, etc, but ultimately the single level model growth will decline to near zero unless there are special methods to concentrate events in particular slices. That is, we would need focussed learning. At the substrate level this is probably not practical. Only at the highest levels such as academic learning could we grow the model indefinitely. So once we have overflowed a few times, we must redefine the substrate or move to the next level.
+
+Add spatial underlying to active so that we can rebucket the underlying variables in the same way as temporal. Then we we slot in a single underlying model and convolve. Could add to the underlying decomposition at regular intervals, but its active update would be done in a separate structure.
+
+If we can sometimes see eye examples mixed in with unrelated examples that tells us that we have detected only a dark central area not that we have classified eyes at this level. We will have to go one level up to be sure of detecting eyes. We can do representations at the higher level but we will have to use an event to substrate record map to get examples - we cannot reconstruct it from the higher substrate, unless we use the underlying slice representations. If the higher level examples are mainly eyes or images that look like eyes then we have succeeded. The higher level can use a mixture of spatial underlying, including temporal and spatial gradient and colour. The substrate variables can also be included although there will be overlap. The reason why higher level might work while lower level does not is that the objects that we recognise are composed of simpler features of small volume but an array has far too large a volume to capture these features.
 
 Would like to move away from Film noir because sexist and racist, at least by omission, and is a poor representation of (especially) younger people today. Edge detection (both brightness and colour contrasts) and multi-scale will help to normalise images of heads in a neutral object-like way, but ideally would have access to the images that infants see. Still we might at least be able to make our own films of moving through crowds of people and ultimately the wotbot client can run on the phone and produce model if only slowly and perhaps explicitly restricted to certain parts of the model that contain interesting features. Very little intuitive physics will be learned from film noir or any Hollywood films probably. Need to watch infants and children's TV such as teletubbies. Or some sort of virtual or real arms and hands (manipulation) to enable experimentation. Ideally want films with even lighting, few shadows and lots of primary colours - which is what we see in children's TV presumably because these environments are easier to learn. Noticed that some of the Nintendo Wii games were confusing to my eye but not for the girls who were used to similar scenes.
 
@@ -2469,5 +2493,7 @@ Perhaps before going on to client-server in WBOT03 we should consider audio subs
 client-server architecture
 
 We can calculate how interested wotbot is first by determining if the current slice is a fail and then by looking at the slice likelihood for interesting or unusual. Show by using emoticons, visible or audible. This will encourage the user to "point it in the general direction of something interesting."
+
+A vision only version of the wotbot app could select archetypal or special tagged events from the slice and overlay them on the scene. If the special events are cartoon-like the wotbot could entertain by stylising the real world.
 
 -->
