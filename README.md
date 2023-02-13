@@ -2322,7 +2322,7 @@ Browsing - The actual mode is mostly interested in background patterns, only whe
 
 I think the issue here is that the single level model is capturing all the modes of the distributions of light and dark, but does not capture edges or features. The examples are mostly unrelated scenes of different objects. I think we will need a multi-level model to do features. However, do the multi-scale anyway - perhaps faces and other common features will be more common.
 
-models 48 - 51 have no overflow and are run in cloud, needed a resize to fit onto PC - throws away samples
+models 48 - 51 have no overflow and are run in cloud, needed a resize to fit onto PC - throws away samples, don't worry too much about the comparisons to 47 in the below. Compare to 50 = 47 without overflow
 
 ```
 cd ~/WBOT02_ws
@@ -2346,11 +2346,17 @@ In spite of being twice the model, the leaf slices only increase from 108,597 to
 
 Mode increases from 16 to 20 and the max from 25 to 30, and the mean from 15.9 to 18.9, so the statistics seem to similar as expected.
 
+In both 47 and 48 there are hotspots around the face in the sorts of positions that look like fixation points. Model 47 seems to be able to do the faces a bit better, because the hotspots are more concentrated and the paths longer (relatively). We could try running a 10-valent with a threshold of 100 and no overflow to compare.
+
 48 vs 45 - both 5-valent, added min entropy and no overflow - growth is reduced, multiplier increases slightly,  more normal statistics?, compare qualitative
+
+49 vs 47 and 48 - Model 49 (10-valent, 100 thrs) is in-between model 47 (10-valent, 200 thrs)  and model 48 (5-valent, 100 thrs). The average path is less than one step longer than model 47 but more than 2 steps longer than model 48 (5-valent). The mode is 1 step more than 47 but 3 steps less than 48. The deviation is less than model 47, so the new model is probably evenly distributed, unlike in model 48. For contour003 model 49 seems to be a slight improvement over both model 47 and model 48. For contour004 model 49 seems to be a slight worsening over both model 47 and model 48. The lower threshold seems to be counterbalanced by the larger model. The 49 lengths seem to be intermediate between model 47 and model 48 too. Probably overall model 47 is best - perhaps it would be noticeably better if not constrained by active size. 
 
 50 vs 48 - back to 10-valent - only diff is valency and min entropy limit,  growth is reduced, multiplier increases slightly, similar stats? compare qualitative
 
 50 vs 47 - only diff is overflow, but fairly different growth over 1m and multiplier
+
+Model 50 seems to be very good at focussing on heads and bodies - it does get distracted by strong background objects such as pciture frames or stairs, but is definitely interested in heads, especially in close-up. Perahps as good as model 48 and better than model 47.
 
 49 vs 50 - 100 threshold - higher growth like 5-valent 48 similar multiplier
 
@@ -2358,12 +2364,17 @@ Model 49 is definitely less likely to focues on bodies and faces than model 48. 
 
 51 vs 50 - 400 threshold - higher growth, lower multiplier (more like 47 so perhaps a certain degree of path dependency)
 
+Model 51 seems to have very similar stats as model 50 even though it has half the fuds. Same mode and max and only slightly smaller mean. It could be that the path dependency is having an effect too.
+
+Model 51 seems to be mainly interested in backgrounds, although close up heads and faces get some attention. Seems to agreee with the contour lengths, which have few hotspots around the woman's face in contour004. Why are models 49,50 and 51 so different qualitatively - is the model very path dependent? How can we compare the models?
+
+Colour coded contour maps - The evidence of the multiple offset images and the wide variety of models with similar parameterisation suggests that we go to multi-scale and edge detection to try to stabilise the modelling on a standard. Probably should use low resolution high valency for the brightness substrate and add high resolution edge detection.
+
 54 vs 47 - same config - growth closer than 50, similar multiplier, so 50 diff possibly due to path dependency, check stats are similar too
 
 55 vs 54 - mode 6 - higher growth and multiplier suggests that neglected siblings was having an effect. Perhaps compare the decomp for unbalanced. Check statistics - lower mean, similar deviation
 
 describe the size-potential fix in modes 6 and 7, referenced above
-
 
 56 vs 55 - 5-valent higher growth and lower multiplier agrees with 48 vs 47
 
