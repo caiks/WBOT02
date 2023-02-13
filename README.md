@@ -2220,7 +2220,7 @@ The 30s unique 39 seems to be a little better than 35, with some eyes detected a
 
 Model 41 appears to suggest that a random initial model is unnecessary.
 
-42-45 vs 41 - 5-valent plus expanded set of videos, min diagonal 100 threshold, very high growth of 1.643, multiplier the same, runs ahead of growth expectations -
+42-45 vs 41 - 5-valent plus expanded set of videos, min diagonal 100 threshold, very high growth of 1.643, multiplier the same, runs ahead of overflow growth expectations but compared to 10-valent not significantly different -
 
 million-events|actual fuds|1+ln(million-events)|expected fuds|difference|difference percent
 ---|---|---|---|---|---
@@ -2478,7 +2478,7 @@ Perhaps decreasing resolution towards the edge of the frame.
 
 Experiment with sizes, scales, valencies and thresholds. 
 
-Balanced valency. Perhaps we should also consider deviation and normalise such that the extreme values have a reasonable quantile. The problem is that many images are going to be multi-modal, so the normal distribution would be unrepresentative.
+Balanced valency. Perhaps we should also consider deviation and normalise such that the extreme values have a reasonable quantile. The problem is that many images are going to be multi-modal, so the normal distribution would be unrepresentative. Would we use balanced in the underlying of a two level model? Might also wish to standardise the deviation. 
 
 decreasing thresholds, random initial models (Probably fixed valency is not going to be evenly distributed, so start the model with a random before mode 4 to avoid the small absolute variations of texture and background, although view_decomp and limited length browsing suggests that the models are still balanced near the root), tiled driver models
 
@@ -2539,6 +2539,10 @@ We can probably improve the model by a factor by restricting the frame entropy o
 Add spatial underlying to active so that we can rebucket the underlying variables in the same way as temporal. Then we we slot in a single underlying model and convolve. Could add to the underlying decomposition at regular intervals, but its active update would be done in a separate structure.
 
 If we can sometimes see eye examples mixed in with unrelated examples that tells us that we have detected only a dark central area not that we have classified eyes at this level. We will have to go one level up to be sure of detecting eyes. We can do representations at the higher level but we will have to use an event to substrate record map to get examples - we cannot reconstruct it from the higher substrate, unless we use the underlying slice representations. If the higher level examples are mainly eyes or images that look like eyes then we have succeeded. The higher level can use a mixture of spatial underlying, including temporal and spatial gradient and colour. The substrate variables can also be included although there will be overlap. The reason why higher level might work while lower level does not is that the objects that we recognise are composed of simpler features of small volume but an array has far too large a volume to capture these features.
+
+Could add the central substrate into the higher level to provide extra resolution to the central glyphs, or perhaps only have the periphery in underlying actives to avoid overlap (although it would probably be weak).
+
+It would be nice if we could wrap up the spatial reframing of underlying a single underlying. Would need an automatic reframing of all of the underlying active's variable including the substrate. Also would be nice if we could wrap up the application of an active structure, without updating, to simplify scanning if we are experimenting with lots of structures.
 
 Would like to move away from Film noir because sexist and racist, at least by omission, and is a poor representation of (especially) younger people today. Edge detection (both brightness and colour contrasts) and multi-scale will help to normalise images of heads in a neutral object-like way, but ideally would have access to the images that infants see. Still we might at least be able to make our own films of moving through crowds of people and ultimately the wotbot client can run on the phone and produce model if only slowly and perhaps explicitly restricted to certain parts of the model that contain interesting features. Very little intuitive physics will be learned from film noir or any Hollywood films probably. Need to watch infants and children's TV such as teletubbies. Or some sort of virtual or real arms and hands (manipulation) to enable experimentation. Ideally want films with even lighting, few shadows and lots of primary colours - which is what we see in children's TV presumably because these environments are easier to learn. Noticed that some of the Nintendo Wii games were confusing to my eye but not for the girls who were used to similar scenes.
 
