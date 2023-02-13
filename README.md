@@ -2203,6 +2203,15 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 
 evidence of interesting features. The examples of interactive model 41 in `C:\caiks\WBOT02\images` suggest that lighting is very important as well as scale - so edge detection would be interesting. There are many faces in the examples, but it is rare that a frame is classified with a lot of examples that we would recognise as similar, e.g. actor002_model041_Film_Noir_010.png. Even then, there are many examples which are completely unrelated to faces or eyes. It is clear that the classification is good on broad areas of light and dark, but the model would have to be much larger I think before the facial features would be reliably classified together and even then they would probably be spread over slices that are far apart in the model because of lighting conditions. We can see that scale is very important too - compare actor002_model041_camera_001.png and actor002_model041_camera_002.png, where the images magnification is slightly different.
 
+```
+lengthsDist: {(1,1),(2,8),(3,16),(4,45),(5,69),(6,158),(7,273),(8,519),(9,950),(10,1614),(11,2714),(12,3957),(13,5455),(14,7500),(15,9098),(16,9961),(17,10533),(18,9193),(19,7325),(20,5452),(21,4091),(22,3260),(23,2292),(24,1746),(25,1371),(26,943),(27,697),(28,489),(29,359),(30,355),(31,374),(32,392),(33,460),(34,438),(35,419),(36,291),(37,286),(38,280),(39,281),(40,299),(41,285),(42,296),(43,277),(44,241),(45,188),(46,150),(47,111),(48,91),(49,96),(50,101),(51,66),(52,53),(53,63),(54,55),(55,10),(56,3),(57,3),(58,2),(59,2),(60,3),(61,2),(62,3)}
+lengthsCount: 96065
+lengthsMean: 18.2962
+lengthsDeviation: 6.61144
+lengthsSkewness: 2.12267
+lengthsKurtosisExcess: 6.27214
+lengthsHyperSkewness: 36.2822
+```
 Model 41 has modes at 17, 33, 40, 42, 50, 53, 60, 62.
 
 The very long paths are usually dark black, but there are plenty of hotspots around medium close up faces that are longer than the first mode of 17. There are lots of surfaces and body edges that have longer paths. (Increase the diagonal?) The face slices usually consist of many other non-face events, although it is hard to tell from the off-diagonal siblings. Essentially, the model is recognising faces, but they are buried amongst a lot of other alignments. The lighting of the image is important too - the siblings all have the same brightness. So we must consider edge detection and instantanous motion after multi-scale.
@@ -2221,6 +2230,18 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 2.600|34,069|1.956|33,130|939|2.83%
 2.656|34,557|1.977|33,491|1066|3.18%
 
+model 45 -
+```
+lengthsDist: {(1,2),(2,3),(3,6),(4,18),(5,32),(6,63),(7,146),(8,242),(9,431),(10,771),(11,1278),(12,2202),(13,3394),(14,5024),(15,7546),(16,9696),(17,12139),(18,13324),(19,13057),(20,12020),(21,10104),(22,8395),(23,6876),(24,5743),(25,4816),(26,4023),(27,3411),(28,2921),(29,2384),(30,1819),(31,1551),(32,1231),(33,942),(34,753),(35,565),(36,307),(37,199),(38,125),(39,87),(40,50),(41,27),(42,12),(43,9),(44,7)}
+lengthsCount: 137751
+lengthsMean: 20.2058
+lengthsDeviation: 5.08845
+lengthsSkewness: 0.665683
+lengthsKurtosisExcess: 0.663065
+lengthsHyperSkewness: 5.91677
+```
+45 has modes at 18 only cf model 41 which has modes at 17, 33, 40, 42, 50, 53, 60, 62. That is, much more normal.
+
 Double the fuds and active slices, but not double the paths. The skewness and kurtosis is much less too - suggests a more balanced tree.
 
 Like model041, model045 is not particularly interested in people but complex areas. Not so interested in the darks as model041. Does seem to hang around bodies and clothes.
@@ -2230,6 +2251,18 @@ Can have low valency and high valency (computed) variables for the same pixel if
 developed checkpointing to handle recovery
 
 46 vs 45 - back to 10-valent plus expanded set of videos, lower growth, a little higher multiplier, perhaps compare contour maps to get a qualitative difference
+
+46 vs 41 -
+```
+lengthsDist: {(1,1),(2,17),(3,18),(4,31),(5,100),(6,228),(7,375),(8,661),(9,1205),(10,1973),(11,3334),(12,5220),(13,7381),(14,9115),(15,10368),(16,10740),(17,9662),(18,8370),(19,6331),(20,4626),(21,3394),(22,2374),(23,1874),(24,1811),(25,1556),(26,1399),(27,1106),(28,830),(29,652),(30,437),(31,280),(32,213),(33,106),(34,77),(35,54),(36,19)}
+lengthsCount: 95938
+lengthsMean: 16.8148
+lengthsDeviation: 4.48833
+lengthsSkewness: 0.768545
+lengthsKurtosisExcess: 1.05939
+lengthsHyperSkewness: 7.36744
+```
+46 has modes at 16 only cf model 41 which has modes at 17, 33, 40, 42, 50, 53, 60, 62. That is, much more normal so min diagonal and larger set of videos makes at big difference. Higher moments much less.
 
 million-events|actual fuds|1+ln(million-events)|expected fuds|difference|difference percent
 ---|---|---|---|---|---
@@ -2268,6 +2301,7 @@ lengthsSkewness: -0.376717
 lengthsKurtosisExcess: 0.249775
 lengthsHyperSkewness: -3.94355
 ```
+No fails! Max diagonal 40.7858, med diagonal 27.8792 (cf model 46 max 41.0545, med 28.0772). 
 The min entropy models never have failed slices (47 onward). Unique events may reduce the fails. The max path length is much shorter once min entropy is introduced. This suggests that there are still many potential alignments still to be found even on the longest paths.
 
 Exclude low entropy events. These do not find hotspots very well and generate vast amounts of useless model especially darks. Similar to the problem of duplicates but not the same. How much modelling time is spent on these areas? Certainly the min diagonal has cut down the max path length.
@@ -2275,6 +2309,26 @@ Exclude low entropy events. These do not find hotspots very well and generate va
 Noticeably different statistics between models without and with min entropy. Same mode, but lower deviation and max length and sign of skew has changed and smaller kurtosis - all suggest a more balanced stubbier tree, with more shorter paths (presumably lowish enrtropy/alignments) and fewer longer paths (but perhaps more interesting to us). No fails also suggests that all of the failed slices in the previous model where low entropy. All but 12 of the 1556 slices of length 25 or more were presumably also low entropy.
 
 If model 47 had no overflow, it probably would have had 18,120 fuds at 1.364 fuds/sz/200. Compare this to 5-valent model 48 which had 38,124 fuds at 1.434 fuds/sz/100, or 19,062 equivalently. That is around double. If we assume that min entropies are equivalent, we can conclude that the valency does not have much effect on growth. This seems consistent with the diagonals.
+
+contour003_047_representation is definitely better than contour003_046_representation - the slices seem to be centred around the higher entropy areas of the image, as we would expect and so the resolution around the head and shoulders and the loudspeakers is better. The top slice at the throat matches the distribution of brightness of the collar and tie surprisngly well.
+
+The same is true for contour004 - lots of detail around the head, neck and collar. There is a hint of the mouth. Clearly a level 1 40x40 substrate is limited in how much detail can be captured. Will need to go to a two level. 
+
+If we line up the 004 length image and and the original image such that the dark areas corresponding to the eyes are overlapped and flip between the images, we can see that the head of the man on the left and his hands and hat are also synchronised. This suggests that these areas are interesting, but the hotspots are offset and not always centered on the features. Certainly the areas with the greatest length contrasts are the most interesting.
+
+The same thing can be seen if we line up the 003 length image and and the original image such that the areas corresponding to the man's face are overlapped. We can see that the loudspreaker trumpets are echoed several times. The hotspots in the sky areas are spread out and the model still appears to be very interested in it - perhaps the entropy limit is too low so that it allows slowly varying backgrounds. The hotspots around the body tend to be concentrated.
+
+Browsing - The actual mode is mostly interested in background patterns, only when faces are in close up does it hover around them. The hotspot potential mode 5 seems to be a bit more interested in faces and bodies but it could be wishful thinking.
+
+I think the issue here is that the single level model is capturing all the modes of the distributions of light and dark, but does not capture edges or features. The examples are mostly unrelated scenes of different objects. I think we will need a multi-level model to do features. However, do the multi-scale anyway - perhaps faces and other common features will be more common.
+
+models 48 - 51 have no overflow and are run in cloud, needed a resize to fit onto PC - throws away samples
+
+```
+cd ~/WBOT02_ws
+./WBOT02 resize_tidy model048 model048c 500000
+
+```
 
 48 vs 47 - 5-valent and no overflow, growth higher and lower multiplier suggests that 5-valent is picking up more alignments
 
@@ -2309,6 +2363,7 @@ Model 49 is definitely less likely to focues on bodies and faces than model 48. 
 55 vs 54 - mode 6 - higher growth and multiplier suggests that neglected siblings was having an effect. Perhaps compare the decomp for unbalanced. Check statistics - lower mean, similar deviation
 
 describe the size-potential fix in modes 6 and 7, referenced above
+
 
 56 vs 55 - 5-valent higher growth and lower multiplier agrees with 48 vs 47
 
@@ -2345,6 +2400,16 @@ Tiled scanning and growth in overflow. In the models so far we have only been us
 61 vs 55 - balanced vs fixed, growth a little down but multiplier and stats very similar
 
 balanced valency -  The current substrate doesn't handle lighting levels or skin tones without perhaps creating whole brightness translated copies of models. Easier to implement than edge detection which is also absolute brightness independent. Perhaps as an analogy to multi-scale we could consider multi-lighting. Perhaps we should do the bucketing based on the larger tiled area. Or perhaps we should detect the overall lighting and simply translate the fixed, with the bottom and top values larger or smaller as needed. Of course, films are set at the lighting levels desired by the director, and the light or dark is meaningful. Edge detection, being relative, in addition to surface might well be better.
+
+```
+lengthsDist: {(1,4),(2,18),(3,48),(4,104),(5,190),(6,413),(7,831),(8,1539),(9,2552),(10,4247),(11,6562),(12,9256),(13,12453),(14,16216),(15,17306),(16,17081),(17,14041),(18,9570),(19,5226),(20,1904),(21,531),(22,107)}
+lengthsCount: 120199
+lengthsMean: 14.5965
+lengthsDeviation: 2.81447
+lengthsSkewness: -0.489616
+lengthsKurtosisExcess: 0.306854
+lengthsHyperSkewness: -4.87173
+```
 
 million-events|actual fuds|1+ln(million-events)|expected fuds|difference|difference percent
 ---|---|---|---|---|---
