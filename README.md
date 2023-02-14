@@ -2370,9 +2370,31 @@ Model 51 seems to be mainly interested in backgrounds, although close up heads a
 
 Colour coded contour maps - The evidence of the multiple offset images and the wide variety of models with similar parameterisation suggests that we go to multi-scale and edge detection to try to stabilise the modelling on a standard. Probably should use low resolution high valency for the brightness substrate and add high resolution edge detection.
 
-54 vs 47 - same config - growth closer than 50, similar multiplier, so 50 diff possibly due to path dependency, check stats are similar too
+54 vs 47 - same config - growth closer than 50, similar multiplier, so 50 diff possibly due to path dependency, stats are very similar too -
 
-55 vs 54 - mode 6 - higher growth and multiplier suggests that neglected siblings was having an effect. Perhaps compare the decomp for unbalanced. Check statistics - lower mean, similar deviation
+54 -
+```
+lengthsDist: {(1,6),(2,15),(3,35),(4,70),(5,114),(6,220),(7,423),(8,745),(9,1321),(10,2204),(11,3708),(12,5638),(13,8065),(14,11165),(15,13224),(16,14143),(17,13281),(18,10377),(19,7195),(20,4095),(21,1725),(22,721),(23,167),(24,39)}
+lengthsCount: 98696
+lengthsMean: 15.4762
+lengthsDeviation: 2.90557
+lengthsSkewness: -0.441921
+lengthsKurtosisExcess: 0.472183
+lengthsHyperSkewness: -5.00758
+```
+
+55 vs 54 - mode 6 - higher growth and multiplier suggests that neglected siblings was having an effect. Perhaps compare the decomp for unbalanced. Check statistics - lower mean, mode, similar deviation, slightly lower higher moments agree that there were neglected siblings, although the max length is the same - 
+
+55 -
+```
+lengthsDist: {(2,18),(3,38),(4,117),(5,226),(6,425),(7,799),(8,1400),(9,2462),(10,3947),(11,6201),(12,9102),(13,12446),(14,15461),(15,17272),(16,16489),(17,13755),(18,10150),(19,6317),(20,3282),(21,1282),(22,238),(23,42),(24,36)}
+lengthsCount: 121505
+lengthsMean: 14.7936
+lengthsDeviation: 2.9219
+lengthsSkewness: -0.397247
+lengthsKurtosisExcess: 0.274909
+lengthsHyperSkewness: -4.06495
+```
 
 describe the size-potential fix in modes 6 and 7, referenced above
 
@@ -2459,6 +2481,9 @@ Representation not as good as 61, in the same way that 56 is not as good as 55, 
 Conclude that balanced is better than fixed in that it is interested in faces more, although the representations resemble the bucketed more. Also 10-valent is better than 5-valent even though the model is twice as large and the path length is nearly 4 greater. The lower multipliers of 5-valent seem to be specialising in something other than faces.
 
 So far 61 is the best model wrt interesting features.
+
+The conclusion to this stage is that we are beginning to see features classified together with the compute resources so far, but we will need new substrates and structures to make further progress especially because proper classification requires dynamic gradients and ideally temporal agent manipulation to separate objects from background. For example ornaments sitting on shelves are not grouped together as bowls, vases, statuettes, etc regardless of the shelf. Multi-scale will be able to improve this for faces which appear frequently at different distances but objects infrequently seen in film noir would require embodied interactional experience - the sort of knowledge acquired by infants playing with toys.
+
 
 future developments - 
 
