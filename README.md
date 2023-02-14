@@ -2370,6 +2370,54 @@ Model 51 seems to be mainly interested in backgrounds, although close up heads a
 
 Colour coded contour maps - The evidence of the multiple offset images and the wide variety of models with similar parameterisation suggests that we go to multi-scale and edge detection to try to stabilise the modelling on a standard. Probably should use low resolution high valency for the brightness substrate and add high resolution edge detection.
 
+
+actor002_model041_Film_Noir_010.png length 20 (z 0.26)	both eyes
+
+actor002_model041_Film_Noir_011.png length 18 (z -0.05)	mouth and chin
+
+actor002_model041_Film_Noir_014.png length 20 (z 0.26)	one eye
+
+actor002_model046_Film_Noir_001.png length 20 (z 0.71)	one eye classified as two
+
+actor002_model047_Film_Noir_003.png length 20 (z 1.34)	one eye
+
+actor002_model047_Film_Noir_005.png length 19 (z 0.38)	two eye classified as one
+
+actor002_model047_Film_Noir_006.png length 19 (z 0.38)	mouth classified as mouths, eyes and other
+
+actor002_model048_Film_Noir_001.png length 16 (z -0.85)	mouth classified as mouths, eyes and other
+
+actor002_model048_Film_Noir_002.png length 23 (z 1.20)	mouth classified as eyes and chins
+
+actor002_model048_Film_Noir_003.png length 19 (z 0.03)	one eye
+
+actor002_model048_Film_Noir_004.png length 24 (z 1.47)	face, badly classified
+
+actor002_model048_Film_Noir_005.png length 23 (z 1.20)	eyes and nose
+
+actor002_model048_Film_Noir_006.png length 25 (z 1.78)	one eye, well classified
+
+actor002_model048_Film_Noir_009.png length 25 (z 1.78)	both eyes
+
+actor002_model048_Film_Noir_010.png length 25 (z 1.78)	one eye
+
+actor002_model048_Film_Noir_011.png length 21 (z 0.61)	one eye
+
+actor002_model048_Film_Noir_013.png length 23 (z 1.20)	mouth and chin
+
+actor002_model048_Film_Noir_014.png length 23 (z 1.20)	eye and nose, badly classified
+
+actor002_model050_Film_Noir_002.png	length 18 (z 0.97)	one eye, well classified
+
+actor002_model050_Film_Noir_003.png length 20 (z 1.69)	one eye, well classified
+
+actor002_model050_Film_Noir_005.png length 17 (z 0.61)	mouth and chin
+
+actor002_model050_Film_Noir_006.png length 12 (z -1.19)	both eyes
+
+Most feature-like slices seem to be well above the average length.
+
+
 54 vs 47 - same config - growth closer than 50, similar multiplier, so 50 diff possibly due to path dependency, stats are very similar too -
 
 54 -
@@ -2383,7 +2431,7 @@ lengthsKurtosisExcess: 0.472183
 lengthsHyperSkewness: -5.00758
 ```
 
-55 vs 54 - mode 6 - higher growth and multiplier suggests that neglected siblings was having an effect. Perhaps compare the decomp for unbalanced. Check statistics - lower mean, mode, similar deviation, slightly lower higher moments agree that there were neglected siblings, although the max length is the same - 
+55 vs 54 - mode 6 - higher growth and multiplier suggests that neglected siblings was having an effect. Perhaps compare the decomp for unbalanced. Check statistics - lower mean, mode, similar deviation, slightly lower higher moments agree that there were neglected siblings, although the max length is the same. model 55 has reduced the mean, as expected, and is slightly more normal. 55 has many more paths, so seems to have solved the lost sibling problem. - 
 
 55 -
 ```
@@ -2396,15 +2444,141 @@ lengthsKurtosisExcess: 0.274909
 lengthsHyperSkewness: -4.06495
 ```
 
+This is very revealing, now that the low entropy slices have been removed and the lengths normalised. In 004 we can see hotspots and local model the woman's SW nose, SW chin, corner of woman's left eye, centre of black hair over left ear (on the right), above the man's head on the right. The top hat is similar to the wall next to the chin. In 003 we can see less localised hotspots next to the where the hat meets the head, and between the eye at the top of the nose. There is a hotspot at the junction of the collar, sky and coat on the right. Quite a lot of the hotspots are on the edge of the min entropy areas.
+
+contour - Comparing 50 to 55 suggests that while both models are focussed on the face well, the size-potential method is better than likelihood-potential given min ent because the model seems less rich around the face.
+
+Model 55 does seem to be mostly interested in heads and bodies, like model 50. Now let's run in mode4/7 and fix the centre. First change mode5/6 rectangles. Mode 7 is more likely to be distracted by interesting background features but often does show features around heads and bodies. Mode 4/7 is more steady then mode 5/6.
+
 describe the size-potential fix in modes 6 and 7, referenced above
+
+model 55 -
+```
+	actual		expected		diff
+1	7445	1.000	7445	0	0.00%
+1.5	10140	1.405	10464	-324	-3.09%
+2	12145	1.693	12605	-460	-3.65%
+2.5	13711	1.916	14267	-556	-3.90%
+3	15050	2.099	15624	-574	-3.67%
+```
+
+Dump the distribution of leaf slices by path length and the total size by path length to determine whether there is a large fraction of the history that could be recovered.
+
+Already have the leaf slices by path length
+```
+cd ~/WBOT02_ws
+./WBOT02 view_active_concise model055
+...
+lengthsDist: {(2,18),(3,38),(4,117),(5,226),(6,425),(7,799),(8,1400),(9,2462),(10,3947),(11,6201),(12,9102),(13,12446),(14,15461),(15,17272),(16,16489),(17,13755),(18,10150),(19,6317),(20,3282),(21,1282),(22,238),(23,42),(24,36)}
+...
+```
+
+```
+2	18	18	0.0%
+3	38	56	0.0%
+4	117	173	0.1%
+5	226	399	0.3%
+6	425	824	0.7%
+7	799	1623	1.3%
+8	1400	3023	2.5%
+9	2462	5485	4.5%
+10	3947	9432	7.8%
+11	6201	15633	12.9%
+12	9102	24735	20.4%
+13	12446	37181	30.6%
+14	15461	52642	43.3%
+15	17272	69914	57.5%
+16	16489	86403	71.1%
+17	13755	100158	82.4%
+18	10150	110308	90.8%
+19	6317	116625	96.0%
+20	3282	119907	98.7%
+21	1282	121189	99.7%
+22	238	121427	99.9%
+23	42	121469	100.0%
+24	36	121505	100.0%
+```
+The modal length 15 is at 57.5%. At 10 or below there is only 7.8%. It would only be if the kurtosis was very high would it be worthwhile. We are only going to get a small increase unless we include lengths of 13 or less.
+
 
 56 vs 55 - 5-valent higher growth and lower multiplier agrees with 48 vs 47
 
+56 -
+```
+	actual		expected		diff
+1	16426	1.000	16426	0	0.00%
+1.5	23072	1.405	23086	-14	-0.06%
+2	28027	1.693	27812	215	0.77%
+2.5	31887	1.916	31477	410	1.30%
+3	34859	2.099	34472	387	1.12%
+```
+
 56 vs 48 - mode 6 highest growth rate so far and lower multiplier, so min entropy does not make a nagative impact
+
+The woman's head has local model and is nicely distributed like model 55, so both 5-valent and 10-valent models look promising.
+
+The representations for 55 and 56 look the best of all, with 56 being better for the 003 head and 55 better for the 004 head. Perhaps scaling will help to let us resolve between the two.
+
+cf 202212091515, 202212091515, 202212151550 re demos
+
+Model 55 is more sensitive to subtle variations and is less interested in faces when there is a complex background - I suppose dark eyes, hair or collars make for strong outlines and can be readily picked up by 5-valent. A good demo nonetheless. The scene at sea is quite good because the background has too little entropy. 
+
+Model 56 has a large low entropy hole in the face, much larger than the model 55 hole, and other areas of low entropy which agrees with the actor003_model055_model056_Film_Noir_005 distribution of the frames. 
+
+Much of the clustering around the head is because of low entropy. I do not think models 55 or 56 are up to feature level.
+
+actor002_model055_Film_Noir_004.png length 20 (z 1.78)	eye and ear
+
+actor002_model055_Film_Noir_005.png length 18 (z 1.10)	eye and nose
+
+actor002_model056_Film_Noir_004.png length 26 (z 1.56)	cheek
+
+actor002_model056_Film_Noir_005.png length 26 (z 1.56)	cheek (different from 004)
+
+actor002_model056_Film_Noir_006.png length 25 (z 1.32)	forehead
+
+actor002_model056_Film_Noir_007.png length 27 (z 1.82)	eye and nose, quite good
+
+Perhaps model 56 is more feature-like than 55 because of the deeper model. Does not seem to be as good as 48/50, but of course, they were not well balanced because of size/parent-size rather than min ent. Need to move on to scaled and gradient to see if the feature alignments become more prominent. README
 
 57 vs 55 - scale of 0.354, very similar statistics
 
+Growth model 57 -
+
+```
+~/tmp/growth057.ods
+```
+```
+	actual			expected		diff
+1	7402	1.000	7402	0		0.00%
+1.5	10115	1.405	10403	-288	-2.77%
+2	12306	1.693	12533	-227	-1.81%
+2.5	14058	1.916	14184	-126	-0.89%
+3	15433	2.099	15534	-101	-0.65%
+```
+Declines a bit less than model 55. Similar at 1m - model 55 has 7445 fuds.
+
+The model 57 representations are not too bad, especially 004.
+
+faces seem much less frequent when browsing
+
+
 58 vs 55 - scale of 0.088, slightly reduced growth, similar multiplier
+
+58 -
+```
+	actual		expected		diff
+1	7235	1.000	7235	0	0.00%
+1.5	9698	1.405	10169	-471	-4.63%
+2	11484	1.693	12250	-766	-6.25%
+2.5	12886	1.916	13864	-978	-7.06%
+3	13999	2.099	15183	-1184	-7.80%
+```
+Declines relatively quickly.
+
+The representations are the best so far. There is lots of different model around faces. Clearly if we are not capturing features at larger scales very well, then at smaller we can at least capture detail - implies that a two level model might be interesting.
+
+already mentioned above at 'Clearly the smaller scale model captures smaller features more closely.'
 
 59 vs 55 - mode 7, highest 10-valent growth both to 1m and greater than expected to 3m, similar multiplier
 
@@ -2427,6 +2601,10 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 2|12,785|1.693|12,707|78|0.61%
 2.5|14,834|1.916|14,382|452|3.14%
 3|16,735|2.099|15,750|985|6.25%
+
+Very similar model stats to 55 - variations may be just random, but it looks like 59 is slightly less normal.
+
+The hotspots seem to be different and perhaps less focussed on the face. There seems to be more ignored regions, so the active history is probably biasing towards parts of the model that happen to be most recent. While this mode does increase the model, it is probably more random/path-dependent as to which parts of the model have the most attention.
 
 Tiled scanning and growth in overflow. In the models so far we have only been using around 24 tiles and we are taking 5 events. If we have 6 scales, but take the same number of events we might see growth decline much more slowly. However, it is somewhat surprising that the 1 in 5 potential ratio does not give us some benefit over random. Also model 24 (scanned mode 4) lags far behind so either the alignments are declining at the top of the model or the fact that the children split into half a threshold because actual rather than potential. So the actual tiling depresses growth, but not quite as much as actual scanning. Potential lifts growth both before and after overflow. Higher potential fractions should improve it more.
 
