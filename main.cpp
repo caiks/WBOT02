@@ -322,6 +322,69 @@ int main(int argc, char *argv[])
 		}		
 	}
 	
+	if (argc >= 3 && string(argv[1]) == "view_sizes")
+	{
+		bool ok = true;
+		int stage = 0;
+		string model = string(argv[2]);
+		std::size_t depth = argc >= 4 ? atoi(argv[3]) : 5;
+		
+		Active activeA;
+		activeA.logging = true;		
+		if (ok) 
+		{
+			activeA.historySliceCachingIs = true;
+			ActiveIOParameters ppio;
+			ppio.filename = model +".ac";
+			ok = ok && activeA.load(ppio);
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);				
+		}		
+		std::set<std::size_t> fuds;
+		if (ok)
+		{
+			auto& dr = *activeA.decomp;		
+			auto& vi = dr.mapVarInt();			
+			auto& cv = dr.mapVarParent();	
+			for (auto& pp : activeA.historySlicesLength)
+				if (pp.second <= depth)
+					fuds.insert(vi[cv[pp.first]]);
+			ok = ok && fuds.size() > 0 && *fuds.rbegin() < dr.fuds.size();
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);		
+		}		
+		if (ok)
+		{
+			auto& dr = *activeA.decomp;		
+			auto& sizes = activeA.historySlicesSize;
+			for (auto fud : fuds)		
+			{
+				auto& fs = dr.fuds[fud];
+				auto parent = fs.parent;
+				std::vector<std::size_t> sliceSizes;
+				std::size_t total = 0;
+				for (auto slice : fs.children)		
+				{
+					auto sizeA = sizes[slice];
+					total += sizeA;
+					sliceSizes.push_back(sizeA);
+				}
+				std::sort(sliceSizes.rbegin(), sliceSizes.rend());
+				std::cout << fud << ", " << activeA.historySlicesLength[parent] << ", " << sizes[parent]<< ", " << total << ", " << (sizes[parent]==total ? "ok" : "fail");
+				for (auto sizeA : sliceSizes)
+				{
+					std::cout << "\t" << sizeA << "\t";
+				}
+				std::cout << std::endl;
+			}
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);	
+		}		
+	}
+	
 	if (argc >= 4 && (string(argv[1]) == "resize" || string(argv[1]) == "resize_tidy"))
 	{
 		bool ok = true;
