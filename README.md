@@ -1412,6 +1412,7 @@ model058|0.088|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W vi
 model059|0.177|5 scanned active-size-potential tiled actual-potential|8|fixed|48 B&W videos|3,000,000|16,735|1.116 (1.501)|15.2|2.77|23|1.90|30s unique, 12.0 min diagonal, 1.2 min entropy
 model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
 model062|0.177|5 scanned size-potential tiled actual-potential|6|balanced 5-valent|48 B&W videos|3,000,000|33,612|1.120 (1.634)|18.4|3.7|31|1.76|30s unique, 12.0 min diagonal, 0.8 min entropy
+model063|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|15,013|1.001 (1.494)|15.7|3.0|24|1.84|30s unique, 12.0 min diagonal, 1.0 min entropy
 
 The table above does not show the median and maximum *diagonals*. The median *diagonals* for the actor 2 and actor 3 *models* were consistently around 23-27, and the maximum *diagonals* were consistently around 37-39.
 
@@ -2662,6 +2663,27 @@ So far 61 is the best model wrt interesting features.
 
 The conclusion to this stage is that we are beginning to see features classified together with the compute resources so far, but we will need new substrates and structures to make further progress especially because proper classification requires dynamic gradients and ideally temporal agent manipulation to separate objects from background. For example ornaments sitting on shelves are not grouped together as bowls, vases, statuettes, etc regardless of the shelf. Multi-scale will be able to improve this for faces which appear frequently at different distances but objects infrequently seen in film noir would require embodied interactional experience - the sort of knowledge acquired by infants playing with toys.
 
+63 vs 61 - only diff is min entropy lowered to 1.0, growth a little higher and multiplier a little lower, mean and mode and max higher, deviation higher, slightly more normal
+
+```
+lengthsDist: {(1,3),(2,16),(3,50),(4,76),(5,121),(6,254),(7,498),(8,926),(9,1719),(10,2818),(11,4552),(12,7041),(13,9810),(14,13204),(15,15627),(16,17001),(17,16271),(18,14115),(19,10759),(20,6792),(21,3503),(22,1246),(23,357),(24,40)}
+lengthsCount: 126799
+lengthsMean: 15.7069
+lengthsDeviation: 3.01358
+lengthsSkewness: -0.412472
+lengthsKurtosisExcess: 0.250724
+lengthsHyperSkewness: -4.40199
+```
+
+million-events|actual fuds|1+ln(million-events)|expected fuds|difference|difference percent
+---|---|---|---|---|---
+1|7,468|1.000|7,468|0|0.00%
+1.5|10,127|1.405|10,496|-369|-3.52%
+2|12,146|1.693|12,644|-498|-3.94%
+2.5|13,755|1.916|14,311|-556|-3.88%
+3|15,013|2.099|15,672|-659|-4.21%
+
+decline in growth is less
 
 future developments - 
 
