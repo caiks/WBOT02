@@ -322,12 +322,13 @@ int main(int argc, char *argv[])
 		}		
 	}
 	
-	if (argc >= 3 && string(argv[1]) == "view_sizes")
+	if (argc >= 3 && (string(argv[1]) == "view_sizes" || string(argv[1]) == "view_fractions"))
 	{
 		bool ok = true;
 		int stage = 0;
 		string model = string(argv[2]);
 		std::size_t depth = argc >= 4 ? atoi(argv[3]) : 5;
+		bool isFractions = string(argv[1]) == "view_fractions";
 		
 		Active activeA;
 		activeA.logging = true;		
@@ -373,9 +374,16 @@ int main(int argc, char *argv[])
 				}
 				std::sort(sliceSizes.rbegin(), sliceSizes.rend());
 				std::cout << fud << ", " << activeA.historySlicesLength[parent] << ", " << sizes[parent]<< ", " << total << ", " << (sizes[parent]==total ? "ok" : "fail");
+				double accum = 0.0;
 				for (auto sizeA : sliceSizes)
 				{
-					std::cout << "\t" << sizeA << "\t";
+					if (isFractions)
+					{
+						accum += (double)sizeA / (double)total;
+						std::cout << "\t" << std::setprecision(3) << accum * 100.0 << "\t";
+					}
+					else
+						std::cout << "\t" << sizeA << "\t";
 				}
 				std::cout << std::endl;
 			}
