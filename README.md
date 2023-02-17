@@ -2156,6 +2156,8 @@ We can often observe stable arrangements of hotspots form during a camera shot.
 
 TODO -
 
+Overflow and accumulated size issue and how it affects the potential likelihood in overflow. The problem with sizes is that when a slice finally reaches the induce threshold a large number of its cumulative events have rolled off and only active events are given to the children. So the size per parent size ratio likelihood is sometimes too small. To determine the on-diagonal fraction compare to total rather than parent. 
+
 29 has highest growth rate so far, multiplier at 1.83 similar to bucketed models 21 - 24
 
 29 vs 30 - bucketed vs fixed  - multiplier lower and growth higher. Growth is consistently high in remaining models. Have some browser screenshots of 30
@@ -2613,6 +2615,8 @@ Tiled scanning and growth in overflow. In the models so far we have only been us
 
 balanced valency -  The current substrate doesn't handle lighting levels or skin tones without perhaps creating whole brightness translated copies of models. Easier to implement than edge detection which is also absolute brightness independent. Perhaps as an analogy to multi-scale we could consider multi-lighting. Perhaps we should do the bucketing based on the larger tiled area. Or perhaps we should detect the overall lighting and simply translate the fixed, with the bottom and top values larger or smaller as needed. Of course, films are set at the lighting levels desired by the director, and the light or dark is meaningful. Edge detection, being relative, in addition to surface might well be better.
 
+actor002_model053_Film_Noir_002_fixed.png versus  actor002_model053_Film_Noir_002_balanced.png
+
 ```
 lengthsDist: {(1,4),(2,18),(3,48),(4,104),(5,190),(6,413),(7,831),(8,1539),(9,2552),(10,4247),(11,6562),(12,9256),(13,12453),(14,16216),(15,17306),(16,17081),(17,14041),(18,9570),(19,5226),(20,1904),(21,531),(22,107)}
 lengthsCount: 120199
@@ -2637,7 +2641,73 @@ The representations are very different between 55 and 61. The face is considerab
 
 Again the face representation is better. The position map suggests that the modelling of the face is much more detailed with fewer 'shadows'. The length images certainly look much more like faces with lots of interest below the lip and around the jaw. The greatest interest in 55 is well past to the SW of the chin.
 
+The contour 3 face is too small for this scale. The representation is slightly better.
+
 "wotbot should be able to track it until something else more interesting appears" - put an example of a video and model of the wotbot tracking successfully. Use a model from actor 3, since more reproducible.
+
+In windows -
+
+```
+actor002 actor.json
+
+```
+
+actor.json -
+```
+{
+	"model_initial" : "model061",
+	"interval" : 250,
+	"x" : 870,
+	"width" : 560,
+	"mode" : "mode006",
+	"entropy_minimum" : 1.2,
+	"valency_balanced" : true,
+	"event_size" : 1,
+	"threads" : 6,
+	"scale" : 0.177,
+	"range_centreX" : 0.118,
+	"range_centreY" :0.0885,
+	"gui" : true,
+	"red_frame" : true,
+	"interactive" : true,
+	"interactive_examples" : true,
+	"interactive_entropies" : true,
+	"multiplier" : 1,
+	"label_size" : 16,
+	"disable_update" : true,
+	"summary_active" : false,
+	"logging_action" : false
+}
+```
+
+actor.json -
+```
+{
+	"model_initial" : "model061",
+	"interval" : 250,
+	"x" : 870,
+	"width" : 560,
+	"mode" : "mode004",
+	"entropy_minimum" : 1.2,
+	"valency_balanced" : true,
+	"event_size" : 1,
+	"threads" : 6,
+	"scale" : 0.177,
+	"range_centreX" : 0.059,
+	"range_centreY" :0.04425,
+	"gui" : true,
+	"red_frame" : true,
+	"interactive" : true,
+	"interactive_examples" : true,
+	"interactive_entropies" : true,
+	"multiplier" : 1,
+	"label_size" : 16,
+	"disable_update" : true,
+	"summary_active" : false,
+	"logging_action" : false
+}
+```
+The centre is more stable in mode 4. Better demo than mode 6.
 
 include demo videos
 
@@ -2685,6 +2755,22 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 
 decline in growth is less
 
+Contour - 005 63 vs 61 seems to have fewer hotspots around the face. The face, head and shoulders are less complex in the position model. We have probably diluted the frequency of face events. The 61 representation is better especially around face, but perhaps 63 has the edge in representing the background.
+
+004 63 has less emphasis on face too. Representation of 63 is generally worse.
+
+003 same as above. The conclusion is that we should stick with the higher entropy to keep the frequency of interesting features as high as possible.
+
+Why should a more normal model be better? Probably to do with the fairly fixed probability of being off-diagonal. Binomial distribution for path length if the probability of off-diagonal is constant. Mean is np. https://en.m.wikipedia.org/wiki/Binomial_distribution. See Normal approximation
+
+In the case of model 61 n is 22 and the mean is 14.6 which implies a p of 0.66 assuming the normal mean equals the binomial mean. For 63 p is 0.65. So the binomial deviation is 2.22 and 2.33 respectively - rather lower than the 2.8 and 3.0 of normal. Probably need a larger n and smaller p. n is not fixed and nor is p. The binomial skew is only -0.15 and -0.13, very different from -0.49 and -0.41. If we choose an n of 25, then for 63 the p is 0.628, dev is 2.42, skew is -0.11, so not sensitive to n. Varying the mean does not make much difference either. Perhaps should use a poisson distribution. A p of 0.66 seems quite low - ie off-diagonal is 34%. But of course, the mode is biased towards longer paths. 
+
+If we consider random mode 52 max is 11 mean is 6.7 implies p = 0.61, dev is very close at 1.61 but skew is -0.13 instead of +0.12. Still has the small p.
+
+In terms of off-diagonal it seems that p is above 0.8 at least, so the binomial distribution must be parameterised by an n of 19, which implies a dev of only around 1.7-1.8 and a skew of around -0.4 (which is agrees with normal). Perhaps above 19 we went into overflow. So the binomial does not really fit very well - probably better for random although p is still very low at 0.61 (view_fractions suggests over 0.8 which implies a length of 8 instead of 11 and a dev of only 1.04 and an even larger negative skew), but scanning distorts somewhat increasing n and deviation.
+
+What could we do to increase p and therefore the mean? Does a higher threshold in model 51 vs 50 lead to longer median diagonals? 50 max diagonal is 41.0063 median is 27.8274. 51 max diagonal is 41.9357, median is 27.2012, so there is no significant difference. Perhaps modify the induce parameters to increase alignments at the cost of compute. README
+
 future developments - 
 
 Remember that the eventual mobile app will see an environment that might not look very much like Film noir so perhaps we should concentrate less on the substrate and more on the active structure and compute scale, ie we need not have conclusive evidence of face pattern matching before moving on so long as it appears to be doing something interesting.
@@ -2700,6 +2786,8 @@ Before going on to websockets perhaps we could try to aim for signs that faces a
 model growth in overflow - If the modelling rate is declining we could perhaps swap the positions of old events of recently experienced slices with old events of neglected slices before rolling them off. Or roll off the smaller slice of the oldest and next oldest events. Or the slice with the least likelihood. Or shorter path. Note that the sequence will be wrong if continuous 
 
 Perhaps decreasing resolution towards the edge of the frame.
+
+Initial random model - cf 202302170645 view_fractions for 52 versus 61.
 
 Experiment with sizes, scales, valencies and thresholds. 
 
