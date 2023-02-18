@@ -1757,16 +1757,16 @@ The growth rate of around 0.75 *fuds* per *size* per threshold is well below the
 
 In addition to higher growth rates, we would like to avoid duplication within the *model* of slightly translated but fairly similar regions around hotspots. That is, we would like to see very localised hotspots with very long path lengths at the hotspot itself and very short path lengths nearby and in-between. In this way we will avoid 'wasting' *history* on endlessly duplicated but poorly resolved features. In the path length maps for the random mode *models* above, the brightness is fairly uniform with small variations. We would like to see more of a constellation of point-like instensities. In a sense, this is the opposite to convolution - instead of weighting every location equally, we focus on a handful of places that carry the most information, thereby shrinking the vast *substrate volume*.
 
-Before going on to see how we might obtain these improvements, we will consider for a moment the distribution of the path lengths. As we have seen above, *models* 52 and 53 are very normal with low higher moments. If we approximate the progression along a path as a binary choice between high frequency *on-diagonal slices* and low frequency *off-diagonal slices*, it is reasonable to assume that a path terminates either because it has hit an *off-diagonal slice* or because the *model* as a whole is incomplete. If we assume that it is the former,  the distribution of path lengths will be binomial. For *model* 52 with a maximum path length, `n`, of 11 the probability, `p`, of an *on-diagonal slice* implied by a mean, `np`, of 6.7 is 61%. The deviation, `sqrt(np(1-p))` is 1.62, which is very close to the normal deviation of 1.64. The binomial distribution skew, however, is -0.13, which is in the opposite direction to the normal skew of 0.12. 
+Before going on to see how we might obtain these improvements, we will consider for a moment the distribution of the path lengths. As we have seen above, *models* 52 and 53 are very normal with low higher moments. If we approximate the progression along a path as a binary choice between high frequency *on-diagonal slices* and low frequency *off-diagonal slices*, it is reasonable to assume that a path terminates either because it has hit an *off-diagonal slice* or because the path has not yet exhausted its *alignments*. If we assume that it is the former, the distribution of path lengths will be binomial. For *model* 52 with a maximum path length `n` of 11, the probability `p` of an *on-diagonal slice* implied by a mean, `n*p`, of 6.7 is 61%. The deviation, `sqrt(n*p*(1-p))`, is 1.62, which is very close to the normal deviation of 1.64. The binomial skew, however, is -0.13, which is in the opposite direction to the normal skew of 0.12. 
 
-In addition, the probability, `p`, of *on-diagonal slice* seems very low. In discussion of the [*decomposition* tool](#view_decomp), above, we describe how to use `view_fractions` to examine the differences between *on-diagonal* and *off-diagonal slices* -
+In addition, the probability, `p`, of an *on-diagonal slice* seems too low at 61%. In discussion of the [*decomposition* tool](#view_decomp), above, we describe how to use `view_fractions` to examine the transition from *on-diagonal* to *off-diagonal* sibling *slices* -
 
 ```
 cd ~/WBOT02_ws
 ./WBOT02 view_fractions model052 10
 
 ```
-In the case of *model* 52, only around 15% of the *slices* have not reached 85% by the third sibling. That suggests that `p` is at least 0.85. This would imply that `n` is only 8, not 11. Worse, the binomial deviation is only 1.04 and the skew has decreased to -0.65. These incompatibilities with the normal statistics suggests that a binomial distribution based on the *on-diagonal* to *off-diagonal* ratio is not a good model of the path length distribution while the *model* is incomplete.
+In the case of *model* 52, only around 15% of the *slices* have not reached 85% by the third sibling. That suggests that `p` is at least 85%. This would imply that `n` is only 8, not 11. Worse, the binomial deviation is only 1.04 and the skew has decreased to -0.65. These mismatches with normal statistics suggests that a binomial distribution based on the *on-diagonal* to *off-diagonal* ratio is not a good model of the path length distribution while the *model* is incomplete.
 
 <a name="Potential_filtered_random_models"></a>
 
@@ -2402,10 +2402,11 @@ Model 49 is definitely less likely to focues on bodies and faces than model 48. 
 
 Model 51 seems to have very similar stats as model 50 even though it has half the fuds. Same mode and max and only slightly smaller mean. It could be that the path dependency is having an effect too.
 
+What could we do to increase p and therefore the mean? Does a higher threshold in model 51 vs 50 lead to longer median diagonals? 50 max diagonal is 41.0063 median is 27.8274. 51 max diagonal is 41.9357, median is 27.2012, so there is no significant difference. Perhaps modify the induce parameters to increase alignments at the cost of compute.
+
 Model 51 seems to be mainly interested in backgrounds, although close up heads and faces get some attention. Seems to agreee with the contour lengths, which have few hotspots around the woman's face in contour004. Why are models 49,50 and 51 so different qualitatively - is the model very path dependent? How can we compare the models?
 
 Colour coded contour maps - The evidence of the multiple offset images and the wide variety of models with similar parameterisation suggests that we go to multi-scale and edge detection to try to stabilise the modelling on a standard. Probably should use low resolution high valency for the brightness substrate and add high resolution edge detection.
-
 
 actor002_model041_Film_Noir_010.png length 20 (z 0.26)	both eyes
 
@@ -2794,15 +2795,7 @@ Contour - 005 63 vs 61 seems to have fewer hotspots around the face. The face, h
 
 003 same as above. The conclusion is that we should stick with the higher entropy to keep the frequency of interesting features as high as possible.
 
-Why should a more normal model be better? Probably to do with the fairly fixed probability of being off-diagonal. Binomial distribution for path length if the probability of off-diagonal is constant. Mean is np. https://en.m.wikipedia.org/wiki/Binomial_distribution. See Normal approximation
-
-In the case of model 61 n is 22 and the mean is 14.6 which implies a p of 0.66 assuming the normal mean equals the binomial mean. For 63 p is 0.65. So the binomial deviation is 2.22 and 2.33 respectively - rather lower than the 2.8 and 3.0 of normal. Probably need a larger n and smaller p. n is not fixed and nor is p. The binomial skew is only -0.15 and -0.13, very different from -0.49 and -0.41. If we choose an n of 25, then for 63 the p is 0.628, dev is 2.42, skew is -0.11, so not sensitive to n. Varying the mean does not make much difference either. Perhaps should use a poisson distribution. A p of 0.66 seems quite low - ie off-diagonal is 34%. But of course, the mode is biased towards longer paths. 
-
-If we consider random mode 52 max is 11 mean is 6.7 implies p = 0.61, dev is very close at 1.61 but skew is -0.13 instead of +0.12. Still has the small p.
-
-In terms of off-diagonal it seems that p is above 0.8 at least, so the binomial distribution must be parameterised by an n of 19, which implies a dev of only around 1.7-1.8 and a skew of around -0.4 (which is agrees with normal). Perhaps above 19 we went into overflow. So the binomial does not really fit very well - probably better for random although p is still very low at 0.61 (view_fractions suggests over 0.8 which implies a length of 8 instead of 11 and a dev of only 1.04 and an even larger negative skew), but scanning distorts somewhat increasing n and deviation.
-
-What could we do to increase p and therefore the mean? Does a higher threshold in model 51 vs 50 lead to longer median diagonals? 50 max diagonal is 41.0063 median is 27.8274. 51 max diagonal is 41.9357, median is 27.2012, so there is no significant difference. Perhaps modify the induce parameters to increase alignments at the cost of compute. README
+In the case of model 61 n is 22 and the mean is 14.6 which implies a p of 0.66 assuming the normal mean equals the binomial mean. For 63 p is 0.65 which is too low cf 52 discussion of binomial above. 
 
 future developments - 
 
