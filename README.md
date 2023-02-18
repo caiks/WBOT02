@@ -1129,9 +1129,9 @@ lengthsHyperSkewness: -4.06495
 
 <a name="view_decomp"></a>
 
-##### view_decomp
+##### Decomposition tools
 
-We are usually concerned to see that the *model decompositions* are well balanced so that they are good *classifications* with the maximium degree of abstraction along the *slice* paths, i.e. such that each *fud* is highly *diagonalised*. We also wish to be sure that *alignments* do not simply disappear with additional *history*, i.e. they are not temporary. We can check both by looking at the *likelihoods* or, equivalently in this case, *sizes* of sibling *slices* in descending order. If the children are unbalanced there will be a single large *slice* followed by small *slices*. If the *alignment* has disappeared, all of the children *slices* will have similar *sizes* and *likelihoods* around zero. We can get the information we need with the following, for example
+We are usually concerned to see that the *model decompositions* are well balanced so that they are good *classifications* with the maximium degree of abstraction along the *slice* paths, i.e. such that each *fud* is highly *diagonalised*. We also wish to be sure that *alignments* do not simply disappear with additional *history*, i.e. they are not temporary. We can check both by looking at the *likelihoods* or, equivalently in this case, *sizes* of sibling *slices* in descending order. If the children are unbalanced there will be a single large *slice* followed by small *slices*. If the *alignment* has disappeared, all of the children *slices* will have similar *sizes* and *likelihoods* around zero. We can get the information we need using `view_decomp`, for example -
 
 ```
 cd ~/WBOT02_ws
@@ -1192,6 +1192,28 @@ Sort ascending to find disappearing *alignments* -
 ...
 ```
 In this case the *alignments* seem to be persistent. There are only rare cases where the trailing sibling is not empty. 
+
+There are a couple of variations. `view_sizes` dumps the accumulated *sizes* of the *slices* rather than *likelihoods* -
+
+```
+cd ~/WBOT02_ws
+./WBOT02 view_sizes model061 10
+...
+14091, 9, 276, 201, fail        99              72              11              4               3               3               3               3               1               1  0
+...
+```
+`view_fractions` dumps the percentage of the *slice size* per parent *size*, accumulating along the siblings -
+
+```
+cd ~/WBOT02_ws
+./WBOT02 view_fractions model061 10
+...
+14091, 9, 276, 201, fail        49.3            85.1            90.5            92.5            94              95.5            97              98.5            99              99.100              100
+...
+```
+The aim of `view_fractions` is to distinguish between *on-diagonal* and *off-diagonal slices*.
+
+Note that if the active is overflowing, a parent *slice* sometimes has rolled off *events* before it reaches the induce threshold. In this case the sum of the children *slice sizes* will be less than the parent's accumulated *size*. This is indicated by `ok` or `fail` in the output. `view_fractions` uses the sum of the children *slice sizes* as the denominator to avoid this.
 
 ##### Model logs
 
@@ -1527,7 +1549,7 @@ lengthsHyperSkewness: -0.0498156
 	"summary_active" : true
 }
 ```
-The growth rate declines slightly from 0.740 to 0.683, so we proceeded with the default threshold.
+The growth rate declines slightly from 0.740 to 0.683 and the multiplier has increased a little from 2.98 to 3.15, so we proceeded with the default threshold.
 
 In order to see if there is some qualitative difference between *models* 10 to 13, we would like to try to judge if *likely* locations are clustered for different images. That is, we want to show the various measures of *likelihood* density over an image. See [generate_contour](#generate_contour) above for a description of how we did this.
 
@@ -1567,7 +1589,7 @@ The combined path length and *slice* position image for *model* 13 clearly shows
 
 (Note that the complex *modelling* of some rather uniform background areas is probably exaggerated by the bucketing done by the `Record::valent` function.)
 
-We can clearly see that the *likelihoods*, whether actual or potential, are beginning to cluster into hotspots. That is, there are certain locations where the *model* is most developed and it is these areas that we should concentrate on. Most of the *models* that follow are at the same scale of 0.177. 
+We can clearly see that the actual *likelihoods*, which are the *decomposition* path lengths, are beginning to cluster into hotspots. Presumably these clusters are where there is an increase of the concentration of *alignments*. That is, there are certain locations where the *model* is most developed. It is these areas that we should focus on, literally and metaphorically. Most of the *models* that follow are at the same scale of 0.177. 
 
 It seems, however, that the *likelihood* landscape is fragmented and discrete rather than smooth. So the term 'contour map', which suggests gradients and local maxima and minima, may be something of a misnomer. This suggests that iterative 'golf ball' optima searches are unlikely to be very useful and that a brute force scanning approach will be necessary. Whatever the local behaviour, the *likelihood* maps above do give a qualitative clue as to the direction we should take.
 
@@ -1734,6 +1756,17 @@ Although our experiments with scales, the bucketing of *values* and with the min
 The growth rate of around 0.75 *fuds* per *size* per threshold is well below the theoretical maximum of 2.0 for a perfectly efficient *classification* of *events* over a *bivalent diagonalised decomposition*. So, as well as larger *models*, we would like modes with higher growth rates. 
 
 In addition to higher growth rates, we would like to avoid duplication within the *model* of slightly translated but fairly similar regions around hotspots. That is, we would like to see very localised hotspots with very long path lengths at the hotspot itself and very short path lengths nearby and in-between. In this way we will avoid 'wasting' *history* on endlessly duplicated but poorly resolved features. In the path length maps for the random mode *models* above, the brightness is fairly uniform with small variations. We would like to see more of a constellation of point-like instensities. In a sense, this is the opposite to convolution - instead of weighting every location equally, we focus on a handful of places that carry the most information, thereby shrinking the vast *substrate volume*.
+
+Before going on to see how we might obtain these improvements, we will consider for a moment the distribution of the path lengths. As we have seen above, *models* 52 and 53 are very normal with low higher moments. If we approximate the progression along a path as a binary choice between high frequency *on-diagonal slices* and low frequency *off-diagonal slices*, it is reasonable to assume that a path terminates either because it has hit an *off-diagonal slice* or because the *model* as a whole is incomplete. If we assume that it is the former,  the distribution of path lengths will be binomial. For *model* 52 with a maximum path length, `n`, of 11 the probability, `p`, of *on-diagonal* implied by a mean, `np`, of 6.7 is 61%. The deviation, `sqrt(np(1-p))` is 1.62, which is very close to the normal deviation of 1.64. The binomial distribution skew, however, is -0.13 in the opposite direction of the normal skew of 0.12. 
+
+In addition, the probability, `p`, of *on-diagonal* seems very low. In discussion of the [*decomposition* tool](#view_decomp) we describe how to use `view_fractions` to examine the differences between *on-diagonal* and *off-diagonal slices* -
+
+```
+cd ~/WBOT02_ws
+./WBOT02 view_fractions model052 10
+
+```
+Only around 15% of the *slices* have not reached 85% by the third sibling. That suggests that p is at least 0.85. This would imply n is only 8, not 11. Worse, the binomial deviation is only 1.04 and the skew has decreased to -0.65. These incompatibilities with the normal statistics suggests that a binomial distribution based on the *on-diagonal* to *off-diagonal* ratio is not a good model at this stage.
 
 <a name="Potential_filtered_random_models"></a>
 
