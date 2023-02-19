@@ -1395,6 +1395,7 @@ model013|0.177|4 randomised|1|bucketed|Fireman Sam|720,000|2,719|0.755|7.19|1.91
 model036|0.177|4 randomised|1|fixed|12 B&W videos|500,000|1,931|0.772|7.2|2|17|2.86|
 model052|0.177|4 randomised|1|fixed|48 B&W videos|500,000|1,887|0.753|6.7|1.64|11|3.08|30s unique, 12.0 min diagonal, 1.2 min entropy
 model053|0.177|4 randomised|1|fixed|48 B&W videos|500,000|1,910|0.764|6.6|1.58|11|3.14|30s unique, 12.0 min diagonal, 1.2 min entropy
+model064|0.177|4 randomised|1|balanced|48 B&W videos|500,000|1,837|0.735|6.6|1.6|11|3.13|30s unique, 12.0 min diagonal, 1.2 min entropy
 model015|0.177|4 potential|2|bucketed|Fireman Sam|720,000|4,131|1.148|9.49|1.72|14|2.40|20 randomised
 model019|0.177|4 potential|2|bucketed|Fireman Sam|1,000,000|5,738|1.148|9.81|1.76|15|2.42|20 randomised
 model038|0.177|4 potential|2|fixed|12 B&W videos|500,000|2,488|0.995|9.04|2.12|18|2.37|20 randomised
@@ -1753,11 +1754,23 @@ Although our experiments with scales, the bucketing of *values* and with the min
 
 ![contour004_053_representation](images/contour004_053_representation.png) 
 
+
+TODO model 63
+
+![contour004_052_minent_length](images/contour004_052_minent_length.png) 
+![contour004_064_minent_length](images/contour004_064_minent_length.png) 
+![contour004_064_minent_representation](images/contour004_064_minent_representation.png) 
+
+![contour005_052_minent_length](images/contour005_052_minent_length.png) 
+![contour005_064_minent_length](images/contour005_064_minent_length.png) 
+![contour005_052_minent_representation](images/contour005_052_minent_representation.png) 
+![contour005_064_minent_representation](images/contour005_064_minent_representation.png) 
+
 The growth rate of around 0.75 *fuds* per *size* per threshold is well below the theoretical maximum of 2.0 for a perfectly efficient *classification* of *events* over a *bivalent diagonalised decomposition*. So, as well as larger *models*, we would like modes with higher growth rates. 
 
 In addition to higher growth rates, we would like to avoid duplication within the *model* of slightly translated but fairly similar regions around hotspots. That is, we would like to see very localised hotspots with very long path lengths at the hotspot itself and very short path lengths nearby and in-between. In this way we will avoid 'wasting' *history* on endlessly duplicated but poorly resolved features. In the path length maps for the random mode *models* above, the brightness is fairly uniform with small variations. We would like to see more of a constellation of point-like instensities. In a sense, this is the opposite to convolution - instead of weighting every location equally, we focus on a handful of places that carry the most information, thereby shrinking the vast *substrate volume*.
 
-Before going on to see how we might obtain these improvements, we will consider for a moment the distribution of the path lengths. As we have seen above, *models* 52 and 53 are very normal with low higher moments. If we approximate the progression along a path as a binary choice between high frequency *on-diagonal slices* and low frequency *off-diagonal slices*, it is reasonable to assume that a path terminates either because it has hit an *off-diagonal slice* or because the path has not yet exhausted its *alignments*. If we assume that it is the former, the distribution of path lengths will be binomial. For *model* 52 with a maximum path length `n` of 11, the probability `p` of an *on-diagonal slice* implied by a mean, `n*p`, of 6.7 is 61%. The deviation, `sqrt(n*p*(1-p))`, is 1.62, which is very close to the normal deviation of 1.64. The binomial skew, however, is -0.13, which is in the opposite direction to the normal skew of 0.12. 
+Before going on to see how we might obtain these improvements, we will consider for a moment the distribution of the path lengths in the random mode. As we have seen above, *models* 52 and 53 are very normal with low higher moments. If we approximate the progression along a path as a binary choice between high frequency *on-diagonal slices* and low frequency *off-diagonal slices*, it is reasonable to assume that a path terminates either because it has hit an *off-diagonal slice* or because the path has not yet exhausted its *alignments*. If we assume that it is the former, the distribution of path lengths will be binomial. For *model* 52 with a maximum path length `n` of 11, the probability `p` of an *on-diagonal slice* implied by a mean, `n*p`, of 6.7 is 61%. The deviation, `sqrt(n*p*(1-p))`, is 1.62, which is very close to the normal deviation of 1.64. The binomial skew, however, is -0.13, which is in the opposite direction to the normal skew of 0.12. 
 
 In addition, the probability, `p`, of an *on-diagonal slice* seems too low at 61%. In discussion of the [*decomposition* tool](#view_decomp), above, we describe how to use `view_fractions` to examine the transition from *on-diagonal* to *off-diagonal* sibling *slices* -
 
