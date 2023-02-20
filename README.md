@@ -1748,13 +1748,13 @@ So, as we move across the boundaries between highly related *slices* we sometime
 
 Note that a two *level model* would be less likely to have its ultimate *underlying* concentrated in one region. Its *alignments* would be more global - distributed between regions across the frame. We will consider two *level models* later in the discussion.
 
-Although our experiments with scales, the bucketing of *values* and with the minimum entropy, etc, are making some progress, we are still far short of a perfect *model* as can be seen by the representation of *model* 53 -
+Although our experiments with scales, bucketing of *values* and minimum entropy, etc, are making some progress, we are still far short of a perfect *model* as can be seen by the representation of *model* 53 -
 
 <a name="contour004_053_representation"></a>
 
 ![contour004_053_representation](images/contour004_053_representation.png) 
 
-*Model* 64 is a copy of *model* 52/53 except that the balanced *valency* variation of the `valentFixed` method is used, i.e. `"valency_balanced" : true`. (See [Records and representations](#Records_and_representations) above.) That is, the record cell brightnesses are adjusted so that the cell average is moved to the mid-point of the range.
+*Model* 64 is a copy of *models* 52/53 except that the balanced *valency* variation of the `valentFixed` method is used, i.e. `"valency_balanced" : true`. (See [Records and representations](#Records_and_representations) above.) That is, the record cell brightnesses are adjusted so that the cell average is moved to the mid-point of the range.
 
 The growth rate, statistics and multiplier for *model* 64 are all very similar to those of *models* 52 and 53. To gain a sense of qualitative differences we first compare *model* 52's path lengths in the contour map for the Citizen Kane image -
 
@@ -1776,7 +1776,7 @@ Now it seems that *model* 64 is a little more detailed around the face and neck.
 
 ![contour004_064_minent_representation](images/contour004_064_minent_representation.png) 
 
-For all of these random mode *models* the growth rate of around 0.75 *fuds* per *size* per threshold is well below the theoretical maximum of 2.0 for a perfectly efficient *classification* of *events* over a *bivalent diagonalised decomposition*. So, as well as larger *models*, we would like modes with higher growth rates. 
+The growth rate of around 0.75 *fuds* per *size* per threshold of all of these random mode *models* is well below the theoretical maximum of 2.0 for a perfectly efficient *classification* of *events* over a *bivalent diagonalised decomposition*. So, as well as larger *models*, we would like modes with higher growth rates. 
 
 In addition to higher growth rates, we would like to avoid duplication within the *model* of slightly translated but fairly similar regions around hotspots. That is, we would like to see very localised hotspots with very long path lengths at the hotspot itself and very short path lengths nearby and in-between. In this way we will avoid 'wasting' *history* on endlessly duplicated but poorly resolved features. In the path length maps for the random mode *models* above, the brightness is fairly uniform with small variations. We would like to see more of a constellation of point-like instensities. In a sense, this is the opposite to convolution - instead of weighting every location equally, we focus on a handful of places that carry the most information, thereby shrinking the vast *substrate volume*.
 
