@@ -2111,7 +2111,11 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 1.3|5488|1.262|5970|-482|-8.07%
 1.7|6172|1.531|7238|-1066|-14.73%
 
-See the [discussion above](#growth_rates). The multipliers of all four *models* remain constant at 1.80. This suggests that there remains more *alignments* still to be found even on the longest paths.
+The [discussion above](#growth_rates) explains the definition of expected growth rate.
+
+One reason why the growth rates are below expected may be to do with an issue with the measurement of parent *size*. At the end of the discussion of the [*decomposition* tool](#view_decomp), above, we noted that if the active is overflowing, a parent *slice* sometimes has rolled off *events* before it reaches the induce threshold. In this case the sum of the children *slice sizes* will be less than the parent's accumulated *size* and the potential *likelihoods* will be too small. Of course, actual *likelihood* is not affected, so the problem would only arise when comparing *slices* of the same length.
+
+The multipliers of all four *models* remain constant at 1.80. This suggests that there remains more *alignments* still to be found even on the longest paths.
 
 The scanned actual-potential *likelihood* mode (4) growth rates tend to be similar to those of the non-scanned actual-potential *likelihood* mode (3) *models* with the exception of *model* 25 which has the highest growth rate so far of 1.221 as well as the lowest multiplier. These are the *slice* path length statistics -
 ```
@@ -2211,8 +2215,6 @@ We can also demonstrate the behaviour of the tiled mode itself by choosing to sc
 We can often observe stable arrangements of hotspots form during a camera shot, especially if the `unique_records` parameter is removed.
 
 TODO -
-
-Overflow and accumulated size issue and how it affects the potential likelihood in overflow. The problem with sizes is that when a slice finally reaches the induce threshold a large number of its cumulative events have rolled off and only active events are given to the children. So the size per parent size ratio likelihood is sometimes too small. To determine the on-diagonal fraction compare to total rather than parent. 
 
 29 has highest growth rate so far, multiplier at 1.83 similar to bucketed models 21 - 24
 
