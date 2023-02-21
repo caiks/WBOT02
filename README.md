@@ -1416,7 +1416,7 @@ model030|0.177|5 scanned potential tiled actual-potential|5|fixed|Film Noir|527,
 model031|0.177|5 scanned potential tiled actual-potential|5|fixed|Film Noir|452,255|3,197|1.414|14.62|3.73|32|1.74|12.0 min diagonal
 model034|0.177|5 scanned potential tiled actual-potential|5|fixed|10 B&W videos|527,045|3,846|1.459|15.17|4.4|35|1.72|first actor003 model
 model035|0.177|5 scanned potential tiled actual-potential|5|fixed|14 B&W videos|1,000,000|7,069|1.414|15.92|3.5|35|1.74|
-model037|0.177|5 scanned potential tiled actual-potential|1,5|fixed|12 B&W videos|1,000,000|6,033|1.207|12.6|5.11|35|2.00|two modes at 7 and 15
+model037|0.177|5 scanned potential tiled actual-potential|1,5|fixed|12 B&W videos|1,000,000|6,033|1.207|12.6|5.11|35|2.00|initial *model* 36
 model039|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|1,000,000|7,214|1.443|16.42|5.4|46|1.72|30s unique
 model040|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|2,000,000|12,262|1.226 (1.443)|17.77|6.01|54|1.70|30s unique
 model041|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|2,656,962|14,079|1.060 (1.443)|18.3|6.61|62|1.69|30s unique
@@ -2113,6 +2113,8 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 
 The [discussion above](#growth_rates) explains the definition of expected growth rate.
 
+<a name="potential_likelihood_issue"></a>
+
 One reason why the growth rates are below expected may be to do with an issue with the measurement of parent *size*. At the end of the discussion of the [*decomposition* tool](#view_decomp), above, we noted that if the active is overflowing, a parent *slice* sometimes has rolled off *events* before it reaches the induce threshold. In this case the sum of the children *slice sizes* will be less than the parent's accumulated *size* and the potential *likelihoods* will be too small. Of course, actual *likelihood* is not affected, so the problem would only arise when comparing *slices* of the same length.
 
 The multipliers of all four *models* remain constant at 1.80. This suggests that there remains more *alignments* still to be found even on the longest paths.
@@ -2222,7 +2224,7 @@ TODO -
 
 25 vs 30 - scanned vs tiled - compare length - more interest in the face and head and less in the roof beams. Do a position map to see if the model is richer like random mode models 52 and 53
 
-30 vs 31 - added min diagonal reduced growth, little effect on multiplier, slightly reduced growth
+30 vs 31 - added min diagonal reduced growth, little effect on multiplier, slightly reduced growth. 31 has 32 fails, 30 has only 28, so perhaps has increased the failed slices as would be expected.
 
 34 vs 30 - 34 is first actor003 model, otherwise same config as 30 - similar growth and multiplier
 
@@ -2234,7 +2236,7 @@ Even though double the size the max length is the same as model 34 at 35, the me
 
 37 vs 35 - 37 has a random mode beginning and so has two modal lengths, lower mean and intermediate growth and multiplier. Perhaps look compare the root fuds in the browser
 
-Added 4102 fuds in the last 500k, so a better rate than model 34 in the second half or than model 35 overall, which suggests that randomising improves the model.
+Added 4102 fuds in the last 500k, so a better rate (1.641) than model 34 in the second half or than model 35 overall, which suggests that randomising improves the model.
 
 The mean is lower than model 35, but there are two modes at 7 and 15 and the longest path is the same at 35. There are many more fails (60) than model 35.
 
@@ -2261,6 +2263,8 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 1|7214|1.000|7214|0|0.00%
 2|12262|1.693|12214|48|0.39%
 2.656|14079|1.977|14261|-182|-1.27%
+
+So the potential *likelihood* measurement error caused by the parent's accumulated *size*, described [above](#potential_likelihood_issue), does not seem to be an issue here.
 
 evidence of interesting features. The examples of interactive model 41 in `C:\caiks\WBOT02\images` suggest that lighting is very important as well as scale - so edge detection would be interesting. There are many faces in the examples, but it is rare that a frame is classified with a lot of examples that we would recognise as similar, e.g. actor002_model041_Film_Noir_010.png. Even then, there are many examples which are completely unrelated to faces or eyes. It is clear that the classification is good on broad areas of light and dark, but the model would have to be much larger I think before the facial features would be reliably classified together and even then they would probably be spread over slices that are far apart in the model because of lighting conditions. We can see that scale is very important too - compare actor002_model041_camera_001.png and actor002_model041_camera_002.png, where the images magnification is slightly different.
 
