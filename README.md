@@ -2250,8 +2250,6 @@ The deep blacks seem to be less of a problem with model 35 than 37
 
 39 vs 35 - adds 333 of unique records ie around 30s, increases mean and growth a little
 
-Duplicate removal. Can prevent exact duplicates if we use the motion detector hash for each event and then check the event against the current slice or the most recent slices. Or simply check against the list of the most recent events, so that duplicates are allowed after a suitable interval. Prefer to check the recent slices, but could use a long list of events. Events is easier - use a FIFO queue and a set. Could process before choosing topmost of the mode. First do the browser and get evidence that it is a problem. Duplicate removal. Surely the whole point of centering is to get a lot of similar frames quickly? Similar - but not the same. Removing duplicates might allow unusual events to get more attention. Count the duplicates.
-
 The reason the centre keeps moving is sometimes that the frame does not move. Should we check for min entropy, then set the centre then check for unique records? Probably best to leave it as it is, so that the centre hovers around places of activity and does not get stuck in static backgrounds.
 
 Statistics look rather better than 35?
