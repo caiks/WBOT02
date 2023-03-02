@@ -1833,7 +1833,7 @@ lengthsHyperSkewness: -6.49092
 ```
 Compared to *model* 13, the kurtosis has turned positive, suggesting fatter tails. There is also a large negative hyper-skew, which suggests that the overall longer mean is partly at the expense of more very short paths.
 
-Qualitatively, the path length image appears to have sharpened constrasts -
+Qualitatively, the path length image appears to have sharpened contrasts -
 
 ![contour001_015_length](images/contour001_015_length.png) 
 
@@ -1970,7 +1970,7 @@ lengthsSkewness: -0.669883
 lengthsKurtosisExcess: 0.677749
 lengthsHyperSkewness: -7.46805
 ```
-Qualitatively, the constrasts in the path length image have increased again -
+Qualitatively, the contrasts in the path length image have increased again -
 
 ![contour001_016_length](images/contour001_016_length.png) 
 
@@ -2147,7 +2147,7 @@ From *model* 25 onwards the source images came from Film Noir videos instead of 
 
 ##### Tiled scanned models
 
-In order to make a more balanced *model* able to capture frequent features, we introduce the idea of tiling. We will still scan a range much larger than a single frame but, rather than finding the top hotspots in the whole scan area, we will choose a top hotspot per tile where a tile defaults to a square of width equal to a half of a frame. Once we have identified each tile's hotspot we use mode 2 potential *likelihood* to select the topmost of these hotspots for *modelling*. That is, we use local actual-potential *likelihood* and then global potential *likelihood* to avoid filling the *model* with spatially translated near duplicates, but developing the interesting parts as much as we possibly can with the resources available.
+In order to make a more balanced *model* able to capture frequent features, we introduce the idea of tiling. We will still scan a range much larger than a single frame but, rather than finding the top hotspots in the whole scan area, we will choose a top hotspot per tile where a tile defaults to a square of width equal to a half of a frame. Once we have identified each tile's hotspot we use mode 2 potential *likelihood* to select the topmost of these hotspots for *modelling*. That is, we use local actual-potential *likelihood* and then global potential *likelihood* to avoid filling the *model* with spatially translated near duplicates, but develop the interesting parts as much as we possibly can with the resources available.
 
 In this way we expect the growth will be higher than for scanned actual-potential *likelihood* mode (4), but the multiplier will be similar or a little higher and the *model* will be more normally distributed. The *bivalent* or *trivalent diagonals* often seen in *induction* (e.g. these [root *fuds*](#root_fud_browse)) suggests an ideal multiplier of around 2, which is below random mode but above scanned potential *likelihood* mode. Too small a multiplier suggests frequent siblings are being ignored. Too high a multiplier will dent growth and so produce smaller *models*. Tiling modes aim to solve the convolution problem but without excessive focus on very frequent features nor excessive negligence of moderately infrequent features.
 
