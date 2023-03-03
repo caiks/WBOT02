@@ -317,11 +317,11 @@ We made a couple of experiments with capturing frames from videos, `video001` an
 
 #### Records and representations
 
-Now let us consider scaled and centered average brightness records and their representations. The `Record` class is defined in `dev.h`. It represents a rectangular frame of a part or the whole of an image. It is defined by horizontal and vertical lengths or scales (fractions of 1) and a centre coordinate (a pair of fractions of 1). It consists of a two dimensional array of cells of integral value between 0 (dark) and 255 (light). It has persistence methods and a method to convert it to an *event*, i.e. a `HistoryRepa` of *size* 1 of a *substrate* consisting of (i) *variables* for each cell of a given cell *valency*, plus (ii) a scale *variable* of a given scale *valency*. 
+Now let us consider scaled and centered average brightness records and their representations. The `Record` class is defined in `dev.h`. It represents a rectangular frame of a part or the whole of an image. It is defined by horizontal and vertical lengths or scales (real numbers between zero and one) and a centre coordinate (a pair of real numbers between zero and one). It consists of a two dimensional array of cells of integral brightness value between 0 (dark) and 255 (light). It has persistence methods and a method to convert it to an *event*, i.e. a `HistoryRepa` of *size* 1 of a *substrate* consisting of (i) *variables* for each cell of a given cell *valency*, plus (ii) a scale *variable* of a given scale *valency*. 
 
-`Record` has a constructor that creates a zeroed (black) array of cells. Another constructor creates a greyscale array of cells from a rectangular frame within a given image. Where an individual cell corresponds to a rectangle of pixels, an average pixel value is calculated. The value of the cell is the Hue-Saturation-Value calculation of lightness, i.e. the maximum of the red, green and blue values. 
+`Record` has a constructor that creates a zeroed (black) array of cells. Another constructor creates a greyscale array of cells from a rectangular frame within a given image. Where an individual cell corresponds to a rectangle of pixels, an average pixel value is calculated. The value of the cell is the Hue-Saturation-Value calculation of brightness, i.e. the maximum of the red, green and blue values. 
 
-The `valent` method reduces the *valency* of a record by sorting the *values* and calculating quantiles, with special handling of 0 (black) to deal with the case of a frame that overlaps with the boundaries of the given image. The `valentFixed` method reduces the *valency* of a record by simply dividing it into regular intervals.
+The `valent` method reduces the *valency* of a record by sorting the *values* and calculating quantiles, with special handling of 0 (black) to deal with the case of a frame that overlaps with the boundaries of the given image. The `valentFixed` method reduces the *valency* of a record by simply dividing cell brightness into regular intervals. A variation of the fixed method, called balanced *valency*, is to calculate the average brightness of the record and then add the difference between the mid point of the brightness (127) and the average brightness to each cell's brightness before dividing it into regular intervals. Note that this may reduce the entropy of the record because of possible loss of information at the extremes.
 
 The `image` method converts the record to an image with each cell generating a square of size `multiplier` pixels in the resultant image. The pixels are coloured grey with a lightness that depends on the cell's *value* as a proportion of the *valency*.
 
@@ -1129,9 +1129,9 @@ lengthsHyperSkewness: -4.06495
 
 <a name="view_decomp"></a>
 
-##### view_decomp
+##### Decomposition tools
 
-We are usually concerned to see that the *model decompositions* are well balanced so that they are good *classifications* with the maximium degree of abstraction along the *slice* paths, i.e. such that each *fud* is highly *diagonalised*. We also wish to be sure that *alignments* do not simply disappear with additional *history*, i.e. they are not temporary. We can check both by looking at the *likelihoods* or, equivalently in this case, *sizes* of sibling *slices* in descending order. If the children are unbalanced there will be a single large *slice* followed by small *slices*. If the *alignment* has disappeared, all of the children *slices* will have similar *sizes* and *likelihoods* around zero. We can get the information we need with the following, for example
+We desire that *model decompositions* are well balanced so that they are good *classifications* with the maximium degree of abstraction along the *slice* paths, i.e. such that each *fud* is highly *diagonalised*. We also wish to be sure that *alignments* do not simply disappear with additional *history*, i.e. they are not temporary. We can check both by looking at the *likelihoods* or, equivalently in this case, *sizes* of sibling *slices* in descending order. If the children are unbalanced there will be a single large *slice* followed by small *slices*. If the *alignment* has disappeared, all of the children *slices* will have similar *sizes* and *likelihoods* around zero. We can get the information we need using `view_decomp`, for example -
 
 ```
 cd ~/WBOT02_ws
@@ -1192,6 +1192,28 @@ Sort ascending to find disappearing *alignments* -
 ...
 ```
 In this case the *alignments* seem to be persistent. There are only rare cases where the trailing sibling is not empty. 
+
+There are a couple of variations. `view_sizes` dumps the accumulated *sizes* of the *slices* rather than *likelihoods* -
+
+```
+cd ~/WBOT02_ws
+./WBOT02 view_sizes model061 10
+...
+14091, 9, 276, 201, fail        99              72              11              4               3               3               3               3               1               1  0
+...
+```
+`view_fractions` dumps the percentage of the *slice size* per parent *size*, accumulating along the siblings -
+
+```
+cd ~/WBOT02_ws
+./WBOT02 view_fractions model061 10
+...
+14091, 9, 276, 201, fail        49.3            85.1            90.5            92.5            94              95.5            97              98.5            99              99.100              100
+...
+```
+The aim of `view_fractions` is to distinguish between *on-diagonal* and *off-diagonal slices*.
+
+Note that if the active is overflowing, a parent *slice* sometimes has rolled off *events* before it reaches the induce threshold. In this case the sum of the children *slice sizes* will be less than the parent's accumulated *size*. This is indicated by `ok` or `fail` in the output. `view_fractions` uses the sum of the children *slice sizes* as the denominator to avoid this.
 
 ##### Model logs
 
@@ -1373,6 +1395,7 @@ model013|0.177|4 randomised|1|bucketed|Fireman Sam|720,000|2,719|0.755|7.19|1.91
 model036|0.177|4 randomised|1|fixed|12 B&W videos|500,000|1,931|0.772|7.2|2|17|2.86|
 model052|0.177|4 randomised|1|fixed|48 B&W videos|500,000|1,887|0.753|6.7|1.64|11|3.08|30s unique, 12.0 min diagonal, 1.2 min entropy
 model053|0.177|4 randomised|1|fixed|48 B&W videos|500,000|1,910|0.764|6.6|1.58|11|3.14|30s unique, 12.0 min diagonal, 1.2 min entropy
+model064|0.177|4 randomised|1|balanced|48 B&W videos|500,000|1,837|0.735|6.6|1.6|11|3.13|30s unique, 12.0 min diagonal, 1.2 min entropy
 model015|0.177|4 potential|2|bucketed|Fireman Sam|720,000|4,131|1.148|9.49|1.72|14|2.40|20 randomised
 model019|0.177|4 potential|2|bucketed|Fireman Sam|1,000,000|5,738|1.148|9.81|1.76|15|2.42|20 randomised
 model038|0.177|4 potential|2|fixed|12 B&W videos|500,000|2,488|0.995|9.04|2.12|18|2.37|20 randomised
@@ -1393,7 +1416,7 @@ model030|0.177|5 scanned potential tiled actual-potential|5|fixed|Film Noir|527,
 model031|0.177|5 scanned potential tiled actual-potential|5|fixed|Film Noir|452,255|3,197|1.414|14.62|3.73|32|1.74|12.0 min diagonal
 model034|0.177|5 scanned potential tiled actual-potential|5|fixed|10 B&W videos|527,045|3,846|1.459|15.17|4.4|35|1.72|first actor003 model
 model035|0.177|5 scanned potential tiled actual-potential|5|fixed|14 B&W videos|1,000,000|7,069|1.414|15.92|3.5|35|1.74|
-model037|0.177|5 scanned potential tiled actual-potential|1,5|fixed|12 B&W videos|1,000,000|6,033|1.207|12.6|5.11|35|2.00|two modes at 7 and 15
+model037|0.177|5 scanned potential tiled actual-potential|1,5|fixed|12 B&W videos|1,000,000|6,033|1.207|12.6|5.11|35|2.00|initial *model* 36
 model039|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|1,000,000|7,214|1.443|16.42|5.4|46|1.72|30s unique
 model040|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|2,000,000|12,262|1.226 (1.443)|17.77|6.01|54|1.70|30s unique
 model041|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|2,656,962|14,079|1.060 (1.443)|18.3|6.61|62|1.69|30s unique
@@ -1527,7 +1550,7 @@ lengthsHyperSkewness: -0.0498156
 	"summary_active" : true
 }
 ```
-The growth rate declines slightly from 0.740 to 0.683, so we proceeded with the default threshold.
+The growth rate declines slightly from 0.740 to 0.683 and the multiplier has increased a little from 2.98 to 3.15, so we proceeded with the default threshold.
 
 In order to see if there is some qualitative difference between *models* 10 to 13, we would like to try to judge if *likely* locations are clustered for different images. That is, we want to show the various measures of *likelihood* density over an image. See [generate_contour](#generate_contour) above for a description of how we did this.
 
@@ -1567,7 +1590,7 @@ The combined path length and *slice* position image for *model* 13 clearly shows
 
 (Note that the complex *modelling* of some rather uniform background areas is probably exaggerated by the bucketing done by the `Record::valent` function.)
 
-We can clearly see that the *likelihoods*, whether actual or potential, are beginning to cluster into hotspots. That is, there are certain locations where the *model* is most developed and it is these areas that we should concentrate on. Most of the *models* that follow are at the same scale of 0.177. 
+We can clearly see that the actual *likelihoods*, which are the *decomposition* path lengths, are beginning to cluster into hotspots. Presumably these clusters are where there is an increase of the concentration of *alignments*. That is, there are certain locations where the *model* is most developed. It is these areas that we should focus on, literally and metaphorically. Most of the *models* that follow are at the same scale of 0.177. 
 
 It seems, however, that the *likelihood* landscape is fragmented and discrete rather than smooth. So the term 'contour map', which suggests gradients and local maxima and minima, may be something of a misnomer. This suggests that iterative 'golf ball' optima searches are unlikely to be very useful and that a brute force scanning approach will be necessary. Whatever the local behaviour, the *likelihood* maps above do give a qualitative clue as to the direction we should take.
 
@@ -1630,7 +1653,7 @@ We can see that darker areas of the original image are *modelled* together in th
 
 If `unique_records` is set to an non-zero integer, e.g. `"unique_records" : 333`, the list of previous records are compared for uniqueness. That is, in this example the current record must be unique amongst the previous 333 records in order for it not to be rejected. The idea is to prevent pauses in the action or relatively still areas of background from causing the *slices* to fill up with only a few distinct *events*. 
 
-If `entropy_minimum` is set to some non-zero positive real number, e.g. `"entropy_minimum" : 1.2`, records with lower entropies will be rejected. See also the discussion about [browsing entropies](#interactive_entropies) above. Note that the `entropy_minimum` functionality is only used after *model* 47, when it was noticed that interesting features such as faces were being ignored in favour of the dark corners so common in Film Noir.
+If `entropy_minimum` is set to some non-zero positive real number, e.g. `"entropy_minimum" : 1.2`, records with lower entropies will be rejected. See also the discussion about [browsing entropies](#interactive_entropies) above. Note that the `entropy_minimum` functionality is only used after *model* 47, when it was noticed that interesting features such as faces were being ignored in favour of the dark corners so common in Film Noir. After minimum entropy was added no *model* had induce failures. That is, the *models* remained incomplete everywhere with all leaf *slices* having potential *alignments*.
 
 *Model* 52 also constrains the minimum *diagonal* to be 12.0. This number was choosen to be at the minimum of the distribution of *diagonals*. The idea is to avoid the mostly small *alignments* that are caused purely by the *shuffled histogram*.
 
@@ -1725,15 +1748,50 @@ So, as we move across the boundaries between highly related *slices* we sometime
 
 Note that a two *level model* would be less likely to have its ultimate *underlying* concentrated in one region. Its *alignments* would be more global - distributed between regions across the frame. We will consider two *level models* later in the discussion.
 
-Although our experiments with scales, the bucketing of *values* and with the minimum entropy, etc, are making some progress, we are still far short of a perfect *model* as can be seen by the representation of *model* 53 -
+Although our experiments with scales, bucketing of *values* and minimum entropy, etc, are making some progress, we are still far short of a perfect *model* as can be seen by the representation of *model* 53 -
 
 <a name="contour004_053_representation"></a>
 
 ![contour004_053_representation](images/contour004_053_representation.png) 
 
-The growth rate of around 0.75 *fuds* per *size* per threshold is well below the theoretical maximum of 2.0 for a perfectly efficient *classification* of *events* over a *bivalent diagonalised decomposition*. So, as well as larger *models*, we would like modes with higher growth rates. 
+*Model* 64 is a copy of *models* 52/53 except that the balanced *valency* variation of the `valentFixed` method is used, i.e. `"valency_balanced" : true`. (See [Records and representations](#Records_and_representations) above.) That is, the record cell brightnesses are adjusted so that the cell average is moved to the mid-point of the range.
+
+The growth rate, statistics and multiplier for *model* 64 are all very similar to those of *models* 52 and 53. To gain a sense of qualitative differences we first compare *model* 52's path lengths in the contour map for the Citizen Kane image -
+
+![contour004_052_minent_length](images/contour004_052_minent_length.png) 
+
+to that of *model* 64 -
+
+![contour004_064_minent_length](images/contour004_064_minent_length.png) 
+
+The hotspots seem to be less prominent in the balanced *valency* case, especially around the face. That is, there is less evidence of clustering of long paths. That suggests, perhaps, a more even representation of *slices* within the *model*, at least for faces. If we now compare the position of the *slices* within the *model*, first for *model* 52 -
+
+![contour004_052_minent_position](images/contour004_052_minent_position.png) 
+
+and then for *model* 64 -
+
+![contour004_064_minent_position](images/contour004_064_minent_position.png) 
+
+Now it seems that *model* 64 is a little more detailed around the face and neck. The overall implied representation, however, is considerably less convincing because of the standardisation of brightnesses -
+
+![contour004_064_minent_representation](images/contour004_064_minent_representation.png) 
+
+The growth rate of around 0.75 *fuds* per *size* per threshold of all of these random mode *models* is well below the theoretical maximum of 2.0 for a perfectly efficient *classification* of *events* over a *bivalent diagonalised decomposition*. So, as well as larger *models*, we would like modes with higher growth rates. 
 
 In addition to higher growth rates, we would like to avoid duplication within the *model* of slightly translated but fairly similar regions around hotspots. That is, we would like to see very localised hotspots with very long path lengths at the hotspot itself and very short path lengths nearby and in-between. In this way we will avoid 'wasting' *history* on endlessly duplicated but poorly resolved features. In the path length maps for the random mode *models* above, the brightness is fairly uniform with small variations. We would like to see more of a constellation of point-like instensities. In a sense, this is the opposite to convolution - instead of weighting every location equally, we focus on a handful of places that carry the most information, thereby shrinking the vast *substrate volume*.
+
+Before going on to see how we might obtain these improvements, we will consider for a moment the distribution of path lengths. As we have seen above, *models* 52, 53 and 64 are very normal with low higher moments. If we approximate the progression along a path as a binary choice between high frequency *on-diagonal slices* and low frequency *off-diagonal slices*, it is reasonable to assume that a path terminates either because it has hit an *off-diagonal slice* or because the path has exhausted its *alignments*. That is, we can assume that the distribution of path lengths will be roughly binomial. For *model* 52 with a maximum path length `n` of 11, the probability `p` of an *on-diagonal slice* implied by a mean, `n*p`, of 6.7 is 61%. The binomial deviation, `sqrt(n*p*(1-p))`, is 1.62, which is very close to the actual deviation of 1.64. The binomial skew, however, is -0.13, which is in the opposite direction to the actual skew of 0.12. 
+
+In addition, the probability, `p`, of an *on-diagonal slice* seems too low at 61%. In discussion of the [*decomposition* tool](#view_decomp), above, we describe how to use `view_fractions` to examine the transition from *on-diagonal* to *off-diagonal* sibling *slices* -
+
+```
+cd ~/WBOT02_ws
+./WBOT02 view_fractions model052 10
+
+```
+In the case of *model* 52, only around 15% of the *slices* have not reached 85% by the third sibling. That suggests that `p` is at least 85%. This, however, would imply that `n` is only 8, not 11. Worse, the binomial deviation is only 1.04 and the skew decreases to -0.65. This mismatch with the statistics suggests that a binomial distribution based on the *on-diagonal* to *off-diagonal* ratio is not a good model of the path length distribution while the *model* remains incomplete. 
+
+The binomial distribution implies that the *models* will become more normal with longer mean paths. If we take `p` to be 85%, the binomial skew falls below 0.3 where `n` is greater than 42. For `p` equal to 90%, `n` must be greater than 79. So, as we move to larger *histories* and non-random modes, we can confirm that the *model* has been properly explored by checking that the higher moments are low.
 
 <a name="Potential_filtered_random_models"></a>
 
@@ -1775,7 +1833,7 @@ lengthsHyperSkewness: -6.49092
 ```
 Compared to *model* 13, the kurtosis has turned positive, suggesting fatter tails. There is also a large negative hyper-skew, which suggests that the overall longer mean is partly at the expense of more very short paths.
 
-Qualitatively, the path length image appears to have sharpened constrasts -
+Qualitatively, the path length image appears to have sharpened contrasts -
 
 ![contour001_015_length](images/contour001_015_length.png) 
 
@@ -1830,7 +1888,7 @@ lengthsKurtosisExcess: 0.568218
 lengthsHyperSkewness: -6.29521
 ```
 
-In the same way that we ran *model* 36 to see the effect of the `Record::valentFixed` regular interval method compared to the quantile `Record::valent` method of random mode *model* 13, we have also run *model* 38 in potential *likelihood* mode 2 with fixed *valency* to see the effect compared to *model* 15. It was run in `actor003` with 12 Film Noir videos using the following configuration, `model038.json` -
+In the same way that we ran *model* 36 to see the effect of the `Record::valentFixed` regular interval method compared to the quantile `Record::valent` method of random mode *model* 13, we ran *model* 38 in potential *likelihood* mode 2 with fixed *valency* to see the effect compared to *model* 15. It was run in `actor003` with 12 Film Noir videos using the following configuration, `model038.json` -
 ```
 {
 	"model" : "model038",
@@ -1912,7 +1970,7 @@ lengthsSkewness: -0.669883
 lengthsKurtosisExcess: 0.677749
 lengthsHyperSkewness: -7.46805
 ```
-Qualitatively, the constrasts in the path length image have increased again -
+Qualitatively, the contrasts in the path length image have increased again -
 
 ![contour001_016_length](images/contour001_016_length.png) 
 
@@ -2043,7 +2101,7 @@ This process is highly compute intensive so the work is split into parallel thre
 	"warning_action" : false
 }
 ```
-The scan consists of `106 * 80 = 8,480` *model applications*. Of these, the top 10 actual-potential *likelihood* *slices* are selected for *modelling*. The factor of 840 to 1 is more than twice that of the non-scanned *model* 60, but the scan area is more localised to the centre, so the *model* is more path dependent on the action as the centre moves around.
+The scan consists of `106 * 80 = 8,480` *model applications*. Of these, the top 10 actual-potential *likelihood* *slices* are selected for *modelling*. The factor of 848 to 1 is more than twice that of the non-scanned *model* 60, but the scan area is more localised to the centre, so the *model* is more path dependent on the action as the centre moves around.
 
 The results for various configurations can be seen in the [table](#Model_table) above. All mode 4 *models* use the quantile *valency* (or 'bucketed') `Record::valent` method except for *model* 25 which uses the fixed *valency*  `Record::valentFixed` method. The bucketed results have multipliers of around 1.8, which is considerably lower than the bucketed non-scanned actual-potential *likelihood* mode (3) *model* multipliers of around 2.2. (Note that *models* 17 and 20 have initial *models* in non-scanned actual-potential *likelihood* mode and potential *likelihood* mode respectively, and so have intermediate multipliers.) The fixed *model* 25 also has a lower multiplier of 1.58 compared to 1.69 for *model* 60, although note that *model* 25 does not have the minimum entropy constraint. 
 
@@ -2055,7 +2113,13 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 1.3|5488|1.262|5970|-482|-8.07%
 1.7|6172|1.531|7238|-1066|-14.73%
 
-See the [discussion above](#growth_rates). The multipliers of all four *models* remain constant at 1.80. This suggests that there remains more *alignments* still to be found even on the longest paths.
+The [discussion above](#growth_rates) explains the definition of expected growth rate.
+
+<a name="potential_likelihood_issue"></a>
+
+One reason why the growth rates are below expected may be to do with an issue with the measurement of parent *size*. At the end of the discussion of the [*decomposition* tool](#view_decomp), above, we noted that if the active is overflowing, a parent *slice* sometimes has rolled off *events* before it reaches the induce threshold. In this case the sum of the children *slice sizes* will be less than the parent's accumulated *size* and the potential *likelihoods* will be too small. Of course, actual *likelihood* is not affected, so the problem would only arise when comparing *slices* of the same length.
+
+The multipliers of all four *models* remain constant at 1.80. This suggests that there remains more *alignments* still to be found even on the longest paths.
 
 The scanned actual-potential *likelihood* mode (4) growth rates tend to be similar to those of the non-scanned actual-potential *likelihood* mode (3) *models* with the exception of *model* 25 which has the highest growth rate so far of 1.221 as well as the lowest multiplier. These are the *slice* path length statistics -
 ```
@@ -2077,21 +2141,21 @@ Like *model* 60, *model* 25 does not appear to be as detailed in high entropy ar
 
 Possibly adding the unique frame and minimum entropy constraints would make the *model* more representative of below maximum frequency features by removing the emphasis on very long paths. The hyper-skew, however, might go from very positive to very negative, and the *model* would probably be no more normal than *model* 60.
 
-From *model* 25 onwards the source images came from Film Noir videos instead of Fireman Sam. We can see that there is a step change between the *models*. This is probably because Fireman Sam is in colour and therefore perhaps has fewer brightness contrasts, reducing the available *alignments* for *modelling*. Also later series of Fireman Sam are CGI and so have even more colours, more detailed backgrounds and more complex rendering in general, distracting from foreground features.
+From *model* 25 onwards the source images came from Film Noir videos instead of Fireman Sam. We can see that there is a step change between the *models*. This is probably because Fireman Sam is in colour and therefore perhaps has fewer brightness contrasts, reducing the available *alignments* for *modelling*. Also, later series of Fireman Sam are CGI and so have even more colours, more detailed backgrounds and more complex rendering in general, distracting from foreground features.
 
 <a name="Tiled_scanned_models"></a>
 
 ##### Tiled scanned models
 
-In order to make a more balanced *model* able to capture frequent features, we introduce the idea of tiling. We will still scan a range much larger than a single frame but, rather than finding the top hotspots in the whole scan area, we will choose a top hotspot per tile where a tile defaults to a square of width equal to a half of a frame. Once we have identified each tile's hotspot we use mode 2 potential *likelihood* to select the topmost of these hotspots for *modelling*. That is, we use local actual-potential *likelihood* and then global potential *likelihood* to avoid filling the *model* with spatially translated near duplicates, but developing the interesting parts as much as we possibly can with the resources available.
+In order to make a more balanced *model* able to capture frequent features, we introduce the idea of tiling. We will still scan a range much larger than a single frame but, rather than finding the top hotspots in the whole scan area, we will choose a top hotspot per tile where a tile defaults to a square of width equal to a half of a frame. Once we have identified each tile's hotspot we use mode 2 potential *likelihood* to select the topmost of these hotspots for *modelling*. That is, we use local actual-potential *likelihood* and then global potential *likelihood* to avoid filling the *model* with spatially translated near duplicates, but develop the interesting parts as much as we possibly can with the resources available.
 
 In this way we expect the growth will be higher than for scanned actual-potential *likelihood* mode (4), but the multiplier will be similar or a little higher and the *model* will be more normally distributed. The *bivalent* or *trivalent diagonals* often seen in *induction* (e.g. these [root *fuds*](#root_fud_browse)) suggests an ideal multiplier of around 2, which is below random mode but above scanned potential *likelihood* mode. Too small a multiplier suggests frequent siblings are being ignored. Too high a multiplier will dent growth and so produce smaller *models*. Tiling modes aim to solve the convolution problem but without excessive focus on very frequent features nor excessive negligence of moderately infrequent features.
 
 This desire for a balance between reducing the convolution *volume* and having good representations by regularly spacing hotspots is the reason the tiles default to half a frame - the region around the hotspot will then be of the same magnitude as the scale of the features that can be captured by a frame. 
 
-The experiments in tiled scanned modes carries on the guadualist approach of previous experiments; they usually consist of small changes in the configuration to see what quantitative and qualitative differences there are. The discussion below will largely be comparisons between *models* of similar configurations. Note, however, that there is a degree of uncertainty in the direction of progress due to a degree of non-repeatability of the *model* runs. The runs are path dependent even in `actor003` video list operation because the Ubuntu 20/22 implementations underlying the Qt media library were asynchronous. So small timing differences lead to initial *history* differences that are magnified by changes in the choice of centres. In fact, given the chaotic sensitivities, it is remarkable how the resultant *models* are nonetheless fairly consistent quantitatively and qualitatively.
+The experiments in tiled scanned modes carries on the guadualist approach of previous experiments; they usually consist of small changes in the configuration to see what quantitative and qualitative differences there are. The discussion below will largely be comparisons between *models* of similar configurations. Note, however, that there is a degree of uncertainty in the direction of progress due to a degree of non-repeatability of the *model* runs. The runs are path dependent even in `actor003` video list operation because the Ubuntu 20/22 implementations underlying the Qt media library were asynchronous. So, small timing differences lead to initial *history* differences that are magnified by changes in the choice of centres. In fact, given the chaotic sensitivities, it is remarkable how the resultant *models* are nonetheless fairly consistent quantitatively and qualitatively.
 
-*Models* generated in tiled modes can be browsed in mode 4 screen grabbing video or stills. In this way the centre will snap to the *slice* with longest path in the scan region. One can choose, say, a scan region of one tile (half a frame height) and so see the *slice* of the local hotspot from where tiled modes would choose *events*. In this example a region of a quarter of a frame height is used in `actor002` -
+*Models* generated in tiled modes can be browsed in mode 4 screen grabbing video or stills. In this way the manually chosen centre will snap to the *slice* with longest path in the scan region. One can choose, say, a scan region of one tile (half a frame height) and so see the *slice* of the local hotspot from where tiled modes would have chosen *events*. In this example a region of a quarter of a frame height is used in `actor002` -
 
 ```
 {
@@ -2119,9 +2183,9 @@ The experiments in tiled scanned modes carries on the guadualist approach of pre
 	"logging_action" : false
 }
 ```
-If the scan region is sufficiently small, we can sometimes observe the wotbot tracking foreground objects as they move. Of course, the motion must be slow and without discontinuities and there must be nothing too distracting in the background. 
+If the scan region is sufficiently small, one can sometimes observe the wotbot tracking foreground objects as they move. Of course, the motion must be slow and without discontinuities and there must be nothing too distracting in the background. 
 
-We can also demonstrate the behaviour of the tiled mode itself by choosing to scan the entire image. Although the motion may be quite jerky, depending on the compute resources, we can often see what interests the wotbot, e.g. with `actor003` this configuration shows the 10 hotspots with the highest potential *likelihoods* -
+We can also demonstrate the behaviour of the tiled mode itself by choosing to scan the entire image. Although the motion may be quite jerky, depending on the compute resources, we can often see what is most interesting to the wotbot, e.g. with `actor003` this configuration shows the 10 hotspots with the highest potential *likelihoods* -
 ```
 {
 	"model_initial" : "model056",
@@ -2152,7 +2216,7 @@ We can also demonstrate the behaviour of the tiled mode itself by choosing to sc
 	"logging_action_factor" : 20
 }
 ```
-We can often observe stable arrangements of hotspots form during a camera shot.
+We can often observe stable arrangements of hotspots form during a camera shot, especially if the `unique_records` parameter is removed.
 
 TODO -
 
@@ -2162,7 +2226,7 @@ TODO -
 
 25 vs 30 - scanned vs tiled - compare length - more interest in the face and head and less in the roof beams. Do a position map to see if the model is richer like random mode models 52 and 53
 
-30 vs 31 - added min diagonal reduced growth, little effect on multiplier, slightly reduced growth
+30 vs 31 - added min diagonal reduced growth, little effect on multiplier, slightly reduced growth. 31 has 32 fails, 30 has only 28, so perhaps has increased the failed slices as would be expected.
 
 34 vs 30 - 34 is first actor003 model, otherwise same config as 30 - similar growth and multiplier
 
@@ -2174,7 +2238,7 @@ Even though double the size the max length is the same as model 34 at 35, the me
 
 37 vs 35 - 37 has a random mode beginning and so has two modal lengths, lower mean and intermediate growth and multiplier. Perhaps look compare the root fuds in the browser
 
-Added 4102 fuds in the last 500k, so a better rate than model 34 in the second half or than model 35 overall, which suggests that randomising improves the model.
+Added 4102 fuds in the last 500k, so a better rate (1.641) than model 34 in the second half or than model 35 overall, which suggests that randomising improves the model.
 
 The mean is lower than model 35, but there are two modes at 7 and 15 and the longest path is the same at 35. There are many more fails (60) than model 35.
 
@@ -2188,8 +2252,6 @@ The deep blacks seem to be less of a problem with model 35 than 37
 
 39 vs 35 - adds 333 of unique records ie around 30s, increases mean and growth a little
 
-Duplicate removal. Can prevent exact duplicates if we use the motion detector hash for each event and then check the event against the current slice or the most recent slices. Or simply check against the list of the most recent events, so that duplicates are allowed after a suitable interval. Prefer to check the recent slices, but could use a long list of events. Events is easier - use a FIFO queue and a set. Could process before choosing topmost of the mode. First do the browser and get evidence that it is a problem. Duplicate removal. Surely the whole point of centering is to get a lot of similar frames quickly? Similar - but not the same. Removing duplicates might allow unusual events to get more attention. Count the duplicates.
-
 The reason the centre keeps moving is sometimes that the frame does not move. Should we check for min entropy, then set the centre then check for unique records? Probably best to leave it as it is, so that the centre hovers around places of activity and does not get stuck in static backgrounds.
 
 Statistics look rather better than 35?
@@ -2201,6 +2263,8 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 1|7214|1.000|7214|0|0.00%
 2|12262|1.693|12214|48|0.39%
 2.656|14079|1.977|14261|-182|-1.27%
+
+So the potential *likelihood* measurement error caused by the parent's accumulated *size*, described [above](#potential_likelihood_issue), does not seem to be an issue here.
 
 evidence of interesting features. The examples of interactive model 41 in `C:\caiks\WBOT02\images` suggest that lighting is very important as well as scale - so edge detection would be interesting. There are many faces in the examples, but it is rare that a frame is classified with a lot of examples that we would recognise as similar, e.g. actor002_model041_Film_Noir_010.png. Even then, there are many examples which are completely unrelated to faces or eyes. It is clear that the classification is good on broad areas of light and dark, but the model would have to be much larger I think before the facial features would be reliably classified together and even then they would probably be spread over slices that are far apart in the model because of lighting conditions. We can see that scale is very important too - compare actor002_model041_camera_001.png and actor002_model041_camera_002.png, where the images magnification is slightly different.
 
@@ -2367,10 +2431,11 @@ Model 49 is definitely less likely to focues on bodies and faces than model 48. 
 
 Model 51 seems to have very similar stats as model 50 even though it has half the fuds. Same mode and max and only slightly smaller mean. It could be that the path dependency is having an effect too.
 
+What could we do to increase p and therefore the mean? Does a higher threshold in model 51 vs 50 lead to longer median diagonals? 50 max diagonal is 41.0063 median is 27.8274. 51 max diagonal is 41.9357, median is 27.2012, so there is no significant difference. Perhaps modify the induce parameters to increase alignments at the cost of compute.
+
 Model 51 seems to be mainly interested in backgrounds, although close up heads and faces get some attention. Seems to agreee with the contour lengths, which have few hotspots around the woman's face in contour004. Why are models 49,50 and 51 so different qualitatively - is the model very path dependent? How can we compare the models?
 
 Colour coded contour maps - The evidence of the multiple offset images and the wide variety of models with similar parameterisation suggests that we go to multi-scale and edge detection to try to stabilise the modelling on a standard. Probably should use low resolution high valency for the brightness substrate and add high resolution edge detection.
-
 
 actor002_model041_Film_Noir_010.png length 20 (z 0.26)	both eyes
 
@@ -2613,6 +2678,8 @@ Tiled scanning and growth in overflow. In the models so far we have only been us
 
 balanced valency -  The current substrate doesn't handle lighting levels or skin tones without perhaps creating whole brightness translated copies of models. Easier to implement than edge detection which is also absolute brightness independent. Perhaps as an analogy to multi-scale we could consider multi-lighting. Perhaps we should do the bucketing based on the larger tiled area. Or perhaps we should detect the overall lighting and simply translate the fixed, with the bottom and top values larger or smaller as needed. Of course, films are set at the lighting levels desired by the director, and the light or dark is meaningful. Edge detection, being relative, in addition to surface might well be better.
 
+actor002_model053_Film_Noir_002_fixed.png versus  actor002_model053_Film_Noir_002_balanced.png
+
 ```
 lengthsDist: {(1,4),(2,18),(3,48),(4,104),(5,190),(6,413),(7,831),(8,1539),(9,2552),(10,4247),(11,6562),(12,9256),(13,12453),(14,16216),(15,17306),(16,17081),(17,14041),(18,9570),(19,5226),(20,1904),(21,531),(22,107)}
 lengthsCount: 120199
@@ -2637,7 +2704,73 @@ The representations are very different between 55 and 61. The face is considerab
 
 Again the face representation is better. The position map suggests that the modelling of the face is much more detailed with fewer 'shadows'. The length images certainly look much more like faces with lots of interest below the lip and around the jaw. The greatest interest in 55 is well past to the SW of the chin.
 
+The contour 3 face is too small for this scale. The representation is slightly better.
+
 "wotbot should be able to track it until something else more interesting appears" - put an example of a video and model of the wotbot tracking successfully. Use a model from actor 3, since more reproducible.
+
+In windows -
+
+```
+actor002 actor.json
+
+```
+
+actor.json -
+```
+{
+	"model_initial" : "model061",
+	"interval" : 250,
+	"x" : 870,
+	"width" : 560,
+	"mode" : "mode006",
+	"entropy_minimum" : 1.2,
+	"valency_balanced" : true,
+	"event_size" : 1,
+	"threads" : 6,
+	"scale" : 0.177,
+	"range_centreX" : 0.118,
+	"range_centreY" :0.0885,
+	"gui" : true,
+	"red_frame" : true,
+	"interactive" : true,
+	"interactive_examples" : true,
+	"interactive_entropies" : true,
+	"multiplier" : 1,
+	"label_size" : 16,
+	"disable_update" : true,
+	"summary_active" : false,
+	"logging_action" : false
+}
+```
+
+actor.json -
+```
+{
+	"model_initial" : "model061",
+	"interval" : 250,
+	"x" : 870,
+	"width" : 560,
+	"mode" : "mode004",
+	"entropy_minimum" : 1.2,
+	"valency_balanced" : true,
+	"event_size" : 1,
+	"threads" : 6,
+	"scale" : 0.177,
+	"range_centreX" : 0.059,
+	"range_centreY" :0.04425,
+	"gui" : true,
+	"red_frame" : true,
+	"interactive" : true,
+	"interactive_examples" : true,
+	"interactive_entropies" : true,
+	"multiplier" : 1,
+	"label_size" : 16,
+	"disable_update" : true,
+	"summary_active" : false,
+	"logging_action" : false
+}
+```
+The centre is more stable in mode 4. Better demo than mode 6.
 
 include demo videos
 
@@ -2685,6 +2818,14 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 
 decline in growth is less
 
+Contour - 005 63 vs 61 seems to have fewer hotspots around the face. The face, head and shoulders are less complex in the position model. We have probably diluted the frequency of face events. The 61 representation is better especially around face, but perhaps 63 has the edge in representing the background.
+
+004 63 has less emphasis on face too. Representation of 63 is generally worse.
+
+003 same as above. The conclusion is that we should stick with the higher entropy to keep the frequency of interesting features as high as possible.
+
+In the case of model 61 n is 22 and the mean is 14.6 which implies a p of 0.66 assuming the normal mean equals the binomial mean. For 63 p is 0.65 which is too low cf 52 discussion of binomial above. 
+
 future developments - 
 
 Remember that the eventual mobile app will see an environment that might not look very much like Film noir so perhaps we should concentrate less on the substrate and more on the active structure and compute scale, ie we need not have conclusive evidence of face pattern matching before moving on so long as it appears to be doing something interesting.
@@ -2700,6 +2841,8 @@ Before going on to websockets perhaps we could try to aim for signs that faces a
 model growth in overflow - If the modelling rate is declining we could perhaps swap the positions of old events of recently experienced slices with old events of neglected slices before rolling them off. Or roll off the smaller slice of the oldest and next oldest events. Or the slice with the least likelihood. Or shorter path. Note that the sequence will be wrong if continuous 
 
 Perhaps decreasing resolution towards the edge of the frame.
+
+Initial random model - cf 202302170645 view_fractions for 52 versus 61.
 
 Experiment with sizes, scales, valencies and thresholds. 
 
