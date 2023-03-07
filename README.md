@@ -1774,7 +1774,7 @@ and then for *model* 64 -
 
 ![contour004_064_minent_position](images/contour004_064_minent_position.png) 
 
-Now it seems that *model* 64 is a little more detailed around the face and neck. The overall implied representation, however, is considerably less convincing because of the standardisation of brightnesses -
+Now it seems that *model* 64 is a little more detailed around the face and neck. The implied representation is similar -
 
 ![contour004_064_minent_representation](images/contour004_064_minent_representation.png) 
 
@@ -2644,7 +2644,6 @@ The model 57 representations are not too bad, especially 004.
 
 faces seem much less frequent when browsing
 
-
 58 vs 55 - scale of 0.088, slightly reduced growth, similar multiplier
 
 58 -
@@ -2661,6 +2660,8 @@ Declines relatively quickly.
 The representations are the best so far. There is lots of different model around faces. Clearly if we are not capturing features at larger scales very well, then at smaller we can at least capture detail - implies that a two level model might be interesting.
 
 already mentioned above at 'Clearly the smaller scale model captures smaller features more closely.'
+
+58 has the best contour003, contour004 and contour005 by far of all models
 
 59 vs 55 - mode 7, highest 10-valent growth both to 1m and greater than expected to 3m, similar multiplier
 
