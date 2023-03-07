@@ -2432,7 +2432,7 @@ int main(int argc, char *argv[])
 			rr[n-1] = 0;
 			std::vector<std::size_t> lengthResults(sizeY*sizeX);
 			std::vector<double> likelihoodResults(sizeY*sizeX);
-			std::vector<std::tuple<std::size_t,double,std::size_t,std::size_t,std::size_t>> actsPotsCoord(sizeY*sizeX);
+			std::vector<std::tuple<std::size_t,double,std::size_t,std::size_t,std::size_t,std::size_t>> actsPotsCoord(sizeY*sizeX);
 			std::vector<std::thread> threads;
 			threads.reserve(threadCount);
 			mark = Clock::now();
@@ -2448,6 +2448,16 @@ int main(int argc, char *argv[])
 								if (z % threadCount == t)
 								{
 									Record recordSub(record,size,size,x,y);
+									std::size_t average = 256;
+									if (valencyBalanced)
+									{
+										auto sizeSub = recordSub.arr->size();
+										auto arrSub = recordSub.arr->data();
+										average = 0;
+										for (std::size_t j = 0; j < sizeSub; j++)
+											average += arrSub[j];	
+										average /= sizeSub;			
+									}
 									Record recordValent = valencyFixed ? recordSub.valentFixed(valency,valencyBalanced) : recordSub.valent(valency,valencyFactor);
 									std::size_t slice = 0;
 									if (entropyMinimum <= 0.0 || recordValent.entropy() >=entropyMinimum)
@@ -2478,9 +2488,9 @@ int main(int argc, char *argv[])
 									likelihoodResults[z] = likelihood;
 									lengthResults[z] = length;
 									if (slice)
-										actsPotsCoord[z] = std::make_tuple(length,likelihood,x,y,slice);
+										actsPotsCoord[z] = std::make_tuple(length,likelihood,x,y,slice,average);
 									else
-										actsPotsCoord[z] = std::make_tuple(0,-INFINITY,x,y,0);
+										actsPotsCoord[z] = std::make_tuple(0,-INFINITY,x,y,0,average);
 								}
 					}, t));
 			for (auto& t : threads)
@@ -2590,10 +2600,11 @@ int main(int argc, char *argv[])
 				{
 					auto x = std::get<2>(t);
 					auto y = std::get<3>(t);
+					auto average = std::get<5>(t);
 					auto posX = centreX + (interval * x - scaleX / 2.0) * captureHeight / captureWidth;
 					auto posY = centreY + interval * y - scaleY / 2.0;
 					QPointF point(posX*captureWidth,posY*captureHeight);
-					auto rep = reps[slice].image(1,valency).scaledToHeight(scale*captureHeight);
+					auto rep = reps[slice].image(1,valency,average).scaledToHeight(scale*captureHeight);
 					representationPainter.drawImage(point,rep);
 				}
 			}

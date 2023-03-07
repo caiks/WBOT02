@@ -130,7 +130,7 @@ namespace WBOT02
 			
 		double entropy() const;
 			
-		QImage image(std::size_t multiplier = 1, std::size_t valency = 0) const;
+		QImage image(std::size_t multiplier = 1, std::size_t valency = 0, std::size_t average = 256) const;
 		void add(const Record& record);
 		
 		double scaleX;

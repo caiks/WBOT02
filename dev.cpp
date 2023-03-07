@@ -151,21 +151,14 @@ Record WBOT02::Record::valentFixed(std::size_t valency, bool balanced) const
 	if (valency && valency <= 128 && record.arr)
 	{
 		auto size = arr->size();
-		auto arr1 =  arr->data();
+		auto arr1 = arr->data();
 		record.arr = std::make_shared<std::vector<unsigned char>>(size,no_init_alloc<unsigned char>());
 		auto arr2 = record.arr->data();
 		if (balanced)
 		{
 			std::size_t av = 0;
-			unsigned char max = 0;
-			std::size_t min = 255;
 			for (std::size_t j = 0; j < size; j++)
-			{
-				auto x = arr1[j];
-				av += x;
-				if (x<min) min = x;
-				if (x>max) max = x;
-			}
+				av += arr1[j];
 			av /= size;
 			if (av < 127)
 			{
@@ -528,7 +521,7 @@ double WBOT02::Representation::entropy() const
 	return e;
 }
 
-QImage WBOT02::Representation::image(std::size_t multiplier, std::size_t valency) const
+QImage WBOT02::Representation::image(std::size_t multiplier, std::size_t valency, std::size_t average) const
 {
 	QImage image(sizeX*multiplier, sizeY*multiplier, QImage::Format_RGB32);
 	if (arr && count && multiplier)
@@ -540,6 +533,22 @@ QImage WBOT02::Representation::image(std::size_t multiplier, std::size_t valency
 		for (std::size_t k = 0; k < size; k++)
 		{
 			auto v = arr1[k] * factor / count + offset;
+			if (average > 127 && average < 256)
+			{
+				std::size_t d = average-127;
+				if (v+d<256)
+					v += d;
+				else
+					v = 255;
+			}
+			else if (average < 127)
+			{
+				std::size_t d = 127-average;
+				if (v>d)
+					v -= d;
+				else
+					v = 0;				
+			}
 			auto i = (k % sizeX) * multiplier;
 			auto j = (k / sizeX) * multiplier;
 			auto rgb = qRgb(v,v,v);
