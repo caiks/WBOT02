@@ -105,6 +105,7 @@ Win007::Win007(const std::string& configA,
 		_interactiveEntropies = ARGS_BOOL(interactive_entropies);
 		_guiLengthMaximum = ARGS_INT(length_maximum);
 		_guiFrameRed = ARGS_BOOL(red_frame);
+		_guiUnderlying = ARGS_BOOL(highlight_underlying);
 		_updateDisable = ARGS_BOOL(disable_update);
 		_activeLogging = ARGS_BOOL(logging_active);
 		_activeSummary = ARGS_BOOL(summary_active);
@@ -1179,6 +1180,7 @@ void Win007::act()
 		std::size_t slice = 0;
 		std::vector<Representation> examples;
 		std::vector<std::pair<double,std::size_t>> ancestors;
+		std::vector<SizeSet> ancestorHighlights;
 		std::vector<std::pair<double,std::size_t>> siblings;
 		{		
 			auto drmul = listVarValuesDecompFudSlicedRepasPathSlice_u;
@@ -1221,9 +1223,23 @@ void Win007::act()
 				while (true)
 				{
 					auto sliceSize = sizes[sliceA];
-					std::size_t parentSize = sizes[cv[sliceA]];
+					auto parent = cv[sliceA];
+					std::size_t parentSize = sizes[parent];
 					double likelihood = (std::log(sliceSize) - std::log(parentSize) + lnwmax)/lnwmax;
 					ancestors.push_back(std::make_pair(likelihood, sliceA));
+					ancestorHighlights.push_back(SizeSet());
+					if (_guiUnderlying)
+					{
+						auto& fud = dr.fuds[vi[parent]].fud;
+						auto& highlights = ancestorHighlights.back();
+						for (auto& tr : fud)
+						{
+							auto n = tr->dimension;
+							auto vv = tr->vectorVar;
+							for (std::size_t i = 0; i < n; i++)
+								highlights.insert(vv[i]);
+						}
+					}
 					if (!sliceA)
 						break;
 					sliceA = cv[sliceA];					
@@ -1320,7 +1336,7 @@ void Win007::act()
 				}
 				else if (k < ancestors.size() && reps.count(ancestors[k].second))
 				{
-					_labelRecordAncestors[k]->setPixmap(QPixmap::fromImage(reps[ancestors[k].second].image(_multiplier,_valency)));					
+					_labelRecordAncestors[k]->setPixmap(QPixmap::fromImage(reps[ancestors[k].second].image(_multiplier,_valency, 256, ancestorHighlights[k])));
 					std::stringstream string;
 					string << std::fixed << std::setprecision(3) << ancestors[k].first << std::defaultfloat;
 					_labelRecordAncestorLikelihoods[k]->setText(string.str().data());

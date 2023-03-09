@@ -523,6 +523,11 @@ double WBOT02::Representation::entropy() const
 
 QImage WBOT02::Representation::image(std::size_t multiplier, std::size_t valency, std::size_t average) const
 {
+	return image(multiplier, valency, average, SizeSet());
+}
+
+QImage WBOT02::Representation::image(std::size_t multiplier, std::size_t valency, std::size_t average, SizeSet highlights) const
+{
 	QImage image(sizeX*multiplier, sizeY*multiplier, QImage::Format_RGB32);
 	if (arr && count && multiplier)
 	{
@@ -551,7 +556,7 @@ QImage WBOT02::Representation::image(std::size_t multiplier, std::size_t valency
 			}
 			auto i = (k % sizeX) * multiplier;
 			auto j = (k / sizeX) * multiplier;
-			auto rgb = qRgb(v,v,v);
+			auto rgb = highlights.count(k) ? Qt::magenta : qRgb(v,v,v);
 			for (std::size_t di = 0; di < multiplier; di++)
 				for (std::size_t dj = 0; dj < multiplier; dj++)
 					image.setPixel(i+di, j+dj, rgb);

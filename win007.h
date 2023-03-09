@@ -80,6 +80,7 @@ private:
 	bool _interactiveExamples;
 	bool _interactiveEntropies;
 	bool _guiFrameRed;
+	bool _guiUnderlying;
 	std::size_t _guiLengthMaximum;
 
 	std::shared_ptr<Alignment::ActiveSystem> _system;
