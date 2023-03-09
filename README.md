@@ -2236,6 +2236,8 @@ We can often observe stable arrangements of hotspots form during a camera shot, 
 
 TODO -
 
+For scale 0.177, interesting parts of faces are sometimes not covered by the model very well because they are off-hotspot so have weak representations.
+
 29 has highest growth rate so far, multiplier at 1.83 similar to bucketed models 21 - 24
 
 29 vs 30 - bucketed vs fixed  - multiplier lower and growth higher. Growth is consistently high in remaining models. Have some browser screenshots of 30
@@ -2434,6 +2436,8 @@ In both 47 and 48 there are hotspots around the face in the sorts of positions t
 49 vs 47 and 48 - Model 49 (10-valent, 100 thrs) is in-between model 47 (10-valent, 200 thrs)  and model 48 (5-valent, 100 thrs). The average path is less than one step longer than model 47 but more than 2 steps longer than model 48 (5-valent). The mode is 1 step more than 47 but 3 steps less than 48. The deviation is less than model 47, so the new model is probably evenly distributed, unlike in model 48. For contour003 model 49 seems to be a slight improvement over both model 47 and model 48. For contour004 model 49 seems to be a slight worsening over both model 47 and model 48. The lower threshold seems to be counterbalanced by the larger model. The 49 lengths seem to be intermediate between model 47 and model 48 too. Probably overall model 47 is best - perhaps it would be noticeably better if not constrained by active size. 
 
 50 vs 48 - back to 10-valent - only diff is valency and min entropy limit,  growth is reduced, multiplier increases slightly, similar stats? compare qualitative
+
+50 is 4th best rep contour 3 and 3rd best contour 4
 
 50 vs 47 - only diff is overflow, but fairly different growth over 1m and multiplier
 
@@ -2693,6 +2697,8 @@ Tiled scanning and growth in overflow. In the models so far we have only been us
 
 61 vs 55 - balanced vs fixed, growth a little down but multiplier and stats very similar
 
+61 second best representation for contour 3 and 5 and third best for 4
+
 balanced valency -  The current substrate doesn't handle lighting levels or skin tones without perhaps creating whole brightness translated copies of models. Easier to implement than edge detection which is also absolute brightness independent. Perhaps as an analogy to multi-scale we could consider multi-lighting. Perhaps we should do the bucketing based on the larger tiled area. Or perhaps we should detect the overall lighting and simply translate the fixed, with the bottom and top values larger or smaller as needed. Of course, films are set at the lighting levels desired by the director, and the light or dark is meaningful. Edge detection, being relative, in addition to surface might well be better.
 
 actor002_model053_Film_Noir_002_fixed.png versus  actor002_model053_Film_Noir_002_balanced.png
@@ -2824,6 +2830,8 @@ lengthsSkewness: -0.412472
 lengthsKurtosisExcess: 0.250724
 lengthsHyperSkewness: -4.40199
 ```
+
+63 third best representation for contour 3 and 5
 
 million-events|actual fuds|1+ln(million-events)|expected fuds|difference|difference percent
 ---|---|---|---|---|---
