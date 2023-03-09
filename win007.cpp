@@ -1361,6 +1361,8 @@ void Win007::act()
 				else if (_interactiveExamples && k < _labelRecordExamples.size())
 				{
 					_labelRecordExamples[k]->setPixmap(_pixmapBlank);
+					if (_interactiveEntropies)
+						_labelRecordExampleEntropies[k]->setText("");
 				}
 			}					
 		}
