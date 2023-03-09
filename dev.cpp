@@ -556,7 +556,7 @@ QImage WBOT02::Representation::image(std::size_t multiplier, std::size_t valency
 			}
 			auto i = (k % sizeX) * multiplier;
 			auto j = (k / sizeX) * multiplier;
-			auto rgb = highlights.count(k) ? Qt::magenta : qRgb(v,v,v);
+			auto rgb = highlights.count(k) ? qRgb(255,0,0) : qRgb(v,v,v);
 			for (std::size_t di = 0; di < multiplier; di++)
 				for (std::size_t dj = 0; dj < multiplier; dj++)
 					image.setPixel(i+di, j+dj, rgb);
