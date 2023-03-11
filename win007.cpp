@@ -1228,7 +1228,7 @@ void Win007::act()
 					double likelihood = (std::log(sliceSize) - std::log(parentSize) + lnwmax)/lnwmax;
 					ancestors.push_back(std::make_pair(likelihood, sliceA));
 					ancestorHighlights.push_back(SizeSet());
-					if (_guiUnderlying)
+					if (_guiUnderlying && sliceA)
 					{
 						auto& fud = dr.fuds[vi[parent]].fud;
 						auto& highlights = ancestorHighlights.back();
