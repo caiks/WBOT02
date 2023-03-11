@@ -897,6 +897,10 @@ We can set `"multiplier" : 1` and `"label_size" : 16` to see a longer sequence. 
 
 ![actor002_model061_Film_Noir_016](images/actor002_model061_Film_Noir_016.png) 
 
+and
+
+![actor002_model061_Film_Noir_017](images/actor002_model061_Film_Noir_017.png) 
+
 We can see that the *underlying variables*, of which there are usually only 4-10, are swamped by the *substrate* of 1600 *variables*. The *underlying* appear to concentrate in clusters or short spans around boundaries between large areas of light and dark, often around the edges of the frame, in much the same way as  we saw them around the outlines of digits in the [NIST experiments](https://greenlake.co.uk/pages/dataset_NIST_properties_sample#All_pixels). The clusters are much smaller than intermediate scale features such as eyes, so the *model* tends to require long *slice* paths to classify these features.
 
 The `actor002` browser can operate without snapping to a hotspot by not specifying a mode in the configuration. For example, `actor.json` -
@@ -2468,6 +2472,8 @@ In both 47 and 48 there are hotspots around the face in the sorts of positions t
 
 49 vs 47 and 48 - Model 49 (10-valent, 100 thrs) is in-between model 47 (10-valent, 200 thrs)  and model 48 (5-valent, 100 thrs). The average path is less than one step longer than model 47 but more than 2 steps longer than model 48 (5-valent). The mode is 1 step more than 47 but 3 steps less than 48. The deviation is less than model 47, so the new model is probably evenly distributed, unlike in model 48. For contour003 model 49 seems to be a slight improvement over both model 47 and model 48. For contour004 model 49 seems to be a slight worsening over both model 47 and model 48. The lower threshold seems to be counterbalanced by the larger model. The 49 lengths seem to be intermediate between model 47 and model 48 too. Probably overall model 47 is best - perhaps it would be noticeably better if not constrained by active size. 
 
+Model 49 is 10-valent but with a threshold of only 100, yet it does seem worse than model 47 and perhaps model 50 (when it has finished running). Probably the alignments were lower and the model is worse although still large. Model 48 seems qualitatively quite good too. Model 48 is 5-valent which implies the threshold is 4 times the square of the valency. Should we run a model 51 10-valent with a threshold of 400? It would be interesting to see the effect on the qualitative model. Will need to run in cloud after the model 50 is finished.
+
 50 vs 48 - back to 10-valent - only diff is valency and min entropy limit,  growth is reduced, multiplier increases slightly, similar stats? compare qualitative
 
 50 is 4th best rep contour 3 and 3rd best contour 4
@@ -2475,6 +2481,8 @@ In both 47 and 48 there are hotspots around the face in the sorts of positions t
 50 vs 47 - only diff is overflow, but fairly different growth over 1m and multiplier
 
 Model 50 seems to be very good at focussing on heads and bodies - it does get distracted by strong background objects such as pciture frames or stairs, but is definitely interested in heads, especially in close-up. Perahps as good as model 48 and better than model 47.
+
+Model 50 is identical to model 47 except for overflow. Yet the fuds/sz/thrs is only 1.28769 for the first 1m versus 1.36373 in model 47. That is, 6438 fuds versus 6818, ie a difference of 380 or 5.5%. Could this be simply because of the element of randomness or is it because the thresholds are too small initially? Perhaps we should start the model with a random model? We could test the variation of the mode001 models and see the effect of larger thresholds on that variation.
 
 49 vs 50 - 100 threshold - higher growth like 5-valent 48 similar multiplier
 
@@ -2909,6 +2917,8 @@ Perhaps decreasing resolution towards the edge of the frame.
 Initial random model - cf 202302170645 view_fractions for 52 versus 61.
 
 Experiment with sizes, scales, valencies and thresholds. 
+
+Could experiment with higher valency, eg 20-valent. But would need threshold and xmax > 400. Probably would require a threshold of 800 or 1600. 
 
 Balanced valency. Perhaps we should also consider deviation and normalise such that the extreme values have a reasonable quantile. The problem is that many images are going to be multi-modal, so the normal distribution would be unrepresentative. Would we use balanced in the underlying of a two level model? Might also wish to standardise the deviation. 
 
