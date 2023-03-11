@@ -871,11 +871,11 @@ Here we have added the entropy below the second and third records in the top row
 To highlight the *underlying variables* in the ancestor representations, set `highlight_underlying` in the configuration. The *underlying* of the *fud* of the parent *slice* will be highlighted in red. For example, `actor.json` -
 ```
 {
-	"model_initial" : "model061",
+	"model_initial" : "model052",
 	"interval" : 250,
 	"x" : 870,
 	"width" : 560,
-	"valency_balanced" : true,
+	"valency_fixed" : true,
 	"event_size" : 1,
 	"scale" : 0.177,
 	"range_centreX" : 0.0295,
@@ -884,16 +884,16 @@ To highlight the *underlying variables* in the ancestor representations, set `hi
 	"red_frame" : true,
 	"interactive" : true,
 	"interactive_examples" : false,
-	"interactive_entropies" : true,
+	"interactive_entropies" : false,
 	"highlight_underlying" : true,
 	"disable_update" : true,
 	"summary_active" : false,
 	"logging_action" : false
 }
 ```
-![actor002_model061_Film_Noir_015](images/actor002_model061_Film_Noir_015.png) 
+![actor002_model052_Film_Noir_002](images/actor002_model052_Film_Noir_002.png) 
 
-We can set `"multiplier" : 1` and `"label_size" : 16` to see a longer sequence -
+We can set `"multiplier" : 1` and `"label_size" : 16` to see a longer sequence. For example, *model* 61 -
 
 ![actor002_model061_Film_Noir_016](images/actor002_model061_Film_Noir_016.png) 
 
@@ -2930,7 +2930,7 @@ gradient - spatial. Film noir tells us that bucketing picks up far too many fine
 
 Higher level. Single level does not have any localisation or connectivity between regions. We can see many examples of unrelated foreground objects or backgrounds classified together simply because of the distribution of brightness. What we want is global scale information that distinguishes between ovals and the letter X offset to one side. Nevertheless the single level models, especially those with a minimum entropy, do seem to have hotspots in the same places that we find interesting. The focus seems to follow interesting objects around as the objects move.
 
-Higher level. Highlighted underlying. Making the underlying visible shows that there is a large disparity between the substrate cardinality (1600) and the underlying cardinality (4-10). We saw something similar in NIST when we saw that the underlying were concentrated along the boundaries of the digits. The underlying is clustered and has short spans only because of the alignments not because there is any given knowledge of region or distance between variables. For this reason edge detection, while a useful hint, will probably not be enough to identify features which are intermediate between the two scales. We will have to experiment with various 2 level models to bring in the regional alignments. Single level models require very long paths to have sufficient coverage of the substrate, even with hotspots and hotscales and other workarounds. We might still need hotspots, although this is more difficult with 2 level, at least for microsaccades on the scale of the underlying level 1 tiles. Probably we will move to the slice topology to do level 2 scale movements relying on multi-scale to handle larger jumps.
+Higher level. Highlighted underlying. Making the underlying visible shows that there is a large disparity between the substrate cardinality (1600) and the underlying cardinality (4-10). The clusters tend to be around the edges of the frame, rather than in the centre, which suggests the substrate is far too large. We saw something similar in NIST when we saw that the underlying were concentrated along the boundaries of the digits. The underlying is clustered and has short spans only because of the alignments not because there is any given knowledge of region or distance between variables. For this reason edge detection, while a useful hint, will probably not be enough to identify features which are intermediate between the two scales. We will have to experiment with various 2 level models to bring in the regional alignments. Single level models require very long paths to have sufficient coverage of the substrate, even with hotspots and hotscales and other workarounds. We might still need hotspots, although this is more difficult with 2 level, at least for microsaccades on the scale of the underlying level 1 tiles. Probably we will move to the slice topology to do level 2 scale movements relying on multi-scale to handle larger jumps.
 
 Higher level. Use a combination of a higher level model with peripheral underlying regions and a single level central region substrate. If the central region is equal to the underlying, use the central underlying model as the driver. Otherwise have a separate model for the single level central region as well that is used for driving the scan. Or could simply have a 2 level model and use the central underlying for driving. Or could have a 3-level with 2-level as underlying and the central region as substrate. Then would have the global and local cross alignments, although with some weak overlap. Run several structures in parallel each with its own topology and choose the action for the slice-transition with the most likelihood over all of them.
 
