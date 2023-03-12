@@ -901,7 +901,7 @@ and
 
 ![actor002_model061_Film_Noir_017](images/actor002_model061_Film_Noir_017.png) 
 
-We can see that the *underlying variables*, of which there are usually only 4-10, are swamped by the *substrate* of 1600 *variables*. The *underlying* appear to concentrate in clusters or short spans around boundaries between large areas of light and dark, often around the edges of the frame, in much the same way as  we saw them around the outlines of digits in the [NIST experiments](https://greenlake.co.uk/pages/dataset_NIST_properties_sample#All_pixels). The clusters are much smaller than intermediate scale features such as eyes, so the *model* tends to require long *slice* paths to classify these features.
+We can see that the *underlying variables*, of which there are usually only 3-14, are swamped by the *substrate* of 1600 *variables*. The *underlying* appear to concentrate in clusters or short spans around boundaries between large areas of light and dark, often around the edges of the frame, in much the same way as  we saw them around the outlines of digits in the [NIST experiments](https://greenlake.co.uk/pages/dataset_NIST_properties_sample#All_pixels). The clusters are much smaller than intermediate scale features such as eyes, so the *model* tends to require long *slice* paths to classify these features.
 
 The `actor002` browser can operate without snapping to a hotspot by not specifying a mode in the configuration. For example, `actor.json` -
 ```
@@ -1096,9 +1096,7 @@ We can dump some of the statistics of an active given a *model*, for example
 cd ~/WBOT02_ws
 ./WBOT02 view_active_concise model055
 
-model: model055
-concise: true
-model055        load    file name: model055.ac  time 7.30521s
+model055        load    file name: model055.ac  time 34.8591s
 ok: true
 activeA.name: model055
 activeA.underlyingEventUpdateds: {3000000}
@@ -1141,6 +1139,13 @@ activeA.decomp->fuds.size(): 15050
 activeA.decomp->fudRepasSize: 280416
 (double)activeA.decomp->fuds.size() * activeA.induceThreshold / sizeA: 3.01
 activeA.decomp: true
+undsDist: {(3,2),(4,460),(5,6949),(6,1813),(7,2511),(8,2029),(9,871),(10,297),(11,89),(12,26),(13,3)}
+undsCount: 15050
+undsMean: 6.20711
+undsDeviation: 1.51821
+undsSkewness: 0.886213
+undsKurtosisExcess: 0.063683
+undsHyperSkewness: 6.7151
 ```
 In this case the `activeA.historySize` is 1m, but the latest *event* id (`activeA.underlyingEventUpdateds`) is 3m, so the active is well into overflow.
 
@@ -1161,6 +1166,18 @@ lengthsHyperSkewness: -4.06495
 `lengthsDist` shows the distribution of the lengths of the paths of the leaf *slices*. The modal length is 15 for *model* 55 above. The maximum length is 24.
 
 `lengthsMean` is mean path length. In this case it is 14.8, very similar to the modal length. The `lengthsDeviation` is the standard deviation and the remaining statistics are the higher moments. In the example above, the hyper-skew is quite high suggesting a slight preponderance of short paths, but otherwise the path length distribution is fairly normal.
+
+The statistics for the *decomposition's fuds' underlying* cardinalities are also shown -
+```
+undsDist: {(3,2),(4,460),(5,6949),(6,1813),(7,2511),(8,2029),(9,871),(10,297),(11,89),(12,26),(13,3)}
+undsCount: 15050
+undsMean: 6.20711
+undsDeviation: 1.51821
+undsSkewness: 0.886213
+undsKurtosisExcess: 0.063683
+undsHyperSkewness: 6.7151
+```
+These vary very little between *models* because the *induction* parameters do not change very much. In general, the *underlying* cardinalities range between 3 and 18 with a mean of around 6 and a mode at 6 or 7.
 
 <a name="view_decomp"></a>
 
@@ -2847,6 +2864,10 @@ include demo videos
 put screenshots in for model 61
 
 If we can sometimes see eye examples mixed in with unrelated examples that tells us that we have detected only a dark central area not that we have classified eyes at this level. We will have to go one level up to be sure of detecting eyes. 
+
+62 vs 61 - 5-valent vs 10-valent
+
+5-valent between 4-18 underlying mean 6.37, mode 6, same dev as 10-valent, so little difference to underlying due to lower valency
 
 62 vs 56 - balanced 5-valent vs fixed 5-valent, growth a little down and multiplier a little up but stats very similar. 62 is a little more normal
 
