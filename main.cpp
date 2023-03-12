@@ -251,7 +251,53 @@ int main(int argc, char *argv[])
 			}	
 			else 
 			{
-				TRUTH(activeA.decomp);				
+				TRUTH(activeA.decomp);	
+				{
+					auto& dr = *activeA.decomp;		
+					std::map<std::size_t, std::size_t> undsDist;
+					std::vector<std::size_t> unds;
+					double undsTotal = 0;
+					for (auto& fr : dr.fuds)
+					{
+						SizeSet und;
+						for (auto& tr : fr.fud)
+						{
+							auto n = tr->dimension;
+							auto vv = tr->vectorVar;
+							for (std::size_t i = 0; i < n; i++)
+								und.insert(vv[i]);
+						}		
+						for (auto& tr : fr.fud)
+							und.erase(tr->derived);
+						unds.push_back(und.size());
+						undsTotal += und.size();
+						undsDist[und.size()] += 1;
+					}
+					EVAL(undsDist);
+					std::size_t undsCount = unds.size();
+					EVAL(undsCount);
+					double undsMean = undsTotal / undsCount;
+					EVAL(undsMean);
+					double undsSquare = 0;
+					double undsCube = 0;
+					double undsQuad = 0;
+					double undsQuin = 0;
+					for (auto length : unds)
+					{
+						undsSquare += std::pow((double)length - undsMean, 2.0);
+						undsCube += std::pow((double)length - undsMean, 3.0);
+						undsQuad += std::pow((double)length - undsMean, 4.0);
+						undsQuin += std::pow((double)length - undsMean, 5.0);
+					}
+					double undsDeviation =  std::sqrt(undsSquare/(undsCount-1));
+					EVAL(undsDeviation);
+					double undsSkewness =  undsCube/undsCount/std::pow(undsSquare/undsCount,1.5);
+					EVAL(undsSkewness);
+					double undsKurtosisExcess =  undsQuad/undsCount/std::pow(undsSquare/undsCount,2.0) - 3.0;
+					EVAL(undsKurtosisExcess);
+					double undsHyperSkewness =  undsQuin/undsCount/std::pow(undsSquare/undsCount,2.5);
+					EVAL(undsHyperSkewness);
+				}
 			}
 		}
 	}
