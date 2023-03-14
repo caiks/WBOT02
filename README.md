@@ -2292,7 +2292,17 @@ The goal of WBOT02 is to specialise in frequently seen objects at varying distan
 
 The diluted underlying which move around the edges initially and features only at the end, do not capture global alignments directly and probably would require impracticably long paths to include these alignments (because they would be spread over many leaf slices). The volume of the single level structure substrate is so huge that 100k leaf slices or some small multiple is still going to contain a lot of alignments and so the classification is far from a map to animal resolutions. Qualtitative opinions comparing models on feature detection are far too subjective - the lack of global alignments make these opinions regarding progress unreliable. Also tiling is compute intensive for large areas. So we have reached the limit of what single level can do even with the min entropy and balanced valency hints and probably with edge detection or multi-scale. 
 
+Can make systematic estimate of path length to feature given a substrate and constraints such as min entropy because we have a few cases of slices capturing a feature in the max size per parent size likelihood models which inadvertently concentrated on certain paths. Mention factors that affect feature detection such as central brightness pushing the feature to different edges and so duplicating model.
+
+Look for the example of the most featurelike slice and analyse it in different models with contour. 
+
 For scale 0.177, interesting parts of faces are sometimes not covered by the model very well because they are off-hotspot so have weak representations.
+
+Model growth. While the wotbot can direct its gaze it is not in control of the slices available to it and so does not grow more than expected. An infant does have more agency and can control how long it spends on a certain toy for example. In this way even with limited history size the model can grow indefinitely. We will have to give the wotbot locomotion and manipulation eventually.
+
+Model growth in overflow. An infant can control the amount of attention it gives to a toy, unlike a wotbot watching a video. So the infant can overcome the overflow problem with burstiness. Perhaps initially unusual slices attract attention/fear and then the momentum of event acquistion (possibly at a safe distance) carries the slice from negative likelihood through the zero likelihood doldrums into postive and past the induce threshold.
+
+See if optical illusions can give us a clue about the substrate. https://www.rd.com/article/optical-illusions/ It seems that many of the illusions are to do with perspective and judging scale. Others are to do with images typically seen when objects are moving (dynamic gradient). Others are to do with judging brightness (spatial gradient). Others to do with judging angles and parallelism. It seems that the large scale peripheral model makes approximations that the small scale foveal model doesn't leading to inconsistencies as the focus saccades.
 
 29 has highest growth rate so far, multiplier at 1.83 similar to bucketed models 21 - 24
 
@@ -2947,6 +2957,8 @@ Initial random model - cf 202302170645 view_fractions for 52 versus 61.
 
 Experiment with sizes, scales, valencies and thresholds. 
 
+Do concentric multi-scale within a single substrate.
+
 Could experiment with higher valency, eg 20-valent. But would need threshold and xmax > 400. Probably would require a threshold of 800 or 1600. 
 
 Balanced valency. Perhaps we should also consider deviation and normalise such that the extreme values have a reasonable quantile. The problem is that many images are going to be multi-modal, so the normal distribution would be unrepresentative. Would we use balanced in the underlying of a two level model? Might also wish to standardise the deviation. 
@@ -2976,6 +2988,14 @@ Higher level. Single level does not have any localisation or connectivity betwee
 Higher level. Highlighted underlying. Making the underlying visible shows that there is a large disparity between the substrate cardinality (1600) and the underlying cardinality (4-10). The clusters tend to be around the edges of the frame, rather than in the centre, which suggests the substrate is far too large. We saw something similar in NIST when we saw that the underlying were concentrated along the boundaries of the digits. The underlying is clustered and has short spans only because of the alignments not because there is any given knowledge of region or distance between variables. For this reason edge detection, while a useful hint, will probably not be enough to identify features which are intermediate between the two scales. We will have to experiment with various 2 level models to bring in the regional alignments. Single level models require very long paths to have sufficient coverage of the substrate, even with hotspots and hotscales and other workarounds. We might still need hotspots, although this is more difficult with 2 level, at least for microsaccades on the scale of the underlying level 1 tiles. Probably we will move to the slice topology to do level 2 scale movements relying on multi-scale to handle larger jumps.
 
 Higher level. Use a combination of a higher level model with peripheral underlying regions and a single level central region substrate. If the central region is equal to the underlying, use the central underlying model as the driver. Otherwise have a separate model for the single level central region as well that is used for driving the scan. Or could simply have a 2 level model and use the central underlying for driving. Or could have a 3-level with 2-level as underlying and the central region as substrate. Then would have the global and local cross alignments, although with some weak overlap. Run several structures in parallel each with its own topology and choose the action for the slice-transition with the most likelihood over all of them.
+
+Multi-modal higher level. We can join shared or separate brightness models of different valencies, levels, tiles and scales with colour models and spatial delta models and even dynamic delta models into a higher level model. In that way we don't care about the overlapping variables say between different scales if they were all joined in a single substrate. We synthesise all the different modalities into a single stream of consciousness with a single actor. Of course the underlying models can still grow and have their own topologies which may be taken account of by the top level actor. The high level actor may still be subject to micro-saccades of a scaled brightness hotspot snap.
+
+Higher temporal level should probably have several fixed scale actives for background objects and tableau, as well as a scale invariant model for foreground objects. Multiply by each type of substrate, although some substrates are perhaps better just for foreground. Having multiple fixed scale will have better resolution at their scales and helps with directing the focus since the action has the correct scale.
+
+Can share the same underlying across multiple scales in the same way we share the underlying convolutional level in a multi-level spatial. This accounts for perspectival translations.
+
+In our multi-modal structure we may not want multiple underlying scales, but simply to snap underlying to the local scale hotspot. Or could have each of the underlying snap to their own separate hotspots ie near the common centre but not all with the same common centre.
 
 If we do 2 level do we need gradient detection if the lower level has the glyphs? The eye definitely has edge detection but I don't think that vision ANNs always have it. In ANNs the glyphs appear at intermediate layers anyway. Perhaps edge detection in the eye is a hint for performance. Perhaps if we add it we could stay with large single level substrates. Would be interesting to experiment with both. Could have a gradient substrate level underlying the second level along with the underlying spatial convolution.
 
