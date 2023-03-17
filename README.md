@@ -868,6 +868,8 @@ The `valentFixed` algorithm was a step forward but we found that the *models* we
 
 Here we have added the entropy below the second and third records in the top row, and below each of the example records in the second row. The entropies are not to be confused with the *likelihoods* underneath the representations elsewhere. In this example, the entropies are all quite high. The highest is grey-scale record (third in the top row) at 4.188. This is as expected because of its *valency* of 256, which is much greater than the 10-*valent* *substrate*. The entropies also help us distinguish between very similar but not identical *events*, such as the five examples on the right.
 
+<a name="highlight_underlying"></a>
+
 To highlight the *underlying variables* in the ancestor representations, set `highlight_underlying` in the configuration. The *underlying* of the *fud* of the parent *slice* will be highlighted in red. For example, `actor.json` -
 ```
 {
@@ -2215,9 +2217,11 @@ From *model* 25 onwards the source images came from Film Noir videos instead of 
 
 ##### Tiled scanned models
 
+The goal of WBOT02 is to specialise in frequently seen objects at varying distances and with varying backgrounds. The specialisation should be in proportion to the frequency; this will be the case if we use some variation of potential *likelihood* to accelerate *model* growth. In addition, we should leave it to the objects themselves to determine how interesting they are - so long as there is no *model* duplication due to simple translation around the hotspots. 
+
 In order to make a more balanced *model* able to capture fairly frequent features, we introduce the idea of tiling. We will still scan a range much larger than a single frame but, rather than finding the top hotspots in the whole scan area, we will choose a top hotspot per tile where a tile defaults to a square of width equal to a half of a frame. Once we have identified each tile's hotspot we use mode 2 potential *likelihood* to select the topmost of these hotspots for *modelling*. That is, we use local actual-potential *likelihood* and then global potential *likelihood* to avoid filling the *model* with spatially translated near duplicates, but develop the interesting parts as much as we possibly can with the resources available.
 
-In this way we expect the growth will be higher than for scanned actual-potential *likelihood* mode (4), but the multiplier will be similar or a little higher and the *model* will be more normally distributed. The *bivalent* or *trivalent diagonals* often seen in *induction* (e.g. these [root *fuds*](#root_fud_browse)) suggests an ideal multiplier of around 2, which is below random mode but above scanned potential *likelihood* mode. Too small a multiplier suggests frequent siblings are being ignored. Too high a multiplier will dent growth and so produce smaller *models*. Tiling modes aim to solve the convolution problem but without excessive focus on very frequent features nor excessive negligence of moderately infrequent features.
+In this way we expect the [growth](#Model_table) will be higher than for scanned actual-potential *likelihood* mode (4), but the multiplier will be similar or a little higher and the *model* will be at least as normally distributed. The *bivalent* or *trivalent diagonals* often seen in *induction* (e.g. these [root *fuds*](#root_fud_browse)) suggests an ideal multiplier of around 2, which is below random mode but above scanned potential *likelihood* mode. Too small a multiplier suggests frequent siblings are being ignored. Too high a multiplier will dent growth and so produce smaller *models*. Tiling modes aim to solve the convolution problem but without excessive focus on very frequent features nor excessive negligence of moderately infrequent features.
 
 This desire for a balance between reducing the convolution *volume* and having good representations by regularly spacing hotspots is the reason the tiles default to half a frame - the region around the hotspot will then be of the same magnitude as the scale of the features that can be captured by a frame. 
 
@@ -2287,28 +2291,6 @@ We can also demonstrate the behaviour of the tiled mode itself by choosing to sc
 We can often observe stable arrangements of hotspots form during a camera shot, especially if the `unique_records` parameter is removed.
 
 TODO -
-
-The goal of WBOT02 is to specialise in frequently seen objects at varying distances and with varying backgrounds. The specialisation should be in proportion to the frequency which should be the case if we use tiled potential likelihood. If there are a lot of object types we might have a competition for history so we could put a limit on the difference between the maximum path length and the mean ie an artificial low alignment. Or perhaps a limit when selecting which tiles to choose for update. In general we should perhaps leave it to the objects themselves to determine how interesting they are so long as there is no model duplication from various hotspots.
-
-The diluted underlying which move around the edges initially and features only at the end, do not capture global alignments directly and probably would require impracticably long paths to include these alignments (because they would be spread over many leaf slices). The volume of the single level structure substrate is so huge that 100k leaf slices or some small multiple is still going to contain a lot of alignments and so the classification is far from a map to animal resolutions. Qualtitative opinions comparing models on feature detection are far too subjective - the lack of global alignments make these opinions regarding progress unreliable. Also tiling is compute intensive for large areas. So we have reached the limit of what single level can do even with the min entropy and balanced valency hints and probably with edge detection or multi-scale. 
-
-Can make systematic estimate of path length to feature given a substrate and constraints such as min entropy because we have a few cases of slices capturing a feature in the max size per parent size likelihood models which inadvertently concentrated on certain paths. Mention factors that affect feature detection such as central brightness pushing the feature to different edges and so duplicating model.
-
-Look for the example of the most featurelike slice and analyse it in different models with contour. 
-
-For scale 0.177, interesting parts of faces are sometimes not covered by the model very well because they are off-hotspot so have weak representations.
-
-Model growth. While the wotbot can direct its gaze it is not in control of the slices available to it and so does not grow more than expected. An infant does have more agency and can control how long it spends on a certain toy for example. In this way even with limited history size the model can grow indefinitely. We will have to give the wotbot locomotion and manipulation eventually.
-
-Model growth in overflow. An infant can control the amount of attention it gives to a toy, unlike a wotbot watching a video. So the infant can overcome the overflow problem with burstiness. Perhaps initially unusual slices attract attention/fear and then the momentum of event acquistion (possibly at a safe distance) carries the slice from negative likelihood through the zero likelihood doldrums into postive and past the induce threshold.
-
-See if optical illusions can give us a clue about the substrate. https://www.rd.com/article/optical-illusions/ It seems that many of the illusions are to do with perspective and judging scale. Others are to do with images typically seen when objects are moving (dynamic gradient). Others are to do with judging brightness (spatial gradient). Others to do with judging angles and parallelism. It seems that the large scale peripheral model makes approximations that the small scale foveal model doesn't leading to inconsistencies as the focus saccades.
-
-Some of the illusions depend on fovea versus peripheral. Perhaps we have the foveal central one level model joined with a higher level model of tiles of foveal surrounding. The two level spatial model captures the gross relations and similarities and differences between regions or tiles. The one level model joined with it adds the detail. Could even put the zero level substrate in too. Could add a third level peri-peripheral model. Would this solve the scale problem?
-
-To enable locomotion and manipulation we need the topology working for vision and sound. Probably also need temporal, certainly for conversation and simulation.
-
-Does tracking rely on scanning? Probably but only local.
 
 29 has highest growth rate so far, multiplier at 1.83 similar to bucketed models 21 - 24
 
@@ -2751,6 +2733,8 @@ already mentioned above at 'Clearly the smaller scale model captures smaller fea
 
 58 has the best contour003, contour004 and contour005 by far of all models
 
+For scale 0.177, interesting parts of faces are sometimes not covered by the model very well because they are off-hotspot so have weak representations.
+
 59 vs 55 - mode 7, highest 10-valent growth both to 1m and greater than expected to 3m, similar multiplier
 
 cf model 55 -
@@ -2939,7 +2923,35 @@ Contour - 005 63 vs 61 seems to have fewer hotspots around the face. The face, h
 
 In the case of model 61 n is 22 and the mean is 14.6 which implies a p of 0.66 assuming the normal mean equals the binomial mean. For 63 p is 0.65 which is too low cf 52 discussion of binomial above. 
 
+END TODO
+
+Having compared the tiled scanning *models*, let us make some concluding remarks.
+
+We discussed [above](#highlight_underlying) how to set `highlight_underlying` in the configuration for `actor002`. The examples given there, of *model* 52 and *model* 61, showed that the clusters of *underlying* in the ancestor *slice* representaions are much smaller than intermediate scale features such as eyes. The average cardinality of *underlying variables* for the *fuds* of *model* 61 is 6.16. If we consider a path length of 21 *fuds*, the maximum coverage of the *substrate* is only 8%. That is, in determining a *slice*, even at a hotspot, only a small fraction of the *substrate* is used. Near the root, the *underlying* clusters are in the periphery of the frame, presumably around an average central brightness. Only towards the end of long path do the clusters appear around features which may or may not be in the middle of the frame. So they can only capture global frame-wide *alignments* indirectly and on very long paths. In addition, becuase of the peripheral nature of the root clusters, small offsets to the location or size of a feature are likely to result in duplicated *model*, in spite of the use of actual-potential mode to handle small translations. We have seen in several examples that a *slice* which qualitatively appears to capture a feature, such as two eyes, always also contains example *events* that do not exhibit the global *alignments*, e.g. they have two dark patches for the eyes but nothing corresponding to the bridge of a nose.
+
+Spreading features over many *slices* at the end of long paths means that *substrates* which dilute the *underlying* are unlikely to be (a) practicable, (b) accurate, or (c) useful in higher *level models*. This conclusion suggests that no amount of adjustments to single *level models*, such as minimum entropy constraints or balanced *valency* or edge detection hints, will be sufficient to make progress with a wotbot.
+
+In addition, scanning in any mode is compute intensive for large areas. This is the case for a single scale, so for multi-scale we would have to run our experiments on large servers in the cloud. Scanning the *multi-level models* required to have global *alignments*, would be slower still and difficult to implement. We will have to focus on using *slice* topologies instead of scanning to maintain high growth rates and moderate multipliers. We can, however, still do local scans of *substrate models*, such as the centre *underlying* of a two *level model*, to find the local hotspots.
+
+TODO 
+
+Although it appears that we Can make systematic estimate of path length to feature given a substrate and constraints such as min entropy because we have a few cases of slices capturing a feature in the max size per parent size likelihood models which inadvertently concentrated on certain paths. Mention factors that affect feature detection such as central brightness pushing the feature to different edges and so duplicating model.
+
+Model growth. While the wotbot can direct its gaze it is not in control of the slices available to it and so does not grow more than expected. An infant does have more agency and can control how long it spends on a certain toy for example. In this way even with limited history size the model can grow indefinitely. We will have to give the wotbot locomotion and manipulation eventually.
+
+Model growth in overflow. An infant can control the amount of attention it gives to a toy, unlike a wotbot watching a video. So the infant can overcome the overflow problem with burstiness. Perhaps initially unusual slices attract attention/fear and then the momentum of event acquistion (possibly at a safe distance) carries the slice from negative likelihood through the zero likelihood doldrums into postive and past the induce threshold.
+
+
 future developments - 
+
+See if optical illusions can give us a clue about the substrate. https://www.rd.com/article/optical-illusions/ It seems that many of the illusions are to do with perspective and judging scale. Others are to do with images typically seen when objects are moving (dynamic gradient). Others are to do with judging brightness (spatial gradient). Others to do with judging angles and parallelism. It seems that the large scale peripheral model makes approximations that the small scale foveal model doesn't leading to inconsistencies as the focus saccades.
+
+Some of the illusions depend on fovea versus peripheral. Perhaps we have the foveal central one level model joined with a higher level model of tiles of foveal surrounding. The two level spatial model captures the gross relations and similarities and differences between regions or tiles. The one level model joined with it adds the detail. Could even put the zero level substrate in too. Could add a third level peri-peripheral model. Would this solve the scale problem?
+
+To enable locomotion and manipulation we need the topology working for vision and sound. Probably also need temporal, certainly for conversation and simulation.
+
+Does tracking rely on scanning? Probably but only local.
+
 
 Perhaps don't spend too long on model growth now that we understand the limits. The volume of the single level structure substrate is so huge that 100k leaf slices or some small multiple is still going to contain a lot of alignments and so the classification is far from a map to animal resolutions. Move on to new substrates and levels. Using both will throw away a lot of uninteresting alignments as we have already done by scanning for hotspots.
 
