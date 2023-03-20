@@ -2211,7 +2211,7 @@ we can see that these extra constraints appear to make the *model* more represen
 
 The skew and hyper-skew goes from very positive to very negative, so *model* 65 is no more normal than *model* 25, although it is more normal than *model* 60. The excess of very short paths is probably the result of the actual-potential scanning mode ignoring less frequent, but not infrequent, features.
 
-From *model* 25 onwards the source images came from Film Noir videos instead of Fireman Sam. We can see that there is a step change between the *models*. This is probably because Fireman Sam is in colour and therefore perhaps has fewer brightness contrasts, reducing the available *alignments* for *modelling*. Also, later series of Fireman Sam are CGI and so have even more colours, more detailed backgrounds and more complex rendering in general, distracting from foreground features.
+From *model* 25 onwards the source images came from Film Noir videos instead of Fireman Sam. We can see that there is a small increase in growth and normality between Fireman Sam *model* 21 and Film Noir *model* 27. This is probably because Fireman Sam is in colour and therefore perhaps has fewer brightness contrasts, reducing the available *alignments* for *modelling*. Also, later series of Fireman Sam are CGI and so have even more colours, more detailed backgrounds and more complex rendering in general, distracting from foreground features.
 
 <a name="Tiled_scanned_models"></a>
 
@@ -2290,23 +2290,41 @@ We can also demonstrate the behaviour of the tiled mode itself by choosing to sc
 ```
 We can often observe stable arrangements of hotspots form during a camera shot, especially if the `unique_records` parameter is removed.
 
+##### Model 29 versus model 27 
+
+*Model* 29 is the first of the scanned potential tiled actual-potential mode (5) experiments. It differs from *model* 27 in the mode (scanned actual-potential mode 4). Both *models* are bucketed *valency* Film Noir. *Model* 29 has highest growth rate so far at 1.287, but the multiplier at 1.83 is similar to the mode 4 *models*. It is less normal than *model* 27. The high growth rate suggests that the balance between global potential and local actual-potential gives an advantage.
+
+##### Model 30 versus model 29
+
+The difference here is that we have moved from bucketed *valency* to fixed *valency*. The growth is considerably higher at 1.448, but the multiplier is lower at 1.74. The skew has flipped from negative to positive, but the *model* is no more normal. Probably more of the *model* is given over to low entropy frames. Growth remains higher in the following *models* which carry on with fixed *valency*. There are indications that features are being captured, for example -
+
+![actor002_model030_Film_Noir_008](images/actor002_model030_Film_Noir_008.png) 
+
+##### Model 30 versus model 25
+
+The difference here is between mode 5 and mode 4. Both *models* are fixed *valency* Film Noir. Both the growth is higher at 1.448 and the multiplier is also higher, although still well below 2. The skew is less positive, although the kurtosis is much higher. We can see that there is much more interest in the face and head and less in the roof beams by comparing the length map for *model* 25 -
+
+![contour004_025_length](images/contour004_025_length.png) 
+
+to *model* 30 -
+
+![contour004_030_length](images/contour004_030_length.png) 
+
+This suggests that the tiling is more uniformly interested in features. The very high maximum path length and positive skew of *model* 25 suggests that the *model* 30 interest in low entropy frames has been reduced by the tiling.
+
+##### Model 31 versus model 30
+
+The only difference is that the *diagonal* is constrained to be at least 12.0. This reduces growth a little to 1.414 and increases the number of failed *slices* from 28 to 32 as would be expected, but otherwise has little effect on the statistics.
+
+##### Model 34 versus model 30
+
+*Model* 34 is the first `actor003` *model*, otherwise it has the same configuration as *model* 30. It has similar statistics apart from an increase in higher moments. This could be because of a change in the set of videos.
+
+##### Model 35 versus model 34
+
+*Model* 35 is also an `actor003` *model*, but with a larger *history* and an expanded set of videos. It has slightly reduced growth, but similar multiplier. Now the higher moments are much more like *model* 30.
+
 TODO -
-
-29 has highest growth rate so far, multiplier at 1.83 similar to bucketed models 21 - 24
-
-29 vs 30 - bucketed vs fixed  - multiplier lower and growth higher. Growth is consistently high in remaining models. Have some browser screenshots of 30
-
-25 vs 30 - scanned vs tiled - compare length - more interest in the face and head and less in the roof beams. Do a position map to see if the model is richer like random mode models 52 and 53
-
-30 vs 31 - added min diagonal reduced growth, little effect on multiplier, slightly reduced growth. 31 has 32 fails, 30 has only 28, so perhaps has increased the failed slices as would be expected.
-
-34 vs 30 - 34 is first actor003 model, otherwise same config as 30 - similar growth and multiplier
-
-34 Does seem to linger on the edges of heads in medium shots or medium close ups eg 7:06 or 18:02 of 'Pickup On South Street 1953' 
-
-34 vs 35 - 35 has a larger history and an expanded set of videos - similar growth and multiplier
-
-Even though double the size the max length is the same as model 34 at 35, the mean is only 0.7 greater at 15.9227, but the mode is 16 instead  of 14. The deviation is smaller too - this suggests a balanced model. Growth rate is declining slightly, but not much, still very high.
 
 37 vs 35 - 37 has a random mode beginning and so has two modal lengths, lower mean and intermediate growth and multiplier. Perhaps look compare the root fuds in the browser
 
@@ -2927,20 +2945,17 @@ END TODO
 
 Having compared the tiled scanning *models*, let us make some concluding remarks.
 
-We discussed [above](#highlight_underlying) how to set `highlight_underlying` in the configuration for `actor002` in order to view the *underlying variables* of a *fud* in the *slice* representations. The examples given there, of *model* 52 and *model* 61, showed that the clusters of *underlying* are much smaller than intermediate scale features such as eyes. The average cardinality of *underlying variables* for the *fuds* of *model* 61 is 6.16. If we consider a path length of 21 *fuds*, the maximum coverage of the *substrate* is only 8%. That is, in determining a *slice*, even at a hotspot, only a small fraction of the *substrate* is used. Near the root, the *underlying* clusters tend to be in the periphery of the frame, presumably around the steepest gradients of an average central brightness. Only towards the end of long paths do the clusters appear around features which may or may not be in the middle of the frame. So the *models* can only capture global frame-wide *alignments* indirectly over many *fuds* rather than directly in single *fuds*. In addition, because of the peripheral nature of the root clusters, small offsets to the location or size of a feature are likely to result in duplicated *model*, in spite of scanning for hotspots to handle convolved small translations. We have seen in several examples that a *slice* which qualitatively appears to capture a feature, such as two eyes, always contains example *events* that do not exhibit the global *alignments* of the feature, e.g. they have two dark patches for the eyes but nothing corresponding to the bridge of a nose. TODO reference an example.
+We discussed [above](#highlight_underlying) how to set `highlight_underlying` in the configuration for `actor002` in order to view the *underlying variables* of a *fud* in the *slice* representations. The examples given there, of *model* 52 and *model* 61, showed that the clusters of *underlying* are much smaller than intermediate scale features such as eyes. The average cardinality of *underlying variables* for the *fuds* of *model* 61 is 6.16. If we consider a path length of 21 *fuds*, the maximum coverage of the *substrate* is only 8%. That is, in determining a *slice*, even at a hotspot, only a small fraction of the *substrate* is used. Near the root, the *underlying* clusters tend to be in the periphery of the frame, presumably around the steepest gradients of an average central brightness. Only towards the end of long paths do the clusters appear around features which may or may not be in the middle of the frame. So the *models* can only capture global frame-wide *alignments* indirectly over many *fuds* rather than directly in single *fuds*. In addition, because of the peripheral nature of the root clusters, small offsets to the location or size of a feature are likely to result in duplicated *model*, in spite of scanning for hotspots to handle convolved small translations. We have seen in several examples that *slices* which qualitatively appear to capture a feature, such as two eyes, also contain example *events* that do not exhibit the global *alignments* of the feature, e.g. they have two dark patches for the eyes but nothing corresponding to the bridge of a nose. TODO reference an example.
 
-Spreading feature *events* intermixed with non-feature *events* over many *slices* at the end of long paths means that *models* with *substrates* which dilute the *underlying* are unlikely to be (a) practicable, (b) accurate, or (c) *aligned* with other *underlying* in higher *level models*. This conclusion suggests that no amount of adjusting of single *level models*, such as adding minimum entropy constraints or balanced *valency* or edge detection hints, will be sufficient to make progress with a wotbot.
+Spreading feature *events* intermixed with non-feature *events* over many *slices* at the end of long paths means that *models* with large *substrates* which dilute the *underlying* are unlikely to be (a) practicable, (b) accurate, or (c) *aligned* with other *underlying* in higher *level models*. This conclusion suggests that no amount of adjusting of single *level models*, such as adding minimum entropy constraints or balanced *valency* or edge detection hints, will be sufficient to make progress with a wotbot.
 
 In addition, scanning in any mode is compute intensive for large areas. This is the case for a single scale, so for multi-scale we would have to run our experiments on large servers in the cloud. Scanning the *multi-level models* required to capture global *alignments*, would be slower still and difficult to implement. We will have to focus on using *slice* topologies instead of scanning to maintain high growth rates and moderate multipliers. We can, however, still do local scans of *substrate models*, such as the centre *underlying* of a two *level model*, to find the local hotspots.
 
-Another problem is the inherent limit to *model* growth of a passive observer. While the wotbot can direct its gaze it is not in control of the *events* available to it and so does not grow more than expected. Before *history* overflow, *fud* growth per *event* per threshold is limited to a theoretical maximum of around two; *model* growth per second is also limited by the rate at which *events* are obtained. Scanning modes have good *fud* growth but the compute requirements reduce *model* growth per second. In overflow we have seen above that actual-potential *likelihood* modes tend to be below the theoretical growth rates as *events* roll off. Using active *size* rather than accumulated *size* pushes the rate a little above the expected overflow rate, but not enough to prevent negligible rates after a few multiples of overflow. An infant, for example, has more agency and can control the amount of attention to a toy. A small number of *slices* will have a concentrated sequence of varying *events* repeatedly passing the threshold for *induction* in a short time. So an agent can overcome the overflow problem with 'burstiness'. Perhaps initially unusual *slices* attract attention (or fear) and then the momentum of *event* acquistion (possibly at a safe distance) carries the *slice* from negative *likelihood* through the zero *likelihood* doldrums into positive and then past the induce threshold. In this way, even with limited *history size*, a *model* could grow at reasonable rates indefinitely, given a suitably rich environment and limited compute resources. We will have to give the wotbot locomotion and manipulation eventually. Patient watching of videos, especially the non-natural productions of Hollywood, can only take us so far. 
+Another problem is the inherent limit to *model* growth of a passive observer. While the wotbot can direct its gaze it is not in control of the *events* available to it and so does not grow more than expected. Before *history* overflow, *fud* growth per *event* per threshold is limited to a theoretical maximum of around two; *model* growth per second is also limited by the rate at which *events* are obtained. Scanning modes have good *fud* growth but the compute requirements reduce *model* growth per second. In overflow we have seen above that actual-potential *likelihood* modes tend to be below the theoretical growth rates as *events* roll off. Using active *size* rather than accumulated *size* pushes the rate a little above the expected overflow rate, but not enough to prevent negligible rates after a few multiples of overflow. The way to overcome this limitation is to have more control over the environment. An infant, for example, has more agency and can vary the amount of attention given to a toy. Thus a small number of *slices* will receive a concentrated sequence of similar *events* repeatedly passing the threshold for *induction* in a short time. So an agent can overcome the overflow problem with 'burstiness'. Perhaps initially unusual *slices* attract attention (or fear) and then the momentum of *event* acquistion (possibly at a safe distance) carries the *slice* from negative *likelihood* through the zero *likelihood* doldrums into positive *likelihood* and then past the induce threshold. In this way, even with limited *history size* and compute resources, *models* could grow at reasonable rates indefinitely, given a suitably rich environment. We will have to give the wotbot locomotion and manipulation eventually. Patient watching of videos, especially the non-natural productions of Film Noir Hollywood, can only take us so far. 
 
-So, while scanning single *level models* has brought us almost to qualitative features with moderate compute, we will focus on using *slice* topologies in multi-modal *multi-level models* with a view ultimately to an embodied agent wotbot that can interact with its environment.
+So, while scanning single *level models* has brought us almost to qualitative features with moderate compute, we will focus on using *slice* topologies in multi-modal *multi-level models* with a view ultimately to an embodied wotbot that can interact with its environment.
 
 TODO 
-
-Although it appears that we Can make systematic estimate of path length to feature given a substrate and constraints such as min entropy because we have a few cases of slices capturing a feature in the max size per parent size likelihood models which inadvertently concentrated on certain paths. Mention factors that affect feature detection such as central brightness pushing the feature to different edges and so duplicating model.
-
 
 future developments - 
 
@@ -2951,7 +2966,6 @@ Some of the illusions depend on fovea versus peripheral. Perhaps we have the fov
 To enable locomotion and manipulation we need the topology working for vision and sound. Probably also need temporal, certainly for conversation and simulation.
 
 Does tracking rely on scanning? Probably but only local.
-
 
 Perhaps don't spend too long on model growth now that we understand the limits. The volume of the single level structure substrate is so huge that 100k leaf slices or some small multiple is still going to contain a lot of alignments and so the classification is far from a map to animal resolutions. Move on to new substrates and levels. Using both will throw away a lot of uninteresting alignments as we have already done by scanning for hotspots.
 
