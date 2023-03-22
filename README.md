@@ -1439,7 +1439,7 @@ scale|2^(-x/2)|1/tan(2^(-x/2))
 
 This summarises the *model* results for both `actor002` and `actor003` -
 
-model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|Hyper-skew|multiplier|notes
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 model010|0.5|4 randomised|1|bucketed|Fireman Sam|720,000|2,567|0.713|6.8|1.8|12|0.1|-0.4|0.7|3.16|25 FPS
 model011|0.354|4 randomised|1|bucketed|Fireman Sam|720,000|2,699|0.75|7.2|1.9|12|-0.1|-0.5|-0.8|2.99|
@@ -2292,15 +2292,30 @@ We can often observe stable arrangements of hotspots form during a camera shot, 
 
 ##### Model 29 versus model 27 
 
+model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model027|0.177|10 scanned actual-potential|4|bucketed|Film Noir|759,760|3,757|0.989|14.1|3.1|24|-0.2|0.4|-2.4|1.79|
+model029|0.177|5 scanned potential tiled actual-potential|5|bucketed|Film Noir|526,345|3,386|1.287|13.5|2.6|23|-0.4|0.8|-5.0|1.83|
+
 *Model* 29 is the first of the scanned potential tiled actual-potential mode (5) experiments. It differs from *model* 27 in the mode (scanned actual-potential mode 4). Both *models* are bucketed *valency* Film Noir. *Model* 29 has highest growth rate so far at 1.287, but the multiplier at 1.83 is similar to the mode 4 *models*. It is less normal than *model* 27. The high growth rate suggests that the balance between global potential and local actual-potential gives an advantage.
 
 ##### Model 30 versus model 29
+
+model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model029|0.177|5 scanned potential tiled actual-potential|5|bucketed|Film Noir|526,345|3,386|1.287|13.5|2.6|23|-0.4|0.8|-5.0|1.83|
+model030|0.177|5 scanned potential tiled actual-potential|5|fixed|Film Noir|527,045|3,816|1.448|15.6|3.7|31|0.3|1.0|4.0|1.70|
 
 The difference here is that we have moved from bucketed *valency* to fixed *valency*. The growth is considerably higher at 1.448, but the multiplier is lower at 1.74. The skew has flipped from negative to positive, but the *model* is no more normal. Probably more of the *model* is given over to low entropy frames. Growth remains higher in the following *models* which carry on with fixed *valency*. There are indications that features are being captured, for example -
 
 ![actor002_model030_Film_Noir_008](images/actor002_model030_Film_Noir_008.png) 
 
 ##### Model 30 versus model 25
+
+model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model025|0.177|10 scanned actual-potential|4|fixed|Film Noir|865,170|5,283|1.221|18.7|7.4|50|0.8|0.3|6.1|1.58|
+model030|0.177|5 scanned potential tiled actual-potential|5|fixed|Film Noir|527,045|3,816|1.448|15.6|3.7|31|0.3|1.0|4.0|1.70|
 
 The difference here is between mode 5 and mode 4. Both *models* are fixed *valency* Film Noir. Both the growth is higher at 1.448 and the multiplier is also higher, although still well below 2. The skew is less positive, although the kurtosis is much higher. We can see that there is much more interest in the face and head and less in the roof beams by comparing the length map for *model* 25 -
 
@@ -2314,39 +2329,60 @@ This suggests that the tiling is more uniformly interested in features. The very
 
 ##### Model 31 versus model 30
 
+model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model030|0.177|5 scanned potential tiled actual-potential|5|fixed|Film Noir|527,045|3,816|1.448|15.6|3.7|31|0.3|1.0|4.0|1.70|
+model031|0.177|5 scanned potential tiled actual-potential|5|fixed|Film Noir|452,255|3,197|1.414|14.6|3.7|32|0.4|0.8|4.5|1.74|12.0 min diagonal
+
 The only difference is that the *diagonal* is constrained to be at least 12.0. This reduces growth a little to 1.414 and increases the number of failed *slices* from 28 to 32 as would be expected, but otherwise has little effect on the statistics.
 
 ##### Model 34 versus model 30
 
-*Model* 34 is the first `actor003` *model*, otherwise it has the same configuration as *model* 30. It has similar statistics apart from an increase in higher moments. This could be because of a change in the set of videos.
+model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model030|0.177|5 scanned potential tiled actual-potential|5|fixed|Film Noir|527,045|3,816|1.448|15.6|3.7|31|0.3|1.0|4.0|1.70|
+model034|0.177|5 scanned potential tiled actual-potential|5|fixed|10 B&W videos|527,045|3,846|1.459|15.2|4.4|35|0.7|1.2|7.4|1.72|first actor003 model
+
+*Model* 34 is the first `actor003` *model*, otherwise it has the same configuration as *model* 30. It has similar statistics apart from a longer maximum path length and an increase in higher moments. This could be because of a change in the set of videos.
 
 ##### Model 35 versus model 34
 
-*Model* 35 is also an `actor003` *model*, but with a larger *history* and an expanded set of videos. It has slightly reduced growth, but similar multiplier. Now the higher moments are much more like *model* 30.
+model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model030|0.177|5 scanned potential tiled actual-potential|5|fixed|Film Noir|527,045|3,816|1.448|15.6|3.7|31|0.3|1.0|4.0|1.70|
+model034|0.177|5 scanned potential tiled actual-potential|5|fixed|10 B&W videos|527,045|3,846|1.459|15.2|4.4|35|0.7|1.2|7.4|1.72|first actor003 model
+model035|0.177|5 scanned potential tiled actual-potential|5|fixed|14 B&W videos|1,000,000|7,069|1.414|15.9|3.5|35|0.2|1.1|4.0|1.74|
 
-TODO -
+*Model* 35 is also an `actor003` *model*, but with a larger *history* and an expanded set of videos. It has slightly reduced growth, but similar multiplier. The higher moments are much more like those of *model* 30. 
 
-37 vs 35 - 37 has a random mode beginning and so has two modal lengths, lower mean and intermediate growth and multiplier. Perhaps look compare the root fuds in the browser
+##### Model 37 versus model 35
 
-Added 4102 fuds in the last 500k, so a better rate (1.641) than model 34 in the second half or than model 35 overall, which suggests that randomising improves the model.
+model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model036|0.177|4 randomised|1|fixed|12 B&W videos|500,000|1,931|0.772|7.2|2.0|17|0.2|0.1|3.8|2.86|
+model035|0.177|5 scanned potential tiled actual-potential|5|fixed|14 B&W videos|1,000,000|7,069|1.414|15.9|3.5|35|0.2|1.1|4.0|1.74|
+model037|0.177|5 scanned potential tiled actual-potential|1,5|fixed|12 B&W videos|1,000,000|6,033|1.207|12.6|5.1|35|0.4|0.1|5.0|2.00|initial *model* 36
 
-The mean is lower than model 35, but there are two modes at 7 and 15 and the longest path is the same at 35. There are many more fails (60) than model 35.
+*Model* 37 has a random mode beginning for the first 500,000 *events*, and so has two modal lengths (at 7 and 15). It has a lower mean, and intermediate growth and multiplier. Although it added 4102 *fuds* in the last 500,000 *events*, and so had a better rate (1.641) than *model* 35 in the second half, randomising the beginning merely appears to interpolate between the two modes.
 
-Does potential exaggerate lopsided fuds in model 37? Use a higher diagonal.
+##### Model 39 versus model 35
 
-37 seems to be a bit better than 35 at overall shape, although 37 has a smaller model, but 35 is definitely better at eyes and heads. 37 appears to have more sky than 35.
+model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model035|0.177|5 scanned potential tiled actual-potential|5|fixed|14 B&W videos|1,000,000|7,069|1.414|15.9|3.5|35|0.2|1.1|4.0|1.74|
+model039|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|1,000,000|7,214|1.443|16.4|5.4|46|1.8|5.6|32.3|1.72|30s unique
 
-Often distracted by the dark blacks, but if none are visible then it will often find hairlines and face edges in medium close ups when there are several events. It seems like there is quite a lot of interesting model amongst the higher but dull peaks nearby. Perhaps the dull peaks are due to a lot of background duplicates. These dull peaks seem very lopsided - would a high diagonal exclude them?
+In *model* 39 we added `"unique_records" : 333` to the configuration compared to *model* 35. This prevents identical records within the previous 30 seconds approximately from being added to the *history*. The list of videos was slightly changed too. The growth and multiplier are around the same. Although we would expect the *model* to be a little more normal, the maximum length and skew have increased greatly. Possibly this is simply because of path dependence and the consequence variation between otherwise identical runs, but we do find that subsequent *models* with the same uniqueness constraint also have very high positive skew and long paths. So the effect appears to be to increase interest in low entropy frames, possibly because without uniqueness there would be very little *alignment* if many of the *events* were identical.
 
-The deep blacks seem to be less of a problem with model 35 than 37
+##### Models 40 and 41 versus model 39
 
-39 vs 35 - adds 333 of unique records ie around 30s, increases mean and growth a little
+model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model039|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|1,000,000|7,214|1.443|16.4|5.4|46|1.8|5.6|32.3|1.72|30s unique
+model040|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|2,000,000|12,262|1.226 (1.443)|17.8|6.0|54|1.9|5.2|29.4|1.70|30s unique
+model041|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|2,656,962|14,079|1.060 (1.443)|18.3|6.6|62|2.1|6.3|36.3|1.69|30s unique
 
-The reason the centre keeps moving is sometimes that the frame does not move. Should we check for min entropy, then set the centre then check for unique records? Probably best to leave it as it is, so that the centre hovers around places of activity and does not get stuck in static backgrounds.
-
-Statistics look rather better than 35?
-
-40 and 41 vs 39 - adds history, overflowing - runs around expectations -
+*Model* 40 loads initial *model* 39 and continues into overflow. *Model* 41 loads initial *model* 41 and carries on further. We can see the actual *model* growth is close to expected -
 
 million-events|actual fuds|1+ln(million-events)|expected fuds|difference|difference percent
 ---|---|---|---|---|---
@@ -2354,10 +2390,19 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 2|12262|1.693|12214|48|0.39%
 2.656|14079|1.977|14261|-182|-1.27%
 
-So the potential *likelihood* measurement error caused by the parent's accumulated *size*, described [above](#potential_likelihood_issue), does not seem to be an issue here.
+So the potential *likelihood* measurement error caused by the parent's accumulated *size*, described [above](#potential_likelihood_issue), does not seem to be an issue here, perhaps because tiling only uses actual-potential *likelihood* locally, avoiding the diminishing returns if used globally (as in mode 4 *models* 21-24).
 
-evidence of interesting features. The examples of interactive model 41 in `C:\caiks\WBOT02\images` suggest that lighting is very important as well as scale - so edge detection would be interesting. There are many faces in the examples, but it is rare that a frame is classified with a lot of examples that we would recognise as similar, e.g. actor002_model041_Film_Noir_010.png. Even then, there are many examples which are completely unrelated to faces or eyes. It is clear that the classification is good on broad areas of light and dark, but the model would have to be much larger I think before the facial features would be reliably classified together and even then they would probably be spread over slices that are far apart in the model because of lighting conditions. We can see that scale is very important too - compare actor002_model041_camera_001.png and actor002_model041_camera_002.png, where the images magnification is slightly different.
+There is some evidence of the *modelling* of interesting features. There are many faces in the actor002_model041_Film_Noir [images](images), but it is rare that a frame is classified with a lot of examples that we would recognise as similar, e.g. 
 
+![actor002_model041_Film_Noir_010](images/actor002_model041_Film_Noir_010.png) 
+
+Even then, there are many example *events* which are completely unrelated to faces or eyes. In the following image the matched examples have the lips in completely the wrong place -
+
+![actor002_model041_Film_Noir_011](images/actor002_model041_Film_Noir_011.png) 
+
+ It is clear that the *classification* is good on broad areas of light and dark, but the *model* would have to be much larger before the facial features would be reliably *classified* together and even then they would probably be spread over *slices* that are far apart in the *model*.
+
+This shows the distribution of path lengths for *model* 41 -
 ```
 lengthsDist: {(1,1),(2,8),(3,16),(4,45),(5,69),(6,158),(7,273),(8,519),(9,950),(10,1614),(11,2714),(12,3957),(13,5455),(14,7500),(15,9098),(16,9961),(17,10533),(18,9193),(19,7325),(20,5452),(21,4091),(22,3260),(23,2292),(24,1746),(25,1371),(26,943),(27,697),(28,489),(29,359),(30,355),(31,374),(32,392),(33,460),(34,438),(35,419),(36,291),(37,286),(38,280),(39,281),(40,299),(41,285),(42,296),(43,277),(44,241),(45,188),(46,150),(47,111),(48,91),(49,96),(50,101),(51,66),(52,53),(53,63),(54,55),(55,10),(56,3),(57,3),(58,2),(59,2),(60,3),(61,2),(62,3)}
 lengthsCount: 96065
@@ -2367,13 +2412,11 @@ lengthsSkewness: 2.12267
 lengthsKurtosisExcess: 6.27214
 lengthsHyperSkewness: 36.2822
 ```
-Model 41 has modes at 17, 33, 40, 42, 50, 53, 60, 62.
+The deviation is very large and there are modes at 17, 33, 40, 42, 50, 53, 60 and 62. Qualitatively it appears that the very long paths are usually dark black, but there are plenty of hotspots around medium close up faces that are longer than the first mode of 17. There are lots of body surfaces and edges that have long paths. The face *slices* usually consist of many other non-face *events*. Essentially, the *model* is beginning to recognise features, but they are buried amongst a lot of other *alignments*. 
 
-The very long paths are usually dark black, but there are plenty of hotspots around medium close up faces that are longer than the first mode of 17. There are lots of surfaces and body edges that have longer paths. (Increase the diagonal?) The face slices usually consist of many other non-face events, although it is hard to tell from the off-diagonal siblings. Essentially, the model is recognising faces, but they are buried amongst a lot of other alignments. The lighting of the image is important too - the siblings all have the same brightness. So we must consider edge detection and instantanous motion after multi-scale.
+The lighting of the image is important too - sibling and examples all have the similar brightness. See *model* 61 below for a discussion of balanced *valency*.
 
-The 30s unique 39 seems to be a little better than 35, with some eyes detected although misplaced. There seems a little bit of improvement in model 41 compared to 39. Doesn't seem to be especially interested in faces, but rather in textures. 
-
-Model 41 appears to suggest that a random initial model is unnecessary.
+TODO -
 
 42-45 vs 41 - 5-valent plus expanded set of videos, min diagonal 100 threshold, very high growth of 1.643, multiplier the same, runs ahead of overflow growth expectations but compared to 10-valent not significantly different -
 
@@ -2953,11 +2996,13 @@ In addition, scanning in any mode is compute intensive for large areas. This is 
 
 Another problem is the inherent limit to *model* growth of a passive observer. While the wotbot can direct its gaze it is not in control of the *events* available to it and so does not grow more than expected. Before *history* overflow, *fud* growth per *event* per threshold is limited to a theoretical maximum of around two; *model* growth per second is also limited by the rate at which *events* are obtained. Scanning modes have good *fud* growth but the compute requirements reduce *model* growth per second. In overflow we have seen above that actual-potential *likelihood* modes tend to be below the theoretical growth rates as *events* roll off. Using active *size* rather than accumulated *size* pushes the rate a little above the expected overflow rate, but not enough to prevent negligible rates after a few multiples of overflow. The way to overcome this limitation is to have more control over the environment. An infant, for example, has more agency and can vary the amount of attention given to a toy. Thus a small number of *slices* will receive a concentrated sequence of similar *events* repeatedly passing the threshold for *induction* in a short time. So an agent can overcome the overflow problem with 'burstiness'. Perhaps initially unusual *slices* attract attention (or fear) and then the momentum of *event* acquistion (possibly at a safe distance) carries the *slice* from negative *likelihood* through the zero *likelihood* doldrums into positive *likelihood* and then past the induce threshold. In this way, even with limited *history size* and compute resources, *models* could grow at reasonable rates indefinitely, given a suitably rich environment. We will have to give the wotbot locomotion and manipulation eventually. Patient watching of videos, especially the non-natural productions of Film Noir Hollywood, can only take us so far. 
 
-So, while scanning single *level models* has brought us almost to qualitative features with moderate compute, we will focus on using *slice* topologies in multi-modal *multi-level models* with a view ultimately to an embodied wotbot that can interact with its environment.
+So, while scanning single *level models* has brought us almost to qualitative features with moderate compute, we will focus on using *slice* topologies in multi-modal and temporal *multi-level models* with a view ultimately to an embodied wotbot that can interact with its environment and other agents.
 
 TODO 
 
 future developments - 
+
+Do random covered offset/scale plus local scan. Then add topology search. Then 2 level with central underlying local scan and 2 level scan local scan for reference.
 
 See if optical illusions can give us a clue about the substrate. https://www.rd.com/article/optical-illusions/ It seems that many of the illusions are to do with perspective and judging scale. Others are to do with images typically seen when objects are moving (dynamic gradient). Others are to do with judging brightness (spatial gradient). Others to do with judging angles and parallelism. It seems that the large scale peripheral model makes approximations that the small scale foveal model doesn't leading to inconsistencies as the focus saccades.
 
