@@ -2423,7 +2423,7 @@ model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|k
 model041|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|2,656,962|14,079|1.060 (1.443)|18.3|6.6|62|2.1|6.3|36.3|1.69|30s unique
 model045|0.177|5 scanned potential tiled actual-potential|5|fixed 5-valent|48 B&W videos|2,656,963|34,557|1.300 (1.643)|20.2|5.1|44|0.7|0.7|5.9|1.68|30s unique, 12.0 min diagonal, 100 threshold
 
-We ran *models* 42 to 45 in sequence each with the previous *model* as its initial in order to determine the effect of overflow. First, though, compare *model* 45 to *model* 41. The difference is that *model* 45 is *5-valent*, has an expanded set of videos, has a minimum *diagonal* of 12.0 and an induce threshold reduced to 100 *events*. The lower *valency* has a very high growth rate of 1.643. The multiplier is similar, but the *model* is much more normal and the maximum path length is considerably reduced. *Modek* 45 only has one mode at 18, instead of the 8 modes of *model* 41. Probably the lower *valency* reduces the *alignments* in low entropy frames to below the minimum *diagonal* preventing the very long paths. 
+We ran *models* 42 to 45 in sequence each with the previous *model* as its initial, in order to determine the effect of overflow. First, though, compare *model* 45 to *model* 41. The differences are that *model* 45 is *5-valent*, has an expanded set of videos, has a minimum *diagonal* of 12.0 and an induce threshold reduced to 100 *events*. The lower *valency* has a very high growth rate of 1.643. The multiplier is similar, but the *model* is much more normal and the maximum path length is considerably reduced. *Model* 45 only has one mode at 18, instead of the 8 modes of *model* 41. Probably the lower *valency* reduces the *alignments* in low entropy frames to below the minimum *diagonal*, thus preventing the very long paths. 
 
 The growth in overflow is slightly ahead of expected but compared to *10-valent* it is not significantly different-
 
@@ -2435,7 +2435,7 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 2.600|34,069|1.956|33,130|939|2.83%
 2.656|34,557|1.977|33,491|1066|3.18%
 
-Qualitatively *model* 45 is not so intereested in dark areas as *model* 41. It does seem to hang around bodies and clothes -
+Qualitatively, *model* 45 is not so interested in dark areas as *model* 41. It does seem to hang around bodies and clothes -
 
 ![actor002_model045_Film_Noir_003](images/actor002_model045_Film_Noir_003.png) 
 
@@ -2449,25 +2449,17 @@ and this is the representation for *model* 45 -
 
 Note that at this point we developed checkpointing to handle recovery in case of the occasional crashes that bedevil the video libraries.
 
-TODO -
+##### Model 46 versus models 45 and 41
 
-Double the fuds and active slices, but not double the paths. The skewness and kurtosis is much less too - suggests a more balanced tree.
+model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model041|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|2,656,962|14,079|1.060 (1.443)|18.3|6.6|62|2.1|6.3|36.3|1.69|30s unique
+model045|0.177|5 scanned potential tiled actual-potential|5|fixed 5-valent|48 B&W videos|2,656,963|34,557|1.300 (1.643)|20.2|5.1|44|0.7|0.7|5.9|1.68|30s unique, 12.0 min diagonal, 100 threshold
+model046|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,965|13,432|1.011 (1.406)|16.8|4.5|36|0.8|1.1|7.4|1.76|30s unique, 12.0 min diagonal
 
-Like model041, model045 is not particularly interested in people but complex areas. Not so interested in the darks as model041. Does seem to hang around bodies and clothes.
+With *model* 46 we are back to *10-valent*. We have retained the expanded set of videos and minimum *diagonal* of *model* 45. The growth rate is a little below the growth of *model* 41 because of the minimum *diagonal*. The multiplier is similar but now the *model* is much more normal than *model* 41, although not quite as normal as *model* 45. There is only one mode (at 16) and the maximum length is much more moderate. A combination of the larger set of videos and the minimum *diagonal* has improved the normality without much cost to growth.
 
-46 vs 45 - back to 10-valent plus expanded set of videos, lower growth, a little higher multiplier, perhaps compare contour maps to get a qualitative difference
-
-46 vs 41 -
-```
-lengthsDist: {(1,1),(2,17),(3,18),(4,31),(5,100),(6,228),(7,375),(8,661),(9,1205),(10,1973),(11,3334),(12,5220),(13,7381),(14,9115),(15,10368),(16,10740),(17,9662),(18,8370),(19,6331),(20,4626),(21,3394),(22,2374),(23,1874),(24,1811),(25,1556),(26,1399),(27,1106),(28,830),(29,652),(30,437),(31,280),(32,213),(33,106),(34,77),(35,54),(36,19)}
-lengthsCount: 95938
-lengthsMean: 16.8148
-lengthsDeviation: 4.48833
-lengthsSkewness: 0.768545
-lengthsKurtosisExcess: 1.05939
-lengthsHyperSkewness: 7.36744
-```
-46 has modes at 16 only cf model 41 which has modes at 17, 33, 40, 42, 50, 53, 60, 62. That is, much more normal so min diagonal and larger set of videos makes at big difference. Higher moments much less.
+The growth in overflow is similar to that of *model* 41 -
 
 million-events|actual fuds|1+ln(million-events)|expected fuds|difference|difference percent
 ---|---|---|---|---|---
@@ -2477,45 +2469,45 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 2.500|13,090|1.916|13,404|-314|-2.35%
 2.657|13,432|1.977|13,830|-398|-2.88%
 
-model 46 -
-```
-lengthsDist: {(1,1),(2,17),(3,18),(4,31),(5,100),(6,228),(7,375),(8,661),(9,1205),(10,1973),(11,3334),(12,5220),(13,7381),(14,9115),(15,10368),(16,10740),(17,9662),(18,8370),(19,6331),(20,4626),(21,3394),(22,2374),(23,1874),(24,1811),(25,1556),(26,1399),(27,1106),(28,830),(29,652),(30,437),(31,280),(32,213),(33,106),(34,77),(35,54),(36,19)}
-lengthsCount: 95938
-lengthsMean: 16.8148
-lengthsDeviation: 4.48833
-lengthsSkewness: 0.768545
-lengthsKurtosisExcess: 1.05939
-lengthsHyperSkewness: 7.36744
-```
+Qualitatively, *model* 46 does occasionally spot features but, again, it is rare that a frame is classified with a lot of examples that we would recognise as similar, e.g. 
 
-Compared to model 45, model 46 seems to be be more interested in darks and figures, but perhaps that is simply because the model is less 'complete'. It could, however, be because at the higher valency more detail is resolvable, which explains the darks. Model 45 does seem to be more interested in backgrounds and patterns.
+![actor002_model046_Film_Noir_001](images/actor002_model046_Film_Noir_001.png) 
 
-Comparing the contour maps between 45 and 46 we can see that there is a distinct difference in valency with much less detail in the darks and lights.
+This is the representation for *model* 46 -
 
-There does not seem to be much improvement after 1m events or with 48 videos, whether with 5 valency or 10 valency. In 46 some of the larger frames do not have the right distribution, so perhaps not rolling up the values correctly. Model 45 seems to have better representations, although less detailed. Suggests that linked variables might be better, or ordered values. Perhaps we could divide into fewer cells and have more active history.
+![contour004_046_representation](images/contour004_046_representation.png) 
 
-47 vs 46 - added min entropy, growth is reduced, multiplier increases slightly, more normal statistics?, compare qualitative
+##### Model 47 versus model 46
 
-Model 47 shows us that heads are not usually the most interesting frames even in film noir. To develop an interest naturally we need dynamic audio and video and possibly even emotional rewards in the slice topology.
+model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model046|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,965|13,432|1.011 (1.406)|16.8|4.5|36|0.8|1.1|7.4|1.76|30s unique, 12.0 min diagonal
+model047|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,963|13,688|1.030 (1.364)|15.9|3.1|25|-0.4|0.2|-3.9|1.82|30s unique, 12.0 min diagonal, 1.2 min entropy
 
-model 47 -
-```
-lengthsDist: {(1,3),(2,12),(3,20),(4,60),(5,120),(6,236),(7,417),(8,839),(9,1317),(10,2339),(11,3604),(12,5775),(13,8134),(14,10667),(15,13343),(16,14043),(17,13979),(18,12387),(19,9497),(20,6270),(21,3264),(22,1587),(23,503),(24,169),(25,12)}
-lengthsCount: 108597
-lengthsMean: 15.856
-lengthsDeviation: 3.06973
-lengthsSkewness: -0.376717
-lengthsKurtosisExcess: 0.249775
-lengthsHyperSkewness: -3.94355
-```
-No fails! Max diagonal 40.7858, med diagonal 27.8792 (cf model 46 max 41.0545, med 28.0772). 
-The min entropy models never have failed slices (47 onward). Unique events may reduce the fails. The max path length is much shorter once min entropy is introduced. This suggests that there are still many potential alignments still to be found even on the longest paths.
+In *model* 47 we added minimum entropy. The growth is reduced but the multiplier increases slightly. The kurtosis is much smaller and the skew is halved, but is negative rather than positive. The maximum path length has reduced again to only 25. The mean and deviation are reduced, but the mode is unchanged at 16. The statistics suggest that the long paths were mainly low entropy frames, but there is now a small excess of short paths. In addition, there are no fails - implying that the long paths had low *alignments*, which agrees with the our interpretation of the effect of minimum entropy. As well as excluding frames with weak *alignments*, the low entropy frames were poor at resolving hotspots and so increased the duplication of *model* due to small translations.
 
-Exclude low entropy events. These do not find hotspots very well and generate vast amounts of useless model especially darks. Similar to the problem of duplicates but not the same. How much modelling time is spent on these areas? Certainly the min diagonal has cut down the max path length.
+The length map suggests that there are many hotspots around the face -
 
-Noticeably different statistics between models without and with min entropy. Same mode, but lower deviation and max length and sign of skew has changed and smaller kurtosis - all suggest a more balanced stubbier tree, with more shorter paths (presumably lowish enrtropy/alignments) and fewer longer paths (but perhaps more interesting to us). No fails also suggests that all of the failed slices in the previous model where low entropy. All but 12 of the 1556 slices of length 25 or more were presumably also low entropy.
+![contour004_047_length](images/contour004_047_length.png) 
 
-If model 47 had no overflow, it probably would have had 18,120 fuds at 1.364 fuds/sz/200. Compare this to 5-valent model 48 which had 38,124 fuds at 1.434 fuds/sz/100, or 19,062 equivalently. That is around double. If we assume that min entropies are equivalent, we can conclude that the valency does not have much effect on growth. This seems consistent with the diagonals.
+There is quite a lot of detail in the *model* there too -
+
+![contour004_047_position](images/contour004_047_position.png) 
+
+Qualitatively, *model* 47 seems to be slightly better than *model* 46 -
+
+![actor002_model047_Film_Noir_002](images/actor002_model047_Film_Noir_002.png) 
+
+![actor002_model047_Film_Noir_003](images/actor002_model047_Film_Noir_003.png) 
+
+![actor002_model047_Film_Noir_006](images/actor002_model047_Film_Noir_006.png) 
+
+The representation for *model* 47 appears to have improved a little -
+
+![contour004_047_representation](images/contour004_047_representation.png) 
+
+
+TODO -
 
 contour003_047_representation is definitely better than contour003_046_representation - the slices seem to be centred around the higher entropy areas of the image, as we would expect and so the resolution around the head and shoulders and the loudspeakers is better. The top slice at the throat matches the distribution of brightness of the collar and tie surprisngly well.
 
