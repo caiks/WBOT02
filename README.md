@@ -2502,155 +2502,98 @@ Qualitatively, *model* 47 seems to be slightly better than *model* 46 -
 
 ![actor002_model047_Film_Noir_006](images/actor002_model047_Film_Noir_006.png) 
 
-The representation for *model* 47 appears to have improved a little -
+With this example -
+
+![contour003](images/contour003.png) 
+
+the *model* 46 representation is as follows -
+
+![contour003_046_representation](images/contour003_046_representation.png) 
+
+but *model* 47 fares somewhat better -
+
+![contour003_047_representation](images/contour003_047_representation.png) 
+
+The *slices* seem to be centred around the higher entropy areas of the image, as we would expect, and so the resolution around the head and shoulders and the loudspeakers is better. The top *slice* at the throat matches the distribution of brightness of the collar and tie fairly well.
+
+The *model* appears to be better for this image too -
 
 ![contour004_047_representation](images/contour004_047_representation.png) 
 
+There is a lot of detail around the head, neck and collar and a hint of a mouth. Again, however, the single *level model* is quite good at capturing all the modes of the distributions of light and dark, but not as good at capturing edges or features.
+
+##### Model 50 versus model 47
+
+model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model047|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,963|13,688|1.030 (1.364)|15.9|3.1|25|-0.4|0.2|-3.9|1.82|30s unique, 12.0 min diagonal, 1.2 min entropy
+model050|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,962|16,980|1.278|15.3|2.8|23|-0.5|0.4|-5.2|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow
+
+Here the only difference between *models* 50 and 47 is that *model* 50 is run with no overflow. (It was run in the cloud with a *history size* of 3 million *events*.) We can see that the growth of *model* 50 at 1.278 is lower than that of *model* 47 before it went into overflow (1.364), so as the average path length increases the growth slows gradually, presumably because the remaining *alignments* tend to be smaller. Note that the mean path is actually slightly shorter at 15.3. This is explained by the slightly increased negative skew. The multiplier is a little larger too. Possibly these differences are due to the variation between runs rather than because of the absence of overflow.
+
+Qualitatively, *model* 50 is picking up features, for example -
+
+![actor002_model050_Film_Noir_002](images/actor002_model050_Film_Noir_002.png) 
+
+![actor002_model050_Film_Noir_005](images/actor002_model050_Film_Noir_005.png) 
+
+![actor002_model050_Film_Noir_006](images/actor002_model050_Film_Noir_006.png) 
+
+##### Models 49 and 51 versus model 50
+
+model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model049|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,964|36,146|1.36|16.7|2.9|28|-0.4|0.5|-4.8|1.87|30s unique, 12.0 min diagonal, 100 threshold, 1.2 min entropy, no overflow
+model050|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,962|16,980|1.278|15.3|2.8|23|-0.5|0.4|-5.2|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow
+model051|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,963|8,079|1.216|15.1|2.9|23|-0.5|0.4|-5.6|1.81|30s unique, 12.0 min diagonal, 400 threshold, 1.2 min entropy, no overflow
+
+Here we experimented with the threshold. *Model* 49 has a threshold of 100, *model* 50 has the default threshold of 200, and *model* 51 has a threshold of 400. We can see that the threshold affects growth a little, but does not make much difference to the multiplier. The deviation and higher moments are all very similar. Quantitatively, there does not seem to be much of a cost to using the lower threshold of 100, even though it is only the square of the *valency*. Qualitatively, however, the representation of *model* 49 appears to be worse than that of *model* 50, presumably because of smaller *slices*. 
+
+This is *model* 50 -
+
+![contour004_050_representation](images/contour004_050_representation.png) 
+
+and this is *model* 49 -
+
+![contour004_049_representation](images/contour004_049_representation.png) 
+
+##### Model 48 versus model 49
+
+model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model049|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,964|36,146|1.36|16.7|2.9|28|-0.4|0.5|-4.8|1.87|30s unique, 12.0 min diagonal, 100 threshold, 1.2 min entropy, no overflow
+model048|0.177|5 scanned potential tiled actual-potential|5|fixed 5-valent|48 B&W videos|2,656,965|38,124|1.434|18.9|3.4|30|-0.4|0.3|-4.3|1.75|30s unique, 12.0 min diagonal, 100 threshold, 0.8 min entropy, no overflow
+
+Here the difference is that *model* 48 is *5-valent* whereas *model* 49 is *10-valent*. The thresholds are the same, but the minimum entropy is set lower at 0.8 instead of 1.2. The growth for the *5-valent model* is higher and the multiplier lower, but the higher moments are very similar.
+
+The representation for *model* 48 is perhaps better than that of *model* 49 -
+
+![contour004_048_representation](images/contour004_048_representation.png) 
+
+So the larger threshold of 200 is probably better for the higher *valency*.
+
+##### Model 54 versus models 47 and 50
+
+model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model047|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,963|13,688|1.030 (1.364)|15.9|3.1|25|-0.4|0.2|-3.9|1.82|30s unique, 12.0 min diagonal, 1.2 min entropy
+model050|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,962|16,980|1.278|15.3|2.8|23|-0.5|0.4|-5.2|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow
+model054|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|3,000,065|12,390|0.826 (1.294)|15.5|2.9|24|-0.4|0.5|-5.0|1.84|30s unique, 12.0 min diagonal, 1.2 min entropy
+
+With *model* 54 we went back to the smaller *history* so it is essentially identical to *model* 47 except that it terminates a little later. *Model* 54 is intermediate between the two earlier *models*, which suggests that the differences between all three are simply due to the variations between runs.
+
+##### Model 55 versus model 54
+
+model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model054|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|3,000,065|12,390|0.826 (1.294)|15.5|2.9|24|-0.4|0.5|-5.0|1.84|30s unique, 12.0 min diagonal, 1.2 min entropy
+model055|0.177|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|15,050|1.003 (1.489)|14.8|2.9|24|-0.4|0.3|-4.1|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy
+
+*Model* 55 is identical to *model* 54 except for its mode. A problem with calculating the potential *likelihood* in terms of the ratio between a *slice's size* and its parent's *size* is that *on-diagonal* siblings of ancestor *slices* may end up being ignored. This is because the ratio between *slice size* and parent *slice size* is only comparable where the siblings are leaf *slices*. The siblings of ancestor *slices* will probably have larger parents, and so the potential *likelihood* appears to decrease. To fix this in scanned size-potential tiled actual-potential mode (6) we simply use the *slice size* as the measure for potential *likelihood*. 
+
+In *model* 55 the effect of the mode is to increase both the growth and the multiplier. The growth probably increases because the *alignments* of the neglected siblings are probably higher than for *slices* on longer paths. The multiplier would be expected to be higher in this mode; now it is closer to the ideal multiplier of around two. The kurtosis and hyperskew are a little lower, and so the *model* is slightly more normal. *Model* 55 has many more paths (121,505 versus 98,696), so we seem to have solved the lost sibling problem.
 
 TODO -
-
-contour003_047_representation is definitely better than contour003_046_representation - the slices seem to be centred around the higher entropy areas of the image, as we would expect and so the resolution around the head and shoulders and the loudspeakers is better. The top slice at the throat matches the distribution of brightness of the collar and tie surprisngly well.
-
-The same is true for contour004 - lots of detail around the head, neck and collar. There is a hint of the mouth. Clearly a level 1 40x40 substrate is limited in how much detail can be captured. Will need to go to a two level. 
-
-If we line up the 004 length image and and the original image such that the dark areas corresponding to the eyes are overlapped and flip between the images, we can see that the head of the man on the left and his hands and hat are also synchronised. This suggests that these areas are interesting, but the hotspots are offset and not always centered on the features. Certainly the areas with the greatest length contrasts are the most interesting.
-
-The same thing can be seen if we line up the 003 length image and and the original image such that the areas corresponding to the man's face are overlapped. We can see that the loudspreaker trumpets are echoed several times. The hotspots in the sky areas are spread out and the model still appears to be very interested in it - perhaps the entropy limit is too low so that it allows slowly varying backgrounds. The hotspots around the body tend to be concentrated.
-
-Browsing - The actual mode is mostly interested in background patterns, only when faces are in close up does it hover around them. The hotspot potential mode 5 seems to be a bit more interested in faces and bodies but it could be wishful thinking.
-
-I think the issue here is that the single level model is capturing all the modes of the distributions of light and dark, but does not capture edges or features. The examples are mostly unrelated scenes of different objects. I think we will need a multi-level model to do features. However, do the multi-scale anyway - perhaps faces and other common features will be more common.
-
-models 48 - 51 have no overflow and are run in cloud, needed a resize to fit onto PC - throws away samples, don't worry too much about the comparisons to 47 in the below. Compare to 50 = 47 without overflow
-
-```
-cd ~/WBOT02_ws
-./WBOT02 resize_tidy model048 model048c 500000
-
-```
-
-48 vs 47 - 5-valent and no overflow, growth higher and lower multiplier suggests that 5-valent is picking up more alignments
-
-model 48 -
-```
-lengthsDist: {(1,2),(2,3),(3,12),(4,32),(5,49),(6,101),(7,190),(8,358),(9,633),(10,1105),(11,1933),(12,2950),(13,4553),(14,6566),(15,9351),(16,12512),(17,15831),(18,18657),(19,21069),(20,21341),(21,19216),(22,15614),(23,11678),(24,7486),(25,3789),(26,1728),(27,599),(28,121),(29,52),(30,10)}
-lengthsCount: 177541
-lengthsMean: 18.9173
-lengthsDeviation: 3.43071
-lengthsSkewness: -0.418654
-lengthsKurtosisExcess: 0.262438
-lengthsHyperSkewness: -4.25479
-```
-In spite of being twice the model, the leaf slices only increase from 108,597 to 177,541 slices, ie only 60% more. This is because the increase in model was not evenly distributed but concentrated, presumably on the hotspots.
-
-Mode increases from 16 to 20 and the max from 25 to 30, and the mean from 15.9 to 18.9, so the statistics seem to similar as expected.
-
-In both 47 and 48 there are hotspots around the face in the sorts of positions that look like fixation points. Model 47 seems to be able to do the faces a bit better, because the hotspots are more concentrated and the paths longer (relatively). We could try running a 10-valent with a threshold of 100 and no overflow to compare.
-
-The 5-valent model 48 seems to follow the outlines of heads very closely, but the 10-valent goes more for the centre of the face if at all - the 400 threshold appears to be more interested in corners and rectangular objects. It could be that the 5-valent requires the strong contrast of the edges of faces. Perhaps the tree position colour coding in the contour images will give us a clue as to how closely different  features are related.
-
-48 vs 45 - both 5-valent, added min entropy and no overflow - growth is reduced, multiplier increases slightly,  more normal statistics?, compare qualitative
-
-49 vs 47 and 48 - Model 49 (10-valent, 100 thrs) is in-between model 47 (10-valent, 200 thrs)  and model 48 (5-valent, 100 thrs). The average path is less than one step longer than model 47 but more than 2 steps longer than model 48 (5-valent). The mode is 1 step more than 47 but 3 steps less than 48. The deviation is less than model 47, so the new model is probably evenly distributed, unlike in model 48. For contour003 model 49 seems to be a slight improvement over both model 47 and model 48. For contour004 model 49 seems to be a slight worsening over both model 47 and model 48. The lower threshold seems to be counterbalanced by the larger model. The 49 lengths seem to be intermediate between model 47 and model 48 too. Probably overall model 47 is best - perhaps it would be noticeably better if not constrained by active size. 
-
-Model 49 is 10-valent but with a threshold of only 100, yet it does seem worse than model 47 and perhaps model 50 (when it has finished running). Probably the alignments were lower and the model is worse although still large. Model 48 seems qualitatively quite good too. Model 48 is 5-valent which implies the threshold is 4 times the square of the valency. Should we run a model 51 10-valent with a threshold of 400? It would be interesting to see the effect on the qualitative model. Will need to run in cloud after the model 50 is finished.
-
-50 vs 48 - back to 10-valent - only diff is valency and min entropy limit,  growth is reduced, multiplier increases slightly, similar stats? compare qualitative
-
-50 is 4th best rep contour 3 and 3rd best contour 4
-
-50 vs 47 - only diff is overflow, but fairly different growth over 1m and multiplier
-
-Model 50 seems to be very good at focussing on heads and bodies - it does get distracted by strong background objects such as pciture frames or stairs, but is definitely interested in heads, especially in close-up. Perahps as good as model 48 and better than model 47.
-
-Model 50 is identical to model 47 except for overflow. Yet the fuds/sz/thrs is only 1.28769 for the first 1m versus 1.36373 in model 47. That is, 6438 fuds versus 6818, ie a difference of 380 or 5.5%. Could this be simply because of the element of randomness or is it because the thresholds are too small initially? Perhaps we should start the model with a random model? We could test the variation of the mode001 models and see the effect of larger thresholds on that variation.
-
-49 vs 50 - 100 threshold - higher growth like 5-valent 48 similar multiplier
-
-Model 49 is definitely less likely to focues on bodies and faces than model 48. Model 47 is not quite as good at faces and bodies as 48 but is better than 49. The higher frequencies of faces and bodies seems to be overshadowed by interesting background patterns. Even if model 50 is no better than model 49 we still seem to have a model that focuses prefereably on the things that interest us. With multi-scale and multi-level and perhaps dynamics we can perhaps increase the focus on human-interesting objects more intensely. README
-
-51 vs 50 - 400 threshold - higher growth, lower multiplier (more like 47 so perhaps a certain degree of path dependency)
-
-Model 51 seems to have very similar stats as model 50 even though it has half the fuds. Same mode and max and only slightly smaller mean. It could be that the path dependency is having an effect too.
-
-What could we do to increase p and therefore the mean? Does a higher threshold in model 51 vs 50 lead to longer median diagonals? 50 max diagonal is 41.0063 median is 27.8274. 51 max diagonal is 41.9357, median is 27.2012, so there is no significant difference. Perhaps modify the induce parameters to increase alignments at the cost of compute.
-
-Model 51 seems to be mainly interested in backgrounds, although close up heads and faces get some attention. Seems to agreee with the contour lengths, which have few hotspots around the woman's face in contour004. Why are models 49,50 and 51 so different qualitatively - is the model very path dependent? How can we compare the models?
-
-Colour coded contour maps - The evidence of the multiple offset images and the wide variety of models with similar parameterisation suggests that we go to multi-scale and edge detection to try to stabilise the modelling on a standard. Probably should use low resolution high valency for the brightness substrate and add high resolution edge detection.
-
-actor002_model041_Film_Noir_010.png length 20 (z 0.26)	both eyes
-
-actor002_model041_Film_Noir_011.png length 18 (z -0.05)	mouth and chin
-
-actor002_model041_Film_Noir_014.png length 20 (z 0.26)	one eye
-
-actor002_model046_Film_Noir_001.png length 20 (z 0.71)	one eye classified as two
-
-actor002_model047_Film_Noir_003.png length 20 (z 1.34)	one eye
-
-actor002_model047_Film_Noir_005.png length 19 (z 0.38)	two eye classified as one
-
-actor002_model047_Film_Noir_006.png length 19 (z 0.38)	mouth classified as mouths, eyes and other
-
-actor002_model048_Film_Noir_001.png length 16 (z -0.85)	mouth classified as mouths, eyes and other
-
-actor002_model048_Film_Noir_002.png length 23 (z 1.20)	mouth classified as eyes and chins
-
-actor002_model048_Film_Noir_003.png length 19 (z 0.03)	one eye
-
-actor002_model048_Film_Noir_004.png length 24 (z 1.47)	face, badly classified
-
-actor002_model048_Film_Noir_005.png length 23 (z 1.20)	eyes and nose
-
-actor002_model048_Film_Noir_006.png length 25 (z 1.78)	one eye, well classified
-
-actor002_model048_Film_Noir_009.png length 25 (z 1.78)	both eyes
-
-actor002_model048_Film_Noir_010.png length 25 (z 1.78)	one eye
-
-actor002_model048_Film_Noir_011.png length 21 (z 0.61)	one eye
-
-actor002_model048_Film_Noir_013.png length 23 (z 1.20)	mouth and chin
-
-actor002_model048_Film_Noir_014.png length 23 (z 1.20)	eye and nose, badly classified
-
-actor002_model050_Film_Noir_002.png	length 18 (z 0.97)	one eye, well classified
-
-actor002_model050_Film_Noir_003.png length 20 (z 1.69)	one eye, well classified
-
-actor002_model050_Film_Noir_005.png length 17 (z 0.61)	mouth and chin
-
-actor002_model050_Film_Noir_006.png length 12 (z -1.19)	both eyes
-
-Most feature-like slices seem to be well above the average length.
-
-
-54 vs 47 - same config - growth closer than 50, similar multiplier, so 50 diff possibly due to path dependency, stats are very similar too -
-
-54 -
-```
-lengthsDist: {(1,6),(2,15),(3,35),(4,70),(5,114),(6,220),(7,423),(8,745),(9,1321),(10,2204),(11,3708),(12,5638),(13,8065),(14,11165),(15,13224),(16,14143),(17,13281),(18,10377),(19,7195),(20,4095),(21,1725),(22,721),(23,167),(24,39)}
-lengthsCount: 98696
-lengthsMean: 15.4762
-lengthsDeviation: 2.90557
-lengthsSkewness: -0.441921
-lengthsKurtosisExcess: 0.472183
-lengthsHyperSkewness: -5.00758
-```
-
-55 vs 54 - mode 6 - higher growth and multiplier suggests that neglected siblings was having an effect. Perhaps compare the decomp for unbalanced. Check statistics - lower mean, mode, similar deviation, slightly lower higher moments agree that there were neglected siblings, although the max length is the same. model 55 has reduced the mean, as expected, and is slightly more normal. 55 has many more paths, so seems to have solved the lost sibling problem. - 
-
-55 -
-```
-lengthsDist: {(2,18),(3,38),(4,117),(5,226),(6,425),(7,799),(8,1400),(9,2462),(10,3947),(11,6201),(12,9102),(13,12446),(14,15461),(15,17272),(16,16489),(17,13755),(18,10150),(19,6317),(20,3282),(21,1282),(22,238),(23,42),(24,36)}
-lengthsCount: 121505
-lengthsMean: 14.7936
-lengthsDeviation: 2.9219
-lengthsSkewness: -0.397247
-lengthsKurtosisExcess: 0.274909
-lengthsHyperSkewness: -4.06495
-```
 
 This is very revealing, now that the low entropy slices have been removed and the lengths normalised. In 004 we can see hotspots and local model the woman's SW nose, SW chin, corner of woman's left eye, centre of black hair over left ear (on the right), above the man's head on the right. The top hat is similar to the wall next to the chin. In 003 we can see less localised hotspots next to the where the hat meets the head, and between the eye at the top of the nose. There is a hotspot at the junction of the collar, sky and coat on the right. Quite a lot of the hotspots are on the edge of the min entropy areas.
 
