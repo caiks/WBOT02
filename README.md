@@ -2416,9 +2416,16 @@ The deviation is very large and there are modes at 17, 33, 40, 42, 50, 53, 60 an
 
 The lighting of the image is important too - sibling and examples all have the similar brightness. See *model* 61 below for a discussion of balanced *valency*.
 
-TODO -
+##### Models 42 to 45 versus model 41
 
-42-45 vs 41 - 5-valent plus expanded set of videos, min diagonal 100 threshold, very high growth of 1.643, multiplier the same, runs ahead of overflow growth expectations but compared to 10-valent not significantly different -
+model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model041|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|2,656,962|14,079|1.060 (1.443)|18.3|6.6|62|2.1|6.3|36.3|1.69|30s unique
+model045|0.177|5 scanned potential tiled actual-potential|5|fixed 5-valent|48 B&W videos|2,656,963|34,557|1.300 (1.643)|20.2|5.1|44|0.7|0.7|5.9|1.68|30s unique, 12.0 min diagonal, 100 threshold
+
+We ran *models* 42 to 45 in sequence each with the previous *model* as its initial in order to determine the effect of overflow. First, though, compare *model* 45 to *model* 41. The difference is that *model* 45 is *5-valent*, has an expanded set of videos, has a minimum *diagonal* of 12.0 and an induce threshold reduced to 100 *events*. The lower *valency* has a very high growth rate of 1.643. The multiplier is similar, but the *model* is much more normal and the maximum path length is considerably reduced. *Modek* 45 only has one mode at 18, instead of the 8 modes of *model* 41. Probably the lower *valency* reduces the *alignments* in low entropy frames to below the minimum *diagonal* preventing the very long paths. 
+
+The growth in overflow is slightly ahead of expected but compared to *10-valent* it is not significantly different-
 
 million-events|actual fuds|1+ln(million-events)|expected fuds|difference|difference percent
 ---|---|---|---|---|---
@@ -2428,25 +2435,25 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 2.600|34,069|1.956|33,130|939|2.83%
 2.656|34,557|1.977|33,491|1066|3.18%
 
-model 45 -
-```
-lengthsDist: {(1,2),(2,3),(3,6),(4,18),(5,32),(6,63),(7,146),(8,242),(9,431),(10,771),(11,1278),(12,2202),(13,3394),(14,5024),(15,7546),(16,9696),(17,12139),(18,13324),(19,13057),(20,12020),(21,10104),(22,8395),(23,6876),(24,5743),(25,4816),(26,4023),(27,3411),(28,2921),(29,2384),(30,1819),(31,1551),(32,1231),(33,942),(34,753),(35,565),(36,307),(37,199),(38,125),(39,87),(40,50),(41,27),(42,12),(43,9),(44,7)}
-lengthsCount: 137751
-lengthsMean: 20.2058
-lengthsDeviation: 5.08845
-lengthsSkewness: 0.665683
-lengthsKurtosisExcess: 0.663065
-lengthsHyperSkewness: 5.91677
-```
-45 has modes at 18 only cf model 41 which has modes at 17, 33, 40, 42, 50, 53, 60, 62. That is, much more normal.
+Qualitatively *model* 45 is not so intereested in dark areas as *model* 41. It does seem to hang around bodies and clothes -
+
+![actor002_model045_Film_Noir_003](images/actor002_model045_Film_Noir_003.png) 
+
+The *5-valent* representation is perhaps less resolved than the *10-valent*, in spite of the lower threshold and longer mean paths. This is the representation for *model* 41 -
+
+![contour004_041_representation](images/contour004_041_representation.png) 
+
+and this is the representation for *model* 45 -
+
+![contour004_045_representation](images/contour004_045_representation.png) 
+
+Note that at this point we developed checkpointing to handle recovery in case of the occasional crashes that bedevil the video libraries.
+
+TODO -
 
 Double the fuds and active slices, but not double the paths. The skewness and kurtosis is much less too - suggests a more balanced tree.
 
 Like model041, model045 is not particularly interested in people but complex areas. Not so interested in the darks as model041. Does seem to hang around bodies and clothes.
-
-Can have low valency and high valency (computed) variables for the same pixel if the variables are shuffle-linked to prevent tautological alignments.
-
-developed checkpointing to handle recovery
 
 46 vs 45 - back to 10-valent plus expanded set of videos, lower growth, a little higher multiplier, perhaps compare contour maps to get a qualitative difference
 
@@ -3041,6 +3048,8 @@ Could experiment with higher valency, eg 20-valent. But would need threshold and
 Balanced valency. Perhaps we should also consider deviation and normalise such that the extreme values have a reasonable quantile. The problem is that many images are going to be multi-modal, so the normal distribution would be unrepresentative. Would we use balanced in the underlying of a two level model? Might also wish to standardise the deviation. 
 
 decreasing thresholds, random initial models (Probably fixed valency is not going to be evenly distributed, so start the model with a random before mode 4 to avoid the small absolute variations of texture and background, although view_decomp and limited length browsing suggests that the models are still balanced near the root), tiled driver models
+
+Can have low valency and high valency (computed) variables for the same pixel if the variables are shuffle-linked to prevent tautological alignments.
 
 Experiment with gradually declining thresholds to avoid a lot of useless non-alignments at the start of the path.
 
