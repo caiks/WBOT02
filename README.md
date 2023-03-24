@@ -2635,7 +2635,7 @@ and this is the one for mode 6 *model* 55 -
 
 ![contour004_055_minent_len_position](images/contour004_055_minent_len_position.png) 
 
-We can see that some areas that were dim around the head and neck, but are not low entropy frames, are now *modelled* in the the same locations in *model* 55. These areas were possibly ignored sibling *slices*. In general, the *model* seems to be richer around the head than before. The representation is not necessarily much more improved, however -
+We can see that some areas that were dim around the head and neck, but are not low entropy frames, are now *modelled* in the same locations in *model* 55. These areas were possibly ignored sibling *slices*. In general, the *model* seems to be richer around the head than before. The representation is not necessarily much more improved, however -
 
 ![contour004_055_minent_representation](images/contour004_055_minent_representation.png) 
 
@@ -2647,7 +2647,7 @@ to *model* 55 -
 
 ![contour005_055_representation](images/contour005_055_representation.png) 
 
-We made some videos that show where the wotbot is looking using *model* 55. We ran `actor003`
+We made some videos that show where the wotbot is looking with *model* 55. We ran `actor003`
 ```
 cd ~/WBOT02_ws
 ./WBOT02 actor003 actor.json
@@ -2683,104 +2683,38 @@ with this `actor.json` configuration -
 	"logging_action_factor" : 20
 }
 ```
+This [video](images/actor003_model055_Film_Noir_002.mp4?raw=true) from around 1:45 and this [video](images/actor003_model055_Film_Noir_003.mp4?raw=true) from around 0:17 and 1:28, usually have some frames centered on heads. Of course, this could be simply because of minimum entropy where the backgrounds are dull.
+
+##### Model 56 versus model 55
+
+model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model055|0.177|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|15,050|1.003 (1.489)|14.8|2.9|24|-0.4|0.3|-4.1|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy
+model056|0.177|5 scanned size-potential tiled actual-potential|6|fixed 5-valent|48 B&W videos|3,000,000|34,859|1.162 (1.643)|19.7|4.0|32|-0.4|0.0|-3.5|1.70|30s unique, 12.0 min diagonal,  100 threshold, 0.8 min entropy
+
+Here the difference is that *model* 56 is *5-valent* whereas *model* 55 is *10-valent*. A similar comparison was made between *model* 48 and *model* 49, both at mode 5 instead of 6. The change in both cases is very similar - the growth for the *5-valent model* is higher and the multiplier lower, but the higher moments are similar. Both of the mode 6 *models* grow faster than their corresponding mode 5 *model*.
+
+Here are some qualitative comparisons with *model* 55 on the left and *model* 56 on the right -
+
+![actor003_model055_model056_Film_Noir_002](images/actor003_model055_model056_Film_Noir_002.png) 
+
+![actor003_model055_model056_Film_Noir_003](images/actor003_model055_model056_Film_Noir_003.png) 
+
+![actor003_model055_model056_Film_Noir_005](images/actor003_model055_model056_Film_Noir_005.png) 
+
+![actor003_model055_model056_Film_Noir_006](images/actor003_model055_model056_Film_Noir_006.png) 
+
+Possibly faces are slightly less interesting to the *5-valent model* if the features are bucketed into the same *value*. This is suggested by the length maps. *Model* 56 has a large low entropy hole in middle of the face -
+
+![contour005_056_minent_length](images/contour005_056_minent_length.png) 
+
+It is much larger than the *model* 55 hole -
+
+![contour005_055_minent_length](images/contour005_055_minent_length.png) 
+
+This [video](images/actor003_model056_Film_Noir_003.mp4?raw=true) from around 1:22 shows that *model* 56 usually has some frames centered on heads, but again this could be because of minimum entropy where the backgrounds are dull.
 
 TODO -
-
-
-include the mp4 videos, actor003_model055_Film_Noir_002.mp4 from around 1:45 and actor003_model055_Film_Noir_003.mp4 from around 0:17 and 1:28 usually has some frames centered on heads, but could be because of min entropy where the backgrounds are dull
-
-describe the size-potential fix in modes 6 and 7, referenced above
-
-model 55 -
-```
-	actual		expected		diff
-1	7445	1.000	7445	0	0.00%
-1.5	10140	1.405	10464	-324	-3.09%
-2	12145	1.693	12605	-460	-3.65%
-2.5	13711	1.916	14267	-556	-3.90%
-3	15050	2.099	15624	-574	-3.67%
-```
-
-Dump the distribution of leaf slices by path length and the total size by path length to determine whether there is a large fraction of the history that could be recovered.
-
-Already have the leaf slices by path length
-```
-cd ~/WBOT02_ws
-./WBOT02 view_active_concise model055
-...
-lengthsDist: {(2,18),(3,38),(4,117),(5,226),(6,425),(7,799),(8,1400),(9,2462),(10,3947),(11,6201),(12,9102),(13,12446),(14,15461),(15,17272),(16,16489),(17,13755),(18,10150),(19,6317),(20,3282),(21,1282),(22,238),(23,42),(24,36)}
-...
-```
-
-```
-2	18	18	0.0%
-3	38	56	0.0%
-4	117	173	0.1%
-5	226	399	0.3%
-6	425	824	0.7%
-7	799	1623	1.3%
-8	1400	3023	2.5%
-9	2462	5485	4.5%
-10	3947	9432	7.8%
-11	6201	15633	12.9%
-12	9102	24735	20.4%
-13	12446	37181	30.6%
-14	15461	52642	43.3%
-15	17272	69914	57.5%
-16	16489	86403	71.1%
-17	13755	100158	82.4%
-18	10150	110308	90.8%
-19	6317	116625	96.0%
-20	3282	119907	98.7%
-21	1282	121189	99.7%
-22	238	121427	99.9%
-23	42	121469	100.0%
-24	36	121505	100.0%
-```
-The modal length 15 is at 57.5%. At 10 or below there is only 7.8%. It would only be if the kurtosis was very high would it be worthwhile. We are only going to get a small increase unless we include lengths of 13 or less.
-
-
-56 vs 55 - 5-valent higher growth and lower multiplier agrees with 48 vs 47
-
-56 -
-```
-	actual		expected		diff
-1	16426	1.000	16426	0	0.00%
-1.5	23072	1.405	23086	-14	-0.06%
-2	28027	1.693	27812	215	0.77%
-2.5	31887	1.916	31477	410	1.30%
-3	34859	2.099	34472	387	1.12%
-```
-
-56 vs 48 - mode 6 highest growth rate so far and lower multiplier, so min entropy does not make a nagative impact
-
-The woman's head has local model and is nicely distributed like model 55, so both 5-valent and 10-valent models look promising.
-
-The representations for 55 and 56 look the best of all, with 56 being better for the 003 head and 55 better for the 004 head. Perhaps scaling will help to let us resolve between the two.
-
-cf 202212091515, 202212091515, 202212151550 re demos
-
-Model 55 is more sensitive to subtle variations and is less interested in faces when there is a complex background - I suppose dark eyes, hair or collars make for strong outlines and can be readily picked up by 5-valent. A good demo nonetheless. The scene at sea is quite good because the background has too little entropy. 
-
-Model 56 has a large low entropy hole in the face, much larger than the model 55 hole, and other areas of low entropy which agrees with the actor003_model055_model056_Film_Noir_005 distribution of the frames. 
-
-Much of the clustering around the head is because of low entropy. I do not think models 55 or 56 are up to feature level.
-
-actor002_model055_Film_Noir_004.png length 20 (z 1.78)	eye and ear
-
-actor002_model055_Film_Noir_005.png length 18 (z 1.10)	eye and nose
-
-actor002_model056_Film_Noir_004.png length 26 (z 1.56)	cheek
-
-actor002_model056_Film_Noir_005.png length 26 (z 1.56)	cheek (different from 004)
-
-actor002_model056_Film_Noir_006.png length 25 (z 1.32)	forehead
-
-actor002_model056_Film_Noir_007.png length 27 (z 1.82)	eye and nose, quite good
-
-Perhaps model 56 is more feature-like than 55 because of the deeper model. Does not seem to be as good as 48/50, but of course, they were not well balanced because of size/parent-size rather than min ent. Need to move on to scaled and gradient to see if the feature alignments become more prominent. README
-
-include the mp4 videos actor003_model056_Film_Noir_003.mp4 from around 1:22 usually has some frames centered on heads, but could be because of min entropy where the backgrounds are dull - cf model 55 videos
 
 57 vs 55 - scale of 0.354, very similar statistics
 
