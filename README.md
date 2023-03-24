@@ -2593,13 +2593,99 @@ model055|0.177|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W vi
 
 In *model* 55 the effect of the mode is to increase both the growth and the multiplier. The growth probably increases because the *alignments* of the neglected siblings are probably higher than for *slices* on longer paths. The multiplier would be expected to be higher in this mode; now it is closer to the ideal multiplier of around two. The kurtosis and hyperskew are a little lower, and so the *model* is slightly more normal. *Model* 55 has many more paths (121,505 versus 98,696), so we seem to have solved the lost sibling problem.
 
+The use of *slice size* as the measure for potential *likelihood* can also be applied to non-tiled scanned actual-potential mode 4 to create scanned actual-size-potential mode 7. That is, the scanned *slices* are ordered first by path length and then by *size*. We have not used this mode in any `actor003` runs, but in an interactive `actor002` session where we grab the camera. We ran
+```
+actor002 actor.json
+
+```
+with the following configuration `actor.json` -
+```
+{
+	"model_initial" : "model055",
+	"interval" : 250,
+	"x" : 870,
+	"width" : 560,
+	"mode" : "mode007",
+	"entropy_minimum" : 1.2,
+	"valency_fixed" : true,
+	"event_size" : 1,
+	"threads" : 6,
+	"scale" : 0.177,
+	"range_centreX" : 0.0295,
+	"range_centreY" :0.022125,
+	"gui" : true,
+	"red_frame" : true,
+	"interactive" : true,
+	"interactive_examples" : true,
+	"interactive_entropies" : true,
+	"multiplier" : 1,
+	"label_size" : 16,
+	"disable_update" : true,
+	"summary_active" : false,
+	"logging_action" : false
+}
+```
+Here is a [video](images/actor002_model055_camera_001.mp4?raw=true) made using this mode. The video also demonstrates how scanning modes can track interesting foreground *slices* where the motion is fairly slow and there are not too many background features.
+
+Qualitatively, the *size* potential *likelihood* measure appears to have added *model* in areas that were previously ignored. For example, this is the length-position map for mode 5 *model* 50 -
+
+![contour004_050_minent_len_position](images/contour004_050_minent_len_position.png) 
+
+and this is the one for mode 6 *model* 55 -
+
+![contour004_055_minent_len_position](images/contour004_055_minent_len_position.png) 
+
+We can see that some areas that were dim around the head and neck, but are not low entropy frames, are now *modelled* in the the same locations in *model* 55. These areas were possibly ignored sibling *slices*. In general, the *model* seems to be richer around the head than before. The representation is not necessarily much more improved, however -
+
+![contour004_055_minent_representation](images/contour004_055_minent_representation.png) 
+
+There does seem some improvement in some cases, however. Compare *model* 50 -
+
+![contour005_050_representation](images/contour005_050_representation.png) 
+
+to *model* 55 -
+
+![contour005_055_representation](images/contour005_055_representation.png) 
+
+We made some videos that show where the wotbot is looking using *model* 55. We ran `actor003`
+```
+cd ~/WBOT02_ws
+./WBOT02 actor003 actor.json
+
+```
+with this `actor.json` configuration -
+```
+{
+	"model_initial" : "model055",
+	"video_sources" : [
+		"videos/No Man's Woman (1955) [oLiwhrvkMEU].webm"],
+	"interval" : 250,
+	"video_start" : 1,
+	"playback_rate" : 1.0,
+	"mode" : "mode007",
+	"unique_records" : 333,
+	"entropy_minimum" : 1.2,
+	"valency_fixed" : true,
+	"event_size" : 10,
+	"threads" : 8,
+	"induceThreadCount" : 7,
+	"induceParameters.diagonalMin" : 12.0,
+	"disable_update" : true,
+	"scale" : 0.177,
+	"range_centreX" : 0.75,
+	"range_centreY" :0.411,
+	"gui" : true,
+	"red_frame" : true,
+	"logging_event" : true,
+	"logging_event_factor" : 1000,
+	"summary_active" : true,
+	"logging_action" : false,
+	"logging_action_factor" : 20
+}
+```
+
 TODO -
 
-This is very revealing, now that the low entropy slices have been removed and the lengths normalised. In 004 we can see hotspots and local model the woman's SW nose, SW chin, corner of woman's left eye, centre of black hair over left ear (on the right), above the man's head on the right. The top hat is similar to the wall next to the chin. In 003 we can see less localised hotspots next to the where the hat meets the head, and between the eye at the top of the nose. There is a hotspot at the junction of the collar, sky and coat on the right. Quite a lot of the hotspots are on the edge of the min entropy areas.
-
-contour - Comparing 50 to 55 suggests that while both models are focussed on the face well, the size-potential method is better than likelihood-potential given min ent because the model seems less rich around the face.
-
-Model 55 does seem to be mostly interested in heads and bodies, like model 50. Now let's run in mode4/7 and fix the centre. First change mode5/6 rectangles. Mode 7 is more likely to be distracted by interesting background features but often does show features around heads and bodies. Mode 4/7 is more steady then mode 5/6.
 
 include the mp4 videos, actor003_model055_Film_Noir_002.mp4 from around 1:45 and actor003_model055_Film_Noir_003.mp4 from around 0:17 and 1:28 usually has some frames centered on heads, but could be because of min entropy where the backgrounds are dull
 
