@@ -1492,7 +1492,6 @@ model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W
 model062|0.177|5 scanned size-potential tiled actual-potential|6|balanced 5-valent|48 B&W videos|3,000,000|33,612|1.120 (1.634)|18.4|3.7|31|-0.2|0.2|-2.1|1.76|30s unique, 12.0 min diagonal, 0.8 min entropy
 model063|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|15,013|1.001 (1.494)|15.7|3.0|24|-0.4|0.3|-4.4|1.84|30s unique, 12.0 min diagonal, 1.0 min entropy
 
-
 The table above does not show the median and maximum *diagonals*. The median *diagonals* for the actor 2 and actor 3 *models* were consistently around 23-27, and the maximum *diagonals* were consistently around 37-39.
 
 In general, the *model* growth rate (*fuds* per *event* per threshold) is the quantitative guide for development, but other *model* statistics - path length mean, standard deviation and higher moments, and path length maximum - help us to judge whether the *model* is well balanced or distorted. See the *model* tool [view_active_concise](#view_active_concise) above. 
@@ -2128,7 +2127,7 @@ As in the case of potential *likelihood* *model* 38 [above](#Actual-contour004_0
 
 The very high filter ratio of the actual-potential *likelihood* mode (3) *model* 60 of 1 to 400 reduces the *decomposition* path step multiplier to the smallest seen so far (1.69). This suggests that in the limit a complete scan of the all of the frames within the random range would yield us the smallest possible multiplier but still have high *model* growth. In other words, we will systematically search for the best locations for wotbot's attention.
 
-The implementation of the scanned actual-potential *likelihood* mode (4) was based on the implementation of the [generate_contour](#generate_contour) functionality described above. Mode 4 first takes a record equal to the entire scanning area from the given image. Then the current *model* is *applied* to each *substrate* sub-record of the scan record in order to determine the *slice* of that frame and thence the actual-potential *likelihood* pair. Then the list of frames is sorted and the topmost are taken for *events*. To avoid a cluster of frames around the most *likely* hotspot, the selection is constrained such that the centres of the frames are at least a certain fixed fraction of a frame apart from each other. The `separation` parameter defines this distance. It defaults to half of a frame. The set of topmost frames are highlighted if the GUI is visible. The top frame's centre then becomes the centre for the next scan. 
+The implementation of the 'scanned actual-potential *likelihood*' mode (4) was based on the implementation of the [generate_contour](#generate_contour) functionality described above. Mode 4 first takes a record equal to the entire scanning area from the given image. Then the current *model* is *applied* to each *substrate* sub-record of the scan record in order to determine the *slice* of that frame and thence the actual-potential *likelihood* pair. Then the list of frames is sorted and the topmost are taken for *events*. To avoid a cluster of frames around the most *likely* hotspot, the selection is constrained such that the centres of the frames are at least a certain fixed fraction of a frame apart from each other. The `separation` parameter defines this distance. It defaults to half of a frame. The set of topmost frames are highlighted if the GUI is visible. The top frame's centre then becomes the centre for the next scan. 
 
 This process is highly compute intensive so the work is split into parallel threads. The time taken depends on the configuration. Larger scans may require processing in the cloud.
 
@@ -2159,7 +2158,7 @@ This process is highly compute intensive so the work is split into parallel thre
 ```
 The scan consists of `106 * 80 = 8,480` *model applications*. Of these, the top 10 actual-potential *likelihood* *slices* are selected for *modelling*. The factor of 848 to 1 is more than twice that of the non-scanned *model* 60, but the scan area is more localised to the centre, so the *model* is more path dependent on the action as the centre moves around.
 
-The results for various configurations can be seen in the [table](#Model_table) above. All of the mode 4 *models* use the quantile *valency* (or 'bucketed') `Record::valent` method except for *models* 25 and 65 which use the fixed *valency*  `Record::valentFixed` method. The bucketed results have multipliers of around 1.8, which is considerably lower than the bucketed non-scanned actual-potential *likelihood* mode (3) *model* multipliers of around 2.2. (Note that *models* 17 and 20 have initial *models* in non-scanned actual-potential *likelihood* mode and potential *likelihood* mode respectively, and so have intermediate multipliers.) The fixed *model* 25 also has a lower multiplier of 1.58 compared to 1.69 for *model* 60, although note that *model* 25 does not have the minimum entropy constraint. 
+The results for various configurations can be seen in the [table](#Model_table) above. All of the mode 4 *models* use the quantile *valency* (or 'bucketed') `Record::valent` method except for *models* 25 and 65 which use the fixed *valency*  `Record::valentFixed` method. The bucketed results have multipliers of around 1.8, which is considerably lower than the bucketed non-scanned 'actual-potential *likelihood*' mode (3) *model* multipliers of around 2.2. (Note that *models* 17 and 20 have initial *models* in non-scanned 'actual-potential *likelihood*' mode and potential *likelihood* mode respectively, and so have intermediate multipliers.) The fixed *model* 25 also has a lower multiplier of 1.58 compared to 1.69 for *model* 60, although note that *model* 25 does not have the minimum entropy constraint. 
 
 *Models* 21 to 24 are a series of experiments with bucketed *valency* that were trained on the Fireman Sam videos. Their configurations are all the same apart from increasing `event_maximum`. The active *history size* is 1 million *events*. Neither *models* 21 nor 22 overflow; their growth rates are very similar at 0.942 and 0.946 respectively. Both *models* 23 and 24 overflow; their growth rates decline somewhat faster than expected -
 
@@ -2177,7 +2176,7 @@ One reason why the growth rates are below expected may be to do with an issue wi
 
 The multipliers of all four *models* remain constant at 1.80. This suggests that there remains more *alignments* still to be found even on the longest paths.
 
-The scanned actual-potential *likelihood* mode (4) growth rates tend to be similar to those of the non-scanned actual-potential *likelihood* mode (3) *models* with the exception of *model* 25 which has the highest growth rate so far of 1.221 as well as the lowest multiplier. These are the *slice* path length statistics -
+The 'scanned actual-potential *likelihood*' mode (4) growth rates tend to be similar to those of the non-scanned 'actual-potential *likelihood*' mode (3) *models* with the exception of *model* 25 which has the highest growth rate so far of 1.221 as well as the lowest multiplier. These are the *slice* path length statistics -
 ```
 lengthsDist: {(1,6),(2,13),(3,23),(4,42),(5,105),(6,152),(7,285),(8,409),(9,626),(10,994),(11,1306),(12,1673),(13,1963),(14,1948),(15,2081),(16,1991),(17,1829),(18,1579),(19,1483),(20,1332),(21,1131),(22,938),(23,892),(24,782),(25,739),(26,607),(27,585),(28,572),(29,492),(30,428),(31,456),(32,375),(33,301),(34,288),(35,323),(36,260),(37,173),(38,144),(39,95),(40,64),(41,41),(42,60),(43,12),(44,6),(45,8),(46,3),(47,3),(48,7),(49,3),(50,3)}
 lengthsCount: 29631
@@ -2221,7 +2220,7 @@ The goal of WBOT02 is to specialise in frequently seen objects at varying distan
 
 In order to make a more balanced *model* able to capture fairly frequent features, we introduce the idea of tiling. We will still scan a range much larger than a single frame but, rather than finding the top hotspots in the whole scan area, we will choose a top hotspot per tile where a tile defaults to a square of width equal to a half of a frame. Once we have identified each tile's hotspot we use mode 2 potential *likelihood* to select the topmost of these hotspots for *modelling*. That is, we use local actual-potential *likelihood* and then global potential *likelihood* to avoid filling the *model* with spatially translated near duplicates, but develop the interesting parts as much as we possibly can with the resources available.
 
-In this way we expect the [growth](#Model_table) will be higher than for scanned actual-potential *likelihood* mode (4), but the multiplier will be similar or a little higher and the *model* will be at least as normally distributed. The *bivalent* or *trivalent diagonals* often seen in *induction* (e.g. these [root *fuds*](#root_fud_browse)) suggests an ideal multiplier of around 2, which is below random mode but above scanned potential *likelihood* mode. Too small a multiplier suggests frequent siblings are being ignored. Too high a multiplier will dent growth and so produce smaller *models*. Tiling modes aim to solve the convolution problem but without excessive focus on very frequent features nor excessive negligence of moderately infrequent features.
+In this way we expect the [growth](#Model_table) will be higher than for 'scanned actual-potential *likelihood*' mode (4), but the multiplier will be similar or a little higher and the *model* will be at least as normally distributed. The *bivalent* or *trivalent diagonals* often seen in *induction* (e.g. these [root *fuds*](#root_fud_browse)) suggests an ideal multiplier of around 2, which is below random mode but above scanned potential *likelihood* mode. Too small a multiplier suggests frequent siblings are being ignored. Too high a multiplier will dent growth and so produce smaller *models*. Tiling modes aim to solve the convolution problem but without excessive focus on very frequent features nor excessive negligence of moderately infrequent features.
 
 This desire for a balance between reducing the convolution *volume* and having good representations by regularly spacing hotspots is the reason the tiles default to half a frame - the region around the hotspot will then be of the same magnitude as the scale of the features that can be captured by a frame. 
 
@@ -2297,7 +2296,7 @@ model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|k
 model027|0.177|10 scanned actual-potential|4|bucketed|Film Noir|759,760|3,757|0.989|14.1|3.1|24|-0.2|0.4|-2.4|1.79|
 model029|0.177|5 scanned potential tiled actual-potential|5|bucketed|Film Noir|526,345|3,386|1.287|13.5|2.6|23|-0.4|0.8|-5.0|1.83|
 
-*Model* 29 is the first of the scanned potential tiled actual-potential mode (5) experiments. It differs from *model* 27 in the mode (scanned actual-potential mode 4). Both *models* are bucketed *valency* Film Noir. *Model* 29 has highest growth rate so far at 1.287, but the multiplier at 1.83 is similar to the mode 4 *models*. It is less normal than *model* 27. The high growth rate suggests that the balance between global potential and local actual-potential gives an advantage.
+*Model* 29 is the first of the 'scanned potential tiled actual-potential' mode (5) experiments. It differs from *model* 27 in the mode ('scanned actual-potential' mode 4). Both *models* are bucketed *valency* Film Noir. *Model* 29 has highest growth rate so far at 1.287, but the multiplier at 1.83 is similar to the mode 4 *models*. It is less normal than *model* 27. The high growth rate suggests that the balance between global potential and local actual-potential gives an advantage.
 
 ##### Model 30 versus model 29
 
@@ -2589,11 +2588,11 @@ model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|k
 model054|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|3,000,065|12,390|0.826 (1.294)|15.5|2.9|24|-0.4|0.5|-5.0|1.84|30s unique, 12.0 min diagonal, 1.2 min entropy
 model055|0.177|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|15,050|1.003 (1.489)|14.8|2.9|24|-0.4|0.3|-4.1|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy
 
-*Model* 55 is identical to *model* 54 except for its mode. A problem with calculating the potential *likelihood* in terms of the ratio between a *slice's size* and its parent's *size* is that *on-diagonal* siblings of ancestor *slices* may end up being ignored. This is because the ratio between *slice size* and parent *slice size* is only comparable where the siblings are leaf *slices*. The siblings of ancestor *slices* will probably have larger parents, and so the potential *likelihood* appears to decrease. To fix this in scanned size-potential tiled actual-potential mode (6) we simply use the *slice size* as the measure for potential *likelihood*. 
+*Model* 55 is identical to *model* 54 except for its mode. A problem with calculating the potential *likelihood* in terms of the ratio between a *slice's size* and its parent's *size* is that *on-diagonal* siblings of ancestor *slices* may end up being ignored. This is because the ratio between *slice size* and parent *slice size* is only comparable where the siblings are leaf *slices*. The siblings of ancestor *slices* will probably have larger parents, and so the potential *likelihood* appears to decrease. To fix this in 'scanned size-potential tiled actual-potential' mode (6) we simply use the *slice size* as the measure for potential *likelihood*. 
 
 In *model* 55 the effect of the mode is to increase both the growth and the multiplier. The growth probably increases because the *alignments* of the neglected siblings are probably higher than for *slices* on longer paths. The multiplier would be expected to be higher in this mode; now it is closer to the ideal multiplier of around two. The kurtosis and hyperskew are a little lower, and so the *model* is slightly more normal. *Model* 55 has many more paths (121,505 versus 98,696), so we seem to have solved the lost sibling problem.
 
-The use of *slice size* as the measure for potential *likelihood* can also be applied to non-tiled scanned actual-potential mode 4 to create scanned actual-size-potential mode 7. That is, the scanned *slices* are ordered first by path length and then by *size*. We have not used this mode in any `actor003` runs, but in an interactive `actor002` session where we grab the camera. We ran
+The use of *slice size* as the measure for potential *likelihood* can also be applied to non-tiled 'scanned actual-potential' mode 4 to create scanned actual-size-potential mode 7. That is, the scanned *slices* are ordered first by path length and then by *size*. We have not used this mode in any `actor003` runs, but in an interactive `actor002` session where we grab the camera. We ran
 ```
 actor002 actor.json
 
@@ -2692,7 +2691,7 @@ model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|k
 model055|0.177|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|15,050|1.003 (1.489)|14.8|2.9|24|-0.4|0.3|-4.1|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy
 model056|0.177|5 scanned size-potential tiled actual-potential|6|fixed 5-valent|48 B&W videos|3,000,000|34,859|1.162 (1.643)|19.7|4.0|32|-0.4|0.0|-3.5|1.70|30s unique, 12.0 min diagonal,  100 threshold, 0.8 min entropy
 
-Here the difference is that *model* 56 is *5-valent* whereas *model* 55 is *10-valent*. A similar comparison was made between *model* 48 and *model* 49, both at mode 5 instead of 6. The change in both cases is very similar - the growth for the *5-valent model* is higher and the multiplier lower, but the higher moments are similar. Both of the mode 6 *models* grow faster than their corresponding mode 5 *model*.
+Here the difference is that *model* 56 is *5-valent* whereas *model* 55 is *10-valent*. A similar comparison was made between *model* 48 and *model* 49, both at non-tiled mode 5 instead of mode 6. The change in both cases is very similar - the growth for the *5-valent model* is higher and the multiplier lower, but the higher moments are similar. Both of the mode 6 *models* grow faster than their corresponding mode 5 *model*.
 
 Here are some qualitative comparisons with *model* 55 on the left and *model* 56 on the right -
 
@@ -2704,63 +2703,44 @@ Here are some qualitative comparisons with *model* 55 on the left and *model* 56
 
 ![actor003_model055_model056_Film_Noir_006](images/actor003_model055_model056_Film_Noir_006.png) 
 
-Possibly faces are slightly less interesting to the *5-valent model* if the features are bucketed into the same *value*. This is suggested by the length maps. *Model* 56 has a large low entropy hole in middle of the face -
+Possibly faces are slightly less interesting to the *5-valent model* if the features are bucketed into the same *value*. This is suggested by the length maps. *Model* 56 has fewer hotspots around the face and has a large low entropy hole in middle of the face -
 
 ![contour005_056_minent_length](images/contour005_056_minent_length.png) 
 
-It is much larger than the *model* 55 hole -
+*Model* 55 has more hotspots and a smaller low entropy hole -
 
 ![contour005_055_minent_length](images/contour005_055_minent_length.png) 
 
-This [video](images/actor003_model056_Film_Noir_003.mp4?raw=true) from around 1:22 shows that *model* 56 usually has some frames centered on heads, but again this could be because of minimum entropy where the backgrounds are dull.
+This [video](images/actor003_model056_Film_Noir_003.mp4?raw=true) from around 1:22 shows that *model* 56 usually has some frames centered on heads, but again this could be because of minimum entropy restricting the attention to heads and bodies where the backgrounds are dull.
 
-TODO -
+##### Models 57 and 58 versus model 55
 
-57 vs 55 - scale of 0.354, very similar statistics
+model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model055|0.177|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|15,050|1.003 (1.489)|14.8|2.9|24|-0.4|0.3|-4.1|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy
+model057|0.354|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|15,433|1.003 (1.480)|15.5|3.2|25|-0.2|0.2|-2.4|1.86|30s unique, 12.0 min diagonal, 1.2 min entropy
+model058|0.088|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|13,999|0.933 (1.447)|15.4|3.0|25|-0.5|0.3|-4.9|1.86|30s unique, 12.0 min diagonal, 1.2 min entropy
 
-Growth model 57 -
+Here we test the *model* 55 configuration's sensitivity to scale. *Model* 57 doubles the scale, and *Model* 58 halves the scale. The statistics in both cases are very similar to the statistics of *model* 55, although the growth is a little reduced for the smaller scale.
 
-```
-~/tmp/growth057.ods
-```
-```
-	actual			expected		diff
-1	7402	1.000	7402	0		0.00%
-1.5	10115	1.405	10403	-288	-2.77%
-2	12306	1.693	12533	-227	-1.81%
-2.5	14058	1.916	14184	-126	-0.89%
-3	15433	2.099	15534	-101	-0.65%
-```
-Declines a bit less than model 55. Similar at 1m - model 55 has 7445 fuds.
+Let us compare the representations side by side in descending order of scale -
 
-The model 57 representations are not too bad, especially 004.
+![contour003_057_minent_representation](images/contour003_057_minent_representation.png) ![contour003_055_minent_representation](images/contour003_055_minent_representation.png) ![contour003_058_minent_representation](images/contour003_058_minent_representation.png)  
+ 
+![contour004_057_minent_representation](images/contour004_057_minent_representation.png) ![contour004_055_minent_representation](images/contour004_055_minent_representation.png) ![contour004_058_minent_representation](images/contour004_058_minent_representation.png)  
 
-faces seem much less frequent when browsing
+![contour005_057_minent_representation](images/contour005_057_minent_representation.png) ![contour005_055_minent_representation](images/contour005_055_minent_representation.png) ![contour005_058_minent_representation](images/contour005_058_minent_representation.png)  
+ 
+Clearly the whole image improves with decreasing scale, but this is probably not because of better *modelling* of features.
 
-58 vs 55 - scale of 0.088, slightly reduced growth, similar multiplier
+##### Model 59 versus model 55
 
-58 -
-```
-	actual		expected		diff
-1	7235	1.000	7235	0	0.00%
-1.5	9698	1.405	10169	-471	-4.63%
-2	11484	1.693	12250	-766	-6.25%
-2.5	12886	1.916	13864	-978	-7.06%
-3	13999	2.099	15183	-1184	-7.80%
-```
-Declines relatively quickly.
+model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model055|0.177|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|15,050|1.003 (1.489)|14.8|2.9|24|-0.4|0.3|-4.1|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy
+model059|0.177|5 scanned active-size-potential tiled actual-potential|8|fixed|48 B&W videos|3,000,000|16,735|1.116 (1.501)|15.2|2.8|23|-0.6|0.6|-6.2|1.90|30s unique, 12.0 min diagonal, 1.2 min entropy
 
-The representations are the best so far. There is lots of different model around faces. Clearly if we are not capturing features at larger scales very well, then at smaller we can at least capture detail - implies that a two level model might be interesting.
-
-already mentioned above at 'Clearly the smaller scale model captures smaller features more closely.'
-
-58 has the best contour003, contour004 and contour005 by far of all models
-
-For scale 0.177, interesting parts of faces are sometimes not covered by the model very well because they are off-hotspot so have weak representations.
-
-59 vs 55 - mode 7, highest 10-valent growth both to 1m and greater than expected to 3m, similar multiplier
-
-cf model 55 -
+Here we considered the question of growth in overflow. Mode 'scanned active-size-potential tiled actual-potential' (8) uses the active *history slice size* rather than the accumulated cached *slice size*. Before overflow, mode 8 and mode 6 should be exactly the same. Afterwards, mode 8 should give some advantage for a while, although perhaps there might be a disadvantage later on when there is a preponderance of long paths with few remaining *alignments*. Comparing the *models* above we can see that there is a growth advantage for the active-size-potential mode, but at the cost of a more negatively skewed path length distribution and higher kurtosis. These are the overflow statistics for *model* 55 -
 
 million-events|actual fuds|1+ln(million-events)|expected fuds|difference|difference percent
 ---|---|---|---|---|---
@@ -2770,7 +2750,7 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 2.5|13711|1.916|14267|-556|-3.90%
 3|15050|2.099|15624|-574|-3.67%
 
-So active-size potential does have an advantage of around 10%. The advantage is probably increasing so might be an idead to run to 4 times, but there are decreasing returns of course - would have to run to 7m to triple the model, although would be interesting to test.
+These are the overflow statistics for *model* 59 -
 
 million-events|actual fuds|1+ln(million-events)|expected fuds|difference|difference percent
 ---|---|---|---|---|---
@@ -2780,117 +2760,54 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 2.5|14,834|1.916|14,382|452|3.14%
 3|16,735|2.099|15,750|985|6.25%
 
-Very similar model stats to 55 - variations may be just random, but it looks like 59 is slightly less normal.
+So the active-size potential mode does have growth advantage in overflow of up to 10%. This advantage does not seem so great, however, compared to the diminishing returns of logarithmic growth in overflow. There may be other smarter methods to manage the rolling of *events* out of the active *history*, but it is probably the case that a passive observer will always eventually end up with a negligible growth rate.
 
-The hotspots seem to be different and perhaps less focussed on the face. There seems to be more ignored regions, so the active history is probably biasing towards parts of the model that happen to be most recent. While this mode does increase the model, it is probably more random/path-dependent as to which parts of the model have the most attention.
+If we compare the length-position map for *model* 55 -
 
-Tiled scanning and growth in overflow. In the models so far we have only been using around 24 tiles and we are taking 5 events. If we have 6 scales, but take the same number of events we might see growth decline much more slowly. However, it is somewhat surprising that the 1 in 5 potential ratio does not give us some benefit over random. Also model 24 (scanned mode 4) lags far behind so either the alignments are declining at the top of the model or the fact that the children split into half a threshold because actual rather than potential. So the actual tiling depresses growth, but not quite as much as actual scanning. Potential lifts growth both before and after overflow. Higher potential fractions should improve it more.
+![contour005_055_minent_len_position](images/contour005_055_minent_len_position.png)
 
-61 vs 55 - balanced vs fixed, growth a little down but multiplier and stats very similar
+to the map for *model* 59 -
 
-61 second best representation for contour 3 and 5 and third best for 4
+![contour005_059_minent_len_position](images/contour005_059_minent_len_position.png)
 
-balanced valency -  The current substrate doesn't handle lighting levels or skin tones without perhaps creating whole brightness translated copies of models. Easier to implement than edge detection which is also absolute brightness independent. Perhaps as an analogy to multi-scale we could consider multi-lighting. Perhaps we should do the bucketing based on the larger tiled area. Or perhaps we should detect the overall lighting and simply translate the fixed, with the bottom and top values larger or smaller as needed. Of course, films are set at the lighting levels desired by the director, and the light or dark is meaningful. Edge detection, being relative, in addition to surface might well be better.
+it suggests that perhaps mode 8 produces a less diverse *model* with more prematurely pruned paths, but possibly with more hotspots and some longer paths. This is the effect that we would expect if the mode is biasing attention towards parts of the *model* that happen to be most recent. Whether this increases or decreases feature capture is probably randomly path-dependent.
 
-actor002_model053_Film_Noir_002_fixed.png versus  actor002_model053_Film_Noir_002_balanced.png
+##### Model 61 versus model 55
 
-```
-lengthsDist: {(1,4),(2,18),(3,48),(4,104),(5,190),(6,413),(7,831),(8,1539),(9,2552),(10,4247),(11,6562),(12,9256),(13,12453),(14,16216),(15,17306),(16,17081),(17,14041),(18,9570),(19,5226),(20,1904),(21,531),(22,107)}
-lengthsCount: 120199
-lengthsMean: 14.5965
-lengthsDeviation: 2.81447
-lengthsSkewness: -0.489616
-lengthsKurtosisExcess: 0.306854
-lengthsHyperSkewness: -4.87173
-```
+model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model055|0.177|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|15,050|1.003 (1.489)|14.8|2.9|24|-0.4|0.3|-4.1|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy
+model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
 
-million-events|actual fuds|1+ln(million-events)|expected fuds|difference|difference percent
----|---|---|---|---|---
-1|7,286|1.000|7,286|0|0.00%
-1.5|9,820|1.405|10,240|-420|-4.10%
-2|11,665|1.693|12,336|-671|-5.44%
-2.5|13,156|1.916|13,962|-806|-5.77%
-3|14,246|2.099|15,290|-1044|-6.83%
+In the section on [Records and representations](#Records_and_representations) above we mentioned a variation of the fixed *valency* method, called balanced *valency*, which is to calculate the average brightness of the record and then add the difference between the mid point of the brightness (127) and the average brightness to each cell's brightness before dividing it into regular intervals. This method adjusts the mean brightness, but not the deviation, so there may be a loss of information around the extreme *values*. *Model* 61 has the same configuration as *model* 55 except that it uses balanced *valency*. The quantitative effect seems to be to reduce the growth a little and increase the negative skew a little. Qualitatively, there seems to be a slight improvement in the representations when compared side by side -
 
-declining quicker than 55
+![contour003_055_minent_representation](images/contour003_055_minent_representation.png) ![contour003_061_minent_representation](images/contour003_061_minent_representation.png)  
+ 
+![contour004_055_minent_representation](images/contour004_055_minent_representation.png) ![contour004_061_minent_representation](images/contour004_061_minent_representation.png)  
 
-The representations are very different between 55 and 61. The face is considerably better in 61 but shoulders are worse. Most of the interest in the length images seems to be on the face rather than around the edge of the face. The problem with image 5 is that there is a low entropy area in the middle of the face. Perhaps we should have a lower min entropy for balanced.
+![contour005_055_minent_representation](images/contour005_055_minent_representation.png) ![contour005_061_minent_representation](images/contour005_061_minent_representation.png)   
 
-Again the face representation is better. The position map suggests that the modelling of the face is much more detailed with fewer 'shadows'. The length images certainly look much more like faces with lots of interest below the lip and around the jaw. The greatest interest in 55 is well past to the SW of the chin.
+We can see this in the position maps too, where the balanced *valancy model* appears to have more detail around the face -
 
-The contour 3 face is too small for this scale. The representation is slightly better.
+![contour005_055_minent_position](images/contour005_055_minent_position.png) ![contour005_061_minent_position](images/contour005_061_minent_position.png) 
 
-"wotbot should be able to track it until something else more interesting appears" - put an example of a video and model of the wotbot tracking successfully. Use a model from actor 3, since more reproducible.
+The fixed *valency* method does not handle lighting levels or skin tones without perhaps creating whole brightness translated copies of *models*. Analogous to multi-scale, we can think of balanced *valency* as 'multi-lighting'. 
 
-In windows -
+*Model* 61 seems to be no worse at capturing features, for example -
 
-```
-actor002 actor.json
+![actor002_model061_Film_Noir_002](images/actor002_model061_Film_Noir_002.png) 
 
-```
+![actor002_model061_Film_Noir_007](images/actor002_model061_Film_Noir_007.png) 
 
-actor.json -
-```
-{
-	"model_initial" : "model061",
-	"interval" : 250,
-	"x" : 870,
-	"width" : 560,
-	"mode" : "mode006",
-	"entropy_minimum" : 1.2,
-	"valency_balanced" : true,
-	"event_size" : 1,
-	"threads" : 6,
-	"scale" : 0.177,
-	"range_centreX" : 0.118,
-	"range_centreY" :0.0885,
-	"gui" : true,
-	"red_frame" : true,
-	"interactive" : true,
-	"interactive_examples" : true,
-	"interactive_entropies" : true,
-	"multiplier" : 1,
-	"label_size" : 16,
-	"disable_update" : true,
-	"summary_active" : false,
-	"logging_action" : false
-}
-```
+![actor002_model061_Film_Noir_008](images/actor002_model061_Film_Noir_008.png) 
 
-actor.json -
-```
-{
-	"model_initial" : "model061",
-	"interval" : 250,
-	"x" : 870,
-	"width" : 560,
-	"mode" : "mode004",
-	"entropy_minimum" : 1.2,
-	"valency_balanced" : true,
-	"event_size" : 1,
-	"threads" : 6,
-	"scale" : 0.177,
-	"range_centreX" : 0.059,
-	"range_centreY" :0.04425,
-	"gui" : true,
-	"red_frame" : true,
-	"interactive" : true,
-	"interactive_examples" : true,
-	"interactive_entropies" : true,
-	"multiplier" : 1,
-	"label_size" : 16,
-	"disable_update" : true,
-	"summary_active" : false,
-	"logging_action" : false
-}
-```
-The centre is more stable in mode 4. Better demo than mode 6.
+![actor002_model061_Film_Noir_009](images/actor002_model061_Film_Noir_009.png) 
 
-include demo videos
+However, we must bear in mind that it has no sense of global *alignments* and is really only capturing areas of dullness and brightness -
 
-put screenshots in for model 61
+![actor002_model061_Film_Noir_003](images/actor002_model061_Film_Noir_003.png) 
 
-If we can sometimes see eye examples mixed in with unrelated examples that tells us that we have detected only a dark central area not that we have classified eyes at this level. We will have to go one level up to be sure of detecting eyes. 
+TODO -
 
 62 vs 61 - 5-valent vs 10-valent
 
@@ -2915,6 +2832,8 @@ So far 61 is the best model wrt interesting features.
 The conclusion to this stage is that we are beginning to see features classified together with the compute resources so far, but we will need new substrates and structures to make further progress especially because proper classification requires dynamic gradients and ideally temporal agent manipulation to separate objects from background. For example ornaments sitting on shelves are not grouped together as bowls, vases, statuettes, etc regardless of the shelf. Multi-scale will be able to improve this for faces which appear frequently at different distances but objects infrequently seen in film noir would require embodied interactional experience - the sort of knowledge acquired by infants playing with toys.
 
 63 vs 61 - only diff is min entropy lowered to 1.0, growth a little higher and multiplier a little lower, mean and mode and max higher, deviation higher, slightly more normal
+
+The problem with image 5 is that there is a low entropy area in the middle of the face. Perhaps we should have a lower min entropy for balanced.
 
 ```
 lengthsDist: {(1,3),(2,16),(3,50),(4,76),(5,121),(6,254),(7,498),(8,926),(9,1719),(10,2818),(11,4552),(12,7041),(13,9810),(14,13204),(15,15627),(16,17001),(17,16271),(18,14115),(19,10759),(20,6792),(21,3503),(22,1246),(23,357),(24,40)}
@@ -3007,6 +2926,9 @@ decreasing thresholds, random initial models (Probably fixed valency is not goin
 Can have low valency and high valency (computed) variables for the same pixel if the variables are shuffle-linked to prevent tautological alignments.
 
 Experiment with gradually declining thresholds to avoid a lot of useless non-alignments at the start of the path.
+
+Balanced valency compared to edge detection. Easier to implement than edge detection which is also absolute brightness independent. Perhaps we should do the bucketing based on the larger tiled area. Or perhaps we should detect the overall lighting and simply translate the fixed, with the bottom and top values larger or smaller as needed. Of course, films are set at the lighting levels desired by the director, and the light or dark is meaningful. Edge detection, being relative, in addition to surface might well be better.
+
 
 Remodelling. Driver models. If we remodel by inducing a new model from the history, remember that the sample is only representative for the hotspots of the old model. I suppose, however, the new model will only be a tidying up of weakened alignments and lopsidedness, so the new hotspots will proabably be fine and new samples will still be likely and representative.
 
