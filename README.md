@@ -2818,18 +2818,24 @@ model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|k
 model056|0.177|5 scanned size-potential tiled actual-potential|6|fixed 5-valent|48 B&W videos|3,000,000|34,859|1.162 (1.643)|19.7|4.0|32|-0.4|0.0|-3.5|1.70|30s unique, 12.0 min diagonal,  100 threshold, 0.8 min entropy
 model062|0.177|5 scanned size-potential tiled actual-potential|6|balanced 5-valent|48 B&W videos|3,000,000|33,612|1.120 (1.634)|18.4|3.7|31|-0.2|0.2|-2.1|1.76|30s unique, 12.0 min diagonal, 0.8 min entropy
 
-In this comparison we test the effect of balanced *valency* in the *5-valent* case. Quantitatively, the statistics are very similar.
+In this comparison we test the effect of balanced *valency* in the *5-valent* case. Quantitatively, the statistics are very similar. Qualitatively, the representation is perhaps slightly better, although still inferior to the *10-valent* equivalent, *model* 61 -
 
 ![contour005_056_representation](images/contour005_056_representation.png) ![contour005_062_minent_representation](images/contour005_062_minent_representation.png) 
 
+Of course, we would expect that with a lower granularity the benefit of balanced *valency* would be lower, but it is clear that higher *valency models* are significantly better regardless of the bucketing method. That is, the benefit of lower threshold is outweighed by the extra information in the *variables*. It suggests that we should consider going up to *15-valency* or to introduce linked *variables* (i.e. those that are shuffled together) for higher still.
+
+From the evidence of this and the previous comparison we can also guess that balanced *valency* is probably better than fixed *valency*.
+
+##### Model 63 versus model 61
+
+model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
+model063|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|15,013|1.001 (1.494)|15.7|3.0|24|-0.4|0.3|-4.4|1.84|30s unique, 12.0 min diagonal, 1.0 min entropy
+
+The balanced *valency* method slightly modifies the areas where the minimum entropy cutoff takes place, but there still remains an entropy hole in the face of the image of the man facing right. In *model* 63 we reduced the minimum entropy from 1.2 to 1.0.
 
 TODO -
-
-62 vs 56 - balanced 5-valent vs fixed 5-valent, growth a little down and multiplier a little up but stats very similar. 62 is a little more normal
-
-Representation not as good as 61, in the same way that 56 is not as good as 55, but the face is better than 56. Position does not look as detailed around the face as 61. Hotspots are still on the face. The 62 position is more detailed in the middle of the face and less around the edges compared to 56. The entropy is too high for contour 5, although better than for 56, so sometimes balanced helps with low entropy (would expect to be worse overall).
-
-Conclude that balanced is better than fixed in that it is interested in faces more, although the representations resemble the bucketed more. Also 10-valent is better than 5-valent even though the model is twice as large and the path length is nearly 4 greater. The lower multipliers of 5-valent seem to be specialising in something other than faces.
 
 So far 61 is the best model wrt interesting features.
 
