@@ -2818,7 +2818,10 @@ model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|k
 model056|0.177|5 scanned size-potential tiled actual-potential|6|fixed 5-valent|48 B&W videos|3,000,000|34,859|1.162 (1.643)|19.7|4.0|32|-0.4|0.0|-3.5|1.70|30s unique, 12.0 min diagonal,  100 threshold, 0.8 min entropy
 model062|0.177|5 scanned size-potential tiled actual-potential|6|balanced 5-valent|48 B&W videos|3,000,000|33,612|1.120 (1.634)|18.4|3.7|31|-0.2|0.2|-2.1|1.76|30s unique, 12.0 min diagonal, 0.8 min entropy
 
-In this comparison we test the effect of balanced *valency* in the *5-valent* case. 
+In this comparison we test the effect of balanced *valency* in the *5-valent* case. Quantitatively, the statistics are very similar.
+
+![contour005_056_representation](images/contour005_056_representation.png) ![contour005_062_minent_representation](images/contour005_062_minent_representation.png) 
+
 
 TODO -
 
