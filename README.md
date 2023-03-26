@@ -2711,6 +2711,10 @@ Possibly faces are slightly less interesting to the *5-valent model* if the feat
 
 ![contour005_055_minent_length](images/contour005_055_minent_length.png) 
 
+The representation of *model* 56 seems to be a little worse -
+
+![contour005_056_representation](images/contour005_056_representation.png) 
+
 This [video](images/actor003_model056_Film_Noir_003.mp4?raw=true) from around 1:22 shows that *model* 56 usually has some frames centered on heads, but again this could be because of minimum entropy restricting the attention to heads and bodies where the backgrounds are dull.
 
 ##### Models 57 and 58 versus model 55
@@ -2803,25 +2807,22 @@ The fixed *valency* method does not handle lighting levels or skin tones without
 
 ![actor002_model061_Film_Noir_009](images/actor002_model061_Film_Noir_009.png) 
 
-However, we must bear in mind that it has no sense of global *alignments* and is really only capturing areas of dullness and brightness -
+However, we must bear in mind that it has no sense of global *alignments* - it is really only capturing areas of dullness and brightness. For example, here we can see faces and heads are seen in the example *events* of an abstract frame -
 
 ![actor002_model061_Film_Noir_003](images/actor002_model061_Film_Noir_003.png) 
 
+##### Model 62 versus model 56
+
+model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model056|0.177|5 scanned size-potential tiled actual-potential|6|fixed 5-valent|48 B&W videos|3,000,000|34,859|1.162 (1.643)|19.7|4.0|32|-0.4|0.0|-3.5|1.70|30s unique, 12.0 min diagonal,  100 threshold, 0.8 min entropy
+model062|0.177|5 scanned size-potential tiled actual-potential|6|balanced 5-valent|48 B&W videos|3,000,000|33,612|1.120 (1.634)|18.4|3.7|31|-0.2|0.2|-2.1|1.76|30s unique, 12.0 min diagonal, 0.8 min entropy
+
+In this comparison we test the effect of balanced *valency* in the *5-valent* case. 
+
 TODO -
 
-62 vs 61 - 5-valent vs 10-valent
-
-5-valent between 4-18 underlying mean 6.37, mode 6, same dev as 10-valent, so little difference to underlying due to lower valency
-
 62 vs 56 - balanced 5-valent vs fixed 5-valent, growth a little down and multiplier a little up but stats very similar. 62 is a little more normal
-
-million-events|actual fuds|1+ln(million-events)|expected fuds|difference|difference percent
----|---|---|---|---|---
-1|16,335|1.000|16,335|0|0.00%
-1.5|21,768|1.405|22,958|-1190|-5.18%
-2|26,582|1.693|27,658|-1076|-3.89%
-2.5|30,690|1.916|31,303|-613|-1.96%
-3|33,612|2.099|34,281|-669|-1.95%
 
 Representation not as good as 61, in the same way that 56 is not as good as 55, but the face is better than 56. Position does not look as detailed around the face as 61. Hotspots are still on the face. The 62 position is more detailed in the middle of the face and less around the edges compared to 56. The entropy is too high for contour 5, although better than for 56, so sometimes balanced helps with low entropy (would expect to be worse overall).
 
