@@ -2534,6 +2534,8 @@ Qualitatively, *model* 50 is picking up features, for example -
 
 ![actor002_model050_Film_Noir_002](images/actor002_model050_Film_Noir_002.png) 
 
+<a name="chin_example"></a>
+
 ![actor002_model050_Film_Noir_005](images/actor002_model050_Film_Noir_005.png) 
 
 ![actor002_model050_Film_Noir_006](images/actor002_model050_Film_Noir_006.png) 
@@ -2833,65 +2835,35 @@ model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|k
 model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
 model063|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|15,013|1.001 (1.494)|15.7|3.0|24|-0.4|0.3|-4.4|1.84|30s unique, 12.0 min diagonal, 1.0 min entropy
 
-The balanced *valency* method slightly modifies the areas where the minimum entropy cutoff takes place, but there still remains an entropy hole in the face of the image of the man facing right. In *model* 63 we reduced the minimum entropy from 1.2 to 1.0.
+The balanced *valency* method slightly modifies the areas where the minimum entropy cutoff takes place, but there still remains an entropy hole in the face of the image of the man facing right. In *model* 63 we reduced the minimum entropy from 1.2 to 1.0. The effect is to increase growth a little, but reduce the multiplier. Perhaps lower entropy *events* are making the *diagonals* more lopsided. If we compare the representations,
 
-TODO -
+![contour005_061_minent_representation](images/contour005_061_minent_representation.png) ![contour005_063_minent_representation](images/contour005_063_minent_representation.png)  
 
-So far 61 is the best model wrt interesting features.
+it appears that attention moves away slightly from the face and towards background features. This dilution of facial features is also shown by the length-position maps -
+ 
+![contour005_061_minent_len_position](images/contour005_061_minent_len_position.png) ![contour005_063_minent_len_position](images/contour005_063_minent_len_position.png)  
 
-The conclusion to this stage is that we are beginning to see features classified together with the compute resources so far, but we will need new substrates and structures to make further progress especially because proper classification requires dynamic gradients and ideally temporal agent manipulation to separate objects from background. For example ornaments sitting on shelves are not grouped together as bowls, vases, statuettes, etc regardless of the shelf. Multi-scale will be able to improve this for faces which appear frequently at different distances but objects infrequently seen in film noir would require embodied interactional experience - the sort of knowledge acquired by infants playing with toys.
+Although the low entropy hole is smaller, we can see that the *model* is less detailed around the face and there are fewer hotspots. The conclusion is that if we wish to concentrate on foreground features we should retain the higher mimimum entropy.
 
-63 vs 61 - only diff is min entropy lowered to 1.0, growth a little higher and multiplier a little lower, mean and mode and max higher, deviation higher, slightly more normal
+###### Tiled scanned model conclusion
 
-The problem with image 5 is that there is a low entropy area in the middle of the face. Perhaps we should have a lower min entropy for balanced.
+Having compared the tiled scanning *models*, let us make some concluding remarks. So far, it appears that with the `actor003` configuration of *model* 61 - mode 'scanned size-potential tiled actual-potential' (6) with balanced *valency*, unique frames, minimum *diagonal*, minimum frame entropy, and a large set of Film Noir videos - we are beginning to see interesting features *classified* together. Although we have perhaps made some progress there are some points to consider.
 
-```
-lengthsDist: {(1,3),(2,16),(3,50),(4,76),(5,121),(6,254),(7,498),(8,926),(9,1719),(10,2818),(11,4552),(12,7041),(13,9810),(14,13204),(15,15627),(16,17001),(17,16271),(18,14115),(19,10759),(20,6792),(21,3503),(22,1246),(23,357),(24,40)}
-lengthsCount: 126799
-lengthsMean: 15.7069
-lengthsDeviation: 3.01358
-lengthsSkewness: -0.412472
-lengthsKurtosisExcess: 0.250724
-lengthsHyperSkewness: -4.40199
-```
+We discussed [above](#highlight_underlying) how to set `highlight_underlying` in the configuration for `actor002` in order to view the *underlying variables* of a *fud* in the *slice* representations. The examples given there, of *model* 52 and *model* 61, showed that the clusters of *underlying* are much smaller than intermediate scale features such as eyes. The average cardinality of *underlying variables* for the *fuds* of *model* 61 is 6.16. If we consider a path length of 21 *fuds*, the maximum coverage of the *substrate* of 1600 *variables* is only 8%. That is, in determining a *slice*, even at a hotspot, only a small fraction of the *substrate* is used. Near the root, the *underlying* clusters tend to be in the periphery of the frame, presumably around the steepest gradients of an average central brightness. Only towards the end of long paths do the clusters appear around features which may or may not be in the middle of the frame. So the *models* can only capture global frame-wide *alignments* indirectly over many *fuds* rather than directly in single *fuds*. In addition, because of the peripheral nature of the root clusters, small offsets to the location or size of a feature are likely to result in duplicated *model*, in spite of scanning for hotspots to handle convolved small translations. We have seen in several examples that *slices* which qualitatively appear to capture a feature, such as a chin, also contain example *events* that do not exhibit the global *alignments* of the feature, and so the representation might have the outline of a chin and nose, but no lips - see [this example](#chin_example).
 
-63 third best representation for contour 3 and 5
-
-million-events|actual fuds|1+ln(million-events)|expected fuds|difference|difference percent
----|---|---|---|---|---
-1|7,468|1.000|7,468|0|0.00%
-1.5|10,127|1.405|10,496|-369|-3.52%
-2|12,146|1.693|12,644|-498|-3.94%
-2.5|13,755|1.916|14,311|-556|-3.88%
-3|15,013|2.099|15,672|-659|-4.21%
-
-decline in growth is less
-
-Contour - 005 63 vs 61 seems to have fewer hotspots around the face. The face, head and shoulders are less complex in the position model. We have probably diluted the frequency of face events. The 61 representation is better especially around face, but perhaps 63 has the edge in representing the background.
-
-004 63 has less emphasis on face too. Representation of 63 is generally worse.
-
-003 same as above. The conclusion is that we should stick with the higher entropy to keep the frequency of interesting features as high as possible.
-
-In the case of model 61 n is 22 and the mean is 14.6 which implies a p of 0.66 assuming the normal mean equals the binomial mean. For 63 p is 0.65 which is too low cf 52 discussion of binomial above. 
-
-END TODO
-
-Having compared the tiled scanning *models*, let us make some concluding remarks.
-
-We discussed [above](#highlight_underlying) how to set `highlight_underlying` in the configuration for `actor002` in order to view the *underlying variables* of a *fud* in the *slice* representations. The examples given there, of *model* 52 and *model* 61, showed that the clusters of *underlying* are much smaller than intermediate scale features such as eyes. The average cardinality of *underlying variables* for the *fuds* of *model* 61 is 6.16. If we consider a path length of 21 *fuds*, the maximum coverage of the *substrate* is only 8%. That is, in determining a *slice*, even at a hotspot, only a small fraction of the *substrate* is used. Near the root, the *underlying* clusters tend to be in the periphery of the frame, presumably around the steepest gradients of an average central brightness. Only towards the end of long paths do the clusters appear around features which may or may not be in the middle of the frame. So the *models* can only capture global frame-wide *alignments* indirectly over many *fuds* rather than directly in single *fuds*. In addition, because of the peripheral nature of the root clusters, small offsets to the location or size of a feature are likely to result in duplicated *model*, in spite of scanning for hotspots to handle convolved small translations. We have seen in several examples that *slices* which qualitatively appear to capture a feature, such as two eyes, also contain example *events* that do not exhibit the global *alignments* of the feature, e.g. they have two dark patches for the eyes but nothing corresponding to the bridge of a nose. TODO reference an example.
-
-Spreading feature *events* intermixed with non-feature *events* over many *slices* at the end of long paths means that *models* with large *substrates* which dilute the *underlying* are unlikely to be (a) practicable, (b) accurate, or (c) *aligned* with other *underlying* in higher *level models*. This conclusion suggests that no amount of adjusting of single *level models*, such as adding minimum entropy constraints or balanced *valency* or edge detection hints, will be sufficient to make progress with a wotbot.
+Spreading feature *events* intermixed with non-feature *events* over many *slices* at the end of long paths means that *models* with large *substrates* which dilute the *underlying* are unlikely to be (a) practicable and accurate feature detectors, or (b) *aligned* with other *underlying models* in higher *level* structures. This conclusion suggests that no amount of adjusting of single *level models*, such as adding minimum entropy constraints or balanced *valency* or edge detection hints, will be sufficient to make progress with a wotbot.
 
 In addition, scanning in any mode is compute intensive for large areas. This is the case for a single scale, so for multi-scale we would have to run our experiments on large servers in the cloud. Scanning the *multi-level models* required to capture global *alignments*, would be slower still and difficult to implement. We will have to focus on using *slice* topologies instead of scanning to maintain high growth rates and moderate multipliers. We can, however, still do local scans of *substrate models*, such as the centre *underlying* of a two *level model*, to find the local hotspots.
 
-Another problem is the inherent limit to *model* growth of a passive observer. While the wotbot can direct its gaze it is not in control of the *events* available to it and so does not grow more than expected. Before *history* overflow, *fud* growth per *event* per threshold is limited to a theoretical maximum of around two; *model* growth per second is also limited by the rate at which *events* are obtained. Scanning modes have good *fud* growth but the compute requirements reduce *model* growth per second. In overflow we have seen above that actual-potential *likelihood* modes tend to be below the theoretical growth rates as *events* roll off. Using active *size* rather than accumulated *size* pushes the rate a little above the expected overflow rate, but not enough to prevent negligible rates after a few multiples of overflow. The way to overcome this limitation is to have more control over the environment. An infant, for example, has more agency and can vary the amount of attention given to a toy. Thus a small number of *slices* will receive a concentrated sequence of similar *events* repeatedly passing the threshold for *induction* in a short time. So an agent can overcome the overflow problem with 'burstiness'. Perhaps initially unusual *slices* attract attention (or fear) and then the momentum of *event* acquistion (possibly at a safe distance) carries the *slice* from negative *likelihood* through the zero *likelihood* doldrums into positive *likelihood* and then past the induce threshold. In this way, even with limited *history size* and compute resources, *models* could grow at reasonable rates indefinitely, given a suitably rich environment. We will have to give the wotbot locomotion and manipulation eventually. Patient watching of videos, especially the non-natural productions of Film Noir Hollywood, can only take us so far. 
+Another problem is the inherent limit to *model* growth of a passive observer. While the wotbot can direct its gaze it is not in control of the *events* available to it and so does not grow more than expected. Before *history* overflow, *fud* growth per *event* per threshold is limited to a theoretical maximum of around two; *model* growth per second is also limited by the rate at which *events* are obtained. Scanning modes have good *fud* growth but the compute requirements reduce *model* growth per second. In overflow, we have seen above that actual-potential *likelihood* modes tend to be below the theoretical growth rates as *events* roll off. Using active *size* rather than accumulated *size* pushes the rate a little above the expected overflow rate, but not enough to prevent negligible rates after a few multiples of overflow. The way to overcome this limitation is to be able to control the environment. An infant, for example, has agency and can vary the amount of attention given to a toy. Thus a small number of *slices* will receive a concentrated sequence of similar *events* repeatedly passing the threshold for *induction* in a short time. In other words an agent can overcome the overflow problem with 'burstiness'. Perhaps initially unusual *slices* attract attention (or fear) and then the momentum of *event* acquistion (possibly at a safe distance) carries the *slice* from negative *likelihood* through the zero *likelihood* doldrums into positive *likelihood* and then past the induce threshold. In this way, even with limited *history size* and compute resources, *models* could grow at reasonable rates indefinitely, given a suitably rich environment. We will have to give the wotbot locomotion and manipulation eventually. Patient watching of videos, especially the artificial productions of Hollywood, can only take us so far. 
 
 So, while scanning single *level models* has brought us almost to qualitative features with moderate compute, we will focus on using *slice* topologies in multi-modal and temporal *multi-level models* with a view ultimately to an embodied wotbot that can interact with its environment and other agents.
 
 TODO 
 
 future developments - 
+
+The conclusion to this stage is that we are beginning to see features classified together with the compute resources so far, but we will need new substrates and structures to make further progress especially because proper classification requires dynamic gradients and ideally temporal agent manipulation to separate objects from background. For example ornaments sitting on shelves are not grouped together as bowls, vases, statuettes, etc regardless of the shelf. Multi-scale will be able to improve this for faces which appear frequently at different distances but objects infrequently seen in film noir would require embodied interactional experience - the sort of knowledge acquired by infants playing with toys.
 
 Do random covered offset/scale plus local scan. Then add topology search. Then 2 level with central underlying local scan and 2 level scan local scan for reference.
 
