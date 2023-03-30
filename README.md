@@ -2289,7 +2289,7 @@ We can also demonstrate the behaviour of the tiled mode itself by choosing to sc
 ```
 We can often observe stable arrangements of hotspots form during a camera shot, especially if the `unique_records` parameter is removed.
 
-##### Model 29 versus model 27 
+###### Model 29 versus model 27 
 
 model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2298,7 +2298,7 @@ model029|0.177|5 scanned potential tiled actual-potential|5|bucketed|Film Noir|5
 
 *Model* 29 is the first of the 'scanned potential tiled actual-potential' mode (5) experiments. It differs from *model* 27 in the mode ('scanned actual-potential' mode 4). Both *models* are bucketed *valency* Film Noir. *Model* 29 has highest growth rate so far at 1.287, but the multiplier at 1.83 is similar to the mode 4 *models*. It is less normal than *model* 27. The high growth rate suggests that the balance between global potential and local actual-potential gives an advantage.
 
-##### Model 30 versus model 29
+###### Model 30 versus model 29
 
 model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2309,7 +2309,7 @@ The difference here is that we have moved from bucketed *valency* to fixed *vale
 
 ![actor002_model030_Film_Noir_008](images/actor002_model030_Film_Noir_008.png) 
 
-##### Model 30 versus model 25
+###### Model 30 versus model 25
 
 model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2326,7 +2326,7 @@ to *model* 30 -
 
 This suggests that the tiling is more uniformly interested in features. The very high maximum path length and positive skew of *model* 25 suggests that the *model* 30 interest in low entropy frames has been reduced by the tiling.
 
-##### Model 31 versus model 30
+###### Model 31 versus model 30
 
 model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2335,7 +2335,7 @@ model031|0.177|5 scanned potential tiled actual-potential|5|fixed|Film Noir|452,
 
 The only difference is that the *diagonal* is constrained to be at least 12.0. This reduces growth a little to 1.414 and increases the number of failed *slices* from 28 to 32 as would be expected, but otherwise has little effect on the statistics.
 
-##### Model 34 versus model 30
+###### Model 34 versus model 30
 
 model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2344,7 +2344,7 @@ model034|0.177|5 scanned potential tiled actual-potential|5|fixed|10 B&W videos|
 
 *Model* 34 is the first `actor003` *model*, otherwise it has the same configuration as *model* 30. It has similar statistics apart from a longer maximum path length and an increase in higher moments. This could be because of a change in the set of videos.
 
-##### Model 35 versus model 34
+###### Model 35 versus model 34
 
 model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2354,7 +2354,7 @@ model035|0.177|5 scanned potential tiled actual-potential|5|fixed|14 B&W videos|
 
 *Model* 35 is also an `actor003` *model*, but with a larger *history* and an expanded set of videos. It has slightly reduced growth, but similar multiplier. The higher moments are much more like those of *model* 30. 
 
-##### Model 37 versus model 35
+###### Model 37 versus model 35
 
 model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2364,7 +2364,7 @@ model037|0.177|5 scanned potential tiled actual-potential|1,5|fixed|12 B&W video
 
 *Model* 37 has a random mode beginning for the first 500,000 *events*, and so has two modal lengths (at 7 and 15). It has a lower mean, and intermediate growth and multiplier. Although it added 4102 *fuds* in the last 500,000 *events*, and so had a better rate (1.641) than *model* 35 in the second half, randomising the beginning merely appears to interpolate between the two modes.
 
-##### Model 39 versus model 35
+###### Model 39 versus model 35
 
 model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2373,7 +2373,7 @@ model039|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|
 
 In *model* 39 we added `"unique_records" : 333` to the configuration compared to *model* 35. This prevents identical records within the previous 30 seconds approximately from being added to the *history*. The list of videos was slightly changed too. The growth and multiplier are around the same. Although we would expect the *model* to be a little more normal, the maximum length and skew have increased greatly. Possibly this is simply because of path dependence and the consequence variation between otherwise identical runs, but we do find that subsequent *models* with the same uniqueness constraint also have very high positive skew and long paths. So the effect appears to be to increase interest in low entropy frames, possibly because without uniqueness there would be very little *alignment* if many of the *events* were identical.
 
-##### Models 40 and 41 versus model 39
+###### Models 40 and 41 versus model 39
 
 model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2415,7 +2415,7 @@ The deviation is very large and there are modes at 17, 33, 40, 42, 50, 53, 60 an
 
 The lighting of the image is important too - sibling and examples all have the similar brightness. See *model* 61 below for a discussion of balanced *valency*.
 
-##### Models 42 to 45 versus model 41
+###### Models 42 to 45 versus model 41
 
 model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2448,7 +2448,7 @@ and this is the representation for *model* 45 -
 
 Note that at this point we developed checkpointing to handle recovery in case of the occasional crashes that bedevil the video libraries.
 
-##### Model 46 versus models 45 and 41
+###### Model 46 versus models 45 and 41
 
 model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2476,7 +2476,7 @@ This is the representation for *model* 46 -
 
 ![contour004_046_representation](images/contour004_046_representation.png) 
 
-##### Model 47 versus model 46
+###### Model 47 versus model 46
 
 model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2521,7 +2521,7 @@ The *model* appears to be better for this image too -
 
 There is a lot of detail around the head, neck and collar and a hint of a mouth. Again, however, the single *level model* is quite good at capturing all the modes of the distributions of light and dark, but not as good at capturing edges or features.
 
-##### Model 50 versus model 47
+###### Model 50 versus model 47
 
 model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2540,7 +2540,7 @@ Qualitatively, *model* 50 is picking up features, for example -
 
 ![actor002_model050_Film_Noir_006](images/actor002_model050_Film_Noir_006.png) 
 
-##### Models 49 and 51 versus model 50
+###### Models 49 and 51 versus model 50
 
 model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2558,7 +2558,7 @@ and this is *model* 49 -
 
 ![contour004_049_representation](images/contour004_049_representation.png) 
 
-##### Model 48 versus model 49
+###### Model 48 versus model 49
 
 model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2573,7 +2573,7 @@ The representation for *model* 48 is perhaps better than that of *model* 49 -
 
 So the larger threshold of 200 is probably better for the higher *valency*.
 
-##### Model 54 versus models 47 and 50
+###### Model 54 versus models 47 and 50
 
 model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2583,7 +2583,7 @@ model054|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|
 
 With *model* 54 we went back to the smaller *history* so it is essentially identical to *model* 47 except that it terminates a little later. *Model* 54 is intermediate between the two earlier *models*, which suggests that the differences between all three are simply due to the variations between runs.
 
-##### Model 55 versus model 54
+###### Model 55 versus model 54
 
 model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2686,7 +2686,7 @@ with this `actor.json` configuration -
 ```
 This [video](images/actor003_model055_Film_Noir_002.mp4?raw=true) from around 1:45 and this [video](images/actor003_model055_Film_Noir_003.mp4?raw=true) from around 0:17 and 1:28, usually have some frames centered on heads. Of course, this could be simply because of minimum entropy where the backgrounds are dull.
 
-##### Model 56 versus model 55
+###### Model 56 versus model 55
 
 model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2719,7 +2719,7 @@ The representation of *model* 56 seems to be a little worse -
 
 This [video](images/actor003_model056_Film_Noir_003.mp4?raw=true) from around 1:22 shows that *model* 56 usually has some frames centered on heads, but again this could be because of minimum entropy restricting the attention to heads and bodies where the backgrounds are dull.
 
-##### Models 57 and 58 versus model 55
+###### Models 57 and 58 versus model 55
 
 model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2739,7 +2739,7 @@ Let us compare the representations side by side in descending order of scale -
  
 Clearly the whole image improves with decreasing scale, but this is probably not because of better *modelling* of features.
 
-##### Model 59 versus model 55
+###### Model 59 versus model 55
 
 model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2778,7 +2778,7 @@ to the map for *model* 59 -
 
 it suggests that perhaps mode 8 produces a less diverse *model* with more prematurely pruned paths, but possibly with more hotspots and some longer paths. This is the effect that we would expect if the mode is biasing attention towards parts of the *model* that happen to be most recent. Whether this increases or decreases feature capture is probably randomly path-dependent.
 
-##### Model 61 versus model 55
+###### Model 61 versus model 55
 
 model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2813,7 +2813,7 @@ However, we must bear in mind that it has no sense of global *alignments* - it i
 
 ![actor002_model061_Film_Noir_003](images/actor002_model061_Film_Noir_003.png) 
 
-##### Model 62 versus model 56
+###### Model 62 versus model 56
 
 model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2828,7 +2828,7 @@ Of course, we would expect that with a lower granularity the benefit of balanced
 
 From the evidence of this and the previous comparison we can also guess that balanced *valency* is probably better than fixed *valency*.
 
-##### Model 63 versus model 61
+###### Model 63 versus model 61
 
 model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
