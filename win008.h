@@ -118,6 +118,7 @@ private:
 	double _centreRangeX;
 	double _centreRangeY;
     double _scale;
+	std::vector<double> _scales;
 	std::size_t _scaleValency;
 	std::size_t _valency;
 	std::size_t _valencyFactor;

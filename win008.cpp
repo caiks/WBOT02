@@ -152,7 +152,14 @@ Win008::Win008(const std::string& configA,
 		_centreRangeX = ARGS_DOUBLE(range_centreX);
 		_centreRangeY = ARGS_DOUBLE(range_centreY);
 		_scale = ARGS_DOUBLE_DEF(scale,0.5);
-		_scaleValency = ARGS_INT_DEF(scale_valency,4);	
+		_scaleValency = ARGS_INT_DEF(scale_valency,1);	
+		if (args.HasMember("scales") && args["scales"].IsArray())
+		{
+			auto& arr = args["scales"];
+			for (int k = 0; k < arr.Size(); k++)
+				_scales.push_back(arr[k].GetDouble());	
+			_scaleValency = _scales.size();
+		}
 		_valency = ARGS_INT_DEF(valency,10);	
 		_valencyFactor = ARGS_INT(valency_factor);	
 		_valencyFixed = ARGS_BOOL(valency_fixed);	
@@ -588,6 +595,49 @@ void Win008::act()
 					_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
 				this->eventId++;		
 				eventCount++;		
+			}
+		}
+		else if (_mode == "mode009" && _scales.size())
+		{
+			for (std::size_t k = 0; k < _eventSize; k++)	
+			{
+				std::size_t scaleValue = rand() % _scaleValency;
+				auto scaleY = _scales[scaleValue];
+				auto scaleX = scaleY * _captureHeight / _captureWidth;
+				auto centreX = ((double) rand() / (RAND_MAX)) * (1.0 - scaleX) + scaleX/2.0;
+				auto centreY = ((double) rand() / (RAND_MAX)) * (1.0 - scaleY) + scaleY/2.0;
+                Record record(_image, scaleX, scaleY, centreX, centreY, _size, _size, _divisor, _divisor);
+				Record recordValent = _valencyFixed ? record.valentFixed(_valency,_valencyBalanced) : record.valent(_valency,_valencyFactor);
+				if (_recordUniqueSize)
+				{
+					auto recordHash = recordValent.hash();
+					if (_recordUniqueSet.count(recordHash))
+						continue;		
+					while (_recordUniqueQueue.size() >= _recordUniqueSize)
+					{
+						_recordUniqueSet.erase(_recordUniqueQueue.front());
+						_recordUniqueQueue.pop();
+					}
+					_recordUniqueSet.insert(recordHash);
+					_recordUniqueQueue.push(recordHash);
+				}
+				if (_entropyMinimum > 0.0 && recordValent.entropy() < _entropyMinimum)
+					continue;		
+				auto hr = recordsHistoryRepa(_scaleValency, scaleValue, _valency, recordValent);
+				if (!_updateDisable)
+					_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
+				this->eventId++;		
+				eventCount++;	
+				if (gui) // use for testing only
+				{
+					QPainter framePainter(&_image);
+					framePainter.setPen(Qt::darkGray);
+					framePainter.drawRect(
+						(centreX - scaleX/2.0) * _captureWidth, 
+						(centreY - scaleY/2.0) * _captureHeight, 
+						scaleX * _captureWidth,
+						scaleY * _captureHeight);
+				}				
 			}
 		}
 		else if (_mode == "mode002")
