@@ -1450,6 +1450,7 @@ model036|0.177|4 randomised|1|fixed|12 B&W videos|500,000|1,931|0.772|7.2|2.0|17
 model052|0.177|4 randomised|1|fixed|48 B&W videos|500,000|1,887|0.753|6.7|1.6|11|0.1|-0.6|0.7|3.08|30s unique, 12.0 min diagonal, 1.2 min entropy
 model053|0.177|4 randomised|1|fixed|48 B&W videos|500,000|1,910|0.764|6.6|1.6|11|0.0|-0.5|0.0|3.14|30s unique, 12.0 min diagonal, 1.2 min entropy
 model064|0.177|4 randomised|1|balanced|48 B&W videos|500,000|1,837|0.735|6.6|1.6|11|0.0|-0.6|0.0|3.13|30s unique, 12.0 min diagonal, 1.2 min entropy
+model066|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised|9|balanced|48 B&W videos|500,000|1,822|0.7288|6.4|1.7|11|0.1|-0.5|0.6|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy
 model015|0.177|4 potential|2|bucketed|Fireman Sam|720,000|4,131|1.148|9.5|1.7|14|-0.6|0.6|-6.5|2.40|20 randomised
 model019|0.177|4 potential|2|bucketed|Fireman Sam|1,000,000|5,738|1.148|9.8|1.8|15|-0.6|0.6|-6.3|2.42|20 randomised
 model038|0.177|4 potential|2|fixed|12 B&W videos|500,000|2,488|0.995|9.0|2.1|18|-0.1|0.3|-0.1|2.37|20 randomised
@@ -1572,7 +1573,7 @@ Screenshots from *model* 13 are included in the discussion of [interactive brows
 
 ![actor002_model013_Sam_002](images/actor002_model013_Sam_002.png) 
 
-As can be seen in the [table](#Model_table) above, *models* 10, 11, 12 and 13 differ in their scales but all have similar growth rates, means and deviations. All have small skew and small negative kurtosis. So it seems that, from a statistical point of view, these small *models*, of mean *decomposition* path length of only around 7, are fairly scale invariant. Possibly this is because common foreground features are at varying distances, but a more likely reason is that the *models* are still at an early stage of distinguishing between only very general distributions of light and dark. 
+As can be seen in the [table](#Model_table) above, *models* 10, 11, 12 and 13 differ in their scales but all have similar growth rates, means and deviations. All have small skew and small negative kurtosis. So it seems that, from a statistical point of view, these small *models*, of mean *decomposition* path length of only around 7, are fairly scale-invariant. Possibly this is because common foreground features are at varying distances, but a more likely reason is that the *models* are still at an early stage of distinguishing between only very general distributions of light and dark. 
 
 The path length statistics of *model* 13, for example, show that the random mode *model* path lengths are almost normally distributed -
 ```
@@ -1829,13 +1830,84 @@ and then for *model* 64 -
 
 Now it seems that *model* 64 is a little more detailed around the face and neck. The implied representation is similar -
 
+<a name="contour004_064_minent_representation"></a>
+
 ![contour004_064_minent_representation](images/contour004_064_minent_representation.png) 
+
+Let us now consider adding multiple scales to the random mode. To implement this we created a new mode 9 with a modified configuration. This is the configuration for *model* 66,  `model066.json` -
+```
+{
+	"model" : "model066",
+	"video_sources" : [
+		"videos/No Man's Woman (1955) [oLiwhrvkMEU].webm",
+...
+		"videos/Twelve O'Clock High 1949  Gregory Peck, Hugh Marlowe & Dean Jagger [OMh4h2_ts68].webm"],
+	"interval" : 250,
+	"playback_rate" : 3.0,
+	"retry_media" : true,
+	"checkpointing" : true,
+	"mode" : "mode009",
+	"unique_records" : 333,
+	"entropy_minimum" : 1.2,
+	"valency_balanced" : true,
+	"event_size" : 4,
+	"threads" : 7,
+	"activeSize" : 500000,
+	"induceThreadCount" : 7,
+	"induceParameters.diagonalMin" : 12.0,
+	"scales" : [0.5, 0.354, 0.25, 0.177, 0.125, 0.088],
+	"event_maximum" : 500000,
+	"gui" : false,
+	"logging_event" : true,
+	"logging_event_factor" : 1000,
+	"summary_active" : true,
+	"logging_action" : true,
+	"logging_action_factor" : 100
+}
+```
+It is similar to the configuration for *model* 64 except that it has 6 scales - `"scales" : [0.5, 0.354, 0.25, 0.177, 0.125, 0.088]`. Quantitatively, *model* 66 is very similar to *models* 52, 53 and 64. The growth rate is a little lower and the multiplier is a little higher, which suggests that the *alignments* have been diluted slightly by the multi-scale.
+
+Qualitatively, we can show length-position maps for 3 scales, first for a scale of 0.354 -
+
+![contour004_066_scale1_minent_len_position](images/contour004_066_scale1_minent_len_position.png) 
+
+Then for a scale of 0.177, which is the same scale as the other random mode *models* -
+
+![contour004_066_scale3_minent_len_position](images/contour004_066_scale3_minent_len_position.png) 
+
+Finally at the smallest scale of 0.088 -
+
+![contour004_066_scale5_minent_len_position](images/contour004_066_scale5_minent_len_position.png) 
+
+The head is clearly outlined in each case, and the positions within the *model* of the various parts of the head appear to map equivalently across the scales. The outlines are offset in proportion to the scale, from which we surmise that the interesting frames are around the edge of the head.
+
+Finally, these are the representations for the three example scales -
+
+![contour004_066_scale1_minent_representation](images/contour004_066_scale1_minent_representation.png) 
+
+![contour004_066_scale3_minent_representation](images/contour004_066_scale3_minent_representation.png) 
+
+![contour004_066_scale5_minent_representation](images/contour004_066_scale5_minent_representation.png) 
+
+The middle representation, for scale 0.177, seems slightly inferior to that of *model* 64 [above](#contour004_064_minent_representation), again presumably because of the dilution.
+
+We can see that we are not yet capturing features, but only areas of light and dark, if we examine two screenshots of `actor002` at scale 0.177 -
+
+![actor002_model066_Film_Noir_001](images/actor002_model066_Film_Noir_001.png) 
+
+![actor002_model066_Film_Noir_002](images/actor002_model066_Film_Noir_002.png) 
+
+One frame has captured an eye, and the other a cheek, but both are in the same *slice*. The *slice* representation is only a blurry arrangement of light and dark and does not look like an identifiable feature.
+
+We would hope to use multi-scale to help us find *alignments* associated with foreground features, which we conjecture are fairly scale-invariant because film directors use various shots of heads and bodies, but at this stage the path lengths are far too short to *classify* features. Indeed, if we examine the arrangement of the *underlying*, we can see that very little attention is given to the middle of the frame, where, presumably, a *classification* would discriminate between different features -
+
+![actor002_model066_Film_Noir_003](images/actor002_model066_Film_Noir_003.png) 
 
 The growth rate of around 0.75 *fuds* per *size* per threshold of all of these random mode *models* is well below the theoretical maximum of 2.0 for a perfectly efficient *classification* of *events* over a *bivalent diagonalised decomposition*. So, as well as larger *models*, we would like modes with higher growth rates. 
 
 In addition to higher growth rates, we would like to avoid duplication within the *model* of slightly translated but fairly similar regions around hotspots. That is, we would like to see very localised hotspots with very long path lengths at the hotspot itself and very short path lengths nearby and in-between. In this way we will avoid 'wasting' *history* on endlessly duplicated but poorly resolved features. In the path length maps for the random mode *models* above, the brightness is fairly uniform with small variations. We would like to see more of a constellation of point-like instensities. In a sense, this is the opposite to convolution - instead of weighting every location equally, we focus on a handful of places that carry the most information, thereby shrinking the vast *substrate volume*.
 
-Before going on to see how we might obtain these improvements, we will consider for a moment the distribution of path lengths. As we have seen above, *models* 52, 53 and 64 are very normal with low higher moments. If we approximate the progression along a path as a binary choice between high frequency *on-diagonal slices* and low frequency *off-diagonal slices*, it is reasonable to assume that a path terminates either because it has hit an *off-diagonal slice* or because the path has exhausted its *alignments* and there are no more *on-diagonal slices*. That is, we can model the distribution of path lengths as roughly binomial. For *model* 52 with a maximum path length `n` of 11, the probability `p` of an *on-diagonal slice* implied by a mean, `n*p`, of 6.7 is 61%. The binomial deviation, `sqrt(n*p*(1-p))`, is 1.62, which is very close to the actual deviation of 1.64. The binomial skew, however, is -0.13, which is in the opposite direction to the actual skew of 0.12. 
+Before going on to see how we might obtain these improvements, we will consider for a moment the distribution of path lengths. As we have seen above, *models* 52, 53, 64 and 66 are very normal with low higher moments. If we approximate the progression along a path as a binary choice between high frequency *on-diagonal slices* and low frequency *off-diagonal slices*, it is reasonable to assume that a path terminates either because it has hit an *off-diagonal slice* or because the path has exhausted its *alignments* and there are no more *on-diagonal slices*. That is, we can model the distribution of path lengths as roughly binomial. For *model* 52 with a maximum path length `n` of 11, the probability `p` of an *on-diagonal slice* implied by a mean, `n*p`, of 6.7 is 61%. The binomial deviation, `sqrt(n*p*(1-p))`, is 1.62, which is very close to the actual deviation of 1.64. The binomial skew, however, is -0.13, which is in the opposite direction to the actual skew of 0.12. 
 
 In addition, the probability, `p`, of an *on-diagonal slice* seems too low at 61%. In discussion of the [*decomposition* tool](#view_decomp), above, we describe how to use `view_fractions` to examine the transition from *on-diagonal* to *off-diagonal* sibling *slices* -
 
@@ -2938,7 +3010,7 @@ Higher level. Use a combination of a higher level model with peripheral underlyi
 
 Multi-modal higher level. We can join shared or separate brightness models of different valencies, levels, tiles and scales with colour models and spatial delta models and even dynamic delta models into a higher level model. In that way we don't care about the overlapping variables say between different scales if they were all joined in a single substrate. We synthesise all the different modalities into a single stream of consciousness with a single actor. Of course the underlying models can still grow and have their own topologies which may be taken account of by the top level actor. The high level actor may still be subject to micro-saccades of a scaled brightness hotspot snap.
 
-Higher temporal level should probably have several fixed scale actives for background objects and tableau, as well as a scale invariant model for foreground objects. Multiply by each type of substrate, although some substrates are perhaps better just for foreground. Having multiple fixed scale will have better resolution at their scales and helps with directing the focus since the action has the correct scale.
+Higher temporal level should probably have several fixed scale actives for background objects and tableau, as well as a scale-invariant model for foreground objects. Multiply by each type of substrate, although some substrates are perhaps better just for foreground. Having multiple fixed scale will have better resolution at their scales and helps with directing the focus since the action has the correct scale.
 
 Can share the same underlying across multiple scales in the same way we share the underlying convolutional level in a multi-level spatial. This accounts for perspectival translations.
 
