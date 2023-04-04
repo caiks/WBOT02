@@ -1299,10 +1299,10 @@ void Win008::act()
 						QPainter framePainter(&_image);
 						framePainter.setPen(Qt::darkGray);
 						framePainter.drawRect(
-							(centreX - scaleX/2.0) * _captureWidth, 
-							(centreY - scaleY/2.0) * _captureHeight, 
-							scaleX * _captureWidth,
-							scaleY * _captureHeight);
+							posX * _captureWidth - scale/2.0 * _captureHeight, 
+							posY * _captureHeight - scale/2.0 * _captureHeight, 
+							scale * _captureHeight,
+							scale * _captureHeight);
 					}						
 				}		
 			}
