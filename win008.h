@@ -95,6 +95,7 @@ private:
 
 	bool _activeLogging;
 	bool _activeSummary;
+	bool _activeCumulative;
 	std::size_t _activeSize;
 	Alignment::ActiveUpdateParameters _updateParameters;
 	Alignment::ActiveInduceParameters _induceParameters;
