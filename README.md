@@ -2931,7 +2931,17 @@ Another problem is the inherent limit to *model* growth of a passive observer. W
 
 So, while scanning single *level models* has brought us almost to qualitative features with moderate compute, we will focus on using *slice* topologies in multi-modal and temporal *multi-level models* with a view ultimately to an embodied wotbot that can interact with its environment and other agents.
 
+<a name="Topological_models"></a>
+
+##### Topological models
+
 TODO 
+
+Local tiling. Could do hot scale when local tiling. Only scan if not off the edge. When doing random offset, instead of random centre, the offset is different for each scale except for no offset. Then have, say, 9 or 13 or 17 actions scale invariant actions depending on the number of tiles offset in each direction. Will require local tiling at 2 level too to make comparable. Alternative is to tiling in current scale and have scale change actions, ie 15 actions. This is simpler, and possibly better if the scale of the foreground objects changes slowly. Another alternative is combined scale and offset change, but this requires 54 actions, although perhaps we would require only 15 random before going topological in each slice.  Note that we have up to 400 transitions since bidirectional, so 54 actions is probably ok since we are always on diagonal. Some actions will be disallowed anyway if they go off slice. Let's leave hot scale tiling for the moment, separating scale and offset actions has the benefit of less compute and is partly compensated for by topological search. Random local hotspot will probably grow less than hotspot plus hotscale.
+
+Topology Use unique slice and non reverse actions to prevent small loops, but probably doesn't matter if we are just interested in expected size including no change, especially if we use bidirectional.
+
+
 
 future developments - 
 
