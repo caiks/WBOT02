@@ -1492,6 +1492,7 @@ model059|0.177|5 scanned active-size-potential tiled actual-potential|8|fixed|48
 model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
 model062|0.177|5 scanned size-potential tiled actual-potential|6|balanced 5-valent|48 B&W videos|3,000,000|33,612|1.120 (1.634)|18.4|3.7|31|-0.2|0.2|-2.1|1.76|30s unique, 12.0 min diagonal, 0.8 min entropy
 model063|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|15,013|1.001 (1.494)|15.7|3.0|24|-0.4|0.3|-4.4|1.84|30s unique, 12.0 min diagonal, 1.0 min entropy
+model067|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised scanned actual-potential|10|balanced|48 B&W videos|1,000,000|4,494|0.8988|14.0|2.8|22|-0.5|0.5|-5.4|1.82|30s unique, 12.0 min diagonal, 1.2 min entropy
 
 The table above does not show the median and maximum *diagonals*. The median *diagonals* for the actor 2 and actor 3 *models* were consistently around 23-27, and the maximum *diagonals* were consistently around 37-39.
 
