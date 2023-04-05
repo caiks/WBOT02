@@ -302,6 +302,72 @@ int main(int argc, char *argv[])
 		}
 	}
 	
+	
+	if (argc >= 3 && string(argv[1]) == "view_event_lengths_by_scale")
+	{
+		bool ok = true;
+		string model = string(argv[2]);
+	
+		EVAL(model);
+		
+		Active activeA;
+		activeA.logging = true;		
+		if (ok) 
+		{
+			activeA.historySliceCachingIs = true;
+			ActiveIOParameters ppio;
+			ppio.filename = model +".ac";
+			ok = ok && activeA.load(ppio);
+			TRUTH(ok);				
+		}		
+		if (ok)
+		{
+			EVAL(activeA.name);		
+			std::map<std::size_t, std::size_t> scalesTotal;
+			std::map<std::size_t, std::map<std::size_t, std::size_t>> scalesLengthsDist;
+			auto& hr = *activeA.underlyingHistoryRepa.back();
+			auto z = hr.size;
+			auto n = hr.dimension;
+			auto rr = hr.arr;
+			auto& slices = activeA.historySlicesSetEvent;			
+			auto& lengths = activeA.historySlicesLength;
+			for (auto pp : slices)
+			{
+				auto slice = pp.first;
+				auto length = lengths[slice];
+				for (auto j : pp.second)
+				{
+					if (hr.evient)
+					{
+						auto scale = rr[j*n + n-1];
+						scalesTotal[scale]++;
+						scalesLengthsDist[scale][length]++;
+					}
+					else
+					{
+						auto scale = rr[(n-1)*z + j];
+						scalesTotal[scale]++;
+						scalesLengthsDist[scale][length]++;
+					}
+				}
+			}
+			for (auto pp : scalesLengthsDist)			
+			{
+				auto scale = pp.first;
+				auto total = scalesTotal[scale];
+				auto& lengthsDist = pp.second;
+				EVAL(scale);
+				EVAL(total);
+				EVAL(lengthsDist);
+				double mean = 0.0;
+				for (auto& qq : lengthsDist)
+					mean += qq.first * qq.second;
+				mean /= total;
+				EVAL(mean);
+			}
+		}
+	}
+	
 	if (argc >= 3 && string(argv[1]) == "view_decomp")
 	{
 		bool ok = true;
