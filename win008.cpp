@@ -1199,14 +1199,7 @@ void Win008::act()
 					{
 						auto recordHash = recordValent.hash();
 						if (_recordUniqueSet.count(recordHash))
-							continue;		
-						while (_recordUniqueQueue.size() >= _recordUniqueSize)
-						{
-							_recordUniqueSet.erase(_recordUniqueQueue.front());
-							_recordUniqueQueue.pop();
-						}
-						_recordUniqueSet.insert(recordHash);
-						_recordUniqueQueue.push(recordHash);
+							continue;
 					}
 					if (_entropyMinimum > 0.0 && recordValent.entropy() < _entropyMinimum)
 						continue;	
@@ -1281,29 +1274,47 @@ void Win008::act()
 				}
 				if (actsPotsCoord.size())
 				{
-					std::sort(actsPotsCoord.begin(), actsPotsCoord.end());
-					auto& pos = actsPotsCoord.back();
-					auto posX = std::get<2>(pos);
-					auto posY = std::get<3>(pos);	
-					auto x = std::get<4>(pos);
-					auto y = std::get<5>(pos);
-					Record recordSub(record,_size,_size,x,y);
-					Record recordValent = recordSub.valentFixed(_valency,_valencyBalanced);
-					auto hr = recordsHistoryRepa(_scaleValency, scaleValue, _valency, recordValent);
-					if (!_updateDisable)
-						_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
-					this->eventId++;		
-					eventCount++;	
-					if (gui) // use for testing only
+					std::sort(actsPotsCoord.rbegin(), actsPotsCoord.rend());
+					for (auto& pos : actsPotsCoord)
 					{
-						QPainter framePainter(&_image);
-						framePainter.setPen(Qt::darkGray);
-						framePainter.drawRect(
-							posX * _captureWidth - scale/2.0 * _captureHeight, 
-							posY * _captureHeight - scale/2.0 * _captureHeight, 
-							scale * _captureHeight,
-							scale * _captureHeight);
-					}						
+						auto posX = std::get<2>(pos);
+						auto posY = std::get<3>(pos);	
+						auto x = std::get<4>(pos);
+						auto y = std::get<5>(pos);
+						Record recordSub(record,_size,_size,x,y);
+						Record recordValent = recordSub.valentFixed(_valency,_valencyBalanced);
+						if (_recordUniqueSize)
+						{
+							auto recordHash = recordValent.hash();
+							if (_recordUniqueSet.count(recordHash))
+								continue;		
+							while (_recordUniqueQueue.size() >= _recordUniqueSize)
+							{
+								_recordUniqueSet.erase(_recordUniqueQueue.front());
+								_recordUniqueQueue.pop();
+							}
+							_recordUniqueSet.insert(recordHash);
+							_recordUniqueQueue.push(recordHash);
+						}
+						if (_entropyMinimum > 0.0 && recordValent.entropy() < _entropyMinimum)
+							continue;	
+						auto hr = recordsHistoryRepa(_scaleValency, scaleValue, _valency, recordValent);
+						if (!_updateDisable)
+							_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
+						this->eventId++;		
+						eventCount++;	
+						if (gui) // use for testing only
+						{
+							QPainter framePainter(&_image);
+							framePainter.setPen(Qt::darkGray);
+							framePainter.drawRect(
+								posX * _captureWidth - scale/2.0 * _captureHeight, 
+								posY * _captureHeight - scale/2.0 * _captureHeight, 
+								scale * _captureHeight,
+								scale * _captureHeight);
+						}	
+						break;
+					}
 				}		
 			}
 		}
