@@ -1532,7 +1532,7 @@ model059|0.177|5 scanned active-size-potential tiled actual-potential|8|fixed|48
 model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
 model062|0.177|5 scanned size-potential tiled actual-potential|6|balanced 5-valent|48 B&W videos|3,000,000|33,612|1.120 (1.634)|18.4|3.7|31|-0.2|0.2|-2.1|1.76|30s unique, 12.0 min diagonal, 0.8 min entropy
 model063|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|15,013|1.001 (1.494)|15.7|3.0|24|-0.4|0.3|-4.4|1.84|30s unique, 12.0 min diagonal, 1.0 min entropy
-model067|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised scanned actual-potential|10|balanced|48 B&W videos|1,000,000|4,494|0.8988|14.0|2.8|22|-0.5|0.5|-5.4|1.82|30s unique, 12.0 min diagonal, 1.2 min entropy
+model067|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised scanned actual-potential|10|balanced|48 B&W videos|1,000,000|6,815|0.454 (0.910118)|14.1|2.6|21|-0.7|0.7|-7.3|1.87|30s unique, 12.0 min diagonal, 1.2 min entropy
 
 The table above does not show the median and maximum *diagonals*. The median *diagonals* for the actor 2 and actor 3 *models* were consistently around 23-27, and the maximum *diagonals* were consistently around 37-39.
 
@@ -2982,6 +2982,31 @@ Local tiling. Could do hot scale when local tiling. Only scan if not off the edg
 
 Topology Use unique slice and non reverse actions to prevent small loops, but probably doesn't matter if we are just interested in expected size including no change, especially if we use bidirectional.
 
+model 67 vs 66
+
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model066|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised|9|balanced|48 B&W videos|500,000|1,822|0.7288|6.4|1.7|11|0.1|-0.5|0.6|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy
+model067|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised scanned actual-potential|10|balanced|48 B&W videos|1,000,000|6,815|0.454 (0.910118)|14.1|2.6|21|-0.7|0.7|-7.3|1.87|30s unique, 12.0 min diagonal, 1.2 min entropy
+
+model 67 vs 61
+
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
+model067|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised scanned actual-potential|10|balanced|48 B&W videos|1,000,000|6,815|0.454 (0.910118)|14.1|2.6|21|-0.7|0.7|-7.3|1.87|30s unique, 12.0 min diagonal, 1.2 min entropy
+
+
+
+million-events|actual fuds|1+ln(million-events)|expected fuds|difference|difference percent
+---|---|---|---|---|---
+1|4,548|1.000|4,548|0|0.00%
+1.5|5,578|1.405|6,392|-814|-12.74%
+2|6,112|1.693|7,700|-1588|-20.63%
+2.5|6,508|1.916|8,715|-2207|-25.33%
+3|6,815|2.099|9,544|-2729|-28.60%
+
+Growth in overflow is far below exepected, probably because the random frames have different centres - motor actions should keep the frames similar for longer and so increase burstiness.
 
 
 future developments - 
