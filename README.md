@@ -1181,6 +1181,46 @@ undsHyperSkewness: 6.7151
 ```
 These vary very little between *models* because the *induction* parameters do not change very much. In general, the *underlying* cardinalities range between 3 and 18 with a mean of around 6 and a mode at 6 or 7.
 
+<a name="view_event_lengths_by_scale"></a>
+
+##### view_event_lengths_by_scale
+
+We can also view the distribution of *slice* path lengths over *events* grouped by scale given a *model*, for example 
+
+```
+cd ~/WBOT02_ws
+./WBOT02 view_event_lengths_by_scale model066
+model: model066
+model066        load    file name: model066.ac  time 1.59813s
+ok: true
+activeA.name: model066
+scale: 0
+total: 118662
+lengthsDist: {(2,1088),(3,8001),(4,15274),(5,26401),(6,28671),(7,17884),(8,13338),(9,6264),(10,1613),(11,128)}
+mean: 5.87477
+scale: 1
+total: 106578
+lengthsDist: {(2,812),(3,6507),(4,12754),(5,22941),(6,25478),(7,16426),(8,13262),(9,6373),(10,1908),(11,117)}
+mean: 5.99126
+scale: 2
+total: 90802
+lengthsDist: {(2,572),(3,4405),(4,8942),(5,17895),(6,21486),(7,15122),(8,13252),(9,6781),(10,2193),(11,154)}
+mean: 6.22278
+scale: 3
+total: 74859
+lengthsDist: {(2,341),(3,2938),(4,6300),(5,13577),(6,17257),(7,13060),(8,12577),(9,6498),(10,2132),(11,179)}
+mean: 6.41112
+scale: 4
+total: 61174
+lengthsDist: {(2,214),(3,1979),(4,4378),(5,10104),(6,13547),(7,11136),(8,11371),(9,6115),(10,2149),(11,181)}
+mean: 6.58965
+scale: 5
+total: 47925
+lengthsDist: {(2,141),(3,1158),(4,2859),(5,7118),(6,10064),(7,8878),(8,10107),(9,5503),(10,1894),(11,203)}
+mean: 6.77868
+```
+In the example above for *model* 66 the scales were defined as `"scales" : [0.5, 0.354, 0.25, 0.177, 0.125, 0.088]`. The scale index is zero-based, so '0' corresponds to 0.5 in this case. We can see that, in this example, the mean path length increases with decreasing scale.
+
 <a name="view_decomp"></a>
 
 ##### Decomposition tools
