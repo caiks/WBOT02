@@ -2996,7 +2996,7 @@ model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld 
 model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
 model067|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised scanned actual-potential|10|balanced|48 B&W videos|1,000,000|6,815|0.454 (0.910118)|14.1|2.6|21|-0.7|0.7|-7.3|1.87|30s unique, 12.0 min diagonal, 1.2 min entropy
 
-
+We are seeing twice as many events at 0.5 as at 0.088 so the entropy is too high for 0.088 and not high enough for 0.5. Perhaps we have two gross scales - facial features and body features and these are really two separate models - directors are going to use fairly standardised scales. Could go with entropies for each scale, but what is the formula? Or could use a smaller range of scales and a lower entropy.
 
 million-events|actual fuds|1+ln(million-events)|expected fuds|difference|difference percent
 ---|---|---|---|---|---
