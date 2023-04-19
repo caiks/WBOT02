@@ -1532,8 +1532,8 @@ model059|0.177|5 scanned active-size-potential tiled actual-potential|8|fixed|48
 model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
 model062|0.177|5 scanned size-potential tiled actual-potential|6|balanced 5-valent|48 B&W videos|3,000,000|33,612|1.120 (1.634)|18.4|3.7|31|-0.2|0.2|-2.1|1.76|30s unique, 12.0 min diagonal, 0.8 min entropy
 model063|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|15,013|1.001 (1.494)|15.7|3.0|24|-0.4|0.3|-4.4|1.84|30s unique, 12.0 min diagonal, 1.0 min entropy
-model067|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised scanned actual-potential|10|balanced|48 B&W videos|1,000,000|6,815|0.454 (0.910118)|14.1|2.6|21|-0.7|0.7|-7.3|1.87|30s unique, 12.0 min diagonal, 1.2 min entropy
-model068|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised scanned actual-potential|10|balanced|48 B&W videos|1,000,000|7,303|0.487 (0.947)|14.0|2.5|20|-0.7|0.7|-8.1|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy
+model067|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|6,815|0.454 (0.910118)|14.1|2.6|21|-0.7|0.7|-7.3|1.87|30s unique, 12.0 min diagonal, 1.2 min entropy
+model068|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|7,303|0.487 (0.947)|14.0|2.5|20|-0.7|0.7|-8.1|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy
 
 The table above does not show the median and maximum *diagonals*. The median *diagonals* for the actor 2 and actor 3 *models* were consistently around 23-27, and the maximum *diagonals* were consistently around 37-39.
 
@@ -3020,20 +3020,18 @@ It is similar to *model* 66 except that the mode is 10 instead of 9, there are 1
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 model066|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised|9|balanced|48 B&W videos|500,000|1,822|0.7288|6.4|1.7|11|0.1|-0.5|0.6|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy
-model067|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised scanned actual-potential|10|balanced|48 B&W videos|1,000,000|6,815|0.454 (0.910118)|14.1|2.6|21|-0.7|0.7|-7.3|1.87|30s unique, 12.0 min diagonal, 1.2 min entropy
+model067|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|6,815|0.454 (0.910118)|14.1|2.6|21|-0.7|0.7|-7.3|1.87|30s unique, 12.0 min diagonal, 1.2 min entropy
 
 We can see that *model* 67 has a higher growth rate, a lower multiplier and is much less normal than *model* 66. In fact, *model* 67 looks much more like *model* 61 -
 
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
-model067|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised scanned actual-potential|10|balanced|48 B&W videos|1,000,000|6,815|0.454 (0.910118)|14.1|2.6|21|-0.7|0.7|-7.3|1.87|30s unique, 12.0 min diagonal, 1.2 min entropy
+model067|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|6,815|0.454 (0.910118)|14.1|2.6|21|-0.7|0.7|-7.3|1.87|30s unique, 12.0 min diagonal, 1.2 min entropy
 
-The statistics apart from growth are much more similar to 'scanned size-potential tiled actual-potential' mode (6) *model* 61. Clearly the local scanning is the main factor contributing to the longer paths. The growth is lower, however, either because mode 10 does not filter hotspots by potential *likelihood* (*slice size*) or because the centre is not maintained between captures. We can, perhaps, compensate for the lower growth by having larger active *histories* offline, but note that the kurtosis is more than twice the kurtosis of *model* 61, and the skew is much more negative, suggesting either than there are many more short paths or that there are many fewer long paths. In either case, feature detection is probably reduced.
+The statistics apart from growth are much more similar to 'scanned size-potential tiled actual-potential' mode (6) *model* 61. Clearly the local scanning is the main factor contributing to the longer paths. The growth is lower, however, probably because (a) the *alignments* are lowered by multi-scale dilution, (b) mode 10 does not filter hotspots by potential *likelihood* (*slice size*), or (c) the centre is not maintained between captures. 
 
-TODO 
-
-We are seeing twice as many events at 0.5 as at 0.088 so the entropy is too high for 0.088 and not high enough for 0.5. Perhaps we have two gross scales - facial features and body features and these are really two separate models - directors are going to use fairly standardised scales. Could go with entropies for each scale, but what is the formula? Or could use a smaller range of scales and a lower entropy.
+The growth in overflow is much lower than expected too -
 
 million-events|actual fuds|1+ln(million-events)|expected fuds|difference|difference percent
 ---|---|---|---|---|---
@@ -3043,16 +3041,61 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 2.5|6,508|1.916|8,715|-2207|-25.33%
 3|6,815|2.099|9,544|-2729|-28.60%
 
-Growth in overflow is far below exepected, probably because the random frames have different centres - motor actions should keep the frames similar for longer and so increase burstiness.
+This is probably because the random frames have different centres, meaning that there are fewer, shorter bursts of similar frames.
 
-model 68 -
+We can, perhaps, compensate for the lower growth by having larger active *histories* offline, but note that the kurtosis is more than twice the kurtosis of *model* 61, and the skew is much more negative, suggesting either than there are many more short paths or that there are many fewer long paths. In either case, feature detection is probably reduced. We can see this clearly if we compare the position map for *model* 61 -
+
+![contour004_061_minent_position](images/contour004_061_minent_position.png) 
+
+to the position map for *model* 67 at a scale of 0.177 -
+
+![contour004_067_scale3_minent_position](images/contour004_067_scale3_minent_position.png) 
+
+The detail around the face is considerably reduced.
+
+Although, multi-scale was introduced to enhanced feature detection, based on the idea that foreground objects might have a greater range of scales than background, it may, in fact, be diluting features. For example, the film directors may have used a fairly fixed set of shots making some scales less common. In *model* 66, [above](#model066), we used [`view_event_lengths_by_scale`](#view_event_lengths_by_scale) to compare the scales. Running for *model* 67 -
+```
+cd ~/WBOT02_ws
+./WBOT02 view_event_lengths_by_scale model067
+model: model067
+model067        load    file name: model067.ac  time 26.3219s
+ok: true
+activeA.name: model067
+scale: 0
+total: 228577
+lengthsDist: {(3,8),(4,10),(5,29),(6,129),(7,385),(8,1023),(9,2779),(10,5746),(11,10877),(12,17693),(13,28225),(14,37047),(15,41362),(16,38702),(17,26396),(18,13663),(19,3964),(20,500),(21,39)}
+mean: 14.5786
+scale: 1
+total: 209530
+lengthsDist: {(1,1),(2,1),(3,14),(4,12),(5,27),(6,242),(7,743),(8,1656),(9,4078),(10,7475),(11,12554),(12,18557),(13,26942),(14,32905),(15,35906),(16,32078),(17,21779),(18,10856),(19,3174),(20,496),(21,34)}
+mean: 14.2782
+scale: 2
+total: 181792
+lengthsDist: {(1,1),(2,1),(3,16),(4,48),(5,31),(6,198),(7,441),(8,1025),(9,2456),(10,4704),(11,8399),(12,13581),(13,20749),(14,28163),(15,32347),(16,31351),(17,22754),(18,11373),(19,3568),(20,530),(21,56)}
+mean: 14.6284
+scale: 3
+total: 152483
+lengthsDist: {(2,3),(3,35),(4,71),(5,61),(6,238),(7,431),(8,907),(9,1848),(10,3727),(11,6519),(12,10065),(13,16710),(14,22699),(15,27249),(16,27107),(17,19982),(18,10697),(19,3525),(20,550),(21,59)}
+mean: 14.7407
+scale: 4
+total: 126239
+lengthsDist: {(1,3),(2,6),(3,55),(4,104),(5,77),(6,254),(7,453),(8,847),(9,1570),(10,3005),(11,5048),(12,7698),(13,12663),(14,17852),(15,22416),(16,23220),(17,17467),(18,9638),(19,3199),(20,595),(21,69)}
+mean: 14.8242
+scale: 5
+total: 101379
+lengthsDist: {(1,2),(2,15),(3,56),(4,165),(5,89),(6,294),(7,470),(8,750),(9,1278),(10,2333),(11,3681),(12,5685),(13,9640),(14,14016),(15,17484),(16,18891),(17,14626),(18,8559),(19,2848),(20,435),(21,62)}
+mean: 14.8826
+```
+This time we can see that the second scale of 0.354 has the shortest mean path length (14.278), while the smallest scale of 0.088 has the longest mean path length (14.883). This time the largest scale of 0.5 does not have the shortest mean path length, but that could be because is has the most *events* (due to minimum entropy biasing toward larger scales). This suggests that multi-scale is causing dilution. 
+
+In order to see the effect of the choice of scales, in *model* 68 we ran with this configuration `"scales" : [0.25, 0.21, 0.177, 0.149, 0.125, 0.105]`, i.e. six quarter-integral powers of a half -
 
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model067|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised scanned actual-potential|10|balanced|48 B&W videos|1,000,000|6,815|0.454 (0.910118)|14.1|2.6|21|-0.7|0.7|-7.3|1.87|30s unique, 12.0 min diagonal, 1.2 min entropy
-model068|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised scanned actual-potential|10|balanced|48 B&W videos|1,000,000|7,303|0.487 (0.947)|14.0|2.5|20|-0.7|0.7|-8.1|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy
+model067|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|6,815|0.454 (0.910118)|14.1|2.6|21|-0.7|0.7|-7.3|1.87|30s unique, 12.0 min diagonal, 1.2 min entropy
+model068|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|7,303|0.487 (0.947)|14.0|2.5|20|-0.7|0.7|-8.1|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy
 
-The representations at 0.177 seem slightly better and the position map more detailed as expected.
+The growth and multiplier are both slightly higher. The growth in overflow is slightly improved too -
 
 million-events|actual fuds|1+ln(million-events)|expected fuds|difference|difference percent
 ---|---|---|---|---|---
@@ -3062,10 +3105,21 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 2.5|6,938|1.916|9,077|-2139|-23.57%
 3|7,303|2.099|9,941|-2638|-26.54%
 
-Local tiling. Could do hot scale when local tiling. Only scan if not off the edge. When doing random offset, instead of random centre, the offset is different for each scale except for no offset. Then have, say, 9 or 13 or 17 actions scale invariant actions depending on the number of tiles offset in each direction. Will require local tiling at 2 level too to make comparable. Alternative is to tiling in current scale and have scale change actions, ie 15 actions. This is simpler, and possibly better if the scale of the foreground objects changes slowly. Another alternative is combined scale and offset change, but this requires 54 actions, although perhaps we would require only 15 random before going topological in each slice.  Note that we have up to 400 transitions since bidirectional, so 54 actions is probably ok since we are always on diagonal. Some actions will be disallowed anyway if they go off slice. Let's leave hot scale tiling for the moment, separating scale and offset actions has the benefit of less compute and is partly compensated for by topological search. Random local hotspot will probably grow less than hotspot plus hotscale.
+The position map at scale 0.177 is slightly more detailed -
 
-Topology Use unique slice and non reverse actions to prevent small loops, but probably doesn't matter if we are just interested in expected size including no change, especially if we use bidirectional.
+![contour004_068_scale2_minent_position](images/contour004_068_scale2_minent_position.png) 
 
+The representations seem slightly better too. Compare *model* 67 -
+
+![contour004_067_scale3_minent_representation](images/contour004_067_scale3_minent_representation.png) 
+
+to *model* 68 -
+
+![contour004_068_scale2_minent_representation](images/contour004_068_scale2_minent_representation.png) 
+
+TODO 
+
+Compare the screenshots
 
 future developments - 
 
@@ -3117,6 +3171,9 @@ Experiment with gradually declining thresholds to avoid a lot of useless non-ali
 
 Balanced valency compared to edge detection. Easier to implement than edge detection which is also absolute brightness independent. Perhaps we should do the bucketing based on the larger tiled area. Or perhaps we should detect the overall lighting and simply translate the fixed, with the bottom and top values larger or smaller as needed. Of course, films are set at the lighting levels desired by the director, and the light or dark is meaningful. Edge detection, being relative, in addition to surface might well be better.
 
+Local tiling. Could do hot scale when local tiling. Only scan if not off the edge. When doing random offset, instead of random centre, the offset is different for each scale except for no offset. Then have, say, 9 or 13 or 17 actions scale invariant actions depending on the number of tiles offset in each direction. Will require local tiling at 2 level too to make comparable. Alternative is to tiling in current scale and have scale change actions, ie 15 actions. This is simpler, and possibly better if the scale of the foreground objects changes slowly. Another alternative is combined scale and offset change, but this requires 54 actions, although perhaps we would require only 15 random before going topological in each slice.  Note that we have up to 400 transitions since bidirectional, so 54 actions is probably ok since we are always on diagonal. Some actions will be disallowed anyway if they go off slice. Let's leave hot scale tiling for the moment, separating scale and offset actions has the benefit of less compute and is partly compensated for by topological search. Random local hotspot will probably grow less than hotspot plus hotscale.
+
+Topology Use unique slice and non reverse actions to prevent small loops, but probably doesn't matter if we are just interested in expected size including no change, especially if we use bidirectional.
 
 Remodelling. Driver models. If we remodel by inducing a new model from the history, remember that the sample is only representative for the hotspots of the old model. I suppose, however, the new model will only be a tidying up of weakened alignments and lopsidedness, so the new hotspots will proabably be fine and new samples will still be likely and representative.
 
