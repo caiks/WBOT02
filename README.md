@@ -1876,6 +1876,8 @@ Now it seems that *model* 64 is a little more detailed around the face and neck.
 
 ![contour004_064_minent_representation](images/contour004_064_minent_representation.png) 
 
+<a name="model066"></a>
+
 Let us now consider adding multiple scales to the random mode. To implement this we created a new mode 9 with a modified configuration. This is the configuration for *model* 66,  `model066.json` -
 ```
 {
@@ -2977,7 +2979,9 @@ So, while scanning single *level models* has brought us almost to qualitative fe
 
 ##### Multi-level models
 
-Before going on to consider random *multi-level models*, let us first develop a mode that does not require a centre to be chosen in order to allow offline processing. We can do this by selecting random locations, as in modes 1 to 3 and 9. We hope to retain the longer paths of scanning modes 4 to 8, however, by doing local scans for hotspots. In 'randomised scanned actual-potential' mode (10), for each *event* a random centre is chosen and then a local scan of one tile around the centre is done to find the highest actual-potential *likelihood*. The active is non-cumulative in these experiments, so the scan is ordered by path length and then active *slice size*. The frames are checked for minimum entropy and uniqueness before being added as *events*. 
+Before going on to consider random centre *multi-level models*, let us first develop a mode that does not require a centre to be chosen in order to allow offline processing. We can do this by selecting random locations, as in modes 1 to 3 and 9. In *model* 66, [above](#model066), we tested the effect of multiple scales in mode 9 where the frames are selected at random but subject to minimum entropy and uniqueness. We found that the *alignments* have been diluted slightly by the multi-scale, but otherwise it looked very much like *models* 52, 53 and 64. That is, the growth is low compared to scanning modes and the multiplier is very high.
+
+In order to detect features, however, we would like to retain the longer paths of scanning modes 4 to 8 by doing local scans for hotspots. In 'randomised scanned actual-potential' mode (10), for each *event* a centre is chosen at random and then a local scan of one tile around the centre is done to find the highest actual-potential *likelihood*. The active is non-cumulative in these experiments, so the scan is ordered by path length and then active *slice size*. The frames are checked for minimum entropy and uniqueness before being added as *events*. 
 
 Here is the configuration for *model* 67 - 
 ```
@@ -3011,7 +3015,7 @@ Here is the configuration for *model* 67 -
 	"logging_action_factor" : 10000000
 }
 ```
-It is similar to *model* 66 except that the mode is 10 instead of 9, there are 12 *events* per frame instead of 4, the *model* has 3 million *events*, partly in overflow, instead of half a million, and the active is non-cumulative. Let us compare these two *models* -
+It is similar to *model* 66 except that the mode is 10 instead of 9, there are 12 *events* per frame instead of 4, the *model* has 3 million *events*, partly in overflow, instead of 0.5 million *events*, and the active is non-cumulative. Let us compare these two *models* -
 
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -3025,11 +3029,9 @@ model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld 
 model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
 model067|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised scanned actual-potential|10|balanced|48 B&W videos|1,000,000|6,815|0.454 (0.910118)|14.1|2.6|21|-0.7|0.7|-7.3|1.87|30s unique, 12.0 min diagonal, 1.2 min entropy
 
-The statistics apart from growth are much more similar to 'scanned size-potential tiled actual-potential' mode (6) *model* 61.  
+The statistics apart from growth are much more similar to 'scanned size-potential tiled actual-potential' mode (6) *model* 61. Clearly the local scanning is the main factor contributing to the longer paths. The growth is lower, however, either because mode 10 does not filter hotspots by potential *likelihood* (*slice size*) or because the centre is not maintained between captures. We can, perhaps, compensate for the lower growth by having larger active *histories* offline, but note that the kurtosis is more than twice the kurtosis of *model* 61, and the skew is much more negative, suggesting either than there are many more short paths or that there are many fewer long paths. In either case, feature detection is probably reduced.
 
 TODO 
-
-That is, the local scanning is the main factor
 
 We are seeing twice as many events at 0.5 as at 0.088 so the entropy is too high for 0.088 and not high enough for 0.5. Perhaps we have two gross scales - facial features and body features and these are really two separate models - directors are going to use fairly standardised scales. Could go with entropies for each scale, but what is the formula? Or could use a smaller range of scales and a lower entropy.
 
