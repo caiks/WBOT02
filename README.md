@@ -3124,6 +3124,11 @@ At a scale of 0.125 they are similar too -
 
 ![actor002_model067_Film_Noir_006](images/actor002_model067_Film_Noir_006.png) ![actor002_model068_Film_Noir_008](images/actor002_model068_Film_Noir_008.png) 
 
+TODO
+
+Offline modelling. Because we don't have a synchronous Qt layer over ffmpeg we will have to cache records. These files would be too large if we scan the whole screen so ultimately might be best to drill down into the video library and decode explicitly. That way we could scale the compute without the tyranny of timer callbacks. Very time consuming.
+
+There are many configurations that gets us the coverage of the substrate that we need, so will want to test on a fixed set of events maybe with local tiling (mode 10).
 
 future developments - 
 
@@ -3193,7 +3198,11 @@ gradient - spatial. Film noir tells us that bucketing picks up far too many fine
 
 Consider how camouflage works to prevent edge detection, colour and brightness contrasts.
 
+Edge detection. Could add this indirectly by increasing the contrast of neighbouring cells in a record frame according to gradient. This would not then require a different substrate, but valency preprocessing.
+
 It may be that a two level model would avoid the requirement for edge detection or gradient substrates if the first level is quite small scale. But perhaps the first level would have to overlap and so there would be a large number of them. I think we should try edge detection, however, in any case because it takes place in the eye - and so we know it benefits in some way.
+
+Multi-level modelling. If 2 level model not very promising try it with edge detection.
 
 We will have to focus on using *slice* topologies instead of scanning to maintain high growth rates and moderate multipliers. We can, however, still do local scans of *substrate models*, such as the centre *underlying* of a two *level model*, to find the local hotspots.
 
@@ -3221,9 +3230,15 @@ Comparing the contour maps for models 45 and 46 suggests that we need to solve t
 
 gradient - temporal. Typically more motion around the edges of foreground objects. Instantaneous delta variables show values for no change, brightening and darkening. Perhaps add gamma i.e. double brightening, oscillating, double lightening. Probably gamma not very interesting, because sensitive to the frame rate and increases valency. Perhaps gamma should be based on degree change in value rather than just on the direction. Might need instantaneous dynamics to find movement intrinsically interesting. if we have dynamics, the backgrounds will be more separated from heads and bodies. audio substrates
 
+WBOT02 The single level substrate tends to have root underlying around edges because the minimum entropy only applies within the frame, so frames at the boundary of the minimum entropy have uniform areas around one side. The alignments between neighbouring pixels are likely to be high even though uniform. Could check for minimum entropy around edges instead and ignore centre.
+
 Topology. Temporal. When the current slice has enough slice transitions to follow the topology can indicate the goal scale and offset and also the target representation. Then we can have an idea whether the goal locations and slice are what you might expect. Probably better at a temporal level.
 
 Topology versus Scanning. We can only scan visual fields and buffered temporal sequences. It requires a huge amount of compute and is useless for embodied action. Scanning has double the growth and a smaller multiplier and so much longer paths, but we can compensate by tile scans for each action for visual and selecting the top potential. This would require a lot less scanning and we could scan with either a single level driver or with a central underlying instead of the multi-level. Note that we can compute the expected likelihood for each action (a sort of goodness variable), rather than selecting a particular target slice. This will reduce the statistic problem for low thresholds and high valency actions.
+
+NEURO Topology versus scan. I don't think animal eyes can use topology even with multi-scale if the substrate is restricted to a small area around the fovea - there would be too little information in the current slice to reliably transition to somewhere interesting never mind systematically understanding a scene. Saccades seem to know roughly where they are going and why. There are vast numbers of peripheral neurons and if topology is to work they must take part. Perhaps saccades are for enhancing the resolution rather than as a substitute for scanning. Let's assume that the eye does a massive amount of parallel processing tantamount to a scan on serial systems such as wotbot. So we will probably need to use topologies for locomotion and manipulation but not for vision with respect to an entire scene. 
+
+NEURO Topology versus scan. We will have to work with the compute resources we have so let's take vision processing offline for the moment and move to approximate to scanning with multiple levels. Live wotbot will probably not be able to grow the vision model without a lot of parallelism, although ideally would be able to learn faces. 
 
 Higher level. Patterns and textures must be multi-level. We see the same underlying slice repeated. We will have to use tiles for the underlying to get the hotspots so that all are in same slice. Could implement as temporal with the focus changing as it moves over the surface but having same context of the surface at a larger scale. Perhaps face recognition works in the same way but the slices change along the sequence as the focus saccades. The higher level hotspot then sees the typical saccade sequence of a face from start to finish. At temporal levels higher still we just see a sequence of recognised objects with the intermediate mid level non hotspot slices dropped.
 
