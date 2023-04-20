@@ -2979,7 +2979,7 @@ So, while scanning single *level models* has brought us almost to qualitative fe
 
 ##### Multi-level models
 
-Before going on to consider random centre *multi-level models*, let us first develop a mode that does not require a centre to be chosen in order to allow offline processing. We can do this by selecting random locations, as in modes 1 to 3 and 9. In *model* 66, [above](#model066), we tested the effect of multiple scales in mode 9 where the frames are selected at random but subject to minimum entropy and uniqueness. We found that the *alignments* have been diluted slightly by the multi-scale, but otherwise it looked very much like *models* 52, 53 and 64. That is, the growth is low compared to scanning modes and the multiplier is very high.
+Before going on to consider random centre *multi-level models*, let us first develop a mode that does not require a centre to be chosen in order to allow offline processing. We can do this by selecting random locations, as in modes 1 to 3 and 9. In *model* 66, [above](#model066), we tested the effect of multiple scales in mode 9 where the frames are selected at random but subject to minimum entropy and uniqueness. We found that the *alignments* have been diluted slightly by the multi-scale, but otherwise the *model* looked very much like *models* 52, 53 and 64. That is, the growth is low compared to scanning modes and the multiplier is very high.
 
 In order to detect features, however, we would like to retain the longer paths of scanning modes 4 to 8 by doing local scans for hotspots. In 'randomised scanned actual-potential' mode (10), for each *event* a centre is chosen at random and then a local scan of one tile around the centre is done to find the highest actual-potential *likelihood*. The active is non-cumulative in these experiments, so the scan is ordered by path length and then active *slice size*. The frames are checked for minimum entropy and uniqueness before being added as *events*. 
 
@@ -3043,7 +3043,7 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 
 This is probably because the random frames have different centres, meaning that there are fewer, shorter bursts of similar frames.
 
-We can, perhaps, compensate for the lower growth by having larger active *histories* offline, but note that the kurtosis is more than twice the kurtosis of *model* 61, and the skew is much more negative, suggesting either than there are many more short paths or that there are many fewer long paths. In either case, feature detection is probably reduced. We can see this clearly if we compare the position map for *model* 61 -
+We can, perhaps, compensate for the lower growth by having larger active *histories* offline, but note that the kurtosis is more than twice the kurtosis of *model* 61, and the skew is much more negative, suggesting either that there are many more short paths or that there are many fewer long paths. In either case, feature detection is probably reduced. We can see this clearly if we compare the position map for *model* 61 -
 
 ![contour004_061_minent_position](images/contour004_061_minent_position.png) 
 
@@ -3053,7 +3053,7 @@ to the position map for *model* 67 at a scale of 0.177 -
 
 The detail around the face is considerably reduced.
 
-Although, multi-scale was introduced to enhanced feature detection, based on the idea that foreground objects might have a greater range of scales than background, it may, in fact, be diluting features. For example, the film directors may have used a fairly fixed set of shots making some scales less common. In *model* 66, [above](#model066), we used [`view_event_lengths_by_scale`](#view_event_lengths_by_scale) to compare the scales. Running for *model* 67 -
+Although multi-scale was introduced to enhance feature detection, based on the idea that foreground objects might have a greater range of scales than background, it may, in fact, be diluting features. For example, the film directors may have used a fairly fixed set of shots, making some scales less common. In *model* 66, [above](#model066), we used [`view_event_lengths_by_scale`](#view_event_lengths_by_scale) to compare the scales. These are the results for *model* 67 -
 ```
 cd ~/WBOT02_ws
 ./WBOT02 view_event_lengths_by_scale model067
@@ -3086,10 +3086,9 @@ total: 101379
 lengthsDist: {(1,2),(2,15),(3,56),(4,165),(5,89),(6,294),(7,470),(8,750),(9,1278),(10,2333),(11,3681),(12,5685),(13,9640),(14,14016),(15,17484),(16,18891),(17,14626),(18,8559),(19,2848),(20,435),(21,62)}
 mean: 14.8826
 ```
-This time we can see that the second scale of 0.354 has the shortest mean path length (14.278), while the smallest scale of 0.088 has the longest mean path length (14.883). This time the largest scale of 0.5 does not have the shortest mean path length, but that could be because is has the most *events* (due to minimum entropy biasing toward larger scales). This suggests that multi-scale is causing dilution. 
+We can see that the second scale of 0.354 has the shortest mean path length (14.278), while the smallest scale of 0.088 has the longest mean path length (14.883). This time the largest scale of 0.5 does not have the shortest mean path length, but that could be because is has the most *events* (due to minimum entropy biasing toward larger scales). This suggests that multi-scale is causing dilution. 
 
-In order to see the effect of the choice of scales, in *model* 68 we ran with this configuration `"scales" : [0.25, 0.21, 0.177, 0.149, 0.125, 0.105]`, i.e. six quarter-integral powers of a half -
-
+In order to see the effect of the choice of scales, in *model* 68 we ran with this set of scales: 0.25, 0.21, 0.177, 0.149, 0.125 and 0.105, i.e. six quarter-integral powers of a half -
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 model067|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|6,815|0.454 (0.910118)|14.1|2.6|21|-0.7|0.7|-7.3|1.87|30s unique, 12.0 min diagonal, 1.2 min entropy
@@ -3117,9 +3116,14 @@ to *model* 68 -
 
 ![contour004_068_scale2_minent_representation](images/contour004_068_scale2_minent_representation.png) 
 
-TODO 
+*Model* 68 actually has a higher negative skew than for *model* 67, so perhaps gain of *model* at smaller scales is less than the loss of *model* at larger scales. Certainly if we compare screenshots between *model* 67 and *model* 68 at a scale of 0.177, there seems to be little advantage if any -
 
-Compare the screenshots
+![actor002_model067_Film_Noir_002](images/actor002_model067_Film_Noir_002.png) ![actor002_model068_Film_Noir_002](images/actor002_model068_Film_Noir_002.png) 
+
+At a scale of 0.125 they are similar too -
+
+![actor002_model067_Film_Noir_006](images/actor002_model067_Film_Noir_006.png) ![actor002_model068_Film_Noir_008](images/actor002_model068_Film_Noir_008.png) 
+
 
 future developments - 
 
