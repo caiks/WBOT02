@@ -997,10 +997,11 @@ void Win008::act()
 				eventCount++;		
 			}
 		}
-		else if (_mode == "mode005" || _mode == "mode006" || _mode == "mode008")
+		else if (_mode == "mode005" || _mode == "mode006" || _mode == "mode008" || _mode == "mode011")
 		{
-			bool isSizePotential = _mode == "mode006" || _mode == "mode008";
+			bool isSizePotential = _mode == "mode006" || _mode == "mode008" || _mode == "mode011";
 			bool isActiveSizePotential = _mode == "mode008";
+			bool isScanEntropy = _mode == "mode011";
 			auto scaleX = _centreRangeX * 2.0 + _scale;
 			auto scaleY = _centreRangeY * 2.0 + _scale;
 			auto sizeX = (std::size_t)(scaleX * _size / _scale);
@@ -1036,7 +1037,7 @@ void Win008::act()
 					threads.reserve(_threadCount);
 					for (std::size_t t = 0; t < _threadCount; t++)
 						threads.push_back(std::thread(
-							[isSizePotential, isActiveSizePotential, &actor, &activeA, n, vv, 
+							[isSizePotential, isActiveSizePotential, isScanEntropy, &actor, &activeA, n, vv, 
 							centreX, centreY, scaleX, scaleY, sizeX, sizeY, interval, &record, tx, ty,
 							&actsPotsCoord] (int t)
 							{
@@ -1064,39 +1065,49 @@ void Win008::act()
 										{
 											Record recordSub(record,size,size,x,y);
 											Record recordValent = valencyFixed ? recordSub.valentFixed(valency,valencyBalanced) : recordSub.valent(valency,valencyFactor);
-											auto& arr1 = *recordValent.arr;	
-											SizeUCharStructList jj;
-											jj.reserve(n);
-											for (std::size_t i = 0; i < n-1; i++)
+											if (!isScanEntropy)
 											{
-												SizeUCharStruct qq;
-												qq.uchar = arr1[i];	
-												qq.size = vv[i];
-												if (qq.uchar)
-													jj.push_back(qq);
-											}
-											auto ll = drmul(jj,dr,cap);	
-											std::size_t slice = 0;
-											auto posX = centreX + (interval * x - offsetX) * heightWidth;
-											auto posY = centreY + interval * y - offsetY;
-											if (ll && ll->size()) slice = ll->back();	
-											if (slice && cv.count(slice) && sizes.count(slice) 
-												&& lengths.count(slice) && !fails.count(slice))
-											{
-												auto length = lengths[slice];
-												auto sz = sizes[slice];
-												auto likelihood = (std::log(sz) - std::log(sizes[cv[slice]]) + lnwmax)/lnwmax;
-												if (isActiveSizePotential)
+												auto& arr1 = *recordValent.arr;	
+												SizeUCharStructList jj;
+												jj.reserve(n);
+												for (std::size_t i = 0; i < n-1; i++)
 												{
-													if (slices.count(slice))
-														likelihood += slices[slice].size();
+													SizeUCharStruct qq;
+													qq.uchar = arr1[i];	
+													qq.size = vv[i];
+													if (qq.uchar)
+														jj.push_back(qq);
 												}
-												else if (isSizePotential) 
-													likelihood += sz;
-												actsPotsCoord[z] = std::make_tuple(length,likelihood,posX,posY,x,y);
+												auto ll = drmul(jj,dr,cap);	
+												std::size_t slice = 0;
+												auto posX = centreX + (interval * x - offsetX) * heightWidth;
+												auto posY = centreY + interval * y - offsetY;
+												if (ll && ll->size()) slice = ll->back();	
+												if (slice && cv.count(slice) && sizes.count(slice) 
+													&& lengths.count(slice) && !fails.count(slice))
+												{
+													auto length = lengths[slice];
+													auto sz = sizes[slice];
+													auto likelihood = (std::log(sz) - std::log(sizes[cv[slice]]) + lnwmax)/lnwmax;
+													if (isActiveSizePotential)
+													{
+														if (slices.count(slice))
+															likelihood += slices[slice].size();
+													}
+													else if (isSizePotential) 
+														likelihood += sz;
+													actsPotsCoord[z] = std::make_tuple(length,likelihood,posX,posY,x,y);
+												}
+												else
+													actsPotsCoord[z] = std::make_tuple(0,-INFINITY,posX,posY,x,y);	
 											}
 											else
-												actsPotsCoord[z] = std::make_tuple(0,-INFINITY,posX,posY,x,y);	
+											{
+												auto entropy = recordValent.entropy();
+												auto posX = centreX + (interval * x - offsetX) * heightWidth;
+												auto posY = centreY + interval * y - offsetY;
+												actsPotsCoord[z] = std::make_tuple(0,entropy,posX,posY,x,y);
+											}
 										}
 							}, t));
 					for (auto& t : threads)
@@ -1110,7 +1121,50 @@ void Win008::act()
 						auto posX = std::get<2>(t);
 						auto posY = std::get<3>(t);								
 						auto x = std::get<4>(t);								
-						auto y = std::get<5>(t);								
+						auto y = std::get<5>(t);
+						if (isScanEntropy)
+						{
+							auto drmul = listVarValuesDecompFudSlicedRepasPathSlice_u;
+							auto& activeA = *_active;
+							auto& slices = activeA.historySlicesSetEvent;
+							auto& sizes = activeA.historySlicesSize;
+							auto& lengths = activeA.historySlicesLength;
+							auto& fails = activeA.induceSliceFailsSize;
+							Record recordSub(record,_size,_size,x,y);
+							Record recordValent = _valencyFixed ? recordSub.valentFixed(_valency,_valencyBalanced) : recordSub.valent(_valency,_valencyFactor);
+							auto& arr1 = *recordValent.arr;	
+							auto& dr = *activeA.decomp;	
+							auto& cv = dr.mapVarParent();
+							auto cap = (unsigned char)(_updateParameters.mapCapacity);
+							double lnwmax = std::log(_induceParameters.wmax);
+							SizeUCharStructList jj;
+							jj.reserve(n);
+							for (std::size_t i = 0; i < n-1; i++)
+							{
+								SizeUCharStruct qq;
+								qq.uchar = arr1[i];	
+								qq.size = vv[i];
+								if (qq.uchar)
+									jj.push_back(qq);
+							}
+							auto ll = drmul(jj,dr,cap);	
+							std::size_t slice = 0;
+							if (ll && ll->size()) slice = ll->back();	
+							if (slice && cv.count(slice) && sizes.count(slice) 
+								&& lengths.count(slice) && !fails.count(slice))
+							{
+								length = lengths[slice];
+								auto sz = sizes[slice];
+								likelihood = (std::log(sz) - std::log(sizes[cv[slice]]) + lnwmax)/lnwmax;
+								if (isActiveSizePotential)
+								{
+									if (slices.count(slice))
+										likelihood += slices[slice].size();
+								}
+								else if (isSizePotential) 
+									likelihood += sz;
+							}
+						}							
 						actsPotsCoordTop.push_back(std::make_tuple(likelihood,length,posX,posY,x,y));
 					}
 				}
