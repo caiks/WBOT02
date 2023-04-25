@@ -2964,13 +2964,14 @@ Although the low entropy hole is smaller, we can see that the *model* is less de
 
 ###### Model 69 versus model 61
 
-TODO
-
 model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
 model069|0.177|5 scanned size-potential tiled entropy|11|balanced|48 B&W videos|3,000,000|10,993|0.733 (1.290)|8.6|2.2|16|0.2|-0.2|1.6|2.96|30s unique, 12.0 min diagonal, 1.2 min entropy
 
+Scanning is a highly compute intensive process, so we created a new mode 'scanned size-potential tiled entropy' (11) which simply calculates a frame's entropy instead of its *slice*. The idea is that hotspots might also be high entropy locations. The calculation of a frame's entropy could be very fast, since it only requires the calculation of the changes to the distribution of pixels over *values* due to a shift sideways between neighbouring frames. 
+
+As can be seen above, however, the resultant *model* 69 has lower growth, a very high multiplier and a much more normal path distribution with negative kurtosis and positive skew. The mean, mode and maximum path lengths are all much smaller than for *model* 61. The growth in overflow is far behind expected too -
 
 million-events|actual fuds|1+ln(million-events)|expected fuds|difference|difference percent
 ---|---|---|---|---|---
@@ -2979,6 +2980,16 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 2|9,423|1.693|10,917|-1494|-13.69%
 2.5|10,273|1.916|12,356|-2083|-16.86%
 3|10,993|2.099|13,532|-2539|-18.76%
+
+If we compare the length map for *model* 61 -
+
+![contour004_061_minent_length](images/contour004_061_minent_length.png) 
+
+to that of *model* 69 -
+
+![contour004_069_minent_length](images/contour004_069_minent_length.png)   
+
+we can see that the hotspots have disappeared, almost to that of a random mode *model*.
 
 
 ###### Tiled scanned model conclusion
