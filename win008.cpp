@@ -1372,6 +1372,168 @@ void Win008::act()
 				}		
 			}
 		}
+		else if (_mode == "mode012" && _scales.size())
+		{
+			std::vector<Record> records;
+			std::vector<std::tuple<std::size_t,std::size_t,std::size_t,double,double,std::size_t,std::size_t,std::size_t,std::size_t>> actsPotsCoordTop;
+			for (std::size_t k = 0; records.size() < _scanSize && k < _scanSize * 10; k++)	
+			{
+				std::size_t scaleValue = rand() % _scaleValency;
+				auto scale =  _scales[scaleValue];
+				double interval = scale / _size;		
+				std::size_t sizeY = _size + _sizeTile;
+				if (sizeY % 2 != _size % 2) sizeY++;
+				auto sizeD = sizeY - _size;
+				auto scaleY = sizeY * interval;
+				auto scaleX = scaleY * _captureHeight / _captureWidth;
+				auto offset = (scaleY - scale) / 2.0;
+				auto centreX = ((double) rand() / (RAND_MAX)) * (1.0 - scaleX) + scaleX/2.0;
+				auto centreY = ((double) rand() / (RAND_MAX)) * (1.0 - scaleY) + scaleY/2.0;
+                Record record(_image, scaleX, scaleY, centreX, centreY, sizeY, sizeY, _divisor, _divisor);
+				{
+					Record recordSub(record,_size,_size,_sizeTile/2,_sizeTile/2);
+					Record recordValent = recordSub.valentFixed(_valency,_valencyBalanced);
+					if (_recordUniqueSize)
+					{
+						auto recordHash = recordValent.hash();
+						if (_recordUniqueSet.count(recordHash))
+							continue;
+					}
+					if (_entropyMinimum > 0.0 && recordValent.entropy() < _entropyMinimum)
+						continue;	
+				}
+				records.push_back(record);	
+				std::vector<std::tuple<std::size_t,std::size_t,double,double,std::size_t,std::size_t>> actsPotsCoord(sizeD*sizeD);
+				{
+					auto& activeA = *_active;
+					auto& actor = *this;
+					// std::lock_guard<std::mutex> guard(activeA.mutex);
+					std::vector<std::thread> threads;
+					threads.reserve(_threadCount);
+					for (std::size_t t = 0; t < _threadCount; t++)
+						threads.push_back(std::thread(
+							[&actor, &activeA,
+							centreX, centreY, offset, sizeD, interval, &record,
+							&actsPotsCoord] (int t)
+							{
+								auto drmul = listVarValuesDecompFudSlicedRepasPathSlice_u;
+								auto& sizes = activeA.historySlicesSize;
+								auto& lengths = activeA.historySlicesLength;
+								auto& fails = activeA.induceSliceFailsSize;
+								auto& dr = *activeA.decomp;		
+								auto cap = (unsigned char)(actor._updateParameters.mapCapacity);
+								auto heightWidth = (double)actor._captureHeight / (double)actor._captureWidth;
+								auto size = actor._size;
+								auto valency = actor._valency;
+								auto valencyBalanced = actor._valencyBalanced;
+								auto hr = sizesHistoryRepa(actor._scaleValency, valency, size*size);
+								auto n = hr->dimension;
+								auto vv = hr->vectorVar;
+								auto rr = hr->arr;
+								rr[n-1] = 0;
+								for (std::size_t y = 0, z = 0; y < sizeD; y++)	
+									for (std::size_t x = 0; x < sizeD; x++, z++)	
+										if (z % actor._threadCount == t)
+										{
+											Record recordSub(record,size,size,x,y);
+											Record recordValent = recordSub.valentFixed(valency,valencyBalanced);
+											auto& arr1 = *recordValent.arr;	
+											SizeUCharStructList jj;
+											jj.reserve(n);
+											for (std::size_t i = 0; i < n-1; i++)
+											{
+												SizeUCharStruct qq;
+												qq.uchar = arr1[i];	
+												qq.size = vv[i];
+												if (qq.uchar)
+													jj.push_back(qq);
+											}
+											{
+												SizeUCharStruct qq;
+												qq.uchar = rr[n-1];	
+												qq.size = vv[n-1];
+												if (qq.uchar)
+													jj.push_back(qq);
+											}
+											auto ll = drmul(jj,dr,cap);	
+											std::size_t slice = 0;
+											auto posX = centreX + (interval * x - offset) * heightWidth;
+											auto posY = centreY + (interval * y - offset);
+											if (ll && ll->size()) slice = ll->back();	
+											if (slice && !fails.count(slice))
+											{
+												actsPotsCoord[z] = std::make_tuple(lengths[slice],sizes[slice],posX,posY,x,y);
+											}
+											else
+												actsPotsCoord[z] = std::make_tuple(0,0,posX,posY,x,y);	
+										}
+							}, t));
+					for (auto& t : threads)
+						t.join();
+				}
+				if (actsPotsCoord.size())
+				{
+					std::sort(actsPotsCoord.begin(), actsPotsCoord.end());
+					auto& pos = actsPotsCoord.back();
+					auto length = std::get<0>(pos);
+					auto likelihood = std::get<1>(pos);
+					auto posX = std::get<2>(pos);
+					auto posY = std::get<3>(pos);	
+					auto x = std::get<4>(pos);
+					auto y = std::get<5>(pos);
+					actsPotsCoordTop.push_back(std::make_tuple(likelihood,length,rand(),posX,posY,x,y,records.size()-1,scaleValue));
+				}		
+			}
+			EVAL(records.size());
+			EVAL(actsPotsCoordTop.size());
+			std::sort(actsPotsCoordTop.rbegin(), actsPotsCoordTop.rend());			
+			for (std::size_t k = 0; eventCount < _eventSize && k < actsPotsCoordTop.size(); k++)	
+			{
+				auto pos = actsPotsCoordTop[k];
+				auto likelihood = std::get<0>(pos);
+				EVAL(likelihood);
+				auto posX = std::get<3>(pos);
+				auto posY = std::get<4>(pos);	
+				auto x = std::get<5>(pos);
+				auto y = std::get<6>(pos);
+				auto& record = records[std::get<7>(pos)];
+				auto scaleValue = std::get<8>(pos);
+				auto scale =  _scales[scaleValue];
+				Record recordSub(record,_size,_size,x,y);
+				Record recordValent = recordSub.valentFixed(_valency,_valencyBalanced);
+				if (_recordUniqueSize)
+				{
+					auto recordHash = recordValent.hash();
+					if (_recordUniqueSet.count(recordHash))
+						continue;		
+					while (_recordUniqueQueue.size() >= _recordUniqueSize)
+					{
+						_recordUniqueSet.erase(_recordUniqueQueue.front());
+						_recordUniqueQueue.pop();
+					}
+					_recordUniqueSet.insert(recordHash);
+					_recordUniqueQueue.push(recordHash);
+				}
+				if (_entropyMinimum > 0.0 && recordValent.entropy() < _entropyMinimum)
+					continue;	
+				auto hr = recordsHistoryRepa(_scaleValency, scaleValue, _valency, recordValent);
+				if (!_updateDisable)
+					_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
+				this->eventId++;		
+				eventCount++;	
+				if (gui)
+				{
+					QPainter framePainter(&_image);
+					framePainter.setPen(Qt::darkGray);
+					framePainter.drawRect(
+						posX * _captureWidth - scale/2.0 * _captureHeight, 
+						posY * _captureHeight - scale/2.0 * _captureHeight, 
+						scale * _captureHeight,
+						scale * _captureHeight);
+				}	
+				break;
+			}	
+		}
 		if (!_updateDisable)
 		{
 			if (!_active->update(_updateParameters))
