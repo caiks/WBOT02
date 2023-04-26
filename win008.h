@@ -137,6 +137,10 @@ private:
 	std::size_t _recordUniqueSize;
 	std::unordered_set<std::size_t> _recordUniqueSet;
 	std::queue<std::size_t> _recordUniqueQueue;
+	
+	std::string _recordsFileName;
+	bool _recordsOnly;
+	std::ofstream _recordsFile;
 
 };
 #endif // WIN008_H

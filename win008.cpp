@@ -178,6 +178,8 @@ Win008::Win008(const std::string& configA,
 		if (_recordUniqueSize)
 			_recordUniqueSet.reserve(_recordUniqueSize);
 		_entropyMinimum = ARGS_DOUBLE(entropy_minimum);
+		_recordsFileName = ARGS_STRING(records_file);
+		_recordsOnly = ARGS_BOOL(records_only);	
 	}
 	{
 		_labelCentre = new QLabel(this); 
@@ -189,6 +191,24 @@ Win008::Win008(const std::string& configA,
 		_labelFails = new QLabel(this); 
 		_ui->layout04->addWidget(_labelFails);
 	}	
+	// open records file
+	if (_recordsFileName.size())
+	{
+		try
+		{
+			_recordsFile.open(_recordsFileName + ".rec", std::ios::binary);
+			if (!_recordsFile.is_open())
+			{
+                LOG "actor\terror: failed to open records file" << _recordsFileName + ".rec" UNLOG
+				return;
+			}
+		}
+		catch (const std::exception&)
+		{
+            LOG "actor\terror: failed to open records file" << _recordsFileName + ".rec" UNLOG
+         return;
+		}		
+	}
 	// load slice representations if modelInitial 
 	if (_modelInitial.size())
 	{
@@ -332,6 +352,17 @@ Win008::~Win008()
 {
 	terminate = true;
 	_active->terminate = true;
+	if (_recordsFile.is_open())
+	{
+		try
+		{
+			_recordsFile.close();
+		}
+		catch (const std::exception&)
+		{
+			LOG "actor\terror: failed to close records file" << _recordsFileName + ".rec" UNLOG
+		}				
+	}
 	LOG "actor\tdumping" UNLOG
 	dump();	
     delete _ui;
@@ -1403,6 +1434,12 @@ void Win008::act()
 						continue;	
 				}
 				records.push_back(record);	
+				if (_recordsFile.is_open())
+				{
+					recordsPersistent(record, _recordsFile); 
+					if (_recordsOnly)
+						continue;
+				}
 				std::vector<std::tuple<std::size_t,std::size_t,double,double,std::size_t,std::size_t>> actsPotsCoord(sizeD*sizeD);
 				{
 					auto& activeA = *_active;
@@ -1484,53 +1521,59 @@ void Win008::act()
 					actsPotsCoordTop.push_back(std::make_tuple(likelihood,length,rand(),posX,posY,x,y,records.size()-1,scaleValue));
 				}		
 			}
-			std::sort(actsPotsCoordTop.rbegin(), actsPotsCoordTop.rend());			
-			for (std::size_t k = 0; eventCount < _eventSize && k < actsPotsCoordTop.size(); k++)	
+			std::sort(actsPotsCoordTop.rbegin(), actsPotsCoordTop.rend());
+			if (_recordsOnly)
 			{
-				auto pos = actsPotsCoordTop[k];
-				auto likelihood = std::get<0>(pos);
-				auto posX = std::get<3>(pos);
-				auto posY = std::get<4>(pos);	
-				auto x = std::get<5>(pos);
-				auto y = std::get<6>(pos);
-				auto& record = records[std::get<7>(pos)];
-				auto scaleValue = std::get<8>(pos);
-				auto scale =  _scales[scaleValue];
-				Record recordSub(record,_size,_size,x,y);
-				Record recordValent = recordSub.valentFixed(_valency,_valencyBalanced);
-				if (_recordUniqueSize)
+				this->eventId += _eventSize;
+				eventCount += _eventSize;
+			}
+			else 
+				for (std::size_t k = 0; eventCount < _eventSize && k < actsPotsCoordTop.size(); k++)	
 				{
-					auto recordHash = recordValent.hash();
-					if (_recordUniqueSet.count(recordHash))
-						continue;		
-					while (_recordUniqueQueue.size() >= _recordUniqueSize)
+					auto pos = actsPotsCoordTop[k];
+					auto likelihood = std::get<0>(pos);
+					auto posX = std::get<3>(pos);
+					auto posY = std::get<4>(pos);	
+					auto x = std::get<5>(pos);
+					auto y = std::get<6>(pos);
+					auto& record = records[std::get<7>(pos)];
+					auto scaleValue = std::get<8>(pos);
+					auto scale =  _scales[scaleValue];
+					Record recordSub(record,_size,_size,x,y);
+					Record recordValent = recordSub.valentFixed(_valency,_valencyBalanced);
+					if (_recordUniqueSize)
 					{
-						_recordUniqueSet.erase(_recordUniqueQueue.front());
-						_recordUniqueQueue.pop();
+						auto recordHash = recordValent.hash();
+						if (_recordUniqueSet.count(recordHash))
+							continue;		
+						while (_recordUniqueQueue.size() >= _recordUniqueSize)
+						{
+							_recordUniqueSet.erase(_recordUniqueQueue.front());
+							_recordUniqueQueue.pop();
+						}
+						_recordUniqueSet.insert(recordHash);
+						_recordUniqueQueue.push(recordHash);
 					}
-					_recordUniqueSet.insert(recordHash);
-					_recordUniqueQueue.push(recordHash);
-				}
-				if (_entropyMinimum > 0.0 && recordValent.entropy() < _entropyMinimum)
-					continue;	
-				auto hr = recordsHistoryRepa(_scaleValency, scaleValue, _valency, recordValent);
-				if (!_updateDisable)
-					_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
-				this->eventId++;		
-				eventCount++;	
-				if (gui)
-				{
-					QPainter framePainter(&_image);
-					framePainter.setPen(Qt::darkGray);
-					framePainter.drawRect(
-						posX * _captureWidth - scale/2.0 * _captureHeight, 
-						posY * _captureHeight - scale/2.0 * _captureHeight, 
-						scale * _captureHeight,
-						scale * _captureHeight);
+					if (_entropyMinimum > 0.0 && recordValent.entropy() < _entropyMinimum)
+						continue;	
+					auto hr = recordsHistoryRepa(_scaleValency, scaleValue, _valency, recordValent);
+					if (!_updateDisable)
+						_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
+					this->eventId++;		
+					eventCount++;	
+					if (gui)
+					{
+						QPainter framePainter(&_image);
+						framePainter.setPen(Qt::darkGray);
+						framePainter.drawRect(
+							posX * _captureWidth - scale/2.0 * _captureHeight, 
+							posY * _captureHeight - scale/2.0 * _captureHeight, 
+							scale * _captureHeight,
+							scale * _captureHeight);
+					}	
 				}	
-			}	
 		}
-		if (!_updateDisable)
+		if (!_recordsOnly && !_updateDisable)
 		{
 			if (!_active->update(_updateParameters))
 			{
@@ -1546,6 +1589,7 @@ void Win008::act()
 			}
 		}
 		// representations
+		if (!_recordsOnly)		
 		{		
 			auto& activeA = *_active;
 			// std::lock_guard<std::mutex> guard(activeA.mutex);
@@ -1606,7 +1650,7 @@ void Win008::act()
 				_fudsSize = dr.fuds.size();
 			}
 		}
-		if (_checkpointing && _system && _model!="" && this->eventId >= _checkpointEvent + _checkpointInterval)
+		if (!_recordsOnly && _checkpointing && _system && _model!="" && this->eventId >= _checkpointEvent + _checkpointInterval)
 		{
             LOG "actor\tcheckpointing" UNLOG
 			dump();
