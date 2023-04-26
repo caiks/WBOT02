@@ -1484,14 +1484,11 @@ void Win008::act()
 					actsPotsCoordTop.push_back(std::make_tuple(likelihood,length,rand(),posX,posY,x,y,records.size()-1,scaleValue));
 				}		
 			}
-			EVAL(records.size());
-			EVAL(actsPotsCoordTop.size());
 			std::sort(actsPotsCoordTop.rbegin(), actsPotsCoordTop.rend());			
 			for (std::size_t k = 0; eventCount < _eventSize && k < actsPotsCoordTop.size(); k++)	
 			{
 				auto pos = actsPotsCoordTop[k];
 				auto likelihood = std::get<0>(pos);
-				EVAL(likelihood);
 				auto posX = std::get<3>(pos);
 				auto posY = std::get<4>(pos);	
 				auto x = std::get<5>(pos);
@@ -1531,7 +1528,6 @@ void Win008::act()
 						scale * _captureHeight,
 						scale * _captureHeight);
 				}	
-				break;
 			}	
 		}
 		if (!_updateDisable)
