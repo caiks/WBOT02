@@ -3175,7 +3175,9 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 2|13,854|1.693|13,217|637|4.82%
 2.4|15,817|1.875|14,640|1177|8.04%
 
-Comparing the contour maps to 61 appears less detailed around faces, but this might be because multi-scale. Looks very good. Run offline and without overflow and compare. Clearly the potential filtering has fixed the growth issue in 68. The growth in overflow looks more like active-size model 59 because we are not using accumulated.
+Comparing the contour maps to 61 appears less detailed around faces, but this might be because multi-scale. Looks very good. Run offline and without overflow and compare. Clearly the potential filtering has fixed the growth issue in 68. The growth in overflow looks more like active-size model 59 because we are not using accumulated. Maybe having a centre is a disadvantage if we happen to be in a boring place. The tiled scan is scanning 20 tiles, so should be similar. 
+
+Random centre plus local scan is restricted to minimum entropy, but might be more likely to capture background objects rather than foreground. Could bias toward the centre of the screen with a normal distribution.
 
 Offline modelling. Because we don't have a synchronous Qt layer over ffmpeg we will have to cache records. These files would be too large if we scan the whole screen so ultimately might be best to drill down into the video library and decode explicitly. That way we could scale the compute without the tyranny of timer callbacks. Very time consuming.
 
