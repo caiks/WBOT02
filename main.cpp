@@ -1,5 +1,6 @@
 #include "dev.h"
 
+#include "modeller001.h"
 #include "win001.h"
 #include "win002.h"
 #include "win003.h"
@@ -817,6 +818,12 @@ int main(int argc, char *argv[])
 		if (win008.gui)
 			win008.show();
 		application.exec();			
+	}
+
+	if (argc >= 2 && std::string(argv[1]) == "modeller001")
+	{
+        Modeller001 modeller001(std::string(argc >= 3 ? argv[2] : ""));
+		modeller001.model();			
 	}
 
 	if (argc >= 2 

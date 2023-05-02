@@ -24,6 +24,8 @@ set(PROJECT_SOURCES
         dev.cpp
         dev.h
         main.cpp
+		modeller001.cpp
+        modeller001.h
         actor.cpp
         actor.h
         win001.cpp
