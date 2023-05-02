@@ -33,6 +33,7 @@ static void layerer_actor_log(const std::string& str)
 
 Modeller001::Modeller001(const std::string& configA)
 {
+	this->terminate = true;
 	// parse config
 	_config = configA;
 	{
@@ -154,6 +155,10 @@ Modeller001::Modeller001(const std::string& configA)
                 LOG "modeller\terror: failed to open records file" << _recordsFileNames[_recordsIndex] + ".rec" UNLOG
 				return;
 			}
+			else
+			{
+                LOG "modeller\tinit: opened records file" << _recordsFileNames[_recordsIndex] + ".rec" UNLOG
+			}				
 		}
 		catch (const std::exception&)
 		{
@@ -278,6 +283,8 @@ Modeller001::Modeller001(const std::string& configA)
 	{
 		LOG "modeller\terror: failed to initialise" UNLOG
 	}
+	else
+		this->terminate = false;
 }
 
 Modeller001::~Modeller001()
@@ -370,7 +377,7 @@ void Modeller001::model()
 								LOG "modeller\terror: failed to open records file" << _recordsFileNames[_recordsIndex] + ".rec" UNLOG
 								this->terminate = true;
 								return;
-							}		
+							}	
 							_recordsFile.read(reinterpret_cast<char*>(&record.scaleX), sizeof(double));
 							if (_recordsFile.eof())
 							{
@@ -378,6 +385,10 @@ void Modeller001::model()
 								this->terminate = true;
 								return;
 							}
+							else
+							{
+								LOG "modeller\tmodel: opened records file" << _recordsFileNames[_recordsIndex] + ".rec" UNLOG
+							}								
 						}
 						_recordsFile.read(reinterpret_cast<char*>(&record.scaleY), sizeof(double));
 						_recordsFile.read(reinterpret_cast<char*>(&record.centreX), sizeof(double));
@@ -395,19 +406,16 @@ void Modeller001::model()
 					}
 				}
 				records.push_back(record);
-				std::size_t sizeY = _size + _sizeTile;
-				if (sizeY % 2 != _size % 2) sizeY++;
-				auto sizeD = sizeY - _size;		
-				double interval = record.scaleY / sizeY;	
-				auto scale =  interval * _size;		
+				auto sizeD = record.sizeY - _size;		
+				double interval = record.scaleY / record.sizeY;	
+				auto scale =  interval * _size;	
 				std::size_t scaleValue = 0;
 				{
 					for (auto scaleA : _scales)
 					{
-						if (scaleA == scale)
+						if (scaleA - scale > -0.00001 && scaleA - scale < 0.00001)
 							break;
-						else
-							scaleValue++;
+						scaleValue++;
 					}
 					if (scaleValue >= _scales.size())
 					{
@@ -470,10 +478,10 @@ void Modeller001::model()
 											if (ll && ll->size()) slice = ll->back();	
 											if (slice && !fails.count(slice))
 											{
-												actsPotsCoord[z] = std::make_tuple(lengths[slice],sizes[slice],rand(),rand(),x,y);
+												actsPotsCoord[z] = std::make_tuple(lengths[slice],sizes[slice],0.0,0.0,x,y);
 											}
 											else
-												actsPotsCoord[z] = std::make_tuple(0,0,rand(),rand(),x,y);	
+												actsPotsCoord[z] = std::make_tuple(0,0,0.0,0.0,x,y);	
 										}
 							}, t));
 					for (auto& t : threads)
@@ -489,7 +497,7 @@ void Modeller001::model()
 					auto posY = std::get<3>(pos);	
 					auto x = std::get<4>(pos);
 					auto y = std::get<5>(pos);
-					actsPotsCoordTop.push_back(std::make_tuple(likelihood,length,rand(),posX,posY,x,y,records.size()-1,scaleValue));
+					actsPotsCoordTop.push_back(std::make_tuple(likelihood,length,k,posX,posY,x,y,records.size()-1,scaleValue));
 				}		
 			}
 			std::sort(actsPotsCoordTop.rbegin(), actsPotsCoordTop.rend());
