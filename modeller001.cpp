@@ -266,7 +266,7 @@ Modeller001::Modeller001(const std::string& configA)
 			{
 				if (!activeA.induce(_induceParameters))
 				{
-					LOG "actor\tstatus: failed to run initial induce" UNLOG
+					LOG "modeller\tstatus: failed to run initial induce" UNLOG
 					_system.reset();
 					return;
 				}
@@ -302,9 +302,9 @@ Modeller001::~Modeller001()
 			LOG "modeller\terror: failed to close records file" << _recordsFileNames[_recordsIndex] + ".rec" UNLOG
 		}				
 	}
-	LOG "actor\tdumping" UNLOG
+	LOG "modeller\tdumping" UNLOG
 	dump();	
-	LOG "actor\tstatus: finished" UNLOG
+	LOG "modeller\tstatus: finished" UNLOG
 }
 
 
@@ -329,8 +329,8 @@ void Modeller001::dump()
 				std::ofstream out(_model + ".rep", std::ios::binary);
 				sliceRepresentationUMapsPersistent(*_slicesRepresentation, out); 
 				out.close();
-				LOG "actor\tdump\tfile name: " << _model + ".rep" << "\ttime " << ((Sec)(Clock::now() - mark)).count() << "s" UNLOG
-				LOG "actor\tevent id: " << this->eventId UNLOG
+				LOG "modeller\tdump\tfile name: " << _model + ".rep" << "\ttime " << ((Sec)(Clock::now() - mark)).count() << "s" UNLOG
+				LOG "modeller\tevent id: " << this->eventId UNLOG
 			}
 			catch (const std::exception&)
 			{
@@ -342,7 +342,7 @@ void Modeller001::dump()
 		{
 			terminate = true;
 			_active->terminate = true;
-			LOG "actor\tstatus: quitting" UNLOG
+			LOG "modeller\tstatus: quitting" UNLOG
 		}
 	}	
 }
@@ -541,13 +541,13 @@ void Modeller001::model()
 			if (!_active->update(_updateParameters))
 			{
 				this->terminate = true;	
-				LOG "actor\tstatus: quitting" UNLOG
+				LOG "modeller\tstatus: quitting" UNLOG
 				return;
 			}
 			if (!_active->induce(_induceParameters))
 			{
 				this->terminate = true;	
-				LOG "actor\tstatus: quitting" UNLOG
+				LOG "modeller\tstatus: quitting" UNLOG
 				return;
 			}
 		}
@@ -614,13 +614,13 @@ void Modeller001::model()
 		}
 		if (_checkpointing && _system && _model!="" && this->eventId >= _checkpointEvent + _checkpointInterval)
 		{
-            LOG "actor\tcheckpointing" UNLOG
+            LOG "modeller\tcheckpointing" UNLOG
 			dump();
 			_checkpointEvent = this->eventId;
 		}		
 		if (_eventLogging && (_eventLoggingFactor <= 1 || this->eventId >= _eventIdPrev +  _eventLoggingFactor))
 		{
-            LOG "actor\tevent id: " << this->eventId << "\ttime " << ((Sec)(Clock::now() - _mark)).count() << "s" UNLOG
+            LOG "modeller\tevent id: " << this->eventId << "\ttime " << ((Sec)(Clock::now() - _mark)).count() << "s" UNLOG
 			_eventIdPrev = this->eventId;
 		}
 	}
