@@ -536,6 +536,83 @@ void Modeller001::model()
 				eventCount++;	
 			}	
 		}
+		else if (_mode == "mode013" && _scales.size() && _recordsFile.is_open())
+		{
+			Record record;
+			{
+				try
+				{
+					_recordsFile.read(reinterpret_cast<char*>(&record.scaleX), sizeof(double));
+					if (_recordsFile.eof())
+					{
+						_recordsFile.close();
+						_recordsIndex++;
+						if (_recordsIndex >= _recordsFileNames.size())
+							_recordsIndex = 0;
+						_recordsFile.open(_recordsFileNames[_recordsIndex] + ".rec", std::ios::binary);
+						if (!_recordsFile.is_open() || _recordsFile.eof())
+						{
+							LOG "modeller\terror: failed to open records file" << _recordsFileNames[_recordsIndex] + ".rec" UNLOG
+							this->terminate = true;
+							return;
+						}	
+						_recordsFile.read(reinterpret_cast<char*>(&record.scaleX), sizeof(double));
+						if (_recordsFile.eof())
+						{
+							LOG "modeller\terror: failed to open records file" << _recordsFileNames[_recordsIndex] + ".rec" UNLOG
+							this->terminate = true;
+							return;
+						}
+						else
+						{
+							LOG "modeller\tmodel: opened records file" << _recordsFileNames[_recordsIndex] + ".rec" UNLOG
+						}								
+					}
+					_recordsFile.read(reinterpret_cast<char*>(&record.scaleY), sizeof(double));
+					_recordsFile.read(reinterpret_cast<char*>(&record.centreX), sizeof(double));
+					_recordsFile.read(reinterpret_cast<char*>(&record.centreY), sizeof(double));
+					_recordsFile.read(reinterpret_cast<char*>(&record.sizeX), sizeof(std::size_t));
+					_recordsFile.read(reinterpret_cast<char*>(&record.sizeY), sizeof(std::size_t));
+					record.arr->resize(record.sizeX*record.sizeY);
+					_recordsFile.read(reinterpret_cast<char*>((char*)record.arr->data()), record.sizeX*record.sizeY);
+				}
+				catch (const std::exception&)
+				{
+					LOG "modeller\terror: failed to read records file" << _recordsFileNames[_recordsIndex] + ".rec" UNLOG
+					this->terminate = true;
+					return;
+				}
+			}
+			double interval = record.scaleY / record.sizeY;	
+			auto scale =  interval * _size;	
+			std::size_t scaleValue = 0;
+			{
+				for (auto scaleA : _scales)
+				{
+					if (scaleA - scale > -0.00001 && scaleA - scale < 0.00001)
+						break;
+					scaleValue++;
+				}
+				if (scaleValue >= _scales.size())
+				{
+					LOG "modeller\terror: failed to determine scale" UNLOG
+					this->terminate = true;
+					return;
+				}					
+			}			
+			Record recordSub(record,_size,_size,_size/4,_size/4);
+			Record recordValent = recordSub.valentFixed(_valency,_valencyBalanced);
+			for (std::size_t x = 0; x < _size/_sizeTile; x++)	
+				for (std::size_t y = 0; y < _size/_sizeTile; y++)	
+				{
+					Record recordTile(recordValent,_sizeTile,_sizeTile,x*_sizeTile,y*_sizeTile);
+					auto hr = recordsHistoryRepa(_scaleValency, scaleValue, _valency, recordTile);
+					if (!_updateDisable)
+						_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
+					this->eventId++;		
+					eventCount++;	
+				}	
+		}
 		if (!_updateDisable)
 		{
 			if (!_active->update(_updateParameters))

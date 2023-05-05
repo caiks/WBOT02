@@ -3196,6 +3196,8 @@ model073|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scan
 
 Surprisingly the model is more normal - either because offline (and so regular intervals between images) or because no overflow (and so no bias for recent slices). The models are more detailed than for model 70, but still not as detailed as for model 61 at scale 0.177, unsurprisingly. The representations seem to be nearly as good as model 61.
 
+The reason for the preference of edges near the root is that the min entropy frames will tend to have a centralised brightness and the most likely regions of uniformity (and so highly aligned neighbours) is far from the centre. In the underlying for the 2-level this will be less of a problem and in the 2-level itself there will be little effect.
+
 future developments - 
 
 The conclusion to this stage is that we are beginning to see features classified together with the compute resources so far, but we will need new substrates and structures to make further progress especially because proper classification requires dynamic gradients and ideally temporal agent manipulation to separate objects from background. For example ornaments sitting on shelves are not grouped together as bowls, vases, statuettes, etc regardless of the shelf. Multi-scale will be able to improve this for faces which appear frequently at different distances but objects infrequently seen in film noir would require embodied interactional experience - the sort of knowledge acquired by infants playing with toys.
