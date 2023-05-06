@@ -3157,17 +3157,14 @@ At a scale of 0.125 they are similar too -
 
 ![actor002_model067_Film_Noir_006](images/actor002_model067_Film_Noir_006.png) ![actor002_model068_Film_Noir_008](images/actor002_model068_Film_Noir_008.png) 
 
-TODO
+With *model* 70 we keep the same scales as *model* 68 but move to filtering by potential *likelihood*. In mode 'randomised size-potential scanned actual-potential' (12) we first scan the local tile for a batch of random centre frames. We then choose the top frames of these with the highest potential *likelihood* (active *slice size*). Comparing to *model* 68 we can see that the growth is much higher, but otherwise the statistics are similar -
 
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 model068|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|7,303|0.487 (0.947)|14.0|2.5|20|-0.7|0.7|-8.1|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy
 model070|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential|12|balanced|48 B&W videos|2,400,024|15,817|1.054 (1.561)|14.8|2.5|22|-0.7|0.8|-7.8|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy, 20 randomised
 
-model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
-model070|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential|12|balanced|48 B&W videos|2,400,024|15,817|1.054 (1.561)|14.8|2.5|22|-0.7|0.8|-7.8|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy, 20 randomised
+The growth in overflow looks more like active-*size* *model* 59 because we are not accumulating cached *size* - 
 
 million-events|actual fuds|1+ln(million-events)|expected fuds|difference|difference percent
 ---|---|---|---|---|---
@@ -3176,9 +3173,20 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 2|13,854|1.693|13,217|637|4.82%
 2.4|15,817|1.875|14,640|1177|8.04%
 
-Comparing the contour maps to 61 appears less detailed around faces, but this might be because multi-scale. Looks very good. Run offline and without overflow and compare. Clearly the potential filtering has fixed the growth issue in 68. The growth in overflow looks more like active-size model 59 because we are not using accumulated. Maybe having a centre is a disadvantage if we happen to be in a boring place. The tiled scan is scanning 20 tiles, so should be similar. 
+In *model* 70 the filter ratio of 1 to 5 is around the same as in *model* 61 and so the growths are similar -
+
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
+model070|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential|12|balanced|48 B&W videos|2,400,024|15,817|1.054 (1.561)|14.8|2.5|22|-0.7|0.8|-7.8|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy, 20 randomised
+
+TODO
+
+Comparing the contour maps to 61 appears less detailed around faces, but this might be because multi-scale. Looks very good. Maybe having a centre is a disadvantage if we happen to be in a boring place. 
 
 Random centre plus local scan is restricted to minimum entropy, but might be more likely to capture background objects rather than foreground. Could bias toward the centre of the screen with a normal distribution.
+
+Run offline and without overflow and compare.
 
 Offline modelling. Because we don't have a synchronous Qt layer over ffmpeg we will have to cache records. These files would be too large if we scan the whole screen so ultimately might be best to drill down into the video library and decode explicitly. That way we could scale the compute without the tyranny of timer callbacks. Very time consuming.
 
