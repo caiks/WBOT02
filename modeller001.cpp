@@ -135,7 +135,8 @@ Modeller001::Modeller001(const std::string& configA)
 		_valencyBalanced = ARGS_BOOL(valency_balanced);	
 		_valencyFixed |= _valencyBalanced;
 		_size = ARGS_INT_DEF(size,40);	
-		_sizeTile = ARGS_INT_DEF(tile_size,_size/2);	
+		_sizeRecords = ARGS_INT_DEF(records_size,40);	
+		_sizeTile = ARGS_INT_DEF(tile_size,_sizeRecords/2);	
 		_eventSize = ARGS_INT_DEF(event_size,1);	
 		_scanSize = ARGS_INT_DEF(scan_size,1);	
 		_threadCount = ARGS_INT_DEF(threads,1);	
@@ -584,7 +585,7 @@ void Modeller001::model()
 				}
 			}
 			double interval = record.scaleY / record.sizeY;	
-			auto scale =  interval * _size;	
+			auto scale =  interval * _sizeRecords;	
 			std::size_t scaleValue = 0;
 			{
 				for (auto scaleA : _scales)
@@ -600,12 +601,12 @@ void Modeller001::model()
 					return;
 				}					
 			}			
-			Record recordSub(record,_size,_size,_size/4,_size/4);
+			Record recordSub(record,_sizeRecords,_sizeRecords,_sizeTile/2,_sizeTile/2);
 			Record recordValent = recordSub.valentFixed(_valency,_valencyBalanced);
-			for (std::size_t x = 0; x < _size/_sizeTile; x++)	
-				for (std::size_t y = 0; y < _size/_sizeTile; y++)	
+			for (std::size_t x = 0; x < _sizeRecords/_size; x++)	
+				for (std::size_t y = 0; y < _sizeRecords/_size; y++)	
 				{
-					Record recordTile(recordValent,_sizeTile,_sizeTile,x*_sizeTile,y*_sizeTile);
+					Record recordTile(recordValent,_size,_size,x*_size,y*_size);
 					auto hr = recordsHistoryRepa(_scaleValency, scaleValue, _valency, recordTile);
 					if (!_updateDisable)
 						_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	

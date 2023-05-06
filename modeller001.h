@@ -70,6 +70,7 @@ namespace WBOT02
 		bool _valencyFixed;
 		bool _valencyBalanced;
 		std::size_t _size;
+		std::size_t _sizeRecords;
 		std::size_t _sizeTile;
 		std::size_t _threadCount;
 		std::size_t _eventIdPrev;
