@@ -3180,35 +3180,115 @@ model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld 
 model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
 model070|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential|12|balanced|48 B&W videos|2,400,024|15,817|1.054 (1.561)|14.8|2.5|22|-0.7|0.8|-7.8|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy, 20 randomised
 
-TODO
+The position map at scale 0.177 is slightly more detailed than *model* 68, but still not as detailed as *model* 61 -
 
-Comparing the contour maps to 61 appears less detailed around faces, but this might be because multi-scale. Looks very good. Maybe having a centre is a disadvantage if we happen to be in a boring place. 
+![contour004_070_minent_position](images/contour004_070_minent_position.png) 
 
-Random centre plus local scan is restricted to minimum entropy, but might be more likely to capture background objects rather than foreground. Could bias toward the centre of the screen with a normal distribution.
+Although *model* 70 is still restricted to regions with at least the minimum entropy, it seems slightly more likely to to capture background objects rather than foreground, possibly because of its lack of a maintained centre. Note, however, that the run was terminated at 2.4 million *events*, and so we would expect a slightly worse performance in any case.
 
-Run offline and without overflow and compare.
+Now we established that random mode 12 can obtain a similar path distribution to centred mode 6, we moved to running the *modelling* offline. First we obtained the records files by re-running mode 12 but with the `records_only` flag set and an output `records_file` defined. In this configuration we recorded 5 million records from 250,000 images. Each image is grabbed every 300ms, i.e. around 20 hours of footage. This is the configuration for the first records file, `records001.json` -
+```
+{
+	"records_file" : "records001",
+	"records_only" : true,
+	"video_sources" : [
+		"videos/No Man's Woman (1955) [oLiwhrvkMEU].webm",
+...
+		"videos/Twelve O'Clock High 1949  Gregory Peck, Hugh Marlowe & Dean Jagger [OMh4h2_ts68].webm"],
+	"interval" : 250,
+	"playback_rate" : 3.0,
+	"retry_media" : true,
+	"checkpointing" : true,
+	"mode" : "mode012",
+	"unique_records" : 333,
+	"entropy_minimum" : 1.2,
+	"valency_balanced" : true,
+	"event_size" : 4,
+	"scan_size" : 20,
+	"threads" : 7,
+	"cumulative_active" : false,
+	"activeSize" : 1000000,
+	"induceThreadCount" : 7,
+	"induceParameters.diagonalMin" : 12.0,
+	"scales" : [0.250, 0.210, 0.177, 0.149, 0.125, 0.105],
+	"event_maximum" : 1000000,
+	"gui" : false,
+	"logging_event" : true,
+	"logging_event_factor" : 1000,
+	"summary_active" : true,
+	"logging_action" : true,
+	"logging_action_factor" : 10000000
+}
+```
+The run was as follows -
+```
+cd /mnt/vol01/WBOT02_ws
+./WBOT02 actor003 records001.json >>records001.log 2>&1
 
-Offline modelling. Because we don't have a synchronous Qt layer over ffmpeg we will have to cache records. These files would be too large if we scan the whole screen so ultimately might be best to drill down into the video library and decode explicitly. That way we could scale the compute without the tyranny of timer callbacks. Very time consuming.
+```
+We repeated for records files `records002` and `records003`, with different starting indexes. Note that each file is around 18MB, so ultimately disk space might pose a problem for offline processing.
 
-There are many configurations that gets us the coverage of the substrate that we need, so will want to test on a fixed set of events maybe with local tiling (mode 10).
+Now we ran *model* 73 in the cloud from the records files, without overflow, `model073.json` -
+```
+{
+	"model" : "model073",
+	"records_sources" : ["records001","records002","records003"],
+	"checkpointing" : true,
+	"mode" : "mode012",
+	"unique_records" : 333,
+	"entropy_minimum" : 1.2,
+	"valency_balanced" : true,
+	"event_size" : 4,
+	"scan_size" : 20,
+	"threads" : 8,
+	"cumulative_active" : false,
+	"activeSize" : 3000000,
+	"induceThreadCount" : 8,
+	"induceParameters.diagonalMin" : 12.0,
+	"scales" : [0.250, 0.210, 0.177, 0.149, 0.125, 0.105],
+	"event_maximum" : 3000000,
+	"logging_event" : true,
+	"logging_event_factor" : 1000,
+	"summary_active" : true
+}
+```
+Here we compare *model* 73 to online *model* 70 -
 
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 model070|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential|12|balanced|48 B&W videos|2,400,024|15,817|1.054 (1.561)|14.8|2.5|22|-0.7|0.8|-7.8|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy, 20 randomised
 model073|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential|12|balanced|48 B&W videos|3,000,001|23,661|1.577|16.6|2.9|25|-0.5|0.5|-5.9|1.83|30s unique, 12.0 min diagonal, 1.2 min entropy, 20 randomised, no overflow
 
+As expected the statistics are fairly similar, but the distribution is  more normal and closer now to *model* 61 -
+
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
 model073|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential|12|balanced|48 B&W videos|3,000,001|23,661|1.577|16.6|2.9|25|-0.5|0.5|-5.9|1.83|30s unique, 12.0 min diagonal, 1.2 min entropy, 20 randomised, no overflow
 
-Surprisingly the model is more normal - either because offline (and so regular intervals between images) or because no overflow (and so no bias for recent slices). The models are more detailed than for model 70, but still not as detailed as for model 61 at scale 0.177, unsurprisingly. The representations seem to be nearly as good as model 61.
+The larger *model* 73 does not seem to be as detailed as *model* 70 at scale 0.177 -
+
+![contour004_073_minent_position](images/contour004_073_minent_position.png) 
+
+The representations, however, seem to be nearly as good as *model* 61. Compare them side by side with *model* 73 on the right - 
+
+![contour004_061_minent_representation](images/contour004_061_minent_representation.png) ![contour004_073_minent_representation](images/contour004_073_minent_representation.png)
+
+![contour005_061_minent_representation](images/contour005_061_minent_representation.png) ![contour005_073_minent_representation](images/contour005_073_minent_representation.png)
+
+TODO
 
 The reason for the preference of edges near the root is that the min entropy frames will tend to have a centralised brightness and the most likely regions of uniformity (and so highly aligned neighbours) is far from the centre. In the underlying for the 2-level this will be less of a problem and in the 2-level itself there will be little effect.
+
+There are many configurations that gets us the coverage of the substrate that we need, so will want to test on a fixed set of events maybe with local tiling (mode 10).
 
 future developments - 
 
 The conclusion to this stage is that we are beginning to see features classified together with the compute resources so far, but we will need new substrates and structures to make further progress especially because proper classification requires dynamic gradients and ideally temporal agent manipulation to separate objects from background. For example ornaments sitting on shelves are not grouped together as bowls, vases, statuettes, etc regardless of the shelf. Multi-scale will be able to improve this for faces which appear frequently at different distances but objects infrequently seen in film noir would require embodied interactional experience - the sort of knowledge acquired by infants playing with toys.
+
+Offline modelling. Because we don't have a synchronous Qt layer over ffmpeg we will have to cache records. These files would be too large if we scan the whole screen so ultimately might be best to drill down into the video library and decode explicitly. That way we could scale the compute without the tyranny of timer callbacks. Very time consuming.
+
+
 
 Do random covered offset/scale plus local scan. Then add topology search. Then 2 level with central underlying local scan and 2 level scan local scan for reference.
 
