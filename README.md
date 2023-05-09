@@ -1537,6 +1537,7 @@ model067|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised scanned actual-poten
 model068|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|7,303|0.487 (0.947)|14.0|2.5|20|-0.7|0.7|-8.1|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy
 model070|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential|12|balanced|48 B&W videos|2,400,024|15,817|1.054 (1.561)|14.8|2.5|22|-0.7|0.8|-7.8|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy, 20 randomised
 model073|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential|12|balanced|48 B&W videos|3,000,001|23,661|1.577|16.6|2.9|25|-0.5|0.5|-5.9|1.83|30s unique, 12.0 min diagonal, 1.2 min entropy, 20 randomised, no overflow
+model075|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|57,500,000|8,362|0.727|8.3|2.4|16|0.1|-0.5|0.7|2.96|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8
 
 The table above does not show the median and maximum *diagonals*. The median *diagonals* for the actor 2 and actor 3 *models* were consistently around 23-27, and the maximum *diagonals* were consistently around 37-39.
 
@@ -3278,6 +3279,13 @@ The representations, however, seem to be nearly as good as *model* 61. Compare t
 
 TODO
 
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model052|0.177|4 randomised|1|fixed|48 B&W videos|500,000|1,887|0.753|6.7|1.6|11|0.1|-0.6|0.7|3.08|30s unique, 12.0 min diagonal, 1.2 min entropy
+model075|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|57,500,000|8,362|0.727|8.3|2.4|16|0.1|-0.5|0.7|2.96|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8
+
+Perhaps experiment with the induction parameters for the underlying model if have spare compute to see if we can increase the underlying cardinality and reduce the multiplier.
+ 
 The reason for the preference of edges near the root is that the min entropy frames will tend to have a centralised brightness and the most likely regions of uniformity (and so highly aligned neighbours) is far from the centre. In the underlying for the 2-level this will be less of a problem and in the 2-level itself there will be little effect.
 
 There are many configurations that gets us the coverage of the substrate that we need, so will want to test on a fixed set of events maybe with local tiling (mode 10).
