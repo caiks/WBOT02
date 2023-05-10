@@ -588,6 +588,135 @@ int main(int argc, char *argv[])
 		}
 	}
 	
+	if (argc >= 2 && string(argv[1]) == "rethreshold")
+	{
+		bool ok = true;
+		int stage = 0;
+
+		js::Document args;
+		if (ok)
+		{
+			string config = "rethreshold.json";
+			if (argc >= 3) config = string(argv[2]);
+			if (ok && !config.empty())
+			{
+				std::ifstream in;
+				try 
+				{
+					in.open(config);
+					js::IStreamWrapper isw(in);
+					args.ParseStream(isw);
+				}
+				catch (const std::exception&) 
+				{
+					ok = false;
+				}	
+				if (!args.IsObject())
+				{
+					ok = false;
+				}
+			}
+			else
+			{
+				args.Parse("{}");
+				ok = false;
+			}
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);				
+		}
+		
+		string model = ARGS_STRING(model);
+		string model_initial = ARGS_STRING(model_initial);
+		Alignment::ActiveInduceParameters induceParameters;
+		int induceThreadCount = ARGS_INT_DEF(induceThreadCount,4);
+		int induceThreshold = ARGS_INT_DEF(induceThreshold,200);
+		induceParameters.tint = induceThreadCount;		
+		induceParameters.wmax = ARGS_INT_DEF(induceParameters.wmax,18);
+		induceParameters.lmax = ARGS_INT_DEF(induceParameters.lmax,8);
+		induceParameters.xmax = ARGS_INT_DEF(induceParameters.xmax,128);
+		induceParameters.znnmax = 200000.0 * 2.0 * 300.0 * 300.0 * induceThreadCount;
+		induceParameters.omax = ARGS_INT_DEF(induceParameters.omax,10);
+		induceParameters.bmax = ARGS_INT_DEF(induceParameters.bmax,10*3);
+		induceParameters.mmax = ARGS_INT_DEF(induceParameters.mmax,3);
+		induceParameters.umax = ARGS_INT_DEF(induceParameters.umax,128);
+		induceParameters.pmax = ARGS_INT_DEF(induceParameters.pmax,1);
+		induceParameters.mult = ARGS_INT_DEF(induceParameters.mult,1);
+		induceParameters.seed = ARGS_INT_DEF(induceParameters.seed,5);	
+		induceParameters.diagonalMin = ARGS_DOUBLE_DEF(induceParameters.diagonalMin,6.0);
+		if (args.HasMember("induceParameters.induceThresholds"))
+		{
+			auto& a = args["induceParameters.induceThresholds"];
+			if (a.IsArray())
+				for (auto& v : a.GetArray())
+					if (v.IsInt())
+						induceParameters.induceThresholds.insert(v.GetInt());
+		}
+		else
+		{
+			induceParameters.induceThresholds = std::set<std::size_t>{200,225,250,300,400,500,800,1000,2000,3000};
+		}	
+
+		Active activeA;
+		if (ok) 
+		{
+			activeA.historySliceCachingIs = true;
+			ActiveIOParameters ppio;
+			ppio.filename = model_initial +".ac";
+			activeA.logging = true;		
+			ok = ok && activeA.load(ppio);
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);		
+		}
+		if (ok)
+		{
+			ok = ok && induceThreshold > 0 && induceThreshold < activeA.induceThreshold;
+			ok = ok && activeA.historySparse;
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);	
+		}	
+		if (ok)
+		{
+			activeA.name = model;	
+			activeA.induceSlices.clear();
+			activeA.induceSliceFailsSize.clear();
+			activeA.induceThreshold = induceThreshold;				
+			{
+				auto& hr = activeA.historySparse;
+				auto& slev = activeA.historySlicesSetEvent;	
+				auto& induces = activeA.induceSlices;		
+				for (auto pp : slev)
+					if (pp.second.size() >= induceThreshold)
+						induces.insert(pp.first);
+			}					
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);	
+		}
+		if (ok)
+		{
+			activeA.logging = false;		
+			activeA.summary = true;		
+			ok = ok && activeA.induce(induceParameters);					
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);	
+		}
+		if (ok) 
+		{
+			ActiveIOParameters ppio;
+			ppio.filename = activeA.name+".ac";
+			activeA.logging = true;
+			activeA.summary = false;		
+			ok = ok && activeA.dump(ppio);		
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);		
+		}
+	}
+	
 	if (argc >= 3 && std::string(argv[1]) == "image001")
 	{
 		auto mark = Clock::now();
