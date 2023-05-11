@@ -657,14 +657,16 @@ int main(int argc, char *argv[])
 			induceParameters.induceThresholds = std::set<std::size_t>{200,225,250,300,400,500,800,1000,2000,3000};
 		}	
 
+		std::shared_ptr<Alignment::ActiveSystem> systemA = std::make_shared<ActiveSystem>();
 		Active activeA;
 		if (ok) 
 		{
-			activeA.historySliceCachingIs = true;
+			activeA.system = systemA;
+			activeA.logging = true;		
 			ActiveIOParameters ppio;
 			ppio.filename = model_initial +".ac";
-			activeA.logging = true;		
 			ok = ok && activeA.load(ppio);
+			systemA->block = std::max(systemA->block, activeA.varMax() >> activeA.bits);
 			stage++;
 			EVAL(stage);
 			TRUTH(ok);		
