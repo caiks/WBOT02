@@ -628,6 +628,7 @@ int main(int argc, char *argv[])
 		
 		string model = ARGS_STRING(model);
 		string model_initial = ARGS_STRING(model_initial);
+		int size = ARGS_INT_DEF(size,40);	
 		Alignment::ActiveInduceParameters induceParameters;
 		int induceThreadCount = ARGS_INT_DEF(induceThreadCount,4);
 		int induceThreshold = ARGS_INT_DEF(induceThreshold,200);
@@ -659,6 +660,33 @@ int main(int argc, char *argv[])
 
 		std::shared_ptr<Alignment::ActiveSystem> systemA = std::make_shared<ActiveSystem>();
 		Active activeA;
+		std::size_t fudsSize;	
+		std::unique_ptr<WBOT02::SliceRepresentationUMap> slicesRepresentation;
+		if (ok) 
+		{
+			try
+			{
+				std::ifstream in(model_initial + ".rep", std::ios::binary);
+				if (in.is_open())
+				{
+					slicesRepresentation = persistentsSliceRepresentationUMap(in);
+					in.close();
+				}
+				else
+				{
+					LOG "rethreshold\terror: failed to open slice-representations file" << model_initial + ".rep" UNLOG
+					ok = false;
+				}
+			}
+			catch (const std::exception&)
+			{
+				LOG "rethreshold\terror: failed to read records file" << model_initial + ".rep" UNLOG
+				ok = false;
+			}	
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);		
+		}
 		if (ok) 
 		{
 			activeA.system = systemA;
@@ -667,6 +695,7 @@ int main(int argc, char *argv[])
 			ppio.filename = model_initial +".ac";
 			ok = ok && activeA.load(ppio);
 			systemA->block = std::max(systemA->block, activeA.varMax() >> activeA.bits);
+			fudsSize = activeA.decomp->fuds.size();
 			stage++;
 			EVAL(stage);
 			TRUTH(ok);		
@@ -706,6 +735,37 @@ int main(int argc, char *argv[])
 			EVAL(stage);
 			TRUTH(ok);	
 		}
+		if (ok)
+		{		
+			std::shared_ptr<HistoryRepa> hr = activeA.underlyingHistoryRepa.front();
+			auto& slev = activeA.historySlicesSetEvent;
+			auto n = hr->dimension;
+			auto rr = hr->arr;	
+			auto& dr = *activeA.decomp;	
+			auto& reps = *slicesRepresentation;
+			for (std::size_t i = fudsSize; i < dr.fuds.size(); i++)
+			{
+				for (auto sliceB : dr.fuds[i].children)
+				{
+					Representation rep(1.0,1.0,size,size);
+					auto& arr1 = *rep.arr;
+					if (slev.count(sliceB))
+					{
+						for (auto j : slev[sliceB])
+						{
+							auto jn = j*n;
+							for (size_t i = 0; i < n-1; i++)
+								arr1[i] += rr[jn + i];
+							rep.count++;
+						}									
+						reps.insert_or_assign(sliceB, rep);
+					}
+				}
+			}
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);	
+		}
 		if (ok) 
 		{
 			ActiveIOParameters ppio;
@@ -713,6 +773,25 @@ int main(int argc, char *argv[])
 			activeA.logging = true;
 			activeA.summary = false;		
 			ok = ok && activeA.dump(ppio);		
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);		
+		}
+		if (ok) 
+		{
+			try
+			{
+				auto mark = Clock::now(); 
+				std::ofstream out(activeA.name + ".rep", std::ios::binary);
+				sliceRepresentationUMapsPersistent(*slicesRepresentation, out); 
+				out.close();
+				LOG "rethreshold\tdump\tfile name: " << activeA.name + ".rep" << "\ttime " << ((Sec)(Clock::now() - mark)).count() << "s" UNLOG
+			}
+			catch (const std::exception&)
+			{
+				LOG "rethreshold\terror: failed to write slice-representations file" << activeA.name + ".rep" UNLOG
+				ok = false;
+			}				
 			stage++;
 			EVAL(stage);
 			TRUTH(ok);		
