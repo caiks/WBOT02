@@ -1537,8 +1537,11 @@ model067|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised scanned actual-poten
 model068|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|7,303|0.487 (0.947)|14.0|2.5|20|-0.7|0.7|-8.1|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy
 model070|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential|12|balanced|48 B&W videos|2,400,024|15,817|1.054 (1.561)|14.8|2.5|22|-0.7|0.8|-7.8|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy, 20 randomised
 model073|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential|12|balanced|48 B&W videos|3,000,001|23,661|1.577|16.6|2.9|25|-0.5|0.5|-5.9|1.83|30s unique, 12.0 min diagonal, 1.2 min entropy, 20 randomised, no overflow
-model075|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|57,500,000|8,362|0.727|8.3|2.4|16|0.1|-0.5|0.7|2.96|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8
-model076|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|75,000,000|10,833|0.722|8.5|2.5|16|0.1|-0.5|0.7|2.99|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8
+model075|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|57,500,000|8,362|0.727|8.3|2.4|16|0.1|-0.5|0.7|2.96|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000
+model076|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|75,000,000|10,833|0.722|8.5|2.5|16|0.1|-0.5|0.7|2.99|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000
+model077|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 76|13|balanced|48 B&W videos|75,000,000|35,955|0.599|9.3|2.6|19|0.1|-0.4|1.0|3.09|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, threshold 1250
+model078|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 77|13|balanced|48 B&W videos|75,000,000|189,538|0.505|10.3|2.7|22|0.2|-0.3|1.4|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, threshold 200
+model079|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|65,000,000|9,298|0.715|8.7|2.3|16|-0.1|-0.5|-0.5|2.85|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at records002
 
 The table above does not show the median and maximum *diagonals*. The median *diagonals* for the actor 2 and actor 3 *models* were consistently around 23-27, and the maximum *diagonals* were consistently around 37-39.
 
@@ -3283,12 +3286,39 @@ TODO
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 model052|0.177|4 randomised|1|fixed|48 B&W videos|500,000|1,887|0.753|6.7|1.6|11|0.1|-0.6|0.7|3.08|30s unique, 12.0 min diagonal, 1.2 min entropy
-model075|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|57,500,000|8,362|0.727|8.3|2.4|16|0.1|-0.5|0.7|2.96|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8
-model076|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|75,000,000|10,833|0.722|8.5|2.5|16|0.1|-0.5|0.7|2.99|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8
+model075|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|57,500,000|8,362|0.727|8.3|2.4|16|0.1|-0.5|0.7|2.96|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000
+model076|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|75,000,000|10,833|0.722|8.5|2.5|16|0.1|-0.5|0.7|2.99|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000
+model077|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 76|13|balanced|48 B&W videos|75,000,000|35,955|0.599|9.3|2.6|19|0.1|-0.4|1.0|3.09|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, threshold 1250
+model078|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 77|13|balanced|48 B&W videos|75,000,000|189,538|0.505|10.3|2.7|22|0.2|-0.3|1.4|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, threshold 200
+model079|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|65,000,000|9,298|0.715|8.7|2.3|16|-0.1|-0.5|-0.5|2.85|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at records002
+
 
 Perhaps experiment with the induction parameters for the underlying model if have spare compute to see if we can increase the underlying cardinality and reduce the multiplier.
 
-undsMean: 8.92283
+model075 undsMean: 8.90098
+
+model076 undsMean: 8.92283
+
+model077 undsMean: 7.86605
+
+model078 undsMean: 8.12224
+
+lengthsCount: 1861494
+lengthsMean: 10.335
+lengthsDeviation: 2.72063
+lengthsSkewness: 0.17828
+lengthsKurtosisExcess: -0.317382
+lengthsHyperSkewness: 1.37083
+
+model079 undsMean: 8.96483
+ 
+contour004_075_minent_length vs contour004_078_minent_length
+
+contour004_075_minent_representation vs contour004_078_minent_representation
+
+same for 005
+
+78 appears to be more detailed around the eyes and lips in the representations compared to 75. The length maps have improved slightly with less ignoring of the face. So we don't need to do anything else to use this model as the underlying. Note that for the rethresolds we reduced the induction parameters back to defaults because too slow.
  
 The reason for the preference of edges near the root is that the min entropy frames will tend to have a centralised brightness and the most likely regions of uniformity (and so highly aligned neighbours) is far from the centre. In the underlying for the 2-level this will be less of a problem and in the 2-level itself there will be little effect.
 
