@@ -798,6 +798,104 @@ int main(int argc, char *argv[])
 		}
 	}
 	
+	if (argc >= 4 && string(argv[1]) == "randomise_records")
+	{
+		bool ok = true;
+		int stage = 0;
+		string records = string(argv[2]);
+		string records_new = string(argv[3]);
+		
+		EVAL(records);
+		EVAL(records_new);
+
+		std::ifstream recordsFile;
+		if (ok) 
+		{
+			try
+			{
+				recordsFile.open(records + ".rec", std::ios::binary);
+				if (!recordsFile.is_open())
+				{
+					ok = false;
+				}			
+			}
+			catch (const std::exception&)
+			{
+				ok = false;
+			}	
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);		
+		}
+		std::unique_ptr<RecordList> recordsList;
+		if (ok) 
+		{
+			try
+			{
+				recordsList = persistentsRecordList(recordsFile);
+				recordsFile.close();
+			}
+			catch (const std::exception&)
+			{
+				ok = false;
+			}	
+			ok = ok && recordsList && recordsList->size() > 0;
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);		
+		}
+		if (ok) 
+		{
+			try
+			{
+				EVAL(recordsList->size());
+				std::mt19937_64 gen64;		
+				std::shuffle(recordsList->begin(), recordsList->end(), gen64);
+			}
+			catch (const std::exception&)
+			{
+				ok = false;
+			}	
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);		
+		}
+		std::ofstream recordsFileNew;
+		if (ok) 
+		{
+			try
+			{
+				recordsFileNew.open(records_new + ".rec", std::ios::binary);
+				if (!recordsFileNew.is_open())
+				{
+					ok = false;
+				}			
+			}
+			catch (const std::exception&)
+			{
+				ok = false;
+			}	
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);		
+		}
+		if (ok) 
+		{
+			try
+			{
+				recordListsPersistent(*recordsList,recordsFileNew);
+				recordsFileNew.close();
+			}
+			catch (const std::exception&)
+			{
+				ok = false;
+			}	
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);		
+		}
+	}
+
 	if (argc >= 3 && std::string(argv[1]) == "image001")
 	{
 		auto mark = Clock::now();
