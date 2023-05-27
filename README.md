@@ -1543,7 +1543,7 @@ model077|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 76|13|balanced
 model078|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 77|13|balanced|48 B&W videos|75,000,000|189,538|0.505|10.3|2.7|22|0.2|-0.3|1.4|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, threshold 200
 model079|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|65,000,000|9,298|0.715|8.7|2.3|16|-0.1|-0.5|-0.5|2.85|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at records002
 model080|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|75,000,000|10,768|0.718|8.4|2.3|15|-0.1|-0.6|-0.5|3.00|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at randomised records006
-
+model081|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 80|13|balanced|48 B&W videos|75,000,000|188,056|0.501|10.4|2.6|20|0.1|-0.4|0.5|3.23|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, threshold 200
 
 The table above does not show the median and maximum *diagonals*. The median *diagonals* for the actor 2 and actor 3 *models* were consistently around 23-27, and the maximum *diagonals* were consistently around 37-39.
 
@@ -3294,8 +3294,7 @@ model077|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 76|13|balanced
 model078|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 77|13|balanced|48 B&W videos|75,000,000|189,538|0.505|10.3|2.7|22|0.2|-0.3|1.4|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, threshold 200
 model079|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|65,000,000|9,298|0.715|8.7|2.3|16|-0.1|-0.5|-0.5|2.85|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at records002
 model080|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|75,000,000|10,768|0.718|8.4|2.3|15|-0.1|-0.6|-0.5|3.00|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at randomised records006
-
-
+model081|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 80|13|balanced|48 B&W videos|75,000,000|188,056|0.501|10.4|2.6|20|0.1|-0.4|0.5|3.23|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, threshold 200
 
 Perhaps experiment with the induction parameters for the underlying model if have spare compute to see if we can increase the underlying cardinality and reduce the multiplier.
 
@@ -3318,6 +3317,8 @@ model079 undsMean: 8.96483
 
 model080 undsMean: 8.98691
  
+model081 undsMean: 8.13402
+
 contour004_075_minent_length vs contour004_078_minent_length
 
 contour004_075_minent_representation vs contour004_078_minent_representation
@@ -3329,6 +3330,12 @@ same for 005
 The reason for the preference of edges near the root is that the min entropy frames will tend to have a centralised brightness and the most likely regions of uniformity (and so highly aligned neighbours) is far from the centre. In the underlying for the 2-level this will be less of a problem and in the 2-level itself there will be little effect.
 
 There are many configurations that gets us the coverage of the substrate that we need, so will want to test on a fixed set of events maybe with local tiling (mode 10).
+
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model080|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|75,000,000|10,768|0.718|8.4|2.3|15|-0.1|-0.6|-0.5|3.00|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at randomised records006
+model081|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 80|13|balanced|48 B&W videos|75,000,000|188,056|0.501|10.4|2.6|20|0.1|-0.4|0.5|3.23|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, threshold 200
+
 
 future developments - 
 
