@@ -3325,6 +3325,8 @@ contour004_075_minent_representation vs contour004_078_minent_representation
 
 same for 005
 
+Update README of details of models 75-81. Compare 79 (re-run of 76 at different start 'My Favorite Brunette') to 76 checking underlying. Higher underlying appears to reduce the multiplier from around 3.25 to less than 3, but this could be because of higher thresholds.
+
 78 appears to be more detailed around the eyes and lips in the representations compared to 75. The length maps have improved slightly with less ignoring of the face. So we don't need to do anything else to use this model as the underlying. Note that for the rethresolds we reduced the induction parameters back to defaults because too slow.
  
 The reason for the preference of edges near the root is that the min entropy frames will tend to have a centralised brightness and the most likely regions of uniformity (and so highly aligned neighbours) is far from the centre. In the underlying for the 2-level this will be less of a problem and in the 2-level itself there will be little effect.
@@ -3335,6 +3337,10 @@ model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld 
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 model080|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|75,000,000|10,768|0.718|8.4|2.3|15|-0.1|-0.6|-0.5|3.00|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at randomised records006
 model081|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 80|13|balanced|48 B&W videos|75,000,000|188,056|0.501|10.4|2.6|20|0.1|-0.4|0.5|3.23|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, threshold 200
+
+Compare the underlying clusters between models 76, 79 and 80. 76 clusters are very horizontal. Possibly the root fuds were created during a series of images with a lot of horizontals. Model 79 and 80 are much more spherical, so probably the second records set was much more random than 76. Nevertheless we will continue on with 80 and then 81. The high thresholds increase the underlying somewhat. The coverage is much better in all cases, principally because of the smaller substrate, with model 81 having an average of a maximum of 84.6, i.e. 1.3 times the substrate. 
+
+Looking at the position map for model 81 - Compare contour005_061_minent_position to contour005_081_minent_position - it seems that we are getting a degree of convolution - the model changes gradually, with much of the path being common until a boundary
 
 
 future developments - 
