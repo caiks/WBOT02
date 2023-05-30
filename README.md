@@ -3019,6 +3019,8 @@ So, while scanning single *level models* has brought us almost to qualitative fe
 
 ##### Multi-level models
 
+###### Random centre models
+
 Before going on to consider random centre *multi-level models*, let us first develop a mode that does not require a centre to be chosen in order to allow offline processing. We can do this by selecting random locations, as in modes 1 to 3 and 9. In *model* 66, [above](#model066), we tested the effect of multiple scales in mode 9 where the frames are selected at random but subject to minimum entropy and uniqueness. We found that the *alignments* have been diluted slightly by the multi-scale, but otherwise the *model* looked very much like *models* 52, 53 and 64. That is, the growth is low compared to scanning modes and the multiplier is very high.
 
 In order to detect features, however, we would like to retain the longer paths of scanning modes 4 to 8 by doing local scans for hotspots. In 'randomised scanned actual-potential' mode (10), for each *event* a centre is chosen at random and then a local scan of one tile around the centre is done to find the highest actual-potential *likelihood*. The active is non-cumulative in these experiments, so the scan is ordered by path length and then active *slice size*. The frames are checked for minimum entropy and uniqueness before being added as *events*. 
@@ -3193,7 +3195,7 @@ The position map at scale 0.177 is slightly more detailed than *model* 68, but s
 
 Although *model* 70 is still restricted to regions with at least the minimum entropy, it seems slightly more likely to to capture background objects rather than foreground, possibly because of its lack of a maintained centre. Note, however, that the run was terminated at 2.4 million *events*, and so we would expect a slightly worse performance in any case.
 
-Now we established that random mode 12 can obtain a similar path distribution to centred mode 6, we moved to running the *modelling* offline. First we obtained the records files by re-running mode 12 but with the `records_only` flag set and an output `records_file` defined. In this configuration we recorded 5 million records from 250,000 images. Each image is grabbed every 300ms, i.e. around 20 hours of footage. This is the configuration for the first records file, `records001.json` -
+Now we established that random mode 12 can obtain a similar path distribution to centred mode 6, we moved to running the *modelling* offline. First we obtained the records files by re-running mode 12 but with the `records_only` flag set and an output `records_file` defined. In this configuration we recorded 5 million records from 250,000 images. Each image is grabbed every 300ms, i.e. around 20 hours of footage. Note that the records taken include the extra size of the tile, i.e. `60x60 = 3600` altogether in this case. The central subrecord is guaranteed to have the minimum entropy. This is the configuration for the first records file, `records001.json` -
 ```
 {
 	"records_file" : "records001",
@@ -3259,6 +3261,14 @@ Now we ran *model* 73 in the cloud from the records files, without overflow, `mo
 	"summary_active" : true
 }
 ```
+The run was as follows -
+```
+cd /mnt/vol01/WBOT02_ws
+./WBOT02 modeller001 model073.json >>model073.log 2>&1
+
+```
+Note that we are no longer using `actor003`, but are using the offline process `modeller001`.
+
 Here we compare *model* 73 to online *model* 70 -
 
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
@@ -3283,18 +3293,107 @@ The representations, however, seem to be nearly as good as *model* 61. Compare t
 
 ![contour005_061_minent_representation](images/contour005_061_minent_representation.png) ![contour005_073_minent_representation](images/contour005_073_minent_representation.png)
 
-TODO
+###### Underlying models
+
+Now that we have established that there is not much cost to processing offline, let us continue on to develop the *underlying level* for a *2-level model*. We will start with a *substrate* of `8x8 = 64` *variables*. The upper *level* will comprise `5x5 = 25` of these *underlying models* to be equivalent to the *substrate* of `40x40 = 1600` which we have been using in the single *level models* so far. We are hoping now, however, to capture global *alignments* at the higher *level*, in order to classify features more reliably. Perhaps we will also be able to increase the degree of convolution to reduce the amount of scanning.
+
+These are the results of the various *underlying models* with randomised *model* 52 at the beginning for comparison:
 
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 model052|0.177|4 randomised|1|fixed|48 B&W videos|500,000|1,887|0.753|6.7|1.6|11|0.1|-0.6|0.7|3.08|30s unique, 12.0 min diagonal, 1.2 min entropy
-model075|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|57,500,000|8,362|0.727|8.3|2.4|16|0.1|-0.5|0.7|2.96|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000
 model076|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|75,000,000|10,833|0.722|8.5|2.5|16|0.1|-0.5|0.7|2.99|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000
-model077|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 76|13|balanced|48 B&W videos|75,000,000|35,955|0.599|9.3|2.6|19|0.1|-0.4|1.0|3.09|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, threshold 1250
 model078|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 77|13|balanced|48 B&W videos|75,000,000|189,538|0.505|10.3|2.7|22|0.2|-0.3|1.4|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, threshold 200
 model079|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|65,000,000|9,298|0.715|8.7|2.3|16|-0.1|-0.5|-0.5|2.85|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at records002
 model080|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|75,000,000|10,768|0.718|8.4|2.3|15|-0.1|-0.6|-0.5|3.00|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at randomised records006
 model081|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 80|13|balanced|48 B&W videos|75,000,000|188,056|0.501|10.4|2.6|20|0.1|-0.4|0.5|3.23|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, threshold 200
+
+This is the configuration for *model* 76 -
+```
+{
+	"model" : "model076",
+	"records_sources" : ["records001","records002","records003"],
+	"checkpointing" : true,
+	"checkpoint_interval" : 2500000,
+	"mode" : "mode013",
+	"valency_balanced" : true,
+	"size" : 8,
+	"records_size" : 40,
+	"cumulative_active" : false,
+	"activeSize" : 75000000,
+	"induceThreadCount" : 8,
+	"induceParameters.diagonalMin" : 12.0,
+	"induceThreshold" : 5000,
+	"induceParameters.induceThresholds" : [5000,10000,15000],
+	"induceParameters.xmax" : 1024,
+	"induceParameters.omax" : 20,
+	"induceParameters.bmax" : 60,
+	"scales" : [0.250, 0.210, 0.177, 0.149, 0.125, 0.105],
+	"event_maximum" : 75000000,
+	"logging_event" : true,
+	"logging_event_factor" : 100000,
+	"summary_active" : true
+}
+```
+*Model* 76 runs in mode 13. First mode 13 takes the central subrecord of `40x40` cells, which have at least the minimum entropy of the records capture. Then the subrecord is divided up into 25 subrecord tiles of `8x8`, each of these forming an *event*. The maximum *events* is therefore 25 times larger at 75m *events*. These are all in the active *size*, so at least 32GB is needed by *model* 76. The induce threshold is also set 25 times higher at 5,000. In addition there are some increased induction parameters - `"induceParameters.xmax" : 1024`, `"induceParameters.omax" : 20` and `"induceParameters.bmax" : 60`. 
+
+If we compare the statistics of `8x8` *model* 76 to `40x40` random centre *model* 52 we find that they are fairly similar, with *model* 76 having a slightly lower growth rate and multiplier. The mean number of *underlying variables* per *fud*, however, is higher at 8.9. This is due to the increased induction parameters. With an average path length of 8.5, then expected maximum number of *underlying variables* per path is over 75, i.e. 118% of the *substrate*. This may be compared to the 8% of *model* 61. So the coverage of the *substrate* is sufficient. 
+
+In order to obtain the best *underlying model* we then reduced the induced threshold in *model* 78 using a new procedure. This is the configuration for *model* 78 -
+```
+{
+	"model" : "model078",
+	"model_initial" : "model077",
+	"size" : 8,
+	"induceThreadCount" : 8,
+	"induceParameters.diagonalMin" : 12.0,
+	"induceThreshold" : 200
+}
+```
+The `rethreshold` was run as follows -
+```
+cd /mnt/vol01/WBOT02_ws
+./WBOT02 rethreshold model078.json >>model078.log 2>&1
+
+```
+For performance reasons, the `rethreshold` was run without the default induction parameters. The average *underlying* decreases to 8.1, but the path length increases to 10.3, so the average maximum coverage of the *substrate* increases to 130%. Note that the multiplier also increases from 2.99 to 3.24, because of the lower *alignments* due to the lower induction parameters and the smaller *slice sizes* at threshold. The growth is considerably less at 0.505 compared to 0.722.
+
+TODO show the representation.
+
+Here we can see the *underlying* of *model* 76 highlighted - 
+
+![actor002_model076_Film_Noir_001](images/actor002_model076_Film_Noir_001.png) 
+
+Interestingly, many of the *underlying* clusters appear to have a strong horizontal bias. To see if this is an artefact of the capture sequence of records, we ran *model* 79 as a copy of *model* 76, but starting at the third records set, `records003`. This is the configuration for *model* 79 -
+```
+{
+	"model" : "model079",
+	"records_sources" : ["records001","records002","records003"],
+	"records_index" : 2,
+	"checkpointing" : true,
+	"checkpoint_interval" : 2500000,
+	"mode" : "mode013",
+	"valency_balanced" : true,
+	"size" : 8,
+	"records_size" : 40,
+	"cumulative_active" : false,
+	"activeSize" : 75000000,
+	"induceThreadCount" : 8,
+	"induceParameters.diagonalMin" : 12.0,
+	"induceThreshold" : 5000,
+	"induceParameters.induceThresholds" : [5000,10000,15000],
+	"induceParameters.xmax" : 1024,
+	"induceParameters.omax" : 20,
+	"induceParameters.bmax" : 60,
+	"scales" : [0.250, 0.210, 0.177, 0.149, 0.125, 0.105],
+	"event_maximum" : 75000000,
+	"logging_event" : true,
+	"logging_event_factor" : 100000,
+	"summary_active" : true
+}
+```
+
+TODO
 
 Perhaps experiment with the induction parameters for the underlying model if have spare compute to see if we can increase the underlying cardinality and reduce the multiplier.
 
