@@ -1537,10 +1537,8 @@ model067|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised scanned actual-poten
 model068|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|7,303|0.487 (0.947)|14.0|2.5|20|-0.7|0.7|-8.1|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy
 model070|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential|12|balanced|48 B&W videos|2,400,024|15,817|1.054 (1.561)|14.8|2.5|22|-0.7|0.8|-7.8|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy, 20 randomised
 model073|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential|12|balanced|48 B&W videos|3,000,001|23,661|1.577|16.6|2.9|25|-0.5|0.5|-5.9|1.83|30s unique, 12.0 min diagonal, 1.2 min entropy, 20 randomised, no overflow
-model075|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|57,500,000|8,362|0.727|8.3|2.4|16|0.1|-0.5|0.7|2.96|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000
 model076|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|75,000,000|10,833|0.722|8.5|2.5|16|0.1|-0.5|0.7|2.99|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000
-model077|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 76|13|balanced|48 B&W videos|75,000,000|35,955|0.599|9.3|2.6|19|0.1|-0.4|1.0|3.09|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, threshold 1250
-model078|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 77|13|balanced|48 B&W videos|75,000,000|189,538|0.505|10.3|2.7|22|0.2|-0.3|1.4|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, threshold 200
+model078|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 76|13|balanced|48 B&W videos|75,000,000|189,538|0.505|10.3|2.7|22|0.2|-0.3|1.4|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, threshold 200
 model079|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|65,000,000|9,298|0.715|8.7|2.3|16|-0.1|-0.5|-0.5|2.85|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at records002
 model080|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|75,000,000|10,768|0.718|8.4|2.3|15|-0.1|-0.6|-0.5|3.00|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at randomised records006
 model081|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 80|13|balanced|48 B&W videos|75,000,000|188,056|0.501|10.4|2.6|20|0.1|-0.4|0.5|3.23|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, threshold 200
@@ -3231,7 +3229,7 @@ Now we established that random mode 12 can obtain a similar path distribution to
 ```
 The run was as follows -
 ```
-cd /mnt/vol01/WBOT02_ws
+cd ~/WBOT02_ws
 ./WBOT02 actor003 records001.json >>records001.log 2>&1
 
 ```
@@ -3263,7 +3261,7 @@ Now we ran *model* 73 in the cloud from the records files, without overflow, `mo
 ```
 The run was as follows -
 ```
-cd /mnt/vol01/WBOT02_ws
+cd ~/WBOT02_ws
 ./WBOT02 modeller001 model073.json >>model073.log 2>&1
 
 ```
@@ -3295,7 +3293,7 @@ The representations, however, seem to be nearly as good as *model* 61. Compare t
 
 ###### Underlying models
 
-Now that we have established that there is not much cost to processing offline, let us continue on to develop the *underlying level* for a *2-level model*. We will start with a *substrate* of `8x8 = 64` *variables*. The upper *level* will comprise `5x5 = 25` of these *underlying models* to be equivalent to the *substrate* of `40x40 = 1600` which we have been using in the single *level models* so far. We are hoping now, however, to capture global *alignments* at the higher *level*, in order to classify features more reliably. Perhaps we will also be able to increase the degree of convolution to reduce the amount of scanning.
+Now that we have established that there is not much cost to processing offline, let us continue on to develop the *underlying level* for a *2-level model*. We will start with a *substrate* of `8x8 = 64` *variables*. The upper *level* will comprise `5x5 = 25` of these *underlying models* - equivalent to the *substrate* of `40x40 = 1600` which we have been using in the single *level models* so far. We are hoping now, however, to capture global *alignments* at the higher *level*, in order to classify features more reliably. Perhaps we will also be able to increase the degree of convolution to reduce the amount of scanning.
 
 These are the results of the various *underlying models* with randomised *model* 52 at the beginning for comparison:
 
@@ -3303,7 +3301,7 @@ model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld 
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 model052|0.177|4 randomised|1|fixed|48 B&W videos|500,000|1,887|0.753|6.7|1.6|11|0.1|-0.6|0.7|3.08|30s unique, 12.0 min diagonal, 1.2 min entropy
 model076|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|75,000,000|10,833|0.722|8.5|2.5|16|0.1|-0.5|0.7|2.99|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000
-model078|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 77|13|balanced|48 B&W videos|75,000,000|189,538|0.505|10.3|2.7|22|0.2|-0.3|1.4|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, threshold 200
+model078|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 76|13|balanced|48 B&W videos|75,000,000|189,538|0.505|10.3|2.7|22|0.2|-0.3|1.4|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, threshold 200
 model079|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|65,000,000|9,298|0.715|8.7|2.3|16|-0.1|-0.5|-0.5|2.85|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at records002
 model080|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|75,000,000|10,768|0.718|8.4|2.3|15|-0.1|-0.6|-0.5|3.00|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at randomised records006
 model081|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 80|13|balanced|48 B&W videos|75,000,000|188,056|0.501|10.4|2.6|20|0.1|-0.4|0.5|3.23|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, threshold 200
@@ -3335,11 +3333,11 @@ This is the configuration for *model* 76 -
 	"summary_active" : true
 }
 ```
-*Model* 76 runs in mode 13. First mode 13 takes the central subrecord of `40x40` cells, which have at least the minimum entropy of the records capture. Then the subrecord is divided up into 25 subrecord tiles of `8x8`, each of these forming an *event*. The maximum *events* is therefore 25 times larger at 75m *events*. These are all in the active *size*, so at least 32GB is needed by *model* 76. The induce threshold is also set 25 times higher at 5,000. In addition there are some increased induction parameters - `"induceParameters.xmax" : 1024`, `"induceParameters.omax" : 20` and `"induceParameters.bmax" : 60`. 
+*Model* 76 runs in mode 13. First, mode 13 takes the central subrecord of `40x40` cells, which have at least the minimum entropy of the records capture. Then this subrecord is divided up into 25 subrecord tiles of `8x8`, each of these forming an *event*. The maximum *events* is therefore set 25 times larger at 75m *events*. These are all in the active *size*, so at least 32GB is needed by *model* 76. The induce threshold is also set 25 times higher at 5,000. In addition there are some increased induction parameters - `"induceParameters.xmax" : 1024`, `"induceParameters.omax" : 20` and `"induceParameters.bmax" : 60`. 
 
-If we compare the statistics of `8x8` *model* 76 to `40x40` random centre *model* 52 we find that they are fairly similar, with *model* 76 having a slightly lower growth rate and multiplier. The mean number of *underlying variables* per *fud*, however, is higher at 8.9. This is due to the increased induction parameters. With an average path length of 8.5, then expected maximum number of *underlying variables* per path is over 75, i.e. 118% of the *substrate*. This may be compared to the 8% of *model* 61. So the coverage of the *substrate* is sufficient. 
+If we compare the statistics of `8x8` *model* 76 to `40x40` random centre *model* 52 we find that they are fairly similar, with *model* 76 having a slightly lower growth rate and multiplier. The mean number of *underlying variables* per *fud*, however, is higher at 8.9. This is due to the increased induction parameters. With an average path length of 8.5, the expected maximum number of *underlying variables* per path is over 75, i.e. 118% of the *substrate*. This may be compared to the 8% coverage of *model* 61. So the coverage of *model* 76 is more than sufficient. 
 
-In order to obtain the best *underlying model* we then reduced the induced threshold in *model* 78 using a new procedure. This is the configuration for *model* 78 -
+In order to obtain the best *underlying model* we then reduced the induced threshold in *model* 78 from 5,000 to 200, using the `rethreshold` procedure. This is the configuration for *model* 78 -
 ```
 {
 	"model" : "model078",
@@ -3352,19 +3350,21 @@ In order to obtain the best *underlying model* we then reduced the induced thres
 ```
 The `rethreshold` was run as follows -
 ```
-cd /mnt/vol01/WBOT02_ws
+cd ~/WBOT02_ws
 ./WBOT02 rethreshold model078.json >>model078.log 2>&1
 
 ```
-For performance reasons, the `rethreshold` was run without the default induction parameters. The average *underlying* decreases to 8.1, but the path length increases to 10.3, so the average maximum coverage of the *substrate* increases to 130%. Note that the multiplier also increases from 2.99 to 3.24, because of the lower *alignments* due to the lower induction parameters and the smaller *slice sizes* at threshold. The growth is considerably less at 0.505 compared to 0.722.
+For performance reasons, the `rethreshold` was run without the default induction parameters. The average *underlying* decreases to 8.1, but the path length increases to 10.3, so the average maximum coverage of the *substrate* increases to 130%. Note that the multiplier also increases from 2.99 to 3.24, because of the lower *alignments* due to the lower induction parameters and the smaller *slice sizes* at threshold. The growth is considerably less at 0.505 compared to 0.722 before the rethresholding. These are the contour map representations -
 
-TODO show the representation.
+![contour004_078_minent_representation](images/contour004_078_minent_representation.png) 
 
-Here we can see the *underlying* of *model* 76 highlighted - 
+![contour005_078_minent_representation](images/contour005_078_minent_representation.png) 
 
-![actor002_model076_Film_Noir_001](images/actor002_model076_Film_Noir_001.png) 
+Now let us consider the *underlying variables*. Here we can see the *underlying* of *model* 76 highlighted - 
 
-Interestingly, many of the *underlying* clusters appear to have a strong horizontal bias. To see if this is an artefact of the capture sequence of records, we ran *model* 79 as a copy of *model* 76, but starting at the third records set, `records003`. This is the configuration for *model* 79 -
+![actor002_model076_Film_Noir_002](images/actor002_model076_Film_Noir_002.png) 
+
+Interestingly, many of the *underlying* clusters appear to have a strong horizontal bias. Possibly the root *fuds* were created during a series of images with a lot of horizontals. To see if this is an artefact of the capture sequence of records, we ran *model* 79 as a copy of *model* 76, but starting at the third records set, `records003`. This is the configuration for *model* 79 -
 ```
 {
 	"model" : "model079",
@@ -3392,55 +3392,82 @@ Interestingly, many of the *underlying* clusters appear to have a strong horizon
 	"summary_active" : true
 }
 ```
+Apart from a slightly lower multiplier, *model* 79 has very similar statistics to *model* 76. The average *underlying* per *fud* is also very similar. The distribution of the *underlying* differs considerably, however -
+
+![actor002_model079_Film_Noir_002](images/actor002_model079_Film_Noir_002.png) 
+
+Now, the *underlying* clusters are more spherical, suggesting that *model* 76 might not be as representative of arbitrary *events*. To be sure, we created a randomly shuffled copy of `records001` -
+
+```
+cd ~/WBOT02_ws
+./WBOT02 randomise_records records001 records006
+```
+
+Then we ran *model* 80 starting with the shuffled set, `records006` -
+```
+{
+	"model" : "model080",
+	"records_sources" : ["records006","records002","records003"],
+	"checkpointing" : true,
+	"checkpoint_interval" : 2500000,
+	"mode" : "mode013",
+	"valency_balanced" : true,
+	"size" : 8,
+	"records_size" : 40,
+	"cumulative_active" : false,
+	"activeSize" : 75000000,
+	"induceThreadCount" : 8,
+	"induceParameters.diagonalMin" : 12.0,
+	"induceThreshold" : 5000,
+	"induceParameters.induceThresholds" : [5000,10000,15000],
+	"induceParameters.xmax" : 1024,
+	"induceParameters.omax" : 20,
+	"induceParameters.bmax" : 60,
+	"scales" : [0.250, 0.210, 0.177, 0.149, 0.125, 0.105],
+	"event_maximum" : 75000000,
+	"logging_event" : true,
+	"logging_event_factor" : 100000,
+	"summary_active" : true
+}
+```
+*Model* 80 has similar statistics to *models* 76 and 79. The distribution of the *underlying* seem to be the most bloblike -
+
+![actor002_model080_Film_Noir_002](images/actor002_model080_Film_Noir_002.png) 
+
+(Note that there is still a preference for edges, rather than centres, near the root. This is because the frames will tend to have lower entropies, and therefore the most likely regions of uniformity near the edges; therefore it is here that we find the most highly *aligned* neighbouring cells.)
+
+So we rethresholded again to produce the final *underlying model*, 81 -
+```
+{
+	"model" : "model081",
+	"model_initial" : "model080",
+	"size" : 8,
+	"induceThreadCount" : 8,
+	"induceParameters.diagonalMin" : 12.0,
+	"induceThreshold" : 200
+}
+```
+The statistics of *model* 81 are, again, very similar to *model* 78. These are the representations -
+
+![contour004_081_minent_representation](images/contour004_081_minent_representation.png) 
+
+![contour005_081_minent_representation](images/contour005_081_minent_representation.png) 
+
+They are, perhaps, slightly better. The path length maps show that the face is not being neglected, although the *model* is less developed around the eyes and lips -
+
+![contour005_081_minent_length](images/contour005_081_minent_length.png) 
+
+Looking at the *model* position map, there is also some suggestion that *model* 81 changes smoothly in large areas, with sudden changes the position at the boundaries of these areas -
+
+![contour005_081_minent_position](images/contour005_081_minent_position.png) 
+
+This may be compared to the very different position map for *model* 61 -
+
+![contour005_061_minent_position](images/contour005_061_minent_position.png) 
+
+That is, *model* 81 appears to be showing a degree of convolution that might mean that the upper *level* will be tolerant to small changes in centre.
 
 TODO
-
-Perhaps experiment with the induction parameters for the underlying model if have spare compute to see if we can increase the underlying cardinality and reduce the multiplier.
-
-model075 undsMean: 8.90098
-
-model076 undsMean: 8.92283
-
-model077 undsMean: 7.86605
-
-model078 undsMean: 8.12224
-
-lengthsCount: 1861494
-lengthsMean: 10.335
-lengthsDeviation: 2.72063
-lengthsSkewness: 0.17828
-lengthsKurtosisExcess: -0.317382
-lengthsHyperSkewness: 1.37083
-
-model079 undsMean: 8.96483
-
-model080 undsMean: 8.98691
- 
-model081 undsMean: 8.13402
-
-contour004_075_minent_length vs contour004_078_minent_length
-
-contour004_075_minent_representation vs contour004_078_minent_representation
-
-same for 005
-
-Update README of details of models 75-81. Compare 79 (re-run of 76 at different start 'My Favorite Brunette') to 76 checking underlying. Higher underlying appears to reduce the multiplier from around 3.25 to less than 3, but this could be because of higher thresholds.
-
-78 appears to be more detailed around the eyes and lips in the representations compared to 75. The length maps have improved slightly with less ignoring of the face. So we don't need to do anything else to use this model as the underlying. Note that for the rethresolds we reduced the induction parameters back to defaults because too slow.
- 
-The reason for the preference of edges near the root is that the min entropy frames will tend to have a centralised brightness and the most likely regions of uniformity (and so highly aligned neighbours) is far from the centre. In the underlying for the 2-level this will be less of a problem and in the 2-level itself there will be little effect.
-
-There are many configurations that gets us the coverage of the substrate that we need, so will want to test on a fixed set of events maybe with local tiling (mode 10).
-
-model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model080|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|75,000,000|10,768|0.718|8.4|2.3|15|-0.1|-0.6|-0.5|3.00|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at randomised records006
-model081|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 80|13|balanced|48 B&W videos|75,000,000|188,056|0.501|10.4|2.6|20|0.1|-0.4|0.5|3.23|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, threshold 200
-
-Compare the underlying clusters between models 76, 79 and 80. 76 clusters are very horizontal. Possibly the root fuds were created during a series of images with a lot of horizontals. Model 79 and 80 are much more spherical, so probably the second records set was much more random than 76. Nevertheless we will continue on with 80 and then 81. The high thresholds increase the underlying somewhat. The coverage is much better in all cases, principally because of the smaller substrate, with model 81 having an average of a maximum of 84.6, i.e. 1.3 times the substrate. 
-
-Looking at the position map for model 81 - Compare contour005_061_minent_position to contour005_081_minent_position - it seems that we are getting a degree of convolution - the model changes gradually, with much of the path being common until a boundary
-
 
 future developments - 
 
