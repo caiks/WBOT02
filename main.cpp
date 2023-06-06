@@ -237,7 +237,9 @@ int main(int argc, char *argv[])
 			EVAL(activeA.induceSliceFailsSize);				
 			EVAL(activeA.frameUnderlyings);				
 			EVAL(activeA.frameHistorys);				
-			// EVAL(activeA.framesVarsOffset);				
+			// EVAL(activeA.framesVarsOffset);	
+			TRUTH(activeA.underlyingOffsetIs);				
+			EVAL(activeA.underlyingsVarsOffset);				
 			if (activeA.decomp) {EVAL(activeA.decomp->fuds.size());}
 			if (activeA.decomp) {EVAL(activeA.decomp->fudRepasSize);}
 			if (activeA.decomp) {EVAL((double)activeA.decomp->fuds.size() * activeA.induceThreshold / sizeA);}
