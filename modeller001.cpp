@@ -74,8 +74,10 @@ Modeller001::Modeller001(const std::string& configA)
 		_modeLoggingFactor = ARGS_INT(logging_mode_factor); 
 		_modeTracing = ARGS_BOOL(tracing_mode);
 		_eventIdMax = ARGS_INT(event_maximum);
+		_struct = ARGS_STRING(structure);
 		_model = ARGS_STRING(model);
 		_modelInitial = ARGS_STRING(model_initial);
+		_level1Model = ARGS_STRING(level1_model);
 		gui = ARGS_BOOL(gui);
 		if (args.HasMember("records_sources") && args["records_sources"].IsArray())
 		{
@@ -90,6 +92,7 @@ Modeller001::Modeller001(const std::string& configA)
 		_activeCumulative = ARGS_BOOL_DEF(cumulative_active,true);
 		_activeSummary = ARGS_BOOL(summary_active);
 		_activeSize = ARGS_INT_DEF(activeSize,1000000);
+		_level1ActiveSize = ARGS_INT_DEF(activeSize,10);
 		_updateParameters.mapCapacity = ARGS_INT_DEF(updateParameters.mapCapacity,3); 
 		_induceThreshold = ARGS_INT_DEF(induceThreshold,200);
 		_induceThreadCount = ARGS_INT_DEF(induceThreadCount,4);
@@ -135,6 +138,7 @@ Modeller001::Modeller001(const std::string& configA)
 		_valencyBalanced = ARGS_BOOL(valency_balanced);	
 		_valencyFixed |= _valencyBalanced;
 		_size = ARGS_INT_DEF(size,40);	
+		_level1Size = ARGS_INT_DEF(level1_size,1);	
 		_sizeRecords = ARGS_INT_DEF(records_size,40);	
 		_sizeTile = ARGS_INT_DEF(tile_size,_sizeRecords/2);	
 		_eventSize = ARGS_INT_DEF(event_size,1);	
@@ -196,15 +200,62 @@ Modeller001::Modeller001(const std::string& configA)
 	}
 	// create active
 	{
-		{
-            SystemSystemRepaTuple xx(recordsSystemSystemRepaTuple(_scaleValency, _valency, _size*_size));
-            _uu = std::move(std::get<0>(xx));
-            _ur = std::move(std::get<1>(xx));
-		}
 		_system = std::make_shared<ActiveSystem>();
 		_events = std::make_shared<ActiveEventsRepa>(1);
 		_active = std::make_shared<Active>();
 		{
+			if (_struct=="struct002")
+			{
+				{
+					Active activeA;
+					ActiveIOParameters ppio;
+					ppio.filename = _level1Model + ".ac";
+					activeA.logging = true;
+					if (!activeA.load(ppio))
+					{
+						LOG "modeller\terror: failed to load level1 model" << ppio.filename UNLOG
+						_system.reset();
+						return;
+					}
+					_system->block = std::max(_system->block, activeA.varMax() >> activeA.bits);
+					_level1Decomp = activeA.decomp;					
+				}
+				_level1.resize(_size*_size);
+				for (std::size_t m = 0; m < _size*_size; m++)
+				{
+					_level1Events.push_back(std::make_shared<ActiveEventsRepa>(1));
+					_level1.push_back(std::make_shared<Active>());
+				}
+				for (std::size_t m = 0; m < _size*_size; m++)
+				{	
+					auto& activeA = *_level1[m];
+					activeA.log = actor_log;
+					activeA.layerer_log = layerer_actor_log;
+					activeA.system = _system;
+					activeA.decomp = _level1Decomp;
+					activeA.historySize = _level1ActiveSize;
+					{
+						auto hr = sizesHistoryRepa(_scaleValency, _valency, _level1Size*_level1Size, activeA.historySize);
+						activeA.underlyingHistoryRepa.push_back(std::move(hr));
+					}				
+					{
+						auto hr = std::make_unique<HistorySparseArray>();
+						{
+							auto z = activeA.historySize;
+							hr->size = z;
+							hr->capacity = 1;
+							hr->arr = new std::size_t[z];		
+						}		
+						activeA.historySparse = std::move(hr);			
+					}
+					activeA.name = (_model!="" ? _model : "model") + "_1_" + (m<10 ? "0" : "") + std::to_string(m);			
+					activeA.underlyingEventsRepa.push_back(_level1Events[m]);
+					activeA.eventsSparse = std::make_shared<ActiveEventsArray>(1);
+				}
+				{
+					LOG _level1Model << "\tfuds cardinality: " << _level1Decomp->fuds.size() << "\tmodel cardinality: " << _level1Decomp->fudRepasSize UNLOG
+				}
+			}
 			auto& activeA = *_active;
 			activeA.log = actor_log;
 			activeA.layerer_log = layerer_actor_log;

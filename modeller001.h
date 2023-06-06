@@ -36,21 +36,25 @@ namespace WBOT02
 		std::size_t _checkpointEvent;
 		
 		std::shared_ptr<Alignment::ActiveSystem> _system;
-		std::shared_ptr<Alignment::System> _uu;
-		std::shared_ptr<Alignment::SystemRepa> _ur;
 		
 		std::shared_ptr<Alignment::ActiveEventsRepa> _events;
-		std::shared_ptr<Alignment::Active> _active;
+		std::vector<std::shared_ptr<Alignment::ActiveEventsRepa>> _level1Events;
 		
 		std::size_t _eventIdMax;	
 		
+		std::string _struct;
+		std::shared_ptr<Alignment::Active> _active;
 		std::string _model;
 		std::string _modelInitial;
+		std::string _level1Model;
+		std::shared_ptr<Alignment::DecompFudSlicedRepa> _level1Decomp;
+		std::vector<std::shared_ptr<Alignment::Active>> _level1;
 
 		bool _activeLogging;
 		bool _activeSummary;
 		bool _activeCumulative;
 		std::size_t _activeSize;
+		std::size_t _level1ActiveSize;
 		Alignment::ActiveUpdateParameters _updateParameters;
 		Alignment::ActiveInduceParameters _induceParameters;
 		std::size_t _induceThreshold;
@@ -70,6 +74,7 @@ namespace WBOT02
 		bool _valencyFixed;
 		bool _valencyBalanced;
 		std::size_t _size;
+		std::size_t _level1Size;
 		std::size_t _sizeRecords;
 		std::size_t _sizeTile;
 		std::size_t _threadCount;
