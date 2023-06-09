@@ -200,6 +200,11 @@ Modeller001::Modeller001(const std::string& configA)
 	}
 	// create active
 	{
+		{
+            SystemSystemRepaTuple xx(recordsSystemSystemRepaTuple(_scaleValency, _valency, _size*_size));
+            _uu = std::move(std::get<0>(xx));
+            _ur = std::move(std::get<1>(xx));
+		}
 		_system = std::make_shared<ActiveSystem>();
 		_events = std::make_shared<ActiveEventsRepa>(1);
 		_active = std::make_shared<Active>();

@@ -36,6 +36,8 @@ namespace WBOT02
 		std::size_t _checkpointEvent;
 		
 		std::shared_ptr<Alignment::ActiveSystem> _system;
+		std::shared_ptr<Alignment::System> _uu;
+		std::shared_ptr<Alignment::SystemRepa> _ur;
 		
 		std::shared_ptr<Alignment::ActiveEventsRepa> _events;
 		std::vector<std::shared_ptr<Alignment::ActiveEventsRepa>> _level1Events;
