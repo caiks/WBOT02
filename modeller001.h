@@ -54,6 +54,8 @@ namespace WBOT02
 
 		bool _activeLogging;
 		bool _activeSummary;
+		bool _level1Logging;
+		bool _level1Summary;
 		bool _activeCumulative;
 		std::size_t _activeSize;
 		std::size_t _level1ActiveSize;
@@ -77,11 +79,13 @@ namespace WBOT02
 		bool _valencyBalanced;
 		std::size_t _size;
 		std::size_t _level1Size;
+		std::size_t _level2Size;
 		std::size_t _sizeRecords;
 		std::size_t _sizeTile;
 		std::size_t _threadCount;
 		std::size_t _eventIdPrev;
 		double _entropyMinimum;
+		bool _substrateInclude;
 		
 		std::size_t _recordUniqueSize;
 		std::unordered_set<std::size_t> _recordUniqueSet;

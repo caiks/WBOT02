@@ -89,10 +89,12 @@ Modeller001::Modeller001(const std::string& configA)
 		_recordsMode = ARGS_STRING_DEF(records_mode,_mode);
 		_updateDisable = ARGS_BOOL(disable_update);
 		_activeLogging = ARGS_BOOL(logging_active);
+		_level1Logging = ARGS_BOOL(logging_level1);
 		_activeCumulative = ARGS_BOOL_DEF(cumulative_active,true);
 		_activeSummary = ARGS_BOOL(summary_active);
+		_level1Summary = ARGS_BOOL(summary_level1);
 		_activeSize = ARGS_INT_DEF(activeSize,1000000);
-		_level1ActiveSize = ARGS_INT_DEF(activeSize,10);
+		_level1ActiveSize = ARGS_INT_DEF(level1_activeSize,10);
 		_updateParameters.mapCapacity = ARGS_INT_DEF(updateParameters.mapCapacity,3); 
 		_induceThreshold = ARGS_INT_DEF(induceThreshold,200);
 		_induceThreadCount = ARGS_INT_DEF(induceThreadCount,4);
@@ -138,7 +140,8 @@ Modeller001::Modeller001(const std::string& configA)
 		_valencyBalanced = ARGS_BOOL(valency_balanced);	
 		_valencyFixed |= _valencyBalanced;
 		_size = ARGS_INT_DEF(size,40);	
-		_level1Size = ARGS_INT_DEF(level1_size,1);	
+		_level1Size = ARGS_INT_DEF(level1_size,8);	
+		_level2Size = ARGS_INT_DEF(level2_size,5);	
 		_sizeRecords = ARGS_INT_DEF(records_size,40);	
 		_sizeTile = ARGS_INT_DEF(tile_size,_sizeRecords/2);	
 		_eventSize = ARGS_INT_DEF(event_size,1);	
@@ -148,6 +151,7 @@ Modeller001::Modeller001(const std::string& configA)
 		if (_recordUniqueSize)
 			_recordUniqueSet.reserve(_recordUniqueSize);
 		_entropyMinimum = ARGS_DOUBLE(entropy_minimum);
+		_substrateInclude = ARGS_BOOL(include_substrate);
 	}
 	// open records file
 	if (_recordsIndex < _recordsFileNames.size())
@@ -225,15 +229,11 @@ Modeller001::Modeller001(const std::string& configA)
 					_system->block = std::max(_system->block, activeA.varMax() >> activeA.bits);
 					_level1Decomp = activeA.decomp;					
 				}
-				_level1.resize(_size*_size);
-				for (std::size_t m = 0; m < _size*_size; m++)
+				for (std::size_t m = 0; m < _level2Size*_level2Size; m++)
 				{
 					_level1Events.push_back(std::make_shared<ActiveEventsRepa>(1));
 					_level1.push_back(std::make_shared<Active>());
-				}
-				for (std::size_t m = 0; m < _size*_size; m++)
-				{	
-					auto& activeA = *_level1[m];
+					auto& activeA = *_level1.back();
 					activeA.log = actor_log;
 					activeA.layerer_log = layerer_actor_log;
 					activeA.system = _system;
@@ -254,11 +254,13 @@ Modeller001::Modeller001(const std::string& configA)
 						activeA.historySparse = std::move(hr);			
 					}
 					activeA.name = (_model!="" ? _model : "model") + "_1_" + (m<10 ? "0" : "") + std::to_string(m);			
-					activeA.underlyingEventsRepa.push_back(_level1Events[m]);
+					activeA.logging = _level1Logging;
+					activeA.summary = _level1Summary;
+					activeA.underlyingEventsRepa.push_back(_level1Events.back());
 					activeA.eventsSparse = std::make_shared<ActiveEventsArray>(1);
 				}
 				{
-					LOG _level1Model << "\tfuds cardinality: " << _level1Decomp->fuds.size() << "\tmodel cardinality: " << _level1Decomp->fudRepasSize UNLOG
+					LOG _level1Model << "\tactive cardinality: " << _level1.size() << "\tfuds cardinality: " << _level1Decomp->fuds.size() << "\tmodel cardinality: " << _level1Decomp->fudRepasSize UNLOG
 				}
 			}
 			auto& activeA = *_active;
@@ -301,7 +303,14 @@ Modeller001::Modeller001(const std::string& configA)
 				{
                     auto hr = sizesHistoryRepa(_scaleValency, _valency, _size*_size, activeA.historySize);
 					activeA.underlyingHistoryRepa.push_back(std::move(hr));
-				}				
+				}	
+				if (_struct=="struct002")
+				{
+					for (std::size_t m = 0; m < _level1.size(); m++)
+					{
+						activeA.underlyingHistorySparse.push_back(std::make_shared<HistorySparseArray>(activeA.historySize,1));
+					}
+				}
 				{
 					auto hr = std::make_unique<HistorySparseArray>();
 					{
@@ -318,7 +327,16 @@ Modeller001::Modeller001(const std::string& configA)
 			activeA.logging = _activeLogging;
 			activeA.summary = _activeSummary;
 			activeA.underlyingEventsRepa.push_back(_events);
-			activeA.eventsSparse = std::make_shared<ActiveEventsArray>(1);
+			if (_struct=="struct002")
+			{
+				activeA.underlyingOffsetIs = true;
+				for (std::size_t m = 0; m < _level1.size(); m++)
+				{
+					auto& activeB = *_level1[m];
+					activeA.underlyingEventsSparse.push_back(activeB.eventsSparse);
+				}
+			}
+			activeA.eventsSparse = std::make_shared<ActiveEventsArray>(0);
 			if (_modelInitial.size())
 			{
 				if (!activeA.induce(_induceParameters))
@@ -670,8 +688,99 @@ void Modeller001::model()
 					eventCount++;	
 				}	
 		}
+		else if (_mode == "mode014" && _struct=="struct002" && _scales.size() && _recordsFile.is_open())
+		{
+			Record record;
+			{
+				try
+				{
+					_recordsFile.read(reinterpret_cast<char*>(&record.scaleX), sizeof(double));
+					if (_recordsFile.eof())
+					{
+						_recordsFile.close();
+						_recordsIndex++;
+						if (_recordsIndex >= _recordsFileNames.size())
+							_recordsIndex = 0;
+						_recordsFile.open(_recordsFileNames[_recordsIndex] + ".rec", std::ios::binary);
+						if (!_recordsFile.is_open() || _recordsFile.eof())
+						{
+							LOG "modeller\terror: failed to open records file" << _recordsFileNames[_recordsIndex] + ".rec" UNLOG
+							this->terminate = true;
+							return;
+						}	
+						_recordsFile.read(reinterpret_cast<char*>(&record.scaleX), sizeof(double));
+						if (_recordsFile.eof())
+						{
+							LOG "modeller\terror: failed to open records file" << _recordsFileNames[_recordsIndex] + ".rec" UNLOG
+							this->terminate = true;
+							return;
+						}
+						else
+						{
+							LOG "modeller\tmodel: opened records file" << _recordsFileNames[_recordsIndex] + ".rec" UNLOG
+						}								
+					}
+					_recordsFile.read(reinterpret_cast<char*>(&record.scaleY), sizeof(double));
+					_recordsFile.read(reinterpret_cast<char*>(&record.centreX), sizeof(double));
+					_recordsFile.read(reinterpret_cast<char*>(&record.centreY), sizeof(double));
+					_recordsFile.read(reinterpret_cast<char*>(&record.sizeX), sizeof(std::size_t));
+					_recordsFile.read(reinterpret_cast<char*>(&record.sizeY), sizeof(std::size_t));
+					record.arr->resize(record.sizeX*record.sizeY);
+					_recordsFile.read(reinterpret_cast<char*>((char*)record.arr->data()), record.sizeX*record.sizeY);
+				}
+				catch (const std::exception&)
+				{
+					LOG "modeller\terror: failed to read records file" << _recordsFileNames[_recordsIndex] + ".rec" UNLOG
+					this->terminate = true;
+					return;
+				}
+			}
+			double interval = record.scaleY / record.sizeY;	
+			auto scale =  interval * _size;	
+			std::size_t scaleValue = 0;
+			{
+				for (auto scaleA : _scales)
+				{
+					if (scaleA - scale > -0.00001 && scaleA - scale < 0.00001)
+						break;
+					scaleValue++;
+				}
+				if (scaleValue >= _scales.size())
+				{
+					LOG "modeller\terror: failed to determine scale" UNLOG
+					this->terminate = true;
+					return;
+				}					
+			}			
+			Record recordSub(record,_size,_size,_sizeTile/2,_sizeTile/2);
+			Record recordValent = recordSub.valentFixed(_valency,_valencyBalanced);
+			for (std::size_t y = 0, m = 0; y < _level2Size; y++)	
+				for (std::size_t x = 0; x < _level2Size; x++, m++)	
+				{
+					Record recordTile(recordValent,_level1Size,_level1Size,x*_size,y*_size);
+					auto hr = recordsHistoryRepa(_scaleValency,scaleValue,_valency,recordTile);
+					if (!_updateDisable)
+						_level1Events[m]->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_level1Events[m]->references);	
+				}	
+			auto hr = recordsHistoryRepa(_scaleValency, scaleValue, _valency, recordValent);
+			_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
+			this->eventId++;		
+			eventCount++;	
+		}
 		if (!_updateDisable)
 		{
+			if (_struct=="struct002")
+			{
+				for (auto& activeA : _level1)
+				{
+					if (!activeA->update(_updateParameters))
+					{
+						this->terminate = true;	
+						LOG "modeller\tstatus: quitting" UNLOG
+						return;
+					}
+				}
+			}
 			if (!_active->update(_updateParameters))
 			{
 				this->terminate = true;	
