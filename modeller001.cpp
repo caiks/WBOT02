@@ -143,7 +143,7 @@ Modeller001::Modeller001(const std::string& configA)
 		_level1Size = ARGS_INT_DEF(level1_size,8);	
 		_level2Size = ARGS_INT_DEF(level2_size,5);	
 		_sizeRecords = ARGS_INT_DEF(records_size,40);	
-		_sizeTile = ARGS_INT_DEF(tile_size,_sizeRecords/2);	
+		_sizeTile = ARGS_INT_DEF(tile_size,_size/2);	
 		_eventSize = ARGS_INT_DEF(event_size,1);	
 		_scanSize = ARGS_INT_DEF(scan_size,1);	
 		_threadCount = ARGS_INT_DEF(threads,1);	
@@ -329,6 +329,14 @@ Modeller001::Modeller001(const std::string& configA)
 			activeA.underlyingEventsRepa.push_back(_events);
 			if (_struct=="struct002")
 			{
+				if (!_substrateInclude)
+				{
+					std::shared_ptr<HistoryRepa> hr = activeA.underlyingHistoryRepa.front();
+					auto n = hr->dimension - 1;
+					auto vv = hr->vectorVar;
+					for (std::size_t i = 0; i < n; i++)
+						activeA.induceVarExclusions.insert(vv[i]);
+				}
 				activeA.underlyingOffsetIs = true;
 				for (std::size_t m = 0; m < _level1.size(); m++)
 				{
@@ -752,12 +760,12 @@ void Modeller001::model()
 					return;
 				}					
 			}			
-			Record recordSub(record,_size,_size,_sizeTile/2,_sizeTile/2);
+			Record recordSub(record,_size,_size,_size/4,_size/4);
 			Record recordValent = recordSub.valentFixed(_valency,_valencyBalanced);
 			for (std::size_t y = 0, m = 0; y < _level2Size; y++)	
 				for (std::size_t x = 0; x < _level2Size; x++, m++)	
 				{
-					Record recordTile(recordValent,_level1Size,_level1Size,x*_size,y*_size);
+					Record recordTile(recordValent,_level1Size,_level1Size,x*_level1Size,y*_level1Size);
 					auto hr = recordsHistoryRepa(_scaleValency,scaleValue,_valency,recordTile);
 					if (!_updateDisable)
 						_level1Events[m]->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_level1Events[m]->references);	

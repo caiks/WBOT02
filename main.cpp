@@ -152,7 +152,6 @@ int main(int argc, char *argv[])
 			TRUTH(activeA.historyOverflow);				
 			EVAL(activeA.historyEvent);				
 			EVAL(sizeA);
-			EVAL(activeA.historyEvent);		
 			TRUTH(activeA.continousIs);				
 			EVAL(activeA.continousHistoryEventsEvent);	
 			TRUTH(activeA.historySliceCachingIs);				
@@ -204,11 +203,11 @@ int main(int argc, char *argv[])
 				EVAL(hr->size);				
 				// EVAL(*hr);				
 			}
-			for (auto& hr : activeA.underlyingHistorySparse)
+			EVAL(activeA.underlyingHistorySparse.size());
+			if (activeA.underlyingHistorySparse.size())
 			{
-				EVAL(hr->size);				
-				// EVAL(*hr);				
-			}			
+				EVAL(activeA.underlyingHistorySparse.front()->size);
+			}
 			if (!concise)
 			{
 				EVAL(sorted(activeA.underlyingSlicesParent));				
@@ -221,7 +220,7 @@ int main(int argc, char *argv[])
 			EVAL(activeA.var);				
 			EVAL(activeA.varSlice);				
 			EVAL(activeA.induceThreshold);				
-			EVAL(activeA.induceVarExclusions);				
+			EVAL(activeA.induceVarExclusions.size());				
 			if (activeA.historySparse) {EVAL(activeA.historySparse->size);}
 			if (!concise)
 			{
@@ -239,7 +238,7 @@ int main(int argc, char *argv[])
 			EVAL(activeA.frameHistorys);				
 			// EVAL(activeA.framesVarsOffset);	
 			TRUTH(activeA.underlyingOffsetIs);				
-			EVAL(activeA.underlyingsVarsOffset);				
+			EVAL(activeA.underlyingsVarsOffset.size());				
 			if (activeA.decomp) {EVAL(activeA.decomp->fuds.size());}
 			if (activeA.decomp) {EVAL(activeA.decomp->fudRepasSize);}
 			if (activeA.decomp) {EVAL((double)activeA.decomp->fuds.size() * activeA.induceThreshold / sizeA);}
@@ -304,8 +303,7 @@ int main(int argc, char *argv[])
 			}
 		}
 	}
-	
-	
+		
 	if (argc >= 3 && string(argv[1]) == "view_event_lengths_by_scale")
 	{
 		bool ok = true;
@@ -436,6 +434,59 @@ int main(int argc, char *argv[])
 			TRUTH(ok);	
 		}		
 	}
+		
+	if (argc >= 3 && string(argv[1]) == "view_underlying")
+	{
+		bool ok = true;
+		int stage = 0;
+		string model = string(argv[2]);
+		
+		Active activeA;
+		activeA.logging = true;		
+		if (ok) 
+		{
+			activeA.historySliceCachingIs = true;
+			ActiveIOParameters ppio;
+			ppio.filename = model +".ac";
+			ok = ok && activeA.load(ppio);
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);				
+		}		
+		std::set<std::size_t> fuds;
+		if (ok)
+		{
+			auto& dr = *activeA.decomp;	
+			std::size_t fud = 1;			
+			for (auto& fr : dr.fuds)
+			{
+				auto parent = fr.parent;
+				SizeSet und;
+				for (auto& tr : fr.fud)
+				{
+					auto n = tr->dimension;
+					auto vv = tr->vectorVar;
+					for (std::size_t i = 0; i < n; i++)
+						und.insert(vv[i]);
+				}		
+				for (auto& tr : fr.fud)
+					und.erase(tr->derived);
+				std::cout << fud << ", " << activeA.historySlicesLength[parent] << ", ";
+				bool first = true;
+				for (auto v : und)
+				{
+					std::cout << (first ? "(" : ", ") << std::hex << v;
+					first = false;
+				}
+				std::cout << std::dec << ")" << endl;
+				fud++;
+			}
+		
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);		
+		}		
+	}
 	
 	if (argc >= 3 && (string(argv[1]) == "view_sizes" || string(argv[1]) == "view_fractions"))
 	{
@@ -537,9 +588,6 @@ int main(int argc, char *argv[])
 		if (ok)
 		{
 			ok = ok && size < activeA.historySize;
-			ok = ok && activeA.underlyingHistoryRepa.size() == 1;
-			ok = ok && activeA.underlyingHistoryRepa.back();
-			ok = ok && activeA.underlyingHistorySparse.size() == 0;
 			ok = ok && activeA.historySparse;
 			stage++;
 			EVAL(stage);
@@ -552,11 +600,20 @@ int main(int argc, char *argv[])
 			if (tidy) activeA.historySlicesSlicesSizeNext.clear();
 			if (tidy) activeA.historySlicesSliceSetPrev.clear();
 			auto over = activeA.historyOverflow || size < activeA.historyEvent;
+			for (auto& hr : activeA.underlyingHistoryRepa)
 			{
-				auto& hr = activeA.underlyingHistoryRepa.back();
 				auto n = hr->dimension;
 				auto arr = new unsigned char[size*n];
 				std::memcpy(arr,hr->arr,size*n);
+				delete[] hr->arr;
+				hr->arr = arr;
+				hr->size = size;
+			}
+			for (auto& hr : activeA.underlyingHistorySparse)
+			{
+				auto n = hr->capacity;
+				auto arr = new std::size_t[size*n];
+				std::memcpy(arr,hr->arr,size*n*sizeof(std::size_t));
 				delete[] hr->arr;
 				hr->arr = arr;
 				hr->size = size;
