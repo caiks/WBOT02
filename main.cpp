@@ -3113,5 +3113,457 @@ int main(int argc, char *argv[])
 		}
 	}
 	
+	// equals generate_contour009 for struct002
+	if (argc >= 2 && string(argv[1]) == "generate_contour010")
+	{
+		bool ok = true;
+		int stage = 0;
+		
+		js::Document args;
+		if (ok)
+		{
+			string config = "contour.json";
+			if (argc >= 3) config = string(argv[2]);
+			if (ok && !config.empty())
+			{
+				std::ifstream in;
+				try 
+				{
+					in.open(config);
+					js::IStreamWrapper isw(in);
+					args.ParseStream(isw);
+				}
+				catch (const std::exception&) 
+				{
+					ok = false;
+				}	
+				if (!args.IsObject())
+				{
+					ok = false;
+				}
+			}
+			else
+			{
+				args.Parse("{}");
+				ok = false;
+			}
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);				
+		}
+		bool isLengthNormalise = true;
+		string model = ARGS_STRING(model);
+		string level1Model = ARGS_STRING(level1_model);
+		string inputFilename = ARGS_STRING(input_file);
+		string likelihoodFilename = ARGS_STRING(likelihood_file);
+		string lengthFilename = ARGS_STRING(length_file);
+		bool lengthByHue = ARGS_BOOL(length_by_hue);	
+		string positionFilename = ARGS_STRING(position_file);
+		string lengthPositionFilename = ARGS_STRING(length_position_file);
+		string representationFilename = ARGS_STRING(representation_file);
+		double centreX = ARGS_DOUBLE_DEF(centreX,0.5);
+		double centreY = ARGS_DOUBLE_DEF(centreY,0.5);
+		double centreRangeX = ARGS_DOUBLE_DEF(range_centreX,0.41);
+		double centreRangeY = ARGS_DOUBLE_DEF(range_centreY,0.25);
+		double scale = ARGS_DOUBLE_DEF(scale,0.5);
+		int scaleValency = ARGS_INT_DEF(scale_valency,4);	
+		int scaleValue = ARGS_INT_DEF(scale_value,0);	
+		int valency = ARGS_INT_DEF(valency,10);	
+		int valencyFactor = ARGS_INT(valency_factor);	
+		bool valencyFixed = ARGS_BOOL(valency_fixed);	
+		bool valencyBalanced = ARGS_BOOL(valency_balanced);	
+		valencyFixed |= valencyBalanced;
+		int size = ARGS_INT_DEF(size,40);	
+		int level1Size = ARGS_INT_DEF(level1_size,8);	
+		int level2Size = ARGS_INT_DEF(level2_size,5);	
+		int divisor = ARGS_INT_DEF(divisor,4);	
+		int induceParameters_wmax = ARGS_INT_DEF(induceParameters.wmax,18);
+		int threadCount = ARGS_INT_DEF(threads,1);
+		double entropyMinimum = ARGS_DOUBLE(entropy_minimum);
+		bool substrateInclude = ARGS_BOOL(include_substrate);
+		if (ok)
+		{
+			ok = ok && model.size() && level1Model.size();
+			ok = ok && inputFilename.size();
+			ok = ok && (likelihoodFilename.size() || lengthFilename.size() || positionFilename.size() || lengthPositionFilename.size() || representationFilename.size());
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);	
+		}
+		std::shared_ptr<Alignment::DecompFudSlicedRepa>	level1Decomp;
+		std::map<std::size_t, SizeSizeUMap> level1UnderlyingsVarsOffset;	
+		if (ok) 
+		{
+			Active activeA;
+			ActiveIOParameters ppio;
+			ppio.filename = level1Model +".ac";
+			ok = ok && activeA.load(ppio);
+			if (ok)
+			{
+				level1Decomp = activeA.decomp;
+				level1UnderlyingsVarsOffset = activeA.underlyingsVarsOffset;
+			}
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);				
+		}		
+		Active activeA;
+		if (ok) 
+		{
+			activeA.continousIs = true;
+			activeA.historySliceCachingIs = true;
+			activeA.historySliceCumulativeIs = true;
+			ActiveIOParameters ppio;
+			ppio.filename = model +".ac";
+			ok = ok && activeA.load(ppio);
+			activeA.historySliceCachingIs = true;
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);				
+		}		
+		std::unique_ptr<WBOT02::SliceRepresentationUMap> slicesRepresentation;
+		if (ok) 
+		{
+			try
+			{
+				std::ifstream in(model + ".rep", std::ios::binary);
+				if (in.is_open())
+				{
+					slicesRepresentation = persistentsSliceRepresentationUMap(in);
+					in.close();
+				}
+				else
+				{
+					ok = false;
+				}
+				ok = ok && slicesRepresentation;
+			}
+			catch (const std::exception&)
+			{
+				ok = false;
+			}
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);				
+		}		
+		QImage image;
+		QImage likelihoodImage;
+		QImage lengthImage;
+		QImage positionImage;
+		QImage lengthPositionImage;
+		QImage representationImage;
+		int captureWidth = 0;
+		int captureHeight = 0;	
+		if (ok)
+		{
+			QImage imageIn;
+			ok = ok && imageIn.load(QString(inputFilename.c_str()));
+			EVAL(imageIn.format());
+			image = imageIn.convertToFormat(QImage::Format_RGB32);
+			EVAL(image.format());
+			likelihoodImage = image.copy();
+			lengthImage = image.copy();
+			positionImage = image.copy();
+			lengthPositionImage = image.copy();
+			representationImage = image.copy();
+			captureWidth = image.width();
+			EVAL(captureWidth);
+			captureHeight = image.height();
+			EVAL(captureHeight);
+			ok = ok && captureWidth > 0 && captureHeight > 0;
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);	
+		}
+		if (ok)
+		{
+			auto mark = Clock::now();
+			double recordTime = 0.0;
+			double recordValentTime = 0.0;
+			double repaTime = 0.0;
+			double applyTime = 0.0;
+			std::size_t applyCount = 0;
+			QPainter likelihoodPainter(&likelihoodImage);
+			QPainter lengthPainter(&lengthImage);
+			QPainter positionPainter(&positionImage);
+			QPainter lengthPositionPainter(&lengthPositionImage);
+			QPainter representationPainter(&representationImage);
+			QBrush brush;
+            brush.setStyle(Qt::SolidPattern);
+			// brush.setStyle(Qt::Dense3Pattern);
+			auto drmul = listVarValuesDecompFudSlicedRepasPathSlice_u;
+			auto cap = (unsigned char)(ActiveUpdateParameters().mapCapacity);
+			auto& dr = *activeA.decomp;	
+			auto& dr1 = *level1Decomp;	
+			auto& cv = dr.mapVarParent();
+			auto& vi = dr.mapVarInt();
+			auto& sizes = activeA.historySlicesSize;
+            auto& lengths = activeA.historySlicesLength;
+			double lnwmax = std::log(induceParameters_wmax);
+			double interval = scale/size;
+			std::size_t lengthMax = 1;
+			if (!isLengthNormalise)
+			{
+				for (auto& pp : lengths)
+					lengthMax = std::max(lengthMax,pp.second);
+			}	
+			auto scaleX = centreRangeX * 2.0 + scale;
+			auto scaleY = centreRangeY * 2.0 + scale;
+			auto sizeX = (std::size_t)(scaleX * size / scale);
+			if (sizeX % 2 != size % 2) sizeX++;
+			auto sizeY = (std::size_t)(scaleY * size / scale);
+			if (sizeY % 2 != size % 2) sizeY++;
+			scaleX = sizeX * interval;
+			scaleY = sizeY * interval;
+			auto offsetX = (scaleX - scale) / 2.0;
+			auto offsetY = (scaleY - scale) / 2.0;
+			auto heightWidth = (double)captureHeight / (double)captureWidth;
+			mark = Clock::now();
+			Record record(image, 
+				scaleX * captureHeight / captureWidth, scaleY,
+				centreX, centreY, 
+				sizeX, sizeY, 
+				divisor, divisor);
+			recordTime += ((Sec)(Clock::now() - mark)).count();
+			auto hr = sizesHistoryRepa(scaleValency, valency, size*size);
+			auto n = hr->dimension;
+			auto vv = hr->vectorVar;
+			auto hr1 = sizesHistoryRepa(scaleValency, valency, level1Size*level1Size);
+			auto n1 = hr->dimension;
+			auto vv1 = hr->vectorVar;
+			auto& proms = level1UnderlyingsVarsOffset;
+			std::vector<std::size_t> lengthResults(sizeY*sizeX);
+			std::vector<double> likelihoodResults(sizeY*sizeX);
+			std::vector<std::tuple<std::size_t,double,std::size_t,std::size_t,std::size_t,std::size_t>> actsPotsCoord(sizeY*sizeX);
+			std::vector<std::thread> threads;
+			threads.reserve(threadCount);
+			mark = Clock::now();
+			for (std::size_t t = 0; t < threadCount; t++)
+				threads.push_back(std::thread(
+                    [threadCount,valencyFixed,valencyBalanced,entropyMinimum,
+					sizeX,sizeY,size,level1Size,level2Size,
+					&record,valency,valencyFactor,scaleValue,n,vv,substrateInclude,n1,vv1,
+					drmul,&activeA,&dr,&dr1,&proms,&cv,cap,&sizes,&lengths,lnwmax,&actsPotsCoord,
+					&likelihoodResults,&lengthResults] (int t)
+					{
+						for (std::size_t y = 0, z = 0; y < sizeY - size; y++)	
+							for (std::size_t x = 0; x < sizeX - size; x++, z++)	
+								if (z % threadCount == t)
+								{
+									Record recordSub(record,size,size,x,y);
+									std::size_t average = 256;
+									if (valencyBalanced)
+									{
+										auto sizeSub = recordSub.arr->size();
+										auto arrSub = recordSub.arr->data();
+										average = 0;
+										for (std::size_t j = 0; j < sizeSub; j++)
+											average += arrSub[j];	
+										average /= sizeSub;			
+									}
+									Record recordValent = valencyFixed ? recordSub.valentFixed(valency,valencyBalanced) : recordSub.valent(valency,valencyFactor);
+									std::size_t slice = 0;
+									if (entropyMinimum <= 0.0 || recordValent.entropy() >=entropyMinimum)
+									{
+										auto& arr1 = *recordValent.arr;	
+										SizeUCharStructList jj;
+										jj.reserve(n + level2Size*level2Size*20);
+										for (std::size_t y1 = 0, m = 0; y1 < level2Size; y1++)	
+											for (std::size_t x1 = 0; x1 < level2Size; x1++, m++)	
+											{
+												Record recordTile(recordValent,level1Size,level1Size,x1*level1Size,y1*level1Size);
+												auto& arr2 = *recordTile.arr;	
+												SizeUCharStructList kk;
+												kk.reserve(n1);
+												for (std::size_t i = 0; i < n1-1; i++)
+												{
+													SizeUCharStruct qq;
+													qq.uchar = arr2[i];	
+													qq.size = vv1[i];
+													if (qq.uchar)
+														kk.push_back(qq);
+												}
+												{
+													SizeUCharStruct qq;
+													qq.uchar = scaleValue;	
+													qq.size = vv1[n1-1];
+													if (qq.uchar)
+														kk.push_back(qq);
+												}										
+												auto ll = drmul(kk,dr1,cap);	
+												if (ll && ll->size()) 
+													for (auto slice : *ll)
+														if (slice)
+														{
+															SizeUCharStruct qq;
+															qq.uchar = 1;			
+															qq.size = slice;
+															activeA.varPromote(proms[m], qq.size);
+															jj.push_back(qq);
+														}
+											}
+										if (substrateInclude)
+											for (std::size_t i = 0; i < n-1; i++)
+											{
+												SizeUCharStruct qq;
+												qq.uchar = arr1[i];	
+												qq.size = vv[i];
+												if (qq.uchar)
+													jj.push_back(qq);
+											}
+										{
+											SizeUCharStruct qq;
+											qq.uchar = scaleValue;	
+											qq.size = vv[n-1];
+											if (qq.uchar)
+												jj.push_back(qq);
+										}
+										auto ll = drmul(jj,dr,cap);	
+										if (ll && ll->size()) slice = ll->back();
+									}
+									auto length = lengths[slice];
+									auto likelihood = (std::log(sizes[slice]) - std::log(sizes[cv[slice]]) + lnwmax)/lnwmax;
+									likelihoodResults[z] = likelihood;
+									lengthResults[z] = length;
+									if (slice)
+										actsPotsCoord[z] = std::make_tuple(length,likelihood,x,y,slice,average);
+									else
+										actsPotsCoord[z] = std::make_tuple(0,-INFINITY,x,y,0,average);
+								}
+					}, t));
+			for (auto& t : threads)
+				t.join();
+			applyTime += ((Sec)(Clock::now() - mark)).count();	
+			if (isLengthNormalise)
+			{
+				lengthMax = 1;
+				for (auto length : lengthResults)
+					lengthMax = std::max(lengthMax,length);
+			}	
+			std::map<std::size_t,double> positions;
+			{
+				std::vector<std::size_t> slices;
+				for (auto& pp : lengths)
+					if (!vi.count(pp.first))
+						slices.push_back(pp.first);		
+				typedef std::pair<std::size_t,std::size_t> SizePair;
+				std::vector<std::vector<SizePair>> paths;
+				for (auto slice : slices)
+				{
+					std::vector<SizePair> path;
+					while (slice)
+					{
+						path.push_back(SizePair(sizes[slice],slice));
+						slice = cv[slice];
+					}
+					std::reverse(path.begin(), path.end());
+					paths.push_back(path);
+				}
+				std::sort(paths.begin(), paths.end());	
+				std::reverse(paths.begin(), paths.end());
+				double total = 0;
+				for (auto& path : paths)
+				{
+					auto& pp = path.back();
+					positions[pp.second] = total;
+					total += pp.first;
+				}
+				for (auto& pp : positions)
+					pp.second /= total;
+			}
+			for (std::size_t y = 0, z = 0; y < sizeY - size; y++)	
+				for (std::size_t x = 0; x < sizeX - size; x++,z++)	
+				{
+					auto posX = centreX + (interval * x - (scaleX - scale) / 2.0) * captureHeight / captureWidth;
+					auto posY = centreY + interval * y - (scaleY - scale) / 2.0;
+					double likelihood = likelihoodResults[z];				
+					auto length = lengthResults[z];
+					auto slice = std::get<4>(actsPotsCoord[z]);
+					QRectF rectangle(posX*captureWidth, posY*captureHeight, 
+						interval*captureHeight,interval*captureHeight);
+					{
+						int brightness = likelihood > 0.0 ? likelihood * 255 : 0;
+						brush.setColor(QColor(brightness,brightness,brightness));
+						likelihoodPainter.fillRect(rectangle,brush);					
+					}
+					if (lengthByHue)
+					{
+						QColor colour;
+						int hue = (lengthMax - length) * 300 / lengthMax;
+						int saturation = (likelihood > 0.0 ? likelihood * 127 : 0) + 128;
+						int brightness = 255;
+						colour.setHsv(hue, saturation, brightness);
+						if (length)
+							brush.setColor(colour);
+						else
+							brush.setColor(Qt::black);
+						lengthPainter.fillRect(rectangle,brush);					
+					}
+					else
+					{
+						int brightness = length * 255 / lengthMax;
+						brush.setColor(QColor(brightness,brightness,brightness));
+						lengthPainter.fillRect(rectangle,brush);					
+					}						
+					{
+						QColor colour;
+						int position = (int)(positions[slice] * 46080);
+						int hue = position/128;
+						int saturation = 128 + position%128;
+						int brightness = 255;
+						colour.setHsv(hue, saturation, brightness);
+						if (length)
+							brush.setColor(colour);
+						else
+							brush.setColor(Qt::black);
+						positionPainter.fillRect(rectangle,brush);					
+					}
+					{
+						QColor colour;
+						int position = (int)(positions[slice] * 46080);
+						int hue = position/128;
+						int saturation = 128 + position%128;
+						int brightness = length * 255 / lengthMax;
+						colour.setHsv(hue, saturation, brightness);
+						brush.setColor(colour);
+						lengthPositionPainter.fillRect(rectangle,brush);
+					}
+				}	
+            std::sort(actsPotsCoord.begin(), actsPotsCoord.end());			
+            auto& reps = *slicesRepresentation;
+			for (auto t : actsPotsCoord)	
+			{
+				auto slice = std::get<4>(t);
+				if (slice && reps.count(slice))
+				{
+					auto x = std::get<2>(t);
+					auto y = std::get<3>(t);
+					auto average = std::get<5>(t);
+					auto posX = centreX + (interval * x - scaleX / 2.0) * captureHeight / captureWidth;
+					auto posY = centreY + interval * y - scaleY / 2.0;
+					QPointF point(posX*captureWidth,posY*captureHeight);
+					auto rep = reps[slice].image(1,valency,average).scaledToHeight(scale*captureHeight);
+					representationPainter.drawImage(point,rep);
+				}
+			}
+			EVAL(recordTime);
+			EVAL(applyTime);		
+			EVAL(sizeY*sizeX);
+			if (likelihoodFilename.size())
+				ok = ok && likelihoodImage.save(QString(likelihoodFilename.c_str()));
+			if (lengthFilename.size())
+				ok = ok && lengthImage.save(QString(lengthFilename.c_str()));			
+			if (positionFilename.size())
+				ok = ok && positionImage.save(QString(positionFilename.c_str()));
+			if (lengthPositionFilename.size())
+				ok = ok && lengthPositionImage.save(QString(lengthPositionFilename.c_str()));
+			if (representationFilename.size())
+				ok = ok && representationImage.save(QString(representationFilename.c_str()));
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);	
+		}
+	}
+	
 	return 0;
 }
