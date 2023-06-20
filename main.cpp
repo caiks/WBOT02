@@ -232,8 +232,8 @@ int main(int argc, char *argv[])
 				EVAL(activeA.underlyingSlicesParent.size());				
 			}			
 			EVAL(activeA.historySlicesSetEvent.size());				
-			EVAL(activeA.induceSlices);				
-			EVAL(activeA.induceSliceFailsSize);				
+			EVAL(activeA.induceSlices.size());				
+			EVAL(activeA.induceSliceFailsSize.size());				
 			EVAL(activeA.frameUnderlyings);				
 			EVAL(activeA.frameHistorys);				
 			// EVAL(activeA.framesVarsOffset);	
