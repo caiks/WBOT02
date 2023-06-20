@@ -3191,7 +3191,6 @@ int main(int argc, char *argv[])
 			TRUTH(ok);	
 		}
 		std::shared_ptr<Alignment::DecompFudSlicedRepa>	level1Decomp;
-		std::map<std::size_t, SizeSizeUMap> level1UnderlyingsVarsOffset;	
 		if (ok) 
 		{
 			Active activeA;
@@ -3199,10 +3198,7 @@ int main(int argc, char *argv[])
 			ppio.filename = level1Model +".ac";
 			ok = ok && activeA.load(ppio);
 			if (ok)
-			{
 				level1Decomp = activeA.decomp;
-				level1UnderlyingsVarsOffset = activeA.underlyingsVarsOffset;
-			}
 			stage++;
 			EVAL(stage);
 			TRUTH(ok);				
@@ -3297,6 +3293,8 @@ int main(int argc, char *argv[])
 			auto& dr1 = *level1Decomp;	
 			auto& cv = dr.mapVarParent();
 			auto& vi = dr.mapVarInt();
+			auto& cv1 = dr1.mapVarParent();
+			auto& vi1 = dr1.mapVarInt();
 			auto& sizes = activeA.historySlicesSize;
             auto& lengths = activeA.historySlicesLength;
 			double lnwmax = std::log(induceParameters_wmax);
@@ -3329,9 +3327,9 @@ int main(int argc, char *argv[])
 			auto n = hr->dimension;
 			auto vv = hr->vectorVar;
 			auto hr1 = sizesHistoryRepa(scaleValency, valency, level1Size*level1Size);
-			auto n1 = hr->dimension;
-			auto vv1 = hr->vectorVar;
-			auto& proms = level1UnderlyingsVarsOffset;
+			auto n1 = hr1->dimension;
+			auto vv1 = hr1->vectorVar;
+			auto& proms = activeA.underlyingsVarsOffset;
 			std::vector<std::size_t> lengthResults(sizeY*sizeX);
 			std::vector<double> likelihoodResults(sizeY*sizeX);
 			std::vector<std::tuple<std::size_t,double,std::size_t,std::size_t,std::size_t,std::size_t>> actsPotsCoord(sizeY*sizeX);
