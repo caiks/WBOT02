@@ -284,11 +284,11 @@ Modeller001::Modeller001(const std::string& configA)
 				activeA.historySliceCumulativeIs = _activeCumulative;			
 				_system->block = std::max(_system->block, activeA.varMax() >> activeA.bits);
 				if (activeA.underlyingEventUpdateds.size())
-					this->eventId = std::max(this->eventId,*(activeA.underlyingEventUpdateds.rbegin()));					
+					this->eventId = std::max(this->eventId,*(activeA.underlyingEventUpdateds.rbegin()));
 				else if (activeA.historyOverflow)
-					this->eventId = std::max(this->eventId,activeA.historySize);	
+					this->eventId = std::max(this->eventId,activeA.historySize);
 				else					
-					this->eventId = std::max(this->eventId,activeA.historyEvent);	
+					this->eventId = std::max(this->eventId,activeA.historyEvent);
 				_checkpointEvent = this->eventId;
 				this->eventId++;
 				_fudsSize = activeA.decomp->fuds.size();
