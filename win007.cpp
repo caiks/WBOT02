@@ -98,8 +98,10 @@ Win007::Win007(const std::string& configA,
 		_modeLoggingFactor = ARGS_INT(logging_mode_factor); 
 		_modeTracing = ARGS_BOOL(tracing_mode);
 		_eventIdMax = ARGS_INT(event_maximum);
+		_struct = ARGS_STRING(structure);
 		_model = ARGS_STRING(model);
 		_modelInitial = ARGS_STRING(model_initial);
+		_level1Model = ARGS_STRING(level1_model);
 		_interactive = ARGS_BOOL(interactive);
 		_interactiveExamples = ARGS_BOOL(interactive_examples);
 		_interactiveEntropies = ARGS_BOOL(interactive_entropies);
@@ -108,8 +110,11 @@ Win007::Win007(const std::string& configA,
 		_guiUnderlying = ARGS_BOOL(highlight_underlying);
 		_updateDisable = ARGS_BOOL(disable_update);
 		_activeLogging = ARGS_BOOL(logging_active);
+		_level1Logging = ARGS_BOOL(logging_level1);
 		_activeSummary = ARGS_BOOL(summary_active);
+		_level1Summary = ARGS_BOOL(summary_level1);
 		_activeSize = ARGS_INT_DEF(activeSize,1000000);
+		_level1ActiveSize = ARGS_INT_DEF(level1_activeSize,10);
 		_updateParameters.mapCapacity = ARGS_INT_DEF(updateParameters.mapCapacity,3); 
 		_induceThreshold = ARGS_INT_DEF(induceThreshold,200);
 		_induceInterval = (std::chrono::milliseconds)(ARGS_INT_DEF(induceInterval,_interval.count()));	
@@ -152,12 +157,15 @@ Win007::Win007(const std::string& configA,
 		_centreRangeY = ARGS_DOUBLE(range_centreY);
 		_scale = ARGS_DOUBLE_DEF(scale,0.5);
 		_scaleValency = ARGS_INT_DEF(scale_valency,4);	
+		_scaleValue = ARGS_INT_DEF(scale_value,0);	
 		_valency = ARGS_INT_DEF(valency,10);	
 		_valencyFactor = ARGS_INT(valency_factor);	
 		_valencyFixed = ARGS_BOOL(valency_fixed);	
 		_valencyBalanced = ARGS_BOOL(valency_balanced);	
 		_valencyFixed |= _valencyBalanced;
 		_size = ARGS_INT_DEF(size,40);	
+		_level1Size = ARGS_INT_DEF(level1_size,8);	
+		_level2Size = ARGS_INT_DEF(level2_size,5);	
 		_sizeTile = ARGS_INT_DEF(tile_size,_size/2);	
 		_divisor = ARGS_INT_DEF(divisor,4);	
 		_multiplier = ARGS_INT_DEF(multiplier,2);	
@@ -166,6 +174,7 @@ Win007::Win007(const std::string& configA,
 		_threadCount = ARGS_INT_DEF(threads,1);	
 		_separation = ARGS_DOUBLE_DEF(separation,0.5);
 		_entropyMinimum = ARGS_DOUBLE(entropy_minimum);
+		_substrateInclude = ARGS_BOOL(include_substrate);
 	}
 	// add dynamic GUI
 	if (_interactive)
@@ -318,6 +327,56 @@ Win007::Win007(const std::string& configA,
 		_events = std::make_shared<ActiveEventsRepa>(1);
 		_active = std::make_shared<Active>();
 		{
+			if (_struct=="struct002")
+			{
+				{
+					Active activeA;
+					ActiveIOParameters ppio;
+					ppio.filename = _level1Model + ".ac";
+					activeA.logging = true;
+					if (!activeA.load(ppio))
+					{
+						LOG "modeller\terror: failed to load level1 model" << ppio.filename UNLOG
+						_system.reset();
+						return;
+					}
+					_system->block = std::max(_system->block, activeA.varMax() >> activeA.bits);
+					_level1Decomp = activeA.decomp;					
+				}
+				for (std::size_t m = 0; m < _level2Size*_level2Size; m++)
+				{
+					_level1Events.push_back(std::make_shared<ActiveEventsRepa>(1));
+					_level1.push_back(std::make_shared<Active>());
+					auto& activeA = *_level1.back();
+					activeA.log = actor_log;
+					activeA.layerer_log = layerer_actor_log;
+					activeA.system = _system;
+					activeA.decomp = _level1Decomp;
+					activeA.historySize = _level1ActiveSize;
+					{
+						auto hr = sizesHistoryRepa(_scaleValency, _valency, _level1Size*_level1Size, activeA.historySize);
+						activeA.underlyingHistoryRepa.push_back(std::move(hr));
+					}				
+					{
+						auto hr = std::make_unique<HistorySparseArray>();
+						{
+							auto z = activeA.historySize;
+							hr->size = z;
+							hr->capacity = 1;
+							hr->arr = new std::size_t[z];		
+						}		
+						activeA.historySparse = std::move(hr);			
+					}
+					activeA.name = (_model!="" ? _model : "model") + "_1_" + (m<10 ? "0" : "") + std::to_string(m);			
+					activeA.logging = _level1Logging;
+					activeA.summary = _level1Summary;
+					activeA.underlyingEventsRepa.push_back(_level1Events.back());
+					activeA.eventsSparse = std::make_shared<ActiveEventsArray>(1);
+				}
+				{
+					LOG _level1Model << "\tactive cardinality: " << _level1.size() << "\tfuds cardinality: " << _level1Decomp->fuds.size() << "\tmodel cardinality: " << _level1Decomp->fudRepasSize UNLOG
+				}
+			}
 			auto& activeA = *_active;
 			activeA.log = actor_log;
 			activeA.layerer_log = layerer_actor_log;
@@ -338,11 +397,11 @@ Win007::Win007(const std::string& configA,
 				}								
 				_system->block = std::max(_system->block, activeA.varMax() >> activeA.bits);
 				if (activeA.underlyingEventUpdateds.size())
-					this->eventId = std::max(this->eventId,*(activeA.underlyingEventUpdateds.rbegin()));					
+					this->eventId = std::max(this->eventId,*(activeA.underlyingEventUpdateds.rbegin()));
 				else if (activeA.historyOverflow)
-					this->eventId = std::max(this->eventId,activeA.historySize);	
+					this->eventId = std::max(this->eventId,activeA.historySize);
 				else					
-					this->eventId = std::max(this->eventId,activeA.historyEvent);	
+					this->eventId = std::max(this->eventId,activeA.historyEvent);
 				this->eventId++;
 				_fudsSize = activeA.decomp->fuds.size();
 			}
@@ -356,6 +415,13 @@ Win007::Win007(const std::string& configA,
 				{
                     auto hr = sizesHistoryRepa(_scaleValency, _valency, _size*_size, activeA.historySize);
 					activeA.underlyingHistoryRepa.push_back(std::move(hr));
+				}	
+				if (_struct=="struct002")
+				{
+					for (std::size_t m = 0; m < _level1.size(); m++)
+					{
+						activeA.underlyingHistorySparse.push_back(std::make_shared<HistorySparseArray>(activeA.historySize,1));
+					}
 				}				
 				{
 					auto hr = std::make_unique<HistorySparseArray>();
@@ -373,7 +439,24 @@ Win007::Win007(const std::string& configA,
 			activeA.logging = _activeLogging;
 			activeA.summary = _activeSummary;
 			activeA.underlyingEventsRepa.push_back(_events);
-			activeA.eventsSparse = std::make_shared<ActiveEventsArray>(1);
+			if (_struct=="struct002")
+			{
+				if (!_substrateInclude)
+				{
+					std::shared_ptr<HistoryRepa> hr = activeA.underlyingHistoryRepa.front();
+					auto n = hr->dimension - 1;
+					auto vv = hr->vectorVar;
+					for (std::size_t i = 0; i < n; i++)
+						activeA.induceVarExclusions.insert(vv[i]);
+				}
+				activeA.underlyingOffsetIs = true;
+				for (std::size_t m = 0; m < _level1.size(); m++)
+				{
+					auto& activeB = *_level1[m];
+					activeA.underlyingEventsSparse.push_back(activeB.eventsSparse);
+				}
+			}
+			activeA.eventsSparse = std::make_shared<ActiveEventsArray>(0);
 			if (_modelInitial.size())
 			{
 				if (!activeA.induce(_induceParameters))
@@ -388,7 +471,7 @@ Win007::Win007(const std::string& configA,
 			{
 				LOG activeA.name << "\tfuds cardinality: " << activeA.decomp->fuds.size() << "\tmodel cardinality: " << activeA.decomp->fudRepasSize << "\tactive size: " << sizeA << "\tfuds per threshold: " << (double)activeA.decomp->fuds.size() * activeA.induceThreshold / sizeA UNLOG				
 			}
-			if (_mode.size())
+			if (_mode.size() && _struct!="struct002")
 				_threads.push_back(std::thread(run_induce, std::ref(*this), std::ref(activeA), std::ref(_induceParameters), _induceInterval));
 		}
 	}
@@ -1034,13 +1117,27 @@ void Win007::act()
 					_centreY * _captureHeight - _scale * _captureHeight / 2.0, 
 					_scale * _captureHeight,
 					_scale * _captureHeight);		
-				_ui->labelImage->setPixmap(QPixmap::fromImage(image2));						
+				_ui->labelImage->setPixmap(QPixmap::fromImage(image2));		
 			}
-			if (!_updateDisable && !_active->update(_updateParameters))
+			if (!_updateDisable)
 			{
-				this->terminate = true;	
-				return;
-			}			
+				if (_struct=="struct002")
+				{
+					for (auto& activeA : _level1)
+					{
+						if (!activeA->update(_updateParameters))
+						{
+							this->terminate = true;	
+							return;
+						}
+					}
+				}
+				if (!_active->update(_updateParameters))
+				{
+					this->terminate = true;	
+					return;
+				}
+			}		
 		}
 		// representations
 		{		
