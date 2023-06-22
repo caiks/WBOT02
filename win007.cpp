@@ -145,6 +145,7 @@ Win007::Win007(const std::string& configA,
 			_induceParameters.induceThresholds = std::set<std::size_t>{200,225,250,300,400,500,800,1000,2000,3000};
 		}	
 		_fudsSize = 0;
+		_inputFilename = ARGS_STRING(input_file);
 		_captureX = ARGS_INT_DEF(x,791);	
 		_captureY = ARGS_INT_DEF(y,244);	
 		_captureWidth = ARGS_INT_DEF(width,728);	
@@ -175,6 +176,20 @@ Win007::Win007(const std::string& configA,
 		_separation = ARGS_DOUBLE_DEF(separation,0.5);
 		_entropyMinimum = ARGS_DOUBLE(entropy_minimum);
 		_substrateInclude = ARGS_BOOL(include_substrate);
+	}
+	// input image
+	if (_inputFilename.size())
+	{
+		QImage imageIn;		
+		if (imageIn.load(QString(_inputFilename.c_str())))
+		{
+			_inputImage = imageIn.convertToFormat(QImage::Format_RGB32);
+		}
+		else
+		{
+			LOG "actor\terror: failed to load input image " << _inputFilename UNLOG
+			return;	
+		}
 	}
 	// add dynamic GUI
 	if (_interactive)
@@ -336,7 +351,7 @@ Win007::Win007(const std::string& configA,
 					activeA.logging = true;
 					if (!activeA.load(ppio))
 					{
-						LOG "modeller\terror: failed to load level1 model" << ppio.filename UNLOG
+						LOG "actor\terror: failed to load level1 model " << ppio.filename UNLOG
 						_system.reset();
 						return;
 					}
@@ -560,6 +575,14 @@ void Win007::act()
 	// capture
 	_mark = Clock::now();
 	QImage image;
+	if (_inputFilename.size())
+	{
+		image = _inputImage;
+		_captureWidth = image.width();
+		_captureHeight = image.height();
+		_ui->labelImage->setPixmap(QPixmap::fromImage(image));			
+	}
+	else
 	{
 		auto pixmap = _screen->grabWindow(0, _captureX, _captureY, _captureWidth, _captureHeight);
 		image = pixmap.toImage();
@@ -1272,7 +1295,6 @@ void Win007::act()
 			_scale * _captureHeight / _captureWidth, _scale,
 			_centreX, _centreY, _size, _size, _divisor, _divisor);
 		Record recordValent = _valencyFixed ? record.valentFixed(_valency,_valencyBalanced) : record.valent(_valency,_valencyFactor);
-		auto hr = recordsHistoryRepa(_scaleValency, 0, _valency, recordValent);	
 		// representations
 		std::size_t slice = 0;
 		std::vector<Representation> examples;
@@ -1286,6 +1308,7 @@ void Win007::act()
 			std::lock_guard<std::mutex> guard(activeA.mutex);
 			std::shared_ptr<HistoryRepa> hr1 = activeA.underlyingHistoryRepa.front();
 			auto& slev = activeA.historySlicesSetEvent;
+			auto hr = recordsHistoryRepa(_scaleValency, _scaleValue, _valency, recordValent);	
 			auto n = hr->dimension;
 			auto vv = hr->vectorVar;
 			auto rr = hr->arr;	
@@ -1296,14 +1319,56 @@ void Win007::act()
 			auto& cv = dr.mapVarParent();
 			auto& vi = dr.mapVarInt();
 			SizeUCharStructList jj;
-			jj.reserve(n);
-			for (std::size_t i = 0; i < n; i++)
+			jj.reserve(n + _level2Size*_level2Size*20);
+			if (_struct=="struct002")
+			{
+				auto& proms = activeA.underlyingsVarsOffset;
+				auto& dru = *_level1Decomp;	
+				for (std::size_t y1 = 0, m = 0; y1 < _level2Size; y1++)	
+					for (std::size_t x1 = 0; x1 < _level2Size; x1++, m++)	
+					{
+						Record recordTile(recordValent,_level1Size,_level1Size,x1*_level1Size,y1*_level1Size);
+						auto hru = recordsHistoryRepa(_scaleValency, _scaleValue, _valency, recordTile);
+						auto nu = hru->dimension;
+						auto vvu = hru->vectorVar;
+						auto rru = hru->arr;	
+						SizeUCharStructList kk;
+						kk.reserve(nu);
+						for (std::size_t i = 0; i < nu; i++)
+						{
+							SizeUCharStruct qq;
+							qq.uchar = rru[i];	
+							qq.size = vvu[i];
+							if (qq.uchar)
+								kk.push_back(qq);
+						}										
+						auto ll = drmul(kk,dru,cap);	
+						if (ll && ll->size()) 
+							for (auto sliceA : *ll)
+								if (sliceA)
+								{
+									SizeUCharStruct qq;
+									qq.uchar = 1;			
+									qq.size = sliceA;
+									activeA.varPromote(proms[m], qq.size);
+									jj.push_back(qq);
+								}
+					}				
+			}
+			if (_struct!="struct002" || _substrateInclude)			
+				for (std::size_t i = 0; i < n - 1; i++)
+				{
+					SizeUCharStruct qq;
+					qq.uchar = rr[i];	
+					qq.size = vv[i];
+					jj.push_back(qq);
+				}									
 			{
 				SizeUCharStruct qq;
-				qq.uchar = rr[i];	
-				qq.size = vv[i];
+				qq.uchar = rr[n-1];	
+				qq.size = vv[n-1];
 				jj.push_back(qq);
-			}									
+			}				
 			auto ll = drmul(jj,dr,cap);	
 			if (ll && ll->size())
 				slice = ll->back();

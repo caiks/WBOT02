@@ -117,6 +117,8 @@ private:
 
     std::unique_ptr<WBOT02::SliceRepresentationUMap> _slicesRepresentation;
 	
+	std::string _inputFilename;
+	QImage _inputImage;
     int _captureX;
     int _captureY;
     int _captureWidth;
