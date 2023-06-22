@@ -472,7 +472,7 @@ Win007::Win007(const std::string& configA,
 				}
 			}
 			activeA.eventsSparse = std::make_shared<ActiveEventsArray>(0);
-			if (_modelInitial.size())
+			if (_modelInitial.size() && _struct!="struct002")
 			{
 				if (!activeA.induce(_induceParameters))
 				{
