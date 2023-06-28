@@ -1533,8 +1533,8 @@ model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W
 model062|0.177|5 scanned size-potential tiled actual-potential|6|balanced 5-valent|48 B&W videos|3,000,000|33,612|1.120 (1.634)|18.4|3.7|31|-0.2|0.2|-2.1|1.76|30s unique, 12.0 min diagonal, 0.8 min entropy
 model063|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|15,013|1.001 (1.494)|15.7|3.0|24|-0.4|0.3|-4.4|1.84|30s unique, 12.0 min diagonal, 1.0 min entropy
 model069|0.177|5 scanned size-potential tiled entropy|11|balanced|48 B&W videos|3,000,000|10,993|0.733 (1.290)|8.6|2.2|16|0.2|-0.2|1.6|2.96|30s unique, 12.0 min diagonal, 1.2 min entropy
-model067|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|6,815|0.454 (0.910)|14.1|2.6|21|-0.7|0.7|-7.3|1.87|30s unique, 12.0 min diagonal, 1.2 min entropy
-model068|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|7,303|0.487 (0.947)|14.0|2.5|20|-0.7|0.7|-8.1|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy
+model067|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|12 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|6,815|0.454 (0.910)|14.1|2.6|21|-0.7|0.7|-7.3|1.87|30s unique, 12.0 min diagonal, 1.2 min entropy
+model068|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|12 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|7,303|0.487 (0.947)|14.0|2.5|20|-0.7|0.7|-8.1|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy
 model070|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential|12|balanced|48 B&W videos|2,400,024|15,817|1.054 (1.561)|14.8|2.5|22|-0.7|0.8|-7.8|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy, 20 randomised
 model073|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential|12|balanced|48 B&W videos|3,000,001|23,661|1.577|16.6|2.9|25|-0.5|0.5|-5.9|1.83|30s unique, 12.0 min diagonal, 1.2 min entropy, 20 randomised, no overflow
 model076|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|75,000,000|10,833|0.722|8.5|2.5|16|0.1|-0.5|0.7|2.99|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000
@@ -1542,6 +1542,7 @@ model078|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 76|13|balanced
 model079|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|65,000,000|9,298|0.715|8.7|2.3|16|-0.1|-0.5|-0.5|2.85|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at records002
 model080|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|75,000,000|10,768|0.718|8.4|2.3|15|-0.1|-0.6|-0.5|3.00|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at randomised records006
 model081|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 80|13|balanced|48 B&W videos|75,000,000|188,056|0.501|10.4|2.6|20|0.1|-0.4|0.5|3.23|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, threshold 200
+model082|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised level 2|14|balanced|48 B&W videos|3,000,000|12,107|0.807|9.3|2.3|19|0.4|0.0|3.2|2.74|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8
 
 The table above does not show the median and maximum *diagonals*. The median *diagonals* for the actor 2 and actor 3 *models* were consistently around 23-27, and the maximum *diagonals* were consistently around 37-39.
 
@@ -3060,14 +3061,14 @@ It is similar to *model* 66 except that the mode is 10 instead of 9, there are 1
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 model066|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised|9|balanced|48 B&W videos|500,000|1,822|0.7288|6.4|1.7|11|0.1|-0.5|0.6|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy
-model067|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|6,815|0.454 (0.910)|14.1|2.6|21|-0.7|0.7|-7.3|1.87|30s unique, 12.0 min diagonal, 1.2 min entropy
+model067|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|12 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|6,815|0.454 (0.910)|14.1|2.6|21|-0.7|0.7|-7.3|1.87|30s unique, 12.0 min diagonal, 1.2 min entropy
 
 We can see that *model* 67 has a higher growth rate, a lower multiplier and is much less normal than *model* 66. In fact, *model* 67 looks much more like *model* 61 -
 
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
-model067|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|6,815|0.454 (0.910)|14.1|2.6|21|-0.7|0.7|-7.3|1.87|30s unique, 12.0 min diagonal, 1.2 min entropy
+model067|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|12 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|6,815|0.454 (0.910)|14.1|2.6|21|-0.7|0.7|-7.3|1.87|30s unique, 12.0 min diagonal, 1.2 min entropy
 
 The statistics apart from growth are much more similar to 'scanned size-potential tiled actual-potential' mode (6) *model* 61. Clearly the local scanning is the main factor contributing to the longer paths. The growth is lower, however, probably because (a) the *alignments* are lowered by multi-scale dilution, (b) mode 10 does not filter hotspots by potential *likelihood* (*slice size*), or (c) the centre is not maintained between captures. 
 
@@ -3131,8 +3132,8 @@ We can see that the second scale of 0.354 has the shortest mean path length (14.
 In order to see the effect of the choice of scales, in *model* 68 we ran with this set of scales: 0.25, 0.21, 0.177, 0.149, 0.125 and 0.105, i.e. six quarter-integral powers of a half -
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model067|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|6,815|0.454 (0.910)|14.1|2.6|21|-0.7|0.7|-7.3|1.87|30s unique, 12.0 min diagonal, 1.2 min entropy
-model068|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|7,303|0.487 (0.947)|14.0|2.5|20|-0.7|0.7|-8.1|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy
+model067|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|12 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|6,815|0.454 (0.910)|14.1|2.6|21|-0.7|0.7|-7.3|1.87|30s unique, 12.0 min diagonal, 1.2 min entropy
+model068|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|12 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|7,303|0.487 (0.947)|14.0|2.5|20|-0.7|0.7|-8.1|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy
 
 The growth and multiplier are both slightly higher. The growth in overflow is slightly improved too -
 
@@ -3168,7 +3169,7 @@ With *model* 70 we keep the same scales as *model* 68 but move to filtering by p
 
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model068|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|7,303|0.487 (0.947)|14.0|2.5|20|-0.7|0.7|-8.1|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy
+model068|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|12 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|7,303|0.487 (0.947)|14.0|2.5|20|-0.7|0.7|-8.1|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy
 model070|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential|12|balanced|48 B&W videos|2,400,024|15,817|1.054 (1.561)|14.8|2.5|22|-0.7|0.8|-7.8|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy, 20 randomised
 
 The growth in overflow looks more like active-*size* *model* 59 because we are not accumulating cached *size* - 
@@ -3274,7 +3275,7 @@ model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld 
 model070|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential|12|balanced|48 B&W videos|2,400,024|15,817|1.054 (1.561)|14.8|2.5|22|-0.7|0.8|-7.8|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy, 20 randomised
 model073|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential|12|balanced|48 B&W videos|3,000,001|23,661|1.577|16.6|2.9|25|-0.5|0.5|-5.9|1.83|30s unique, 12.0 min diagonal, 1.2 min entropy, 20 randomised, no overflow
 
-As expected the statistics are fairly similar, but the distribution is  more normal and closer now to *model* 61 -
+As expected the statistics are fairly similar, but the distribution is more normal and closer now to *model* 61 -
 
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -3467,7 +3468,61 @@ This may be compared to the very different position map for *model* 61 -
 
 That is, *model* 81 appears to be showing a degree of convolution that might mean that the upper *level* will be tolerant to small changes in centre.
 
+###### 2-level models
+
+For the first *2-level model* we continued with the offline process `modeller001`, which we used for random centre *1-level model* 73 (mode 12) and random centre * underlying level models* 76-81 (mode 13). For each *event*, mode 14 takes the central `40x40` frame from each `60x60` record in the record set (which is guaranteed to be higher than the minimum entropy requirement) and then divides it into `5x5` tiles of `8x8`. It then *applies* the *underlying model* to each tile. These *underlying slices* and their ancestor *slices* are reframed by the higher *level* active according to their position. The *2-level model* is then *applied* to the resultant *substrate* for active update and induce.
+
+This is the configuration for *model* 82 -
+```
+{
+	"structure" : "struct002",
+	"model" : "model082",
+	"level1_model" : "model081",
+	"records_sources" : ["records006","records002","records003"],
+	"checkpointing" : true,
+	"mode" : "mode014",
+	"unique_records" : 333,
+	"entropy_minimum" : 1.2,
+	"valency_balanced" : true,
+	"size" : 40,
+	"level1_size" : 8,
+	"level2_size" : 5,
+	"cumulative_active" : false,
+	"activeSize" : 3000000,
+	"level1_activeSize" : 10,
+	"induceThreadCount" : 8,
+	"induceParameters.diagonalMin" : 12.0,
+	"scales" : [0.250, 0.210, 0.177, 0.149, 0.125, 0.105],
+	"event_maximum" : 3000000,
+	"logging_event" : true,
+	"logging_event_factor" : 1000,
+	"summary_active" : true
+}
+```
+It was run in the cloud as follows -
+```
+cd /mnt/vol01/WBOT02_ws
+/usr/bin/time ./WBOT02 modeller001 model082.json >>model082.log 2>&1
+
+```
+TODO -
+
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model066|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised|9|balanced|48 B&W videos|500,000|1,822|0.7288|6.4|1.7|11|0.1|-0.5|0.6|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy
+model082|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised level 2|14|balanced|48 B&W videos|3,000,000|12,107|0.807|9.3|2.3|19|0.4|0.0|3.2|2.74|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8
+
 TODO
+
+Write up model 82. 
+
+lower multiplier but still too high to obtain long paths
+
+positive skew suggests that some locations are more interesting than others - the contour map is not uniform
+
+The paths are too short to see features, but we have shown that there are global alignments with larger numbers of underlying, albeit with lower diagonals, and the contour maps are centered over the image, with no 'shadows' (similar copies of model at approximately frame-size offsets) and there is a greater degree of convolution. Discuss underlying - more on average, with a high coverage of the 25, and as expected near the 1-level root when near the 2-level root. 
+
+Now we wish to move to scanning modes. Contrary to earlier ideas about offline processsing, we can scan without having to have 25+1 model applications at each cell by tiling underlying, possibly with several offset tile sets, over the scan area and then do the higher level with these tile sets. Now the scan will require only 1-2 model applications per cell. We will also cover much larger scan areas. The downside is that we will be below maximal path lengths sometimes, but this should be less of a problem with the evident convolution (which implies a lot of duplicated model at small translations), although there are still disconinutities in the map. Also, offline record sets are unmanagably large, although randomising is an advantage at the substrate. We will handle the the additional load due to the higher scan multiple and the multi-scale by having asynchronous image capture from video in a actor004 which will be similar to actor003 and modeller001. Also, there is an advantage to centering when scanning to improve burstiness and ultimately we need it for the 3-level temporaral or saccade-sequence features of 3-level which will use slice topology. So we have random for 1-level, centered scanning search for 2-level, and topology search for 3-level. With scanning we are hoping to see long enough paths to see high-frequency features in the examples and similar features spread over only a few hotspots (we can test this by moving an image horizontally/vertically and by scaling), i.e. a sparsity of hotspots implying a degree of 'convolution' between hotspots.
 
 future developments - 
 
