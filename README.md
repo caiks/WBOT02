@@ -3470,7 +3470,7 @@ That is, *model* 81 appears to be showing a degree of convolution that might mea
 
 ###### 2-level models
 
-For the first *2-level model* we continued with the offline process `modeller001`, which we used for random centre *1-level model* 73 (mode 12) and random centre * underlying level models* 76-81 (mode 13). For each *event*, mode 14 takes the central `40x40` frame from each `60x60` record in the record set (which is guaranteed to be higher than the minimum entropy requirement) and then divides it into `5x5` tiles of `8x8`. It then *applies* the *underlying model* to each tile. These *underlying slices* and their ancestor *slices* are reframed by the higher *level* active according to their position. The *2-level model* is then *applied* to the resultant *substrate* for active update and induce.
+For the first *2-level model* we continued with the offline process `modeller001`, which we used for random centre *1-level model* 73 (mode 12) and random centre *underlying level models* 76-81 (mode 13). Now we add mode 14 for the *2-level model* 82. For each *event*, mode 14 takes the central `40x40` frame from each `60x60` record in the record set (which is guaranteed to be higher than the minimum entropy requirement) and then divides it into `5x5` tiles of `8x8`. It then *applies* the *underlying model* to each tile. These *underlying slices* and their ancestor *slices* are reframed by the higher *level* active according to their positions. The *2-level model* is then *applied* to the resultant *substrate* for active update and induce.
 
 This is the configuration for *model* 82 -
 ```
@@ -3505,12 +3505,19 @@ cd /mnt/vol01/WBOT02_ws
 /usr/bin/time ./WBOT02 modeller001 model082.json >>model082.log 2>&1
 
 ```
-TODO -
+Note that the first record set, `records006`, has been shuffled.
+
+Here are the statistics for *model* 82 compared to *1-level model* 66 -
 
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 model066|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised|9|balanced|48 B&W videos|500,000|1,822|0.7288|6.4|1.7|11|0.1|-0.5|0.6|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy
 model082|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised level 2|14|balanced|48 B&W videos|3,000,000|12,107|0.807|9.3|2.3|19|0.4|0.0|3.2|2.74|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8
+
+We can see that the growth rate at  0.807 is quite good for a random frame *model* and the multiplier at 2.74 is also quite good, but the mean path length of 9.3 is still far less than we have obtained from potential, actual-potential and scanned *models*. We can see this if we look at a representation, which is fairly mediocre -
+
+![contour004_082_scale3_minent_representation](images/contour004_082_scale3_minent_representation.png) 
+
 
 TODO
 
