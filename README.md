@@ -1040,7 +1040,9 @@ After this point `Win007` and `Win008` diverge somewhat.
 
 As in `Win006`, the `Win007` constructor then starts a separate active induce thread. Lastly the constructor sets a timer for `Win007::act`. The main thread will call `Win007::act` at regular intervals. `Win007::act` runs the mode and active update. This means that sometimes the active induce thread can lag behind the updates with more than one *slice* over the threshold ready for *induction*. The number of lagging *slices* is shown in the GUI.
 
-`Win007::act` itself is similar to the `Win006::act` method described in [actor001 description](#actor001) above. In addition it has a motion detector, e.g. `"motion_detection_threshold" : 25`. If there is no change in the image after `motion_detection_threshold` images then the image is rejected.
+`Win007::act` itself is similar to the `Win006::act` method described in [actor001 description](#actor001) above. In addition it has a motion detector, e.g. `"motion_detection_threshold" : 25`. If there is no change in the image after `motion_detection_threshold` images then the image is rejected. 
+
+Also, instead of grabbing a rectangle from the screen, a fixed input image, e.g. `"input_file" : "contour004.png"`, can be specified. This enables cases where a screen grab is not allowed.
 
 `Win007::act` also differs from `Win006::act` in that `Win006::act` has a single mode whereas `Win007::act` has several. The `mode001` of `Win007::act` is the same as `Win006::act`. After processing the modes, if the update is not disabled (`disable_update`),  `Win007::act` updates the active and the representations. Finally `Win007::act` updates the logs.
 
@@ -3518,16 +3520,64 @@ We can see that the growth rate at  0.807 is quite good for a random frame *mode
 
 ![contour004_082_scale3_minent_representation](images/contour004_082_scale3_minent_representation.png) 
 
+The average number of *underlying variables* per *fud* is much higher at 14.47 than for *model* 61 at 6.16. There are only 25 *underlying* actives so the coverage is very high at up to 58% per *fud*, although there may be more than one *variable* from an *underlying model*.
+
+We can examine the *underlying variables* as follows -
+
+```
+cd ~/WBOT02_ws
+./WBOT02 view_underlying model082c
+...
+1, 0, (54013b, 590008, 590017, 590050, 5e0008, 630008, 6a0008, 6e0008, 750008, 790008, 9c0007, a90007, ad0007)
+2, 1, (510001, 650008, 650013, 7f0008, 820008, 850050, 920008, 970008, 9f003a, a1003a, a50008)
+3, 2, (510003, 5e0013, 630099, 6e0465, 750099, 790099, 7900ca, 8a0099, 8d0013, 8d00ca, 9f0013, a10099, a90099, b00099, b000ca)
+4, 1, (510000, 520007, 540007, 590007, 650007, 6a0007, 6e0007, 7f00f9, 820007, 920010, 9200f9, 970010, 9c0010, a50010, a500f9, a80010, a90010, ad0010, ad00f9)
+...
+12104, 8, (511b06, 590010, 590107, 5e0000, 5e0010, 5e00f9, 6500a8, 6a0008, 750007, 8a0376, a10000, a10010)
+12105, 11, (51ceda, 520008, 540008, 650008, 650083, 79004c, 7f0008, 8d01cc, 920008, 9c02f6, 9f0137, a50008, b0009b)
+12106, 9, (5172b7, 520038, 5200aa, 540038, 5400aa, 5900aa, 5e00aa, 6300aa, 6500aa, 6a00aa, 6a0167, 6e00aa, 7500aa, 82077b, 85c755, 922faa)
+12107, 5, (510362, 520008, 520017, 520057, 520dd3, 523e5b, 540057, 63a8a5, 650008, 650050, 6a0008, 7f00cc, 850008, 1419029, 235a13b, 2c77c30, 2d40f15)
+```
+
+The different actives can be distinguished by the block number (i.e. a left shift of 16 bits) of the *reframed underlying slices*. The *underlying slices* themselves are modulo the block. We can see that most of the *underlying variables* are in separate actives as would be expected. Near the *2-level* root the *underlying variables* tend to be small and therefore near their *1-level* root. The *2-level* leaf *fuds* tend to have *underlying variables* further along their *slice* paths. The cases where there are *underlying variables* from the same *underlying slice* path are quite common, in spite of being shuffled together, so perhaps we should consider larger induce thresholds.
+
+The median *diagonal* at 18.3 is much less than that for *model* 66 at 26.0, which also suggests that a larger threshold might be considered. However, we can expect higher *level* *alignments* to be somehwat lower than for lower *level models* because the *alignments* are global rather than local.
+
+The random *model* has nearly normal *slice* path statistics as can be seen by the fairly uniform brightnesses in the contour map (for scale 0.177) -
+
+![contour004_082_scale3_minent_length](images/contour004_082_scale3_minent_length.png) 
+
+The hyper-skew is positive, suggesting that some locations have lots of actual *alignments*. These would be likely to form hotspots in scanning *models* initialised by *model* 82. Reassuringly, many of the longer paths are near interesting features, such as around the head and neck. Low entropy areas tend to have shorter paths.
+
+The position map shows quite a lot of convolution, i.e. gradual changes in the position of the *slice* within the *model*, although these tend to be greatest for shorter paths -
+
+![contour004_082_scale3_minent_position](images/contour004_082_scale3_minent_position.png) 
+
+This suggests that scanning modes may be able to do fewer *applications* more sparsely. An example of this can be seen if we compare 
+
+![actor002_model082_Film_Noir_003](images/actor002_model082_Film_Noir_003.png) 
+
+and
+
+![actor002_model082_Film_Noir_004](images/actor002_model082_Film_Noir_004.png) 
+
+which are separated by a small translation and have seven ancestor *slices* in common.
+
+Some neighbouring locations have few ancestors in common, however. This example has only one common ancestor and the *slice* path representations look very different -
+
+![actor002_model082_Film_Noir_008](images/actor002_model082_Film_Noir_008.png) 
+
+and
+
+![actor002_model082_Film_Noir_009](images/actor002_model082_Film_Noir_009.png) 
+
+The position map also shows that the *model* is now centered over the original image, rather than having 'shadows' (similar copies of *model* at approximately frame-size offsets). This is because global *alignments* are spread over the whole *substrate*.
 
 TODO
 
-Write up model 82. 
+The paths are too short to see features
 
-lower multiplier but still too high to obtain long paths
-
-positive skew suggests that some locations are more interesting than others - the contour map is not uniform
-
-The paths are too short to see features, but we have shown that there are global alignments with larger numbers of underlying, albeit with lower diagonals, and the contour maps are centered over the image, with no 'shadows' (similar copies of model at approximately frame-size offsets) and there is a greater degree of convolution. Discuss underlying - more on average, with a high coverage of the 25, and as expected near the 1-level root when near the 2-level root. 
+model 82 has a lower multiplier but it still too high to obtain long paths
 
 Now we wish to move to scanning modes. Contrary to earlier ideas about offline processsing, we can scan without having to have 25+1 model applications at each cell by tiling underlying, possibly with several offset tile sets, over the scan area and then do the higher level with these tile sets. Now the scan will require only 1-2 model applications per cell. We will also cover much larger scan areas. The downside is that we will be below maximal path lengths sometimes, but this should be less of a problem with the evident convolution (which implies a lot of duplicated model at small translations), although there are still disconinutities in the map. Also, offline record sets are unmanagably large, although randomising is an advantage at the substrate. We will handle the the additional load due to the higher scan multiple and the multi-scale by having asynchronous image capture from video in a actor004 which will be similar to actor003 and modeller001. Also, there is an advantage to centering when scanning to improve burstiness and ultimately we need it for the 3-level temporaral or saccade-sequence features of 3-level which will use slice topology. So we have random for 1-level, centered scanning search for 2-level, and topology search for 3-level. With scanning we are hoping to see long enough paths to see high-frequency features in the examples and similar features spread over only a few hotspots (we can test this by moving an image horizontally/vertically and by scaling), i.e. a sparsity of hotspots implying a degree of 'convolution' between hotspots.
 
