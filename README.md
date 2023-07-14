@@ -3541,7 +3541,7 @@ cd ~/WBOT02_ws
 
 The different actives can be distinguished by the block number (i.e. a left shift of 16 bits) of the *reframed underlying slices*. The *underlying slices* themselves are modulo the block. We can see that most of the *underlying variables* are in separate actives as would be expected. Near the *2-level* root the *underlying variables* tend to be small and therefore near their *1-level* root. The *2-level* leaf *fuds* tend to have *underlying variables* further along their *slice* paths. The cases where there are *underlying variables* from the same *underlying slice* path are quite common, in spite of being shuffled together, so perhaps we should consider larger induce thresholds.
 
-The median *diagonal* at 18.3 is much less than that for *model* 66 at 26.0, which also suggests that a larger threshold might be considered. However, we can expect higher *level* *alignments* to be somehwat lower than for lower *level models* because the *alignments* are global rather than local.
+The median *diagonal* at 18.3 is much less than that for *model* 66 at 26.0, which also suggests that a larger threshold might be considered. However, we can expect higher *level* *alignments* to be somewhat lower than for lower *level models* because the *alignments* are global rather than local.
 
 The random *model* has nearly normal *slice* path statistics as can be seen by the fairly uniform brightnesses in the contour map (for scale 0.177) -
 
