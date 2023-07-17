@@ -3563,5 +3563,103 @@ int main(int argc, char *argv[])
 		}
 	}
 	
+	
+	if (argc >= 2 && string(argv[1]) == "generate_representation")
+	{
+		bool ok = true;
+		int stage = 0;
+		
+		js::Document args;
+		if (ok)
+		{
+			string config = "representation.json";
+			if (argc >= 3) config = string(argv[2]);
+			if (ok && !config.empty())
+			{
+				std::ifstream in;
+				try 
+				{
+					in.open(config);
+					js::IStreamWrapper isw(in);
+					args.ParseStream(isw);
+				}
+				catch (const std::exception&) 
+				{
+					ok = false;
+				}	
+				if (!args.IsObject())
+				{
+					ok = false;
+				}
+			}
+			else
+			{
+				args.Parse("{}");
+				ok = false;
+			}
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);				
+		}
+		string inputFilename = ARGS_STRING(input_file);
+		string outputFilename = ARGS_STRING(output_file);
+		double scale = ARGS_DOUBLE_DEF(scale,0.5);
+		int valency = ARGS_INT_DEF(valency,10);	
+		int valencyFactor = ARGS_INT(valency_factor);	
+		bool valencyFixed = ARGS_BOOL(valency_fixed);	
+		bool valencyBalanced = ARGS_BOOL(valency_balanced);	
+		valencyFixed |= valencyBalanced;
+		int size = ARGS_INT_DEF(size,40);	
+		int divisor = ARGS_INT_DEF(divisor,4);	
+		if (ok)
+		{
+			ok = ok && inputFilename.size();
+			ok = ok && outputFilename.size();
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);	
+		}
+		QImage image;
+		QImage outputImage;
+		int captureWidth = 0;
+		int captureHeight = 0;	
+		if (ok)
+		{
+			QImage imageIn;
+			ok = ok && imageIn.load(QString(inputFilename.c_str()));
+			EVAL(imageIn.format());
+			image = imageIn.convertToFormat(QImage::Format_RGB32);
+			EVAL(image.format());
+			outputImage = image.copy();
+			captureWidth = image.width();
+			EVAL(captureWidth);
+			captureHeight = image.height();
+			EVAL(captureHeight);
+			ok = ok && captureWidth > 0 && captureHeight > 0;
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);	
+		}
+		std::size_t sizeX = (std::size_t)(1.0 * captureWidth * size / scale / captureHeight);
+		std::size_t sizeY = (std::size_t)(1.0 * captureHeight * size / scale / captureHeight);
+		if (ok)
+		{
+			auto mark = Clock::now();
+			double recordTime = 0.0;
+			Record record(image, 
+				1.0, 1.0,
+				0.5, 0.5, 
+				sizeX, sizeY, divisor, divisor);
+			Record recordValent = valencyFixed ? record.valentFixed(valency,valencyBalanced) : record.valent(valency,valencyFactor);
+			recordTime += ((Sec)(Clock::now() - mark)).count();
+			outputImage = recordValent.image(1,valency);
+			EVAL(recordTime);
+			ok = ok && outputImage.save(QString(outputFilename.c_str()));
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);	
+		}
+	}
+	
 	return 0;
 }
