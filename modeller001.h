@@ -74,6 +74,7 @@ namespace WBOT02
 		std::vector<double> _scales;
 		std::size_t _scaleValency;
 		std::size_t _valency;
+		std::size_t _valencyBits;
 		std::size_t _valencyFactor;
 		bool _valencyFixed;
 		bool _valencyBalanced;
