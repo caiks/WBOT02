@@ -102,7 +102,7 @@ Modeller001::Modeller001(const std::string& configA)
 		_induceParameters.wmax = ARGS_INT_DEF(induceParameters.wmax,18);
 		_induceParameters.lmax = ARGS_INT_DEF(induceParameters.lmax,8);
 		_induceParameters.xmax = ARGS_INT_DEF(induceParameters.xmax,128);
-		_induceParameters.znnmax = 200000.0 * 2.0 * 300.0 * 300.0 * _induceThreadCount;
+		_induceParameters.znnmax = ARGS_INT_DEF(induceParameters.znnmax, 200*2*1600*1600*_induceThreadCount);
 		_induceParameters.omax = ARGS_INT_DEF(induceParameters.omax,10);
 		_induceParameters.bmax = ARGS_INT_DEF(induceParameters.bmax,10*3);
 		_induceParameters.mmax = ARGS_INT_DEF(induceParameters.mmax,3);
@@ -886,10 +886,12 @@ void Modeller001::model()
 							std::size_t n = _valencyBits;
 							auto ha = std::make_shared<HistorySparseArray>(1,n);
 							auto rr = ha->arr;	
-							for (std::size_t i = 0; i < n; i++)						
+							for (std::size_t i = 0; i < n; i++)				
+							{
 								rr[i] = 65536 + (m << 12) + (i+1 << 8) + (arr1[m] >> n-i-1);
+							}
 							auto& eventsA = *_active->underlyingEventsSparse[m];
-							eventsA.mapIdEvent[this->eventId] = HistorySparseArrayPtrSizePair(std::move(ha), eventsA.references);
+							eventsA.mapIdEvent[this->eventId] = HistorySparseArrayPtrSizePair(ha, eventsA.references);
 						}
 						_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr), _events->references);	
 					}
