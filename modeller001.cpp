@@ -102,7 +102,7 @@ Modeller001::Modeller001(const std::string& configA)
 		_induceParameters.wmax = ARGS_INT_DEF(induceParameters.wmax,18);
 		_induceParameters.lmax = ARGS_INT_DEF(induceParameters.lmax,8);
 		_induceParameters.xmax = ARGS_INT_DEF(induceParameters.xmax,128);
-		_induceParameters.znnmax = ARGS_INT_DEF(induceParameters.znnmax, 200*2*1600*1600*_induceThreadCount);
+		_induceParameters.znnmax = ARGS_DOUBLE_DEF(induceParameters.znnmax, 200000.0 * 2.0 * 300.0 * 300.0 * _induceThreadCount);
 		_induceParameters.omax = ARGS_INT_DEF(induceParameters.omax,10);
 		_induceParameters.bmax = ARGS_INT_DEF(induceParameters.bmax,10*3);
 		_induceParameters.mmax = ARGS_INT_DEF(induceParameters.mmax,3);
