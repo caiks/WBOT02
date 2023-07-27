@@ -35,6 +35,8 @@ namespace WBOT02
 		std::size_t _checkpointInterval;
 		std::size_t _checkpointEvent;
 		
+		std::vector<std::thread> _threads;
+		
 		std::shared_ptr<Alignment::ActiveSystem> _system;
 		std::shared_ptr<Alignment::System> _uu;
 		std::shared_ptr<Alignment::SystemRepa> _ur;

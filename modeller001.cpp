@@ -31,6 +31,17 @@ static void layerer_actor_log(const std::string& str)
 	return;
 };
 
+// void run_induce(Actor& actor, Active& active, ActiveInduceParameters& param, std::size_t induceThresholdInitial, std::chrono::milliseconds induceInterval)
+// {
+	// while (!actor._terminate && !active.terminate)
+	// {
+		// if (actor._poseTimestamp != TimePoint() && actor._scanTimestamp != TimePoint() && actor._eventId >= induceThresholdInitial)
+			// active.induce(param);
+		// std::this_thread::sleep_for(std::chrono::milliseconds(induceInterval));
+	// }	
+	// return;
+// };
+
 Modeller001::Modeller001(const std::string& configA)
 {
 	this->terminate = true;
@@ -111,6 +122,8 @@ Modeller001::Modeller001(const std::string& configA)
 		_induceParameters.mult = ARGS_INT_DEF(induceParameters.mult,1);
 		_induceParameters.seed = ARGS_INT_DEF(induceParameters.seed,5);	
 		_induceParameters.diagonalMin = ARGS_DOUBLE_DEF(induceParameters.diagonalMin,6.0);
+		_induceParameters.asyncThreadMax = ARGS_INT(induceParameters.asyncThreadMax);	
+		_induceParameters.asyncInterval = ARGS_INT_DEF(induceParameters.asyncInterval,10);	
 		if (args.HasMember("induceParameters.induceThresholds"))
 		{
 			auto& a = args["induceParameters.induceThresholds"];
@@ -392,13 +405,17 @@ Modeller001::Modeller001(const std::string& configA)
 			}
 		}
 	}
-	// start act timer
-	if (!_system)
+	
+	if (_system)
+	{
+		// if (_induceParameters.asyncThreadMax)
+			// _threads.push_back(std::thread(run_induce, std::ref(*this), std::ref(activeA), std::ref(_induceParametersLevel1), induceThresholdInitialLevel1, induceIntervalLevel1));
+		this->terminate = false;
+	}
+	else
 	{
 		LOG "modeller\terror: failed to initialise" UNLOG
 	}
-	else
-		this->terminate = false;
 }
 
 Modeller001::~Modeller001()
