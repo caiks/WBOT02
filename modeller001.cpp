@@ -31,16 +31,11 @@ static void layerer_actor_log(const std::string& str)
 	return;
 };
 
-// void run_induce(Actor& actor, Active& active, ActiveInduceParameters& param, std::size_t induceThresholdInitial, std::chrono::milliseconds induceInterval)
-// {
-	// while (!actor._terminate && !active.terminate)
-	// {
-		// if (actor._poseTimestamp != TimePoint() && actor._scanTimestamp != TimePoint() && actor._eventId >= induceThresholdInitial)
-			// active.induce(param);
-		// std::this_thread::sleep_for(std::chrono::milliseconds(induceInterval));
-	// }	
-	// return;
-// };
+void run_induce(Active& active, ActiveInduceParameters& pp, ActiveUpdateParameters& ppu)
+{
+	active.induce(pp, ppu);
+	return;
+};
 
 Modeller001::Modeller001(const std::string& configA)
 {
@@ -405,11 +400,10 @@ Modeller001::Modeller001(const std::string& configA)
 			}
 		}
 	}
-	
 	if (_system)
 	{
-		// if (_induceParameters.asyncThreadMax)
-			// _threads.push_back(std::thread(run_induce, std::ref(*this), std::ref(activeA), std::ref(_induceParametersLevel1), induceThresholdInitialLevel1, induceIntervalLevel1));
+		if (_induceParameters.asyncThreadMax)
+			_threads.push_back(std::thread(run_induce, std::ref(*_active), std::ref(_induceParameters), std::ref(_updateParameters)));
 		this->terminate = false;
 	}
 	else
@@ -422,6 +416,8 @@ Modeller001::~Modeller001()
 {
 	terminate = true;
 	_active->terminate = true;
+	for (auto& t : _threads)
+		t.join();	
 	if (_recordsFile.is_open())
 	{
 		try
@@ -437,7 +433,6 @@ Modeller001::~Modeller001()
 	dump();	
 	LOG "modeller\tstatus: finished" UNLOG
 }
-
 
 void Modeller001::dump()
 {
@@ -483,6 +478,15 @@ void Modeller001::model()
 	while (_system && (!_eventIdMax || this->eventId < _eventIdMax)
 		&& !this->terminate && !(_active && _active->terminate))
 	{
+		// sleep if async and updateProhibit
+		if (_induceParameters.asyncThreadMax && _active->updateProhibit)
+		{
+			if (_induceParameters.asyncInterval)
+				std::this_thread::sleep_for(std::chrono::milliseconds(_induceParameters.asyncInterval));
+			else
+				std::this_thread::sleep_for(std::chrono::milliseconds(10));
+			continue;
+		}
 		_mark = Clock::now(); 	
 		std::size_t eventCount = 0;
 		if (_mode == "mode012" && _scales.size() && _recordsFile.is_open())
@@ -559,7 +563,7 @@ void Modeller001::model()
 				{
 					auto& activeA = *_active;
 					auto& actor = *this;
-					// std::lock_guard<std::mutex> guard(activeA.mutex);
+					std::lock_guard<std::mutex> guard(activeA.mutex);
 					std::vector<std::thread> threads;
 					threads.reserve(_threadCount);
 					for (std::size_t t = 0; t < _threadCount; t++)
@@ -936,17 +940,18 @@ void Modeller001::model()
 				LOG "modeller\tstatus: quitting" UNLOG
 				return;
 			}
-			if (!_active->induce(_induceParameters))
+			// induce if sync
+			if (!_induceParameters.asyncThreadMax && !_active->induce(_induceParameters))
 			{
 				this->terminate = true;	
 				LOG "modeller\tstatus: quitting" UNLOG
 				return;
-			}
+			}				
 		}
 		// representations
 		{		
 			auto& activeA = *_active;
-			// std::lock_guard<std::mutex> guard(activeA.mutex);
+			std::lock_guard<std::mutex> guard(activeA.mutex);
 			std::shared_ptr<HistoryRepa> hr = activeA.underlyingHistoryRepa.front();
 			auto& hs = *activeA.historySparse;
 			auto& slev = activeA.historySlicesSetEvent;
@@ -1014,6 +1019,35 @@ void Modeller001::model()
 		{
             LOG "modeller\tevent id: " << this->eventId << "\ttime " << ((Sec)(Clock::now() - _mark)).count() << "s" UNLOG
 			_eventIdPrev = this->eventId;
+		}
+	}
+	if (_system && !this->terminate && _induceParameters.asyncThreadMax)
+	{
+		bool waiting = true;
+		while (waiting || _active->updateProhibit)
+		{
+			std::this_thread::sleep_for(std::chrono::milliseconds(1000));	
+			{
+				std::lock_guard<std::mutex> guard(_active->mutex);		
+				std::size_t sliceA = 0;
+				std::size_t sliceSizeA = 0;	
+				for (auto sliceB : _active->induceSlices)
+				{
+					auto sliceSizeB = _active->historySlicesSetEvent[sliceB].size();
+					if (sliceSizeB > sliceSizeA)
+					{
+						auto it = _active->induceSliceFailsSize.find(sliceB);
+						if (it == _active->induceSliceFailsSize.end() 
+							|| (it->second < sliceSizeB 
+								&& (!_induceParameters.induceThresholds.size() || _induceParameters.induceThresholds.count(sliceSizeB))))
+						{
+							sliceA = sliceB;
+							sliceSizeA = sliceSizeB;							
+						}
+					}
+				}
+				waiting = sliceSizeA > 0;
+			}			
 		}
 	}
 }
