@@ -119,6 +119,7 @@ Modeller001::Modeller001(const std::string& configA)
 		_induceParameters.diagonalMin = ARGS_DOUBLE_DEF(induceParameters.diagonalMin,6.0);
 		_induceParameters.asyncThreadMax = ARGS_INT(induceParameters.asyncThreadMax);	
 		_induceParameters.asyncInterval = ARGS_INT_DEF(induceParameters.asyncInterval,10);	
+		_induceParameters.asyncUpdateLimit = ARGS_INT(induceParameters.asyncUpdateLimit);	
 		if (args.HasMember("induceParameters.induceThresholds"))
 		{
 			auto& a = args["induceParameters.induceThresholds"];
@@ -1039,7 +1040,7 @@ void Modeller001::model()
 						auto it = _active->induceSliceFailsSize.find(sliceB);
 						if (it == _active->induceSliceFailsSize.end() 
 							|| (it->second < sliceSizeB 
-								&& (!_induceParameters.induceThresholds.size() || _induceParameters.induceThresholds.count(sliceSizeB))))
+								&& _induceParameters.induceThresholdExceeded(it->second, sliceSizeB)))
 						{
 							sliceA = sliceB;
 							sliceSizeA = sliceSizeB;							
