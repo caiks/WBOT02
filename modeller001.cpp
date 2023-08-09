@@ -310,7 +310,7 @@ Modeller001::Modeller001(const std::string& configA)
 			}
 			else
 			{
-				if (_struct=="struct003")
+				if (_struct=="struct003" || _struct=="struct004")
 				{
 					_system->block = (_size * _size << 12 >> activeA.bits) + 1;				
 				}
@@ -337,6 +337,14 @@ Modeller001::Modeller001(const std::string& configA)
 						activeA.underlyingHistorySparse.push_back(std::make_shared<HistorySparseArray>(activeA.historySize,1));
 					}
 				}
+				else if (_struct=="struct004")
+				{
+					for (std::size_t m = 0; m < _size*_size; m++)
+					{
+						activeA.induceVarComputeds.insert(m);
+					}
+				}
+
 				{
 					auto hr = std::make_unique<HistorySparseArray>();
 					{

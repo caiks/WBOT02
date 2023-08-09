@@ -221,6 +221,7 @@ int main(int argc, char *argv[])
 			EVAL(activeA.varSlice);				
 			EVAL(activeA.induceThreshold);				
 			EVAL(activeA.induceVarExclusions.size());				
+			EVAL(activeA.induceVarComputeds.size());				
 			if (activeA.historySparse) {EVAL(activeA.historySparse->size);}
 			if (!concise)
 			{
