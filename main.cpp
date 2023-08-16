@@ -2762,6 +2762,8 @@ int main(int argc, char *argv[])
 			TRUTH(ok);				
 		}
 		bool isLengthNormalise = string(argv[1]) == "generate_contour009";
+		string structure = ARGS_STRING(structure);
+		bool isComputed = structure == "struct004";
 		string model = ARGS_STRING(model);
 		string inputFilename = ARGS_STRING(input_file);
 		string likelihoodFilename = ARGS_STRING(likelihood_file);
@@ -2925,7 +2927,7 @@ int main(int argc, char *argv[])
 			mark = Clock::now();
 			for (std::size_t t = 0; t < threadCount; t++)
 				threads.push_back(std::thread(
-                    [threadCount,valencyFixed,valencyBalanced,entropyMinimum,
+                    [threadCount,valencyFixed,valencyBalanced,isComputed,entropyMinimum,
 					sizeX,sizeY,size,&record,valency,valencyFactor,n,vv,rr,
 					drmul,&dr,&cv,cap,&sizes,&lengths,lnwmax,&actsPotsCoord,
 					&likelihoodResults,&lengthResults] (int t)
@@ -2952,14 +2954,36 @@ int main(int argc, char *argv[])
 										auto& arr1 = *recordValent.arr;	
 										SizeUCharStructList jj;
 										jj.reserve(n);
-										for (std::size_t i = 0; i < n-1; i++)
+										if (isComputed)
 										{
-											SizeUCharStruct qq;
-											qq.uchar = arr1[i];	
-											qq.size = vv[i];
-											if (qq.uchar)
-												jj.push_back(qq);
+											std::size_t s = valency;
+											std::size_t b = 0; 
+											if (s)
+											{
+												s--;
+												while (s >> b)
+													b++;
+											}
+											for (std::size_t i = 0; i < n-1; i++)
+											{
+												SizeUCharStruct qq;
+												qq.uchar = 1;	
+												for (int k = b; k > 0; k--)
+												{
+													qq.size = 65536 + (vv[i] << 12) + (k << 8) + (arr1[i] >> b-k);
+													jj.push_back(qq);
+												}
+											}											
 										}
+										else
+											for (std::size_t i = 0; i < n-1; i++)
+											{
+												SizeUCharStruct qq;
+												qq.uchar = arr1[i];	
+												qq.size = vv[i];
+												if (qq.uchar)
+													jj.push_back(qq);
+											}
 										{
 											SizeUCharStruct qq;
 											qq.uchar = rr[n-1];	
