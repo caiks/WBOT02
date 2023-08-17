@@ -37,6 +37,12 @@ namespace js = rapidjson;
 #define UNLOG  << std::endl; }
 #define LOG { std::cout <<
 
+void do_induce(Active& active, ActiveInduceParameters& pp, ActiveUpdateParameters& ppu)
+{
+	active.induce(pp, ppu);
+	return;
+};
+
 int main(int argc, char *argv[])
 {
 	if (argc >= 2 && std::string(argv[1]) == "hello")
@@ -689,6 +695,8 @@ int main(int argc, char *argv[])
 		string model = ARGS_STRING(model);
 		string model_initial = ARGS_STRING(model_initial);
 		int size = ARGS_INT_DEF(size,40);	
+		Alignment::ActiveUpdateParameters updateParameters;
+		updateParameters.mapCapacity = ARGS_INT_DEF(updateParameters.mapCapacity,3); 
 		Alignment::ActiveInduceParameters induceParameters;
 		int induceThreadCount = ARGS_INT_DEF(induceThreadCount,4);
 		int induceThreshold = ARGS_INT_DEF(induceThreshold,200);
@@ -696,7 +704,7 @@ int main(int argc, char *argv[])
 		induceParameters.wmax = ARGS_INT_DEF(induceParameters.wmax,18);
 		induceParameters.lmax = ARGS_INT_DEF(induceParameters.lmax,8);
 		induceParameters.xmax = ARGS_INT_DEF(induceParameters.xmax,128);
-		induceParameters.znnmax = 200000.0 * 2.0 * 300.0 * 300.0 * induceThreadCount;
+		induceParameters.znnmax = ARGS_DOUBLE_DEF(induceParameters.znnmax, 200000.0 * 2.0 * 300.0 * 300.0 * induceThreadCount);;
 		induceParameters.omax = ARGS_INT_DEF(induceParameters.omax,10);
 		induceParameters.bmax = ARGS_INT_DEF(induceParameters.bmax,10*3);
 		induceParameters.mmax = ARGS_INT_DEF(induceParameters.mmax,3);
@@ -705,6 +713,9 @@ int main(int argc, char *argv[])
 		induceParameters.mult = ARGS_INT_DEF(induceParameters.mult,1);
 		induceParameters.seed = ARGS_INT_DEF(induceParameters.seed,5);	
 		induceParameters.diagonalMin = ARGS_DOUBLE_DEF(induceParameters.diagonalMin,6.0);
+		induceParameters.asyncThreadMax = ARGS_INT(induceParameters.asyncThreadMax);	
+		induceParameters.asyncInterval = ARGS_INT_DEF(induceParameters.asyncInterval,10);	
+		induceParameters.asyncUpdateLimit = ARGS_INT(induceParameters.asyncUpdateLimit);	
 		if (args.HasMember("induceParameters.induceThresholds"))
 		{
 			auto& a = args["induceParameters.induceThresholds"];
@@ -790,7 +801,25 @@ int main(int argc, char *argv[])
 		{
 			activeA.logging = false;		
 			activeA.summary = true;		
-			ok = ok && activeA.induce(induceParameters);					
+			if (induceParameters.asyncThreadMax)
+			{
+				std::thread thread(do_induce, std::ref(activeA), std::ref(induceParameters), std::ref(updateParameters));
+				while (ok && !activeA.terminate)
+				{
+					std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+					std::lock_guard<std::mutex> guard(activeA.mutex);		
+					if (!activeA.induceSlices.size())
+					{
+						activeA.terminate = true;
+						break;
+					}						
+				}
+				thread.join();
+			}
+			else 
+			{
+				ok = ok && activeA.induce(induceParameters,updateParameters);					
+			}
 			stage++;
 			EVAL(stage);
 			TRUTH(ok);	
