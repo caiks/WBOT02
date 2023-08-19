@@ -808,11 +808,15 @@ int main(int argc, char *argv[])
 				{
 					std::this_thread::sleep_for(std::chrono::milliseconds(1000));
 					std::lock_guard<std::mutex> guard(activeA.mutex);		
-					if (!activeA.induceSlices.size())
-					{
+					bool slicesExist = false;
+					for (auto sliceA : activeA.induceSlices)
+						if (!activeA.induceSliceFailsSize.count(sliceA))
+						{
+							slicesExist = true;
+							break;
+						}
+					if (!slicesExist)
 						activeA.terminate = true;
-						break;
-					}						
 				}
 				thread.join();
 			}
