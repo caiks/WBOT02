@@ -3586,6 +3586,18 @@ model081|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 80|13|balanced
 model084|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced computed 32-valent|48 B&W videos|75,000,000|15,362|1.024|10.7|2.0|18|-0.5|0.5|-4.8|2.46|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at randomised records006
 model086|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 84|13|balanced computed 32-valent|48 B&W videos|75,000,000|341,235|0.910|13.9|2.4|23|-0.4|0.2|-3.9|2.49|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 256, omax 20, bmax 60, threshold 200
 
+Model 84 contour. Representation seems a little worse than model 80 for foreground better for background/surfaces. Position maps a little less detailed? Perhaps because of higher neg skew. Perhaps because of crown alignments with same variable, which we see sometimes, e.g. 18100, 18101. Less contrast in length maps - paths are longer around the face, so a more uniform model might explain why the facial detail is not so good. Need to rethreshold to see if helps. On the face of it, computed does not seem to be much better qualitatively although better quantitatively. Perhaps might produce higher alignments in 2-level model.
+
+`exp(ln(341235)/13.9361) = 2.49` (cf 2.46 for model 84) - so still very small and stable. The growth is 0.91 (cf growth of 1.024 for model 84) so very good too. Slightly more normal than model 84 but not much difference.
+
+The mean underlying has decreased to 13.3 (cf 15.1) because of the smaller xmax by 2 bits.
+
+median diagonal 24.9061 (cf 32.0944 for model 84), max diagonal 42.494, bucket for 12 diagonal is smaller than 13 which is smaller than 14, so after shuffle minimum.
+
+The rethrehold model 86 median diagonal at 24.9 is not much higher than the model 81 med diag at 21.0, but there are 80% more fuds so not quite comparable. The key thing is that the model 84 med diag is very high at 32.1.
+
+Computed variable versus simple variable. Computed picks up fine grained global alignments at the cost of detail compared to simple valent, although the high valency alignments partly come for free because they are generally much higher. We will need to focus on hotspots driven by higher levels to pick up more alignments in facial features because these are relatively weak. We have already seen that we need entropy restrictions to avoid the dull areas of the image. Our challenge is to use hints from biology to enhance the alignments that are interesting to humans, eg entropy, hotspots, gradients spatial and dynamic, central area limits or valency variations.
+
 
 The paths are too short to see features
 
