@@ -1304,6 +1304,7 @@ void Win007::act()
 		{		
 			auto drmul = listVarValuesDecompFudSlicedRepasPathSlice_u;
 			auto cap = (unsigned char)(_updateParameters.mapCapacity);
+			bool isComputed = _struct == "struct004";
 			auto& activeA = *_active;
 			std::lock_guard<std::mutex> guard(activeA.mutex);
 			std::shared_ptr<HistoryRepa> hr1 = activeA.underlyingHistoryRepa.front();
@@ -1355,14 +1356,39 @@ void Win007::act()
 								}
 					}				
 			}
-			if (_struct!="struct002" || _substrateInclude)			
-				for (std::size_t i = 0; i < n - 1; i++)
+			if (_struct!="struct002" || _substrateInclude)	
+			{
+				if (isComputed)
 				{
-					SizeUCharStruct qq;
-					qq.uchar = rr[i];	
-					qq.size = vv[i];
-					jj.push_back(qq);
-				}									
+					std::size_t s = _valency;
+					std::size_t b = 0; 
+					if (s)
+					{
+						s--;
+						while (s >> b)
+							b++;
+					}
+					for (std::size_t i = 0; i < n-1; i++)
+					{
+						SizeUCharStruct qq;
+						qq.uchar = 1;	
+						for (int k = b; k > 0; k--)
+						{
+							qq.size = 65536 + (vv[i] << 12) + (k << 8) + (rr[i] >> b-k);
+							jj.push_back(qq);
+						}
+					}											
+				}
+				else			
+					for (std::size_t i = 0; i < n - 1; i++)
+					{
+						SizeUCharStruct qq;
+						qq.uchar = rr[i];	
+						qq.size = vv[i];
+						if (qq.uchar)
+							jj.push_back(qq);
+					}
+			}											
 			{
 				SizeUCharStruct qq;
 				qq.uchar = rr[n-1];	

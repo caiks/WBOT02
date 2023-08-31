@@ -3598,6 +3598,8 @@ The rethrehold model 86 median diagonal at 24.9 is not much higher than the mode
 
 Computed variable versus simple variable. Computed picks up fine grained global alignments at the cost of detail compared to simple valent, although the high valency alignments partly come for free because they are generally much higher. We will need to focus on hotspots driven by higher levels to pick up more alignments in facial features because these are relatively weak. We have already seen that we need entropy restrictions to avoid the dull areas of the image. Our challenge is to use hints from biology to enhance the alignments that are interesting to humans, eg entropy, hotspots, gradients spatial and dynamic, central area limits or valency variations.
 
+Model 86. Browsing around it seems that we would like the model to be a good deal larger still, but we cannot use scanning for underlying. Perhaps we could scan in higher level and then have 25 separate underlying models which 'specialise' in a region.
+
 
 The paths are too short to see features
 
