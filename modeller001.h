@@ -58,6 +58,7 @@ namespace WBOT02
 		bool _activeSummary;
 		bool _level1Logging;
 		bool _level1Summary;
+		bool _activeContinuous;
 		bool _activeCumulative;
 		std::size_t _activeSize;
 		std::size_t _level1ActiveSize;

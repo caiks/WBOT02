@@ -96,6 +96,7 @@ Modeller001::Modeller001(const std::string& configA)
 		_updateDisable = ARGS_BOOL(disable_update);
 		_activeLogging = ARGS_BOOL(logging_active);
 		_level1Logging = ARGS_BOOL(logging_level1);
+		_activeContinuous = ARGS_BOOL(continuous_active);
 		_activeCumulative = ARGS_BOOL_DEF(cumulative_active,true);
 		_activeSummary = ARGS_BOOL(summary_active);
 		_level1Summary = ARGS_BOOL(summary_level1);
@@ -282,8 +283,8 @@ Modeller001::Modeller001(const std::string& configA)
 			activeA.log = actor_log;
 			activeA.layerer_log = layerer_actor_log;
 			activeA.system = _system;
-			activeA.continousIs = true;
 			activeA.historySliceCachingIs = true;
+			activeA.continousIs = _activeContinuous;
 			activeA.historySliceCumulativeIs = _activeCumulative;
             if (_modelInitial.size())
 			{
