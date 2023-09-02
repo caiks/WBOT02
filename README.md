@@ -3600,6 +3600,7 @@ Computed variable versus simple variable. Computed picks up fine grained global 
 
 Model 86. Browsing around it seems that we would like the model to be a good deal larger still, but we cannot use scanning for underlying. Perhaps we could scan in higher level and then have 25 separate underlying models which 'specialise' in a region.
 
+actor002_model080_Film_Noir_003 cf actor002_model084_Film_Noir_002 - we can see that model 84 has higher alignment in the first fud with 3 on-diagonal slices instead of 4 and fewer off-diagonal, which explains lower multipier. The underlyings seem to be in similar places - blobs around the edges (where the entropy would be slightly lower), and the slice representations of the first fud are similar too - dividing into general brightness levels. No doubt we have gained by using balanced valency to avoid 'duplicating' the model. Consider smaller underlying substrates, edge detection and fourier.
 
 The paths are too short to see features
 
