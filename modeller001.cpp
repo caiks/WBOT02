@@ -229,7 +229,7 @@ Modeller001::Modeller001(const std::string& configA)
 		_events = std::make_shared<ActiveEventsRepa>(1);
 		_active = std::make_shared<Active>();
 		{
-			if (_struct=="struct002")
+			if (_struct=="struct002" || _struct=="struct005")
 			{
 				{
 					Active activeA;
@@ -324,7 +324,7 @@ Modeller001::Modeller001(const std::string& configA)
                     auto hr = sizesHistoryRepa(_scaleValency, _valency, _size*_size, activeA.historySize);
 					activeA.underlyingHistoryRepa.push_back(std::move(hr));
 				}	
-				if (_struct=="struct002")
+				if (_struct=="struct002" || _struct=="struct005")
 				{
 					for (std::size_t m = 0; m < _level1.size(); m++)
 					{
@@ -362,7 +362,7 @@ Modeller001::Modeller001(const std::string& configA)
 			activeA.logging = _activeLogging;
 			activeA.summary = _activeSummary;
 			activeA.underlyingEventsRepa.push_back(_events);
-			if (_struct=="struct002")
+			if (_struct=="struct002" || _struct=="struct005")
 			{
 				if (!_substrateInclude)
 				{
@@ -758,7 +758,7 @@ void Modeller001::model()
 					eventCount++;	
 				}	
 		}
-		else if (_mode == "mode014" && _struct=="struct002" && _scales.size() && _recordsFile.is_open())
+		else if (_mode == "mode014" && (_struct=="struct002"  || _struct=="struct005") && _scales.size() && _recordsFile.is_open())
 		{
 			Record record;
 			{
@@ -932,7 +932,7 @@ void Modeller001::model()
 		}
 		if (!_updateDisable)
 		{
-			if (_struct=="struct002")
+			if (_struct=="struct002" || _struct=="struct005")
 			{
 				for (auto& activeA : _level1)
 				{
