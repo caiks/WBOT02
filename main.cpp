@@ -695,6 +695,7 @@ int main(int argc, char *argv[])
 		string model = ARGS_STRING(model);
 		string model_initial = ARGS_STRING(model_initial);
 		int size = ARGS_INT_DEF(size,40);	
+		bool repsNew = ARGS_BOOL(new_representations);	
 		Alignment::ActiveUpdateParameters updateParameters;
 		updateParameters.mapCapacity = ARGS_INT_DEF(updateParameters.mapCapacity,3); 
 		Alignment::ActiveInduceParameters induceParameters;
@@ -735,25 +736,33 @@ int main(int argc, char *argv[])
 		std::unique_ptr<WBOT02::SliceRepresentationUMap> slicesRepresentation;
 		if (ok) 
 		{
-			try
+			if (repsNew)
 			{
-				std::ifstream in(model_initial + ".rep", std::ios::binary);
-				if (in.is_open())
-				{
-					slicesRepresentation = persistentsSliceRepresentationUMap(in);
-					in.close();
-				}
-				else
-				{
-					LOG "rethreshold\terror: failed to open slice-representations file" << model_initial + ".rep" UNLOG
-					ok = false;
-				}
+				slicesRepresentation = std::make_unique<WBOT02::SliceRepresentationUMap>();
 			}
-			catch (const std::exception&)
+			else 
 			{
-				LOG "rethreshold\terror: failed to read records file" << model_initial + ".rep" UNLOG
-				ok = false;
-			}	
+				try
+				{
+					std::ifstream in(model_initial + ".rep", std::ios::binary);
+					if (in.is_open())
+					{
+						slicesRepresentation = persistentsSliceRepresentationUMap(in);
+						in.close();
+					}
+					else
+					{
+						LOG "rethreshold\terror: failed to open slice-representations file" << model_initial + ".rep" UNLOG
+						ok = false;
+					}
+				}
+				catch (const std::exception&)
+				{
+					LOG "rethreshold\terror: failed to read records file" << model_initial + ".rep" UNLOG
+					ok = false;
+				}					
+			}
+
 			stage++;
 			EVAL(stage);
 			TRUTH(ok);		
@@ -835,27 +844,61 @@ int main(int argc, char *argv[])
 			auto n = hr->dimension;
 			auto rr = hr->arr;	
 			auto& dr = *activeA.decomp;	
+			auto& slpp = dr.mapVarParent();
 			auto& reps = *slicesRepresentation;
-			for (std::size_t i = fudsSize; i < dr.fuds.size(); i++)
-			{
-				for (auto sliceB : dr.fuds[i].children)
+			if (repsNew)
+				for (auto& pp : slev)
 				{
-					Representation rep(1.0,1.0,size,size);
-					auto& arr1 = *rep.arr;
-					if (slev.count(sliceB))
 					{
-						for (auto j : slev[sliceB])
+						Representation rep(1.0,1.0,size,size);
+						auto& arr1 = *rep.arr;
+						for (auto j : pp.second)
 						{
 							auto jn = j*n;
 							for (size_t i = 0; i < n-1; i++)
 								arr1[i] += rr[jn + i];
 							rep.count++;
-						}									
-						reps.insert_or_assign(sliceB, rep);
+						}	
+						reps.insert_or_assign(pp.first, rep);							
+					}
+					auto it = slpp.find(pp.first);
+					while (it != slpp.end())
+					{
+						if (!reps.count(it->second))
+							reps.insert_or_assign(it->second, Representation(1.0,1.0,size,size));
+						auto& rep = reps[it->second];
+						auto& arr1 = *rep.arr;
+						for (auto j : pp.second)
+						{
+							auto jn = j*n;
+							for (size_t i = 0; i < n-1; i++)
+								arr1[i] += rr[jn + i];
+							rep.count++;
+						}	
+						it = slpp.find(it->second);
+					}						
+				}
+			else
+				for (std::size_t i = fudsSize; i < dr.fuds.size(); i++)
+				{
+					for (auto sliceB : dr.fuds[i].children)
+					{
+						Representation rep(1.0,1.0,size,size);
+						auto& arr1 = *rep.arr;
+						if (slev.count(sliceB))
+						{
+							for (auto j : slev[sliceB])
+							{
+								auto jn = j*n;
+								for (size_t i = 0; i < n-1; i++)
+									arr1[i] += rr[jn + i];
+								rep.count++;
+							}									
+							reps.insert_or_assign(sliceB, rep);
+						}
 					}
 				}
-			}
-			stage++;
+				stage++;
 			EVAL(stage);
 			TRUTH(ok);	
 		}
