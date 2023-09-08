@@ -226,8 +226,15 @@ int main(int argc, char *argv[])
 			EVAL(activeA.var);				
 			EVAL(activeA.varSlice);				
 			EVAL(activeA.induceThreshold);				
-			EVAL(activeA.induceVarExclusions.size());				
-			EVAL(activeA.induceVarComputeds.size());				
+			EVAL(activeA.induceVarExclusions.size());	
+			if (!concise)
+			{
+				EVAL(activeA.induceVarComputeds);				
+			}
+			else 
+			{
+				EVAL(activeA.induceVarComputeds.size());				
+			}				
 			if (activeA.historySparse) {EVAL(activeA.historySparse->size);}
 			if (!concise)
 			{
@@ -432,7 +439,7 @@ int main(int argc, char *argv[])
 				std::cout << fud << ", " << activeA.historySlicesLength[parent] << ", " << parent << ", " << fs.children.size();
 				for (auto& pp : slices)
 				{
-					std::cout << "\t(" << std::setprecision(3) << pp.first << ", " << pp.second << ")\t";
+					std::cout << "\t(" << std::setprecision(3) << pp.first << ", " << std::hex << pp.second << std::dec << ")\t";
 				}
 				std::cout << std::endl;
 			}

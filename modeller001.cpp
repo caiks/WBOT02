@@ -231,19 +231,19 @@ Modeller001::Modeller001(const std::string& configA)
 		{
 			if (_struct=="struct002" || _struct=="struct005")
 			{
+				Active activeB;
 				{
-					Active activeA;
 					ActiveIOParameters ppio;
 					ppio.filename = _level1Model + ".ac";
-					activeA.logging = true;
-					if (!activeA.load(ppio))
+					activeB.logging = true;
+					if (!activeB.load(ppio))
 					{
 						LOG "modeller\terror: failed to load level1 model" << ppio.filename UNLOG
 						_system.reset();
 						return;
 					}
-					_system->block = std::max(_system->block, activeA.varMax() >> activeA.bits);
-					_level1Decomp = activeA.decomp;					
+					_system->block = std::max(_system->block, activeB.varMax() >> activeB.bits);
+					_level1Decomp = activeB.decomp;					
 				}
 				for (std::size_t m = 0; m < _level2Size*_level2Size; m++)
 				{
@@ -254,6 +254,8 @@ Modeller001::Modeller001(const std::string& configA)
 					activeA.layerer_log = layerer_actor_log;
 					activeA.system = _system;
 					activeA.decomp = _level1Decomp;
+					activeA.induceVarComputeds = activeB.induceVarComputeds;
+					activeA.underlyingSlicesParent = activeB.underlyingSlicesParent;
 					activeA.historySize = _level1ActiveSize;
 					{
 						auto hr = sizesHistoryRepa(_scaleValency, _valency, _level1Size*_level1Size, activeA.historySize);
