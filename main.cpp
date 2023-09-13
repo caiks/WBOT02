@@ -3221,7 +3221,7 @@ int main(int argc, char *argv[])
 		}
 	}
 	
-	// equals generate_contour009 for struct002
+	// equals generate_contour009 for 2-level struct002 and struct005 (computed)
 	if (argc >= 2 && string(argv[1]) == "generate_contour010")
 	{
 		bool ok = true;
@@ -3260,6 +3260,8 @@ int main(int argc, char *argv[])
 			TRUTH(ok);				
 		}
 		bool isLengthNormalise = true;
+		string structure = ARGS_STRING(structure);
+		bool isComputed = structure == "struct005";
 		string model = ARGS_STRING(model);
 		string level1Model = ARGS_STRING(level1_model);
 		string inputFilename = ARGS_STRING(input_file);
@@ -3446,7 +3448,7 @@ int main(int argc, char *argv[])
 			mark = Clock::now();
 			for (std::size_t t = 0; t < threadCount; t++)
 				threads.push_back(std::thread(
-                    [threadCount,valencyFixed,valencyBalanced,entropyMinimum,
+                    [threadCount,valencyFixed,valencyBalanced,isComputed,entropyMinimum,
 					sizeX,sizeY,size,level1Size,level2Size,
 					&record,valency,valencyFactor,scaleValue,n,vv,substrateInclude,n1,vv1,
 					drmul,&activeA,&dr,&dr1,&proms,&cv,cap,&sizes,&lengths,lnwmax,&actsPotsCoord,
@@ -3481,14 +3483,36 @@ int main(int argc, char *argv[])
 												auto& arr2 = *recordTile.arr;	
 												SizeUCharStructList kk;
 												kk.reserve(n1);
-												for (std::size_t i = 0; i < n1-1; i++)
+												if (isComputed)
 												{
-													SizeUCharStruct qq;
-													qq.uchar = arr2[i];	
-													qq.size = vv1[i];
-													if (qq.uchar)
-														kk.push_back(qq);
+													std::size_t s = valency;
+													std::size_t b = 0; 
+													if (s)
+													{
+														s--;
+														while (s >> b)
+															b++;
+													}
+													for (std::size_t i = 0; i < n1-1; i++)
+													{
+														SizeUCharStruct qq;
+														qq.uchar = 1;	
+														for (int k = b; k > 0; k--)
+														{
+															qq.size = 65536 + (vv1[i] << 12) + (k << 8) + (arr2[i] >> b-k);
+															kk.push_back(qq);
+														}
+													}											
 												}
+												else
+													for (std::size_t i = 0; i < n1-1; i++)
+													{
+														SizeUCharStruct qq;
+														qq.uchar = arr2[i];	
+														qq.size = vv1[i];
+														if (qq.uchar)
+															kk.push_back(qq);
+													}
 												{
 													SizeUCharStruct qq;
 													qq.uchar = scaleValue;	
