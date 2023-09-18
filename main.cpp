@@ -469,6 +469,7 @@ int main(int argc, char *argv[])
 			TRUTH(ok);				
 		}		
 		auto& proms = activeA.underlyingsVarsOffset;
+		auto& slpp = activeA.underlyingSlicesParent;						
 		std::set<std::size_t> fuds;
 		if (ok)
 		{
@@ -491,21 +492,36 @@ int main(int argc, char *argv[])
 				bool first = true;
 				for (auto v : und)
 				{
+					bool found = true;
 					if (demoted)
+					{
+						found = false;
 						for (auto& pp : proms)
 						{
 							auto vd = activeA.varDemote(pp.second, v);
 							if (vd != v)
 							{
-								std::cout << (first ? "(" : ", ") << std::hex << vd;
+								v = vd;
+								found = true;
 								break;
 							}
+						}						
+					}
+					if (found)
+					{
+						std::size_t length = 1;
+						auto it = slpp.find(v);
+						while (it != slpp.end() && it->second)
+						{
+							it = slpp.find(it->second);
+							length++;
 						}
-					else
-						std::cout << (first ? "(" : ", ") << std::hex << v;
-					first = false;
+						std::cout << (first ? "(" : ", ") << std::hex << v << std::dec << " (" << length << ")";
+						first = false;						
+					}
+
 				}
-				std::cout << std::dec << ")" << endl;
+				std::cout << ")" << endl;
 				fud++;
 			}
 		
