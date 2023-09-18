@@ -449,11 +449,12 @@ int main(int argc, char *argv[])
 		}		
 	}
 		
-	if (argc >= 3 && string(argv[1]) == "view_underlying")
+	if (argc >= 3 && (string(argv[1]) == "view_underlying" || string(argv[1]) == "view_underlying_demoted"))
 	{
 		bool ok = true;
 		int stage = 0;
 		string model = string(argv[2]);
+		bool demoted = string(argv[1]) == "view_underlying_demoted";
 		
 		Active activeA;
 		activeA.logging = true;		
@@ -467,6 +468,7 @@ int main(int argc, char *argv[])
 			EVAL(stage);
 			TRUTH(ok);				
 		}		
+		auto& proms = activeA.underlyingsVarsOffset;
 		std::set<std::size_t> fuds;
 		if (ok)
 		{
@@ -489,7 +491,18 @@ int main(int argc, char *argv[])
 				bool first = true;
 				for (auto v : und)
 				{
-					std::cout << (first ? "(" : ", ") << std::hex << v;
+					if (demoted)
+						for (auto& pp : proms)
+						{
+							auto vd = activeA.varDemote(pp.second, v);
+							if (vd != v)
+							{
+								std::cout << (first ? "(" : ", ") << std::hex << vd;
+								break;
+							}
+						}
+					else
+						std::cout << (first ? "(" : ", ") << std::hex << v;
 					first = false;
 				}
 				std::cout << std::dec << ")" << endl;
