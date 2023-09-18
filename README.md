@@ -1547,6 +1547,7 @@ model081|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 80|13|balanced
 model082|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised level 2|14|balanced|48 B&W videos|3,000,000|12,107|0.807|9.3|2.3|19|0.4|0.0|3.2|2.74|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8
 model084|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced computed 32-valent|48 B&W videos|75,000,000|15,362|1.024|10.7|2.0|18|-0.5|0.5|-4.8|2.46|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at randomised records006
 model086|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 84|13|balanced computed 32-valent|48 B&W videos|75,000,000|341,235|0.910|13.9|2.4|23|-0.4|0.2|-3.9|2.49|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 256, omax 20, bmax 60, threshold 200
+model087|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised level 2|13|balanced computed 32-valent|48 B&W videos|3,000,000|5,139|0.857|9.6|2.4|17|0.0|-0.4|0.1|2.44|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60, threshold 500
 model088|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 87 level 2|13|balanced computed 32-valent|48 B&W videos|3,000,000|12,976|0.865|10.4|2.5|18|0.0|-0.4|0.2|2.49|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60, threshold 200
 
 The table above does not show the median and maximum *diagonals*. The median *diagonals* for the actor 2 and actor 3 *models* were consistently around 23-27, and the maximum *diagonals* were consistently around 37-39.
@@ -3612,6 +3613,7 @@ model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld 
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 model066|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised|9|balanced|48 B&W videos|500,000|1,822|0.7288|6.4|1.7|11|0.1|-0.5|0.6|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy
 model082|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised level 2|14|balanced|48 B&W videos|3,000,000|12,107|0.807|9.3|2.3|19|0.4|0.0|3.2|2.74|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8
+model087|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised level 2|13|balanced computed 32-valent|48 B&W videos|3,000,000|5,139|0.857|9.6|2.4|17|0.0|-0.4|0.1|2.44|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60, threshold 500
 model088|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 87 level 2|13|balanced computed 32-valent|48 B&W videos|3,000,000|12,976|0.865|10.4|2.5|18|0.0|-0.4|0.2|2.49|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60, threshold 200
 
 growth is slightly higher than for model 82
