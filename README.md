@@ -3626,6 +3626,54 @@ underlying is 16.2 cf 14.5 for model 82
 
 Now we wish to move to scanning modes. Contrary to earlier ideas about offline processsing, we can scan without having to have 25+1 model applications at each cell by tiling underlying, possibly with several offset tile sets, over the scan area and then do the higher level with these tile sets. Now the scan will require only 1-2 model applications per cell. We will also cover much larger scan areas. The downside is that we will be below maximal path lengths sometimes, but this should be less of a problem with the evident convolution (which implies a lot of duplicated model at small translations), although there are still disconinutities in the map. Also, offline record sets are unmanagably large, although randomising is an advantage at the substrate. We will handle the the additional load due to the higher scan multiple and the multi-scale by having asynchronous image capture from video in a actor004 which will be similar to actor003 and modeller001. Also, there is an advantage to centering when scanning to improve burstiness and ultimately we need it for the 3-level temporaral or saccade-sequence features of 3-level which will use slice topology. So we have random for 1-level, centered scanning search for 2-level, and topology search for 3-level. With scanning we are hoping to see long enough paths to see high-frequency features in the examples and similar features spread over only a few hotspots (we can test this by moving an image horizontally/vertically and by scaling), i.e. a sparsity of hotspots implying a degree of 'convolution' between hotspots.
 
+model 82 underlying length distribution -
+
+0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+1|16|12|8|5|3|1|2||||||||||||||||
+2|72|75|68|48|10|8|2|2|2|1||1|||1||||||||
+3|352|372|321|223|68|41|26|15|8|7|2|3|||||||||||
+4|1262|1305|1185|841|311|197|96|53|35|23|12|10|9|3|3||||||||
+5|2610|2847|2770|1947|701|423|245|123|82|49|29|23|13|4|5|3|||||||
+6|4208|4722|4674|3345|1331|764|424|261|139|79|42|42|31|15|2|2|1||||||
+7|4809|5803|6039|4455|1834|1047|574|352|175|118|73|45|22|14|7|2|1|1|||||
+8|5070|5899|6516|4757|2038|1247|671|354|219|124|86|55|24|12|10|1|2|1|||||
+9|4613|5005|5746|4410|1886|1221|626|383|179|116|62|46|27|9|9||3||||||
+10|3782|3972|4660|3489|1492|926|532|282|180|94|63|35|21|5|3|3|||||||
+11|2388|2449|3079|2500|1113|727|385|250|102|59|42|20|18|8|6|2|1|1|||||
+12|1442|1392|1817|1374|700|446|234|114|56|34|32|16|8|2|4|1|||||||
+13|839|751|906|724|374|235|119|62|30|15|13|8||1|1|2|||||||
+14|380|407|516|379|212|106|83|37|19|15|7|3|3||||||||||
+15|159|179|197|137|97|43|25|11|8|4|2|1|||||||||||
+16|66|66|67|45|17|10|7|3|3|1|||||||||||||
+17|18|15|19|15|7|10|3||||1||||||||||||
+18|7|9|5|2|1||||||||||||||||||
+
+model 88 underlying length distribution -
+
+0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+1|25|19|14|3|3|1|||||||||||||||||
+2|48|117|43|13|16|8|1|1|||||||||||||||
+3|78|493|257|130|88|51|14|1|1||||||||||||||
+4|483|1421|800|601|357|175|75|15|7|4|||||||||||||
+5|1077|2525|1830|1359|870|497|178|58|17|4|1|1|||||||||||
+6|1875|4000|3186|2601|1697|870|358|107|43|15|5|2|1||||||||||
+7|2769|5837|4821|4005|2817|1554|659|227|94|38|24|6|2||||||||||
+8|3149|6589|5727|4930|3388|2151|1005|347|143|69|27|6|3||||||||||
+9|3503|6865|5849|4952|3700|2326|1172|424|240|92|37|10|4|1|||||||||
+10|3198|5796|5193|4753|3612|2354|1303|524|261|110|40|13|8|2|1||||||||
+11|2824|4718|4544|4371|3329|2065|1203|509|263|119|39|14|5|1|||||||||
+12|2225|3614|3210|3242|2532|1566|877|375|213|77|36|10|3|2|||||||||
+13|1294|2290|2118|1990|1595|1040|533|247|132|51|19|14|6|1|||||||||
+14|541|1065|1018|1012|807|507|285|82|41|12|4|1|||||||||||
+15|195|468|407|370|292|162|96|34|10|5|2||||||||||||
+16|97|135|113|113|86|60|32|15|9|1|||||||||||||
+17|24|23|24|30|20|14|6|4|1||||||||||||||
+18|||||||||||||||||||||||
+
+The variance of the underlying lengths in model 88 is higher than 82. For example, at overlying path length of 10, there are more than twice as many underlying paths of length 7 (1303 versus 532).
+
 future developments - 
 
 The conclusion to this stage is that we are beginning to see features classified together with the compute resources so far, but we will need new substrates and structures to make further progress especially because proper classification requires dynamic gradients and ideally temporal agent manipulation to separate objects from background. For example ornaments sitting on shelves are not grouped together as bowls, vases, statuettes, etc regardless of the shelf. Multi-scale will be able to improve this for faces which appear frequently at different distances but objects infrequently seen in film noir would require embodied interactional experience - the sort of knowledge acquired by infants playing with toys.

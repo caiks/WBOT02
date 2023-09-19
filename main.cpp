@@ -531,6 +531,99 @@ int main(int argc, char *argv[])
 		}		
 	}
 	
+	if (argc >= 3 && (string(argv[1]) == "view_underlying_lengths" || string(argv[1]) == "view_underlying_lengths_demoted"))
+	{
+		bool ok = true;
+		int stage = 0;
+		string model = string(argv[2]);
+		bool demoted = string(argv[1]) == "view_underlying_lengths_demoted";
+		std::size_t level2 = argc >= 4 ? atoi(argv[3]) : 18;
+		std::size_t level1 = argc >= 5 ? atoi(argv[4]) : 23;
+
+		
+		Active activeA;
+		activeA.logging = true;		
+		if (ok) 
+		{
+			activeA.historySliceCachingIs = true;
+			ActiveIOParameters ppio;
+			ppio.filename = model +".ac";
+			ok = ok && activeA.load(ppio);
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);				
+		}		
+		auto& proms = activeA.underlyingsVarsOffset;
+		auto& slpp = activeA.underlyingSlicesParent;						
+		std::map<std::size_t,std::map<std::size_t,std::size_t>> lengths;
+		if (ok)
+		{
+			auto& dr = *activeA.decomp;	
+			std::size_t fud = 1;			
+			for (auto& fr : dr.fuds)
+			{
+				auto parent = fr.parent;
+				SizeSet und;
+				for (auto& tr : fr.fud)
+				{
+					auto n = tr->dimension;
+					auto vv = tr->vectorVar;
+					for (std::size_t i = 0; i < n; i++)
+						und.insert(vv[i]);
+				}		
+				for (auto& tr : fr.fud)
+					und.erase(tr->derived);
+				for (auto v : und)
+				{
+					bool found = true;
+					if (demoted)
+					{
+						found = false;
+						for (auto& pp : proms)
+						{
+							auto vd = activeA.varDemote(pp.second, v);
+							if (vd != v)
+							{
+								v = vd;
+								found = true;
+								break;
+							}
+						}						
+					}
+					if (found)
+					{
+						std::size_t length = 1;
+						auto it = slpp.find(v);
+						while (it != slpp.end() && it->second)
+						{
+							it = slpp.find(it->second);
+							length++;
+						}
+						lengths[activeA.historySlicesLength[parent]][length]++;
+					}
+
+				}
+			}
+			for (int j = 1; j <= level1; j++)
+				std::cout << "\t" << j;
+			std::cout << endl;
+			for (int i = 1; i <= level2; i++)
+			{
+				std::cout << i;
+				for (int j = 1; j <= level1; j++)
+				{
+					std::cout << "\t";
+					if (lengths[i][j])
+						std::cout << lengths[i][j];
+				}
+				std::cout << endl;
+			}
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);		
+		}		
+	}
+	
 	if (argc >= 3 && (string(argv[1]) == "view_sizes" || string(argv[1]) == "view_fractions"))
 	{
 		bool ok = true;
