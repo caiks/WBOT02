@@ -3607,6 +3607,8 @@ The paths are too short to see features
 
 model 82 has a lower multiplier but it still too high to obtain long paths
 
+shading of model 86 is much better than model 81
+
 TODO 2-level -
 
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
@@ -3673,6 +3675,10 @@ model 88 underlying length distribution -
 18|||||||||||||||||||||||
 
 The variance of the underlying lengths in model 88 is higher than 82. For example, at overlying path length of 10, there are more than twice as many underlying paths of length 7 (1303 versus 532).
+
+entropy limit is different in model 88 versus 82 because of 32-valency
+
+model 88 contour seems slightly better than model 82 - especially forehead and edge of face, but confused by reflection behind the shoulder. Would be interesting to see how a gradient model handles the reflection.
 
 future developments - 
 
