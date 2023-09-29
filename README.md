@@ -3680,6 +3680,8 @@ entropy limit is different in model 88 versus 82 because of 32-valency
 
 model 88 contour seems slightly better than model 82 - especially forehead and edge of face, but confused by reflection behind the shoulder. Would be interesting to see how a gradient model handles the reflection.
 
+Why does model 88 and 86 have the same multiplier but different median diagonals?
+
 future developments - 
 
 The conclusion to this stage is that we are beginning to see features classified together with the compute resources so far, but we will need new substrates and structures to make further progress especially because proper classification requires dynamic gradients and ideally temporal agent manipulation to separate objects from background. For example ornaments sitting on shelves are not grouped together as bowls, vases, statuettes, etc regardless of the shelf. Multi-scale will be able to improve this for faces which appear frequently at different distances but objects infrequently seen in film noir would require embodied interactional experience - the sort of knowledge acquired by infants playing with toys.
