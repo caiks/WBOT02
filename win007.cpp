@@ -342,21 +342,21 @@ Win007::Win007(const std::string& configA,
 		_events = std::make_shared<ActiveEventsRepa>(1);
 		_active = std::make_shared<Active>();
 		{
-			if (_struct=="struct002")
+			if (_struct=="struct002" || _struct=="struct005")
 			{
+				Active activeB;
 				{
-					Active activeA;
 					ActiveIOParameters ppio;
 					ppio.filename = _level1Model + ".ac";
-					activeA.logging = true;
-					if (!activeA.load(ppio))
+					activeB.logging = true;
+					if (!activeB.load(ppio))
 					{
-						LOG "actor\terror: failed to load level1 model " << ppio.filename UNLOG
+						LOG "actor\terror: failed to load level1 model" << ppio.filename UNLOG
 						_system.reset();
 						return;
 					}
-					_system->block = std::max(_system->block, activeA.varMax() >> activeA.bits);
-					_level1Decomp = activeA.decomp;					
+					_system->block = std::max(_system->block, activeB.varMax() >> activeB.bits);
+					_level1Decomp = activeB.decomp;					
 				}
 				for (std::size_t m = 0; m < _level2Size*_level2Size; m++)
 				{
@@ -367,6 +367,8 @@ Win007::Win007(const std::string& configA,
 					activeA.layerer_log = layerer_actor_log;
 					activeA.system = _system;
 					activeA.decomp = _level1Decomp;
+					activeA.induceVarComputeds = activeB.induceVarComputeds;
+					activeA.underlyingSlicesParent = activeB.underlyingSlicesParent;
 					activeA.historySize = _level1ActiveSize;
 					{
 						auto hr = sizesHistoryRepa(_scaleValency, _valency, _level1Size*_level1Size, activeA.historySize);
@@ -422,6 +424,10 @@ Win007::Win007(const std::string& configA,
 			}
 			else
 			{
+				if (_struct=="struct004")
+				{
+					_system->block = (_size * _size << 12 >> activeA.bits) + 1;				
+				}
 				activeA.var = activeA.system->next(activeA.bits);
 				activeA.varSlice = activeA.system->next(activeA.bits);
 				activeA.historySize = _activeSize;
@@ -431,13 +437,20 @@ Win007::Win007(const std::string& configA,
                     auto hr = sizesHistoryRepa(_scaleValency, _valency, _size*_size, activeA.historySize);
 					activeA.underlyingHistoryRepa.push_back(std::move(hr));
 				}	
-				if (_struct=="struct002")
+				if (_struct=="struct002" || _struct=="struct005")
 				{
 					for (std::size_t m = 0; m < _level1.size(); m++)
 					{
 						activeA.underlyingHistorySparse.push_back(std::make_shared<HistorySparseArray>(activeA.historySize,1));
 					}
-				}				
+				}
+				else if (_struct=="struct004")
+				{
+					for (std::size_t m = 0; m < _size*_size; m++)
+					{
+						activeA.induceVarComputeds.insert(m);
+					}
+				}			
 				{
 					auto hr = std::make_unique<HistorySparseArray>();
 					{
@@ -454,7 +467,7 @@ Win007::Win007(const std::string& configA,
 			activeA.logging = _activeLogging;
 			activeA.summary = _activeSummary;
 			activeA.underlyingEventsRepa.push_back(_events);
-			if (_struct=="struct002")
+			if (_struct=="struct002" || _struct=="struct005")
 			{
 				if (!_substrateInclude)
 				{
@@ -472,7 +485,7 @@ Win007::Win007(const std::string& configA,
 				}
 			}
 			activeA.eventsSparse = std::make_shared<ActiveEventsArray>(0);
-			if (_modelInitial.size() && _struct!="struct002")
+			if (_modelInitial.size() && _struct!="struct002" && _struct!="struct005"  && !_updateDisable)
 			{
 				if (!activeA.induce(_induceParameters))
 				{
@@ -486,7 +499,7 @@ Win007::Win007(const std::string& configA,
 			{
 				LOG activeA.name << "\tfuds cardinality: " << activeA.decomp->fuds.size() << "\tmodel cardinality: " << activeA.decomp->fudRepasSize << "\tactive size: " << sizeA << "\tfuds per threshold: " << (double)activeA.decomp->fuds.size() * activeA.induceThreshold / sizeA UNLOG				
 			}
-			if (_mode.size() && _struct!="struct002")
+			if (_mode.size() && _struct!="struct002" && _struct!="struct005" && !_updateDisable)
 				_threads.push_back(std::thread(run_induce, std::ref(*this), std::ref(activeA), std::ref(_induceParameters), _induceInterval));
 		}
 	}
@@ -1304,7 +1317,8 @@ void Win007::act()
 		{		
 			auto drmul = listVarValuesDecompFudSlicedRepasPathSlice_u;
 			auto cap = (unsigned char)(_updateParameters.mapCapacity);
-			bool isComputed = _struct == "struct004";
+			bool is2Level = _struct == "struct002" || _struct == "struct005";
+			bool isComputed = _struct == "struct004" || _struct == "struct005";
 			auto& activeA = *_active;
 			std::lock_guard<std::mutex> guard(activeA.mutex);
 			std::shared_ptr<HistoryRepa> hr1 = activeA.underlyingHistoryRepa.front();
@@ -1321,7 +1335,7 @@ void Win007::act()
 			auto& vi = dr.mapVarInt();
 			SizeUCharStructList jj;
 			jj.reserve(n + _level2Size*_level2Size*20);
-			if (_struct=="struct002")
+			if (is2Level)
 			{
 				auto& proms = activeA.underlyingsVarsOffset;
 				auto& dru = *_level1Decomp;	
@@ -1335,14 +1349,36 @@ void Win007::act()
 						auto rru = hru->arr;	
 						SizeUCharStructList kk;
 						kk.reserve(nu);
-						for (std::size_t i = 0; i < nu; i++)
+						if (isComputed)
 						{
-							SizeUCharStruct qq;
-							qq.uchar = rru[i];	
-							qq.size = vvu[i];
-							if (qq.uchar)
-								kk.push_back(qq);
-						}										
+							std::size_t s = _valency;
+							std::size_t b = 0; 
+							if (s)
+							{
+								s--;
+								while (s >> b)
+									b++;
+							}
+							for (std::size_t i = 0; i < nu-1; i++)
+							{
+								SizeUCharStruct qq;
+								qq.uchar = 1;	
+								for (int k = b; k > 0; k--)
+								{
+									qq.size = 65536 + (vvu[i] << 12) + (k << 8) + (rru[i] >> b-k);
+									jj.push_back(qq);
+								}
+							}											
+						}
+						else
+							for (std::size_t i = 0; i < nu-1; i++)
+							{
+								SizeUCharStruct qq;
+								qq.uchar = rru[i];	
+								qq.size = vvu[i];
+								if (qq.uchar)
+									kk.push_back(qq);
+							}										
 						auto ll = drmul(kk,dru,cap);	
 						if (ll && ll->size()) 
 							for (auto sliceA : *ll)
@@ -1356,7 +1392,7 @@ void Win007::act()
 								}
 					}				
 			}
-			if (_struct!="struct002" || _substrateInclude)	
+			if (!is2Level || _substrateInclude)	
 			{
 				if (isComputed)
 				{
