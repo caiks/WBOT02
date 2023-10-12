@@ -3361,7 +3361,7 @@ cd ~/WBOT02_ws
 ./WBOT02 rethreshold model078.json >>model078.log 2>&1
 
 ```
-For performance reasons, the `rethreshold` was run without the default induction parameters. The average *underlying* decreases to 8.1, but the path length increases to 10.3, so the average maximum coverage of the *substrate* increases to 130%. Note that the multiplier also increases from 2.99 to 3.24, because of the lower *alignments* due to the lower induction parameters and the smaller *slice sizes* at threshold. The growth is considerably less at 0.505 compared to 0.722 before the rethresholding. These are the contour map representations -
+For performance reasons, the `rethreshold` was run with the default induction parameters. The average *underlying* decreases to 8.1, but the path length increases to 10.3, so the average maximum coverage of the *substrate* increases to 130%. Note that the multiplier also increases from 2.99 to 3.24, because of the lower *alignments* due to the lower induction parameters and the smaller *slice sizes* at threshold. The growth is considerably less at 0.505 compared to 0.722 before the rethresholding. These are the contour map representations -
 
 ![contour004_078_minent_representation](images/contour004_078_minent_representation.png) 
 
@@ -3403,7 +3403,7 @@ Apart from a slightly lower multiplier, *model* 79 has very similar statistics t
 
 ![actor002_model079_Film_Noir_002](images/actor002_model079_Film_Noir_002.png) 
 
-Now, the *underlying* clusters are more spherical, suggesting that *model* 76 might not be as representative of arbitrary *events*. To be sure, we created a randomly shuffled copy of `records001` -
+Now, the *underlying* clusters are more spherical or vertical, suggesting that *model* 76 might not be as representative of arbitrary *events*. To be sure, we created a randomly shuffled copy of `records001` -
 
 ```
 cd ~/WBOT02_ws
@@ -3441,7 +3441,7 @@ Then we ran *model* 80 starting with the shuffled set, `records006` -
 
 ![actor002_model080_Film_Noir_002](images/actor002_model080_Film_Noir_002.png) 
 
-(Note that there is still a preference for edges, rather than centres, near the root. This is because the frames will tend to have lower entropies, and therefore the most likely regions of uniformity near the edges; therefore it is here that we find the most highly *aligned* neighbouring cells.)
+(Note that there is still a preference for edges, rather than centres, near the root. This is because the frames will tend to have lower entropies, and therefore the most likely regions of uniformity, near the edges - it is here that we find the most highly *aligned* neighbouring cells.)
 
 So we rethresholded again to produce the final *underlying model*, 81 -
 ```
@@ -3473,6 +3473,79 @@ This may be compared to the very different position map for *model* 61 -
 ![contour005_061_minent_position](images/contour005_061_minent_position.png) 
 
 That is, *model* 81 appears to be showing a degree of convolution that might mean that the upper *level* will be tolerant to small changes in centre.
+
+Before going on to investigate the *2-level* *models*, let us consider a *substrate* that consists of  computed *variables* instead of the familiar simple *multi-valent variables*. By a computed *variable* we mean a small *decomposition* per *variable* which consists of a binary tree of *slices*. Each of the paths of the *decomposition* resolves to a single *value*. All of the paths have the same length. Each *slice* represents a range of *values* that partition the *valency* into smaller and smaller contiguous components at each step along the *decomposition*. So at the first step along the *slice* path a *256-valent* *variable* will have two *slices* - one of the *values* less than or equal to 127 and the other of the *values* greater than 127. At the second there will be four *slices* with *value* ranges 0-63, 64-127, 128-191 and 192-255. The leaf *slices* represent a single *value*, so in this case there are 256 leaf *slices*. In total 511 *slices* are needed to represent one *256-valent* *variable* using this method. 
+
+We ran *models* 84 and 86 using *computed variables*. They are shown along with  *models* 80 and 81 for comparison below -
+
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model052|0.177|4 randomised|1|fixed|48 B&W videos|500,000|1,887|0.753|6.7|1.6|11|0.1|-0.6|0.7|3.08|30s unique, 12.0 min diagonal, 1.2 min entropy
+model080|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|75,000,000|10,768|0.718|8.4|2.3|15|-0.1|-0.6|-0.5|3.00|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at randomised records006
+model081|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 80|13|balanced|48 B&W videos|75,000,000|188,056|0.501|10.4|2.6|20|0.1|-0.4|0.5|3.23|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, threshold 200
+model084|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced computed 32-valent|48 B&W videos|75,000,000|15,362|1.024|10.7|2.0|18|-0.5|0.5|-4.8|2.46|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at randomised records006
+model086|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 84|13|balanced computed 32-valent|48 B&W videos|75,000,000|341,235|0.910|13.9|2.4|23|-0.4|0.2|-3.9|2.49|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 256, omax 20, bmax 60, threshold 200
+
+This is the configuration for *model* 84 -
+```
+{
+	"model" : "model084",
+	"structure" : "struct004",
+	"records_sources" : ["records006","records002","records003"],
+	"checkpointing" : true,
+	"checkpoint_interval" : 2500000,
+	"mode" : "mode013",
+	"valency" : 32,
+	"valency_balanced" : true,
+	"size" : 8,
+	"records_size" : 40,
+	"cumulative_active" : false,
+	"activeSize" : 75000000,
+	"induceThreadCount" : 1,
+	"induceParameters.asyncThreadMax" : 8,
+	"induceParameters.diagonalMin" : 12.0,
+	"induceThreshold" : 5000,
+	"induceParameters.induceThresholds" : [5000,10000,15000],
+	"induceParameters.asyncUpdateLimit" : 10000,
+	"induceParameters.xmax" : 1024,
+	"induceParameters.omax" : 20,
+	"induceParameters.bmax" : 60,
+	"induceParameters.znnmax" : 1310720000.0,
+	"scales" : [0.250, 0.210, 0.177, 0.149, 0.125, 0.105],
+	"event_maximum" : 75000000,
+	"logging_event" : true,
+	"logging_event_factor" : 100000,
+	"summary_active" : true
+}
+```
+There is a new structure (4) which sets the active to use computed *variables* for the *substrate*. The configuration is otherwise very similar to the configuration of *model* 80 except that here (a) the *valency* is 32 instead of the default 10, and (b) the `znnmax` induce parameter is set in order to restrict the very large number of *substrate slice variables*. (A *valency* of 32 implies a path length of 5, so there are potentially `5x8x8 = 320` *slices* for each *event*, i.e. up to `320 x 5000 = 1,600,000` *slice variables* in total.) Also the *model* is configured to run up to 8 induces simultaneously, `"induceParameters.asyncThreadMax" : 8`, to improve performance.
+
+TODO -
+
+compare 82 to 81
+
+Model 84 contour. Representation seems a little worse than model 80 for foreground better for background/surfaces. Position maps a little less detailed? Perhaps because of higher neg skew. Perhaps because of crown alignments with same variable, which we see sometimes, e.g. 18100, 18101. Less contrast in length maps - paths are longer around the face, so a more uniform model might explain why the facial detail is not so good. Need to rethreshold to see if helps. On the face of it, computed does not seem to be much better qualitatively although better quantitatively. Perhaps might produce higher alignments in 2-level model.
+
+`exp(ln(341235)/13.9361) = 2.49` (cf 2.46 for model 84) - so still very small and stable. The growth is 0.91 (cf growth of 1.024 for model 84) so very good too. Slightly more normal than model 84 but not much difference.
+
+The mean underlying has decreased to 13.3 (cf 15.1) because of the smaller xmax by 2 bits.
+
+median diagonal 24.9061 (cf 32.0944 for model 84), max diagonal 42.494, bucket for 12 diagonal is smaller than 13 which is smaller than 14, so after shuffle minimum.
+
+The rethrehold model 86 median diagonal at 24.9 is not much higher than the model 81 med diag at 21.0, but there are 80% more fuds so not quite comparable. The key thing is that the model 84 med diag is very high at 32.1.
+
+Computed variable versus simple variable. Computed picks up fine grained global alignments at the cost of detail compared to simple valent, although the high valency alignments partly come for free because they are generally much higher. We will need to focus on hotspots driven by higher levels to pick up more alignments in facial features because these are relatively weak. We have already seen that we need entropy restrictions to avoid the dull areas of the image. Our challenge is to use hints from biology to enhance the alignments that are interesting to humans, eg entropy, hotspots, gradients spatial and dynamic, central area limits or valency variations.
+
+Model 86. Browsing around it seems that we would like the model to be a good deal larger still, but we cannot use scanning for underlying. Perhaps we could scan in higher level and then have 25 separate underlying models which 'specialise' in a region.
+
+actor002_model080_Film_Noir_003 cf actor002_model084_Film_Noir_002 - we can see that model 84 has higher alignment in the first fud with 3 on-diagonal slices instead of 4 and fewer off-diagonal, which explains lower multipier. The underlyings seem to be in similar places - blobs around the edges (where the entropy would be slightly lower), and the slice representations of the first fud are similar too - dividing into general brightness levels. No doubt we have gained by using balanced valency to avoid 'duplicating' the model. Consider smaller underlying substrates, edge detection and fourier.
+
+The paths are too short to see features
+
+model 82 has a lower multiplier but it still too high to obtain long paths
+
+shading of model 86 is much better than model 81
+
 
 ###### 2-level models
 
@@ -3576,38 +3649,6 @@ and
 ![actor002_model082_Film_Noir_009](images/actor002_model082_Film_Noir_009.png) 
 
 The position map also shows that the *model* is now centered over the original image, rather than having 'shadows' (similar copies of *model* at approximately frame-size offsets). This is because global *alignments* are spread over the whole *substrate*.
-
-TODO underlying -
-
-model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model052|0.177|4 randomised|1|fixed|48 B&W videos|500,000|1,887|0.753|6.7|1.6|11|0.1|-0.6|0.7|3.08|30s unique, 12.0 min diagonal, 1.2 min entropy
-model080|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|75,000,000|10,768|0.718|8.4|2.3|15|-0.1|-0.6|-0.5|3.00|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at randomised records006
-model081|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 80|13|balanced|48 B&W videos|75,000,000|188,056|0.501|10.4|2.6|20|0.1|-0.4|0.5|3.23|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, threshold 200
-model084|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced computed 32-valent|48 B&W videos|75,000,000|15,362|1.024|10.7|2.0|18|-0.5|0.5|-4.8|2.46|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at randomised records006
-model086|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 84|13|balanced computed 32-valent|48 B&W videos|75,000,000|341,235|0.910|13.9|2.4|23|-0.4|0.2|-3.9|2.49|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 256, omax 20, bmax 60, threshold 200
-
-Model 84 contour. Representation seems a little worse than model 80 for foreground better for background/surfaces. Position maps a little less detailed? Perhaps because of higher neg skew. Perhaps because of crown alignments with same variable, which we see sometimes, e.g. 18100, 18101. Less contrast in length maps - paths are longer around the face, so a more uniform model might explain why the facial detail is not so good. Need to rethreshold to see if helps. On the face of it, computed does not seem to be much better qualitatively although better quantitatively. Perhaps might produce higher alignments in 2-level model.
-
-`exp(ln(341235)/13.9361) = 2.49` (cf 2.46 for model 84) - so still very small and stable. The growth is 0.91 (cf growth of 1.024 for model 84) so very good too. Slightly more normal than model 84 but not much difference.
-
-The mean underlying has decreased to 13.3 (cf 15.1) because of the smaller xmax by 2 bits.
-
-median diagonal 24.9061 (cf 32.0944 for model 84), max diagonal 42.494, bucket for 12 diagonal is smaller than 13 which is smaller than 14, so after shuffle minimum.
-
-The rethrehold model 86 median diagonal at 24.9 is not much higher than the model 81 med diag at 21.0, but there are 80% more fuds so not quite comparable. The key thing is that the model 84 med diag is very high at 32.1.
-
-Computed variable versus simple variable. Computed picks up fine grained global alignments at the cost of detail compared to simple valent, although the high valency alignments partly come for free because they are generally much higher. We will need to focus on hotspots driven by higher levels to pick up more alignments in facial features because these are relatively weak. We have already seen that we need entropy restrictions to avoid the dull areas of the image. Our challenge is to use hints from biology to enhance the alignments that are interesting to humans, eg entropy, hotspots, gradients spatial and dynamic, central area limits or valency variations.
-
-Model 86. Browsing around it seems that we would like the model to be a good deal larger still, but we cannot use scanning for underlying. Perhaps we could scan in higher level and then have 25 separate underlying models which 'specialise' in a region.
-
-actor002_model080_Film_Noir_003 cf actor002_model084_Film_Noir_002 - we can see that model 84 has higher alignment in the first fud with 3 on-diagonal slices instead of 4 and fewer off-diagonal, which explains lower multipier. The underlyings seem to be in similar places - blobs around the edges (where the entropy would be slightly lower), and the slice representations of the first fud are similar too - dividing into general brightness levels. No doubt we have gained by using balanced valency to avoid 'duplicating' the model. Consider smaller underlying substrates, edge detection and fourier.
-
-The paths are too short to see features
-
-model 82 has a lower multiplier but it still too high to obtain long paths
-
-shading of model 86 is much better than model 81
 
 TODO 2-level -
 
