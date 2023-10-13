@@ -3518,13 +3518,55 @@ This is the configuration for *model* 84 -
 	"summary_active" : true
 }
 ```
-There is a new structure (4) which sets the active to use computed *variables* for the *substrate*. The configuration is otherwise very similar to the configuration of *model* 80 except that here (a) the *valency* is 32 instead of the default 10, and (b) the `znnmax` induce parameter is set in order to restrict the very large number of *substrate slice variables*. (A *valency* of 32 implies a path length of 5, so there are potentially `5x8x8 = 320` *slices* for each *event*, i.e. up to `320 x 5000 = 1,600,000` *slice variables* in total.) Also the *model* is configured to run up to 8 induces simultaneously, `"induceParameters.asyncThreadMax" : 8`, to improve performance.
+There is a new structure (4) which sets the active to use computed *variables* for the *substrate*. The configuration is otherwise very similar to the configuration of *model* 80 except that here (a) the *valency* is 32 instead of the default 10, and (b) the `ZNNMAX` induce parameter is set in order to restrict the large number of *substrate slice variables*. (For a *valency* of 32 there are up to `63x8x8 = 4,032` *slice variables*.) Also the *model* is configured to run up to 8 induces simultaneously, `"induceParameters.asyncThreadMax" : 8`, to improve performance.
+
+We rethresholded in two stages to produce the final *underlying model*, 86 -
+```
+{
+	"model" : "model086",
+	"model_initial" : "model085",
+	"size" : 8,
+	"induceThreadCount" : 1,
+	"induceParameters.asyncThreadMax" : 8,
+	"induceParameters.diagonalMin" : 12.0,
+	"induceParameters.xmax" : 256,
+	"induceParameters.omax" : 20,
+	"induceParameters.bmax" : 60,
+	"induceParameters.znnmax" : 1310720000.0,
+	"induceThreshold" : 200
+}
+```
+Note that *model* 86 is not directly comparable to *model* 81 because the higher parameterisation was retained from *model* 84, so we would expect higher *diagonals* and a lower *multiplier*.
+
+Now let us consider the results for *model* 84. First, the multiplier of 2.46 is low for a non-scanning mode. It is much lower than the multiplier for *model* 80 at 3.00. The reason is due to the computed *slice* *valency* of 2 compared to the *substrate variable* *valency* of 10. We can see that in the high median *diagonal* of 32.1. If we view the *slice sizes* of the first 10 *fuds* we can see that *on-diagonal* *slices* are very much larger than the *off-diagonal* *slices* and that there are often only a few *off-diagonal* *slices* -
+
+```
+cd ~/WBOT02_ws
+./WBOT02 view_sizes model084c 5
+...
+0, 0, 1000000, 1000000, ok	410213		328101		235058		26628		0	
+1, 1, 328101, 328101, ok	183455		131145		2902		2780		2095		2026		1471		927		918		258		124		0	
+2, 1, 235058, 235058, ok	93740		73997		67318		3	
+3, 1, 410213, 410213, ok	232962		176686		517		48	
+4, 2, 183455, 183455, ok	95459		75290		2879		2238		1274		1222		1123		1112		1057		889		311		305		144		120		32	
+5, 2, 131145, 131145, ok	51863		41455		37827		0	
+6, 2, 176686, 176686, ok	68264		56925		51458		39	
+7, 2, 232962, 232962, ok	87351		83565		62038		8	
+8, 2, 73997, 73997, ok	43250		26564		788		698		665		606		545		437		235		124		50		35	
+9, 2, 67318, 67318, ok	36460		28098		587		485		454		415		246		239		96		88		67		46		37	
+...
+```
+The growth is also very good for a non-scanning mode - this is probably due to the small *off-diagonal slices*. The mean length is 10.7, much higher than for *model* 80 at 8.4. The negative hyperskew is much greater suggesting that un-interesting paths terminate quickly. The mean *underlying* has increased from 9.0 to 15.1, again because the tuples can hold more *variables* of smaller *valency*.
 
 TODO -
 
-compare 82 to 81
+The statistics are very good, but whether this translates into qualitative or as-underlying-model improvements we have yet to see.
+
+compare 84 to 80 and 86 to 81
 
 Model 84 contour. Representation seems a little worse than model 80 for foreground better for background/surfaces. Position maps a little less detailed? Perhaps because of higher neg skew. Perhaps because of crown alignments with same variable, which we see sometimes, e.g. 18100, 18101. Less contrast in length maps - paths are longer around the face, so a more uniform model might explain why the facial detail is not so good. Need to rethreshold to see if helps. On the face of it, computed does not seem to be much better qualitatively although better quantitatively. Perhaps might produce higher alignments in 2-level model.
+
+model 86 -
 
 `exp(ln(341235)/13.9361) = 2.49` (cf 2.46 for model 84) - so still very small and stable. The growth is 0.91 (cf growth of 1.024 for model 84) so very good too. Slightly more normal than model 84 but not much difference.
 
@@ -3541,8 +3583,6 @@ Model 86. Browsing around it seems that we would like the model to be a good dea
 actor002_model080_Film_Noir_003 cf actor002_model084_Film_Noir_002 - we can see that model 84 has higher alignment in the first fud with 3 on-diagonal slices instead of 4 and fewer off-diagonal, which explains lower multipier. The underlyings seem to be in similar places - blobs around the edges (where the entropy would be slightly lower), and the slice representations of the first fud are similar too - dividing into general brightness levels. No doubt we have gained by using balanced valency to avoid 'duplicating' the model. Consider smaller underlying substrates, edge detection and fourier.
 
 The paths are too short to see features
-
-model 82 has a lower multiplier but it still too high to obtain long paths
 
 shading of model 86 is much better than model 81
 
@@ -3666,6 +3706,8 @@ max diagonal 41.6165 med diagonal 19.9203, 75% 23.926 cf model 82 max 37.6907, m
 `exp(ln(12976)/10.3694) = 2.49` - like model 87 - still very good and better than model 82, although this may be because of higher parameters as well as computed underlying substrate. Less skewed but a little more kurtosis. Similar growth. Higher underlying because of xmax.
 
 underlying is 16.2 cf 14.5 for model 82
+
+model 82 has a lower multiplier but it still too high to obtain long paths
 
 Now we wish to move to scanning modes. Contrary to earlier ideas about offline processsing, we can scan without having to have 25+1 model applications at each cell by tiling underlying, possibly with several offset tile sets, over the scan area and then do the higher level with these tile sets. Now the scan will require only 1-2 model applications per cell. We will also cover much larger scan areas. The downside is that we will be below maximal path lengths sometimes, but this should be less of a problem with the evident convolution (which implies a lot of duplicated model at small translations), although there are still disconinutities in the map. Also, offline record sets are unmanagably large, although randomising is an advantage at the substrate. We will handle the the additional load due to the higher scan multiple and the multi-scale by having asynchronous image capture from video in a actor004 which will be similar to actor003 and modeller001. Also, there is an advantage to centering when scanning to improve burstiness and ultimately we need it for the 3-level temporaral or saccade-sequence features of 3-level which will use slice topology. So we have random for 1-level, centered scanning search for 2-level, and topology search for 3-level. With scanning we are hoping to see long enough paths to see high-frequency features in the examples and similar features spread over only a few hotspots (we can test this by moving an image horizontally/vertically and by scaling), i.e. a sparsity of hotspots implying a degree of 'convolution' between hotspots.
 
