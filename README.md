@@ -3585,6 +3585,67 @@ cd ~/WBOT02_ws
 ```
 The growth for *model* 84 is also very good for a non-scanning mode - this is probably due to the small *off-diagonal slices*. The mean length is 10.7, much higher than for *model* 80 at 8.4. The negative hyperskew is much greater suggesting that un-interesting paths terminate quickly. The mean *underlying* has increased from 9.0 to 15.1, again because the tuples can hold more *variables* of smaller *valency*.
 
+To get an idea of how the *model* *slices* up the *history* we restricted the path length using `"length_maximum" : 1`. We ran `actor002` with this actor.json -
+
+```
+{
+	"model_initial" : "model084c",
+	"structure" : "struct004",
+	"interval" : 250,
+	"x" : 870,
+	"width" : 560,
+	"valency" : 32,
+	"valency_balanced" : true,
+	"event_size" : 1,
+	"threads" : 6,
+	"scale" : 0.05,
+	"size" : 8,
+	"gui" : true,
+	"length_maximum" : 1,
+	"red_frame" : true,
+	"interactive" : true,
+	"interactive_examples" : false,
+	"interactive_entropies" : true,
+	"highlight_underlying" : false,
+	"multiplier" : 5,
+	"label_size" : 16,
+	"disable_update" : true,
+	"summary_active" : false,
+	"logging_action" : false
+}
+```
+![actor002_model084_Film_Noir_002](images/actor002_model084_Film_Noir_002.png) 
+
+We can see that there are 3 *on-diagonal slices* which divide the *events* into dark, bright and intermediate -
+
+```
+cd ~/WBOT02_ws
+./WBOT02 view_sizes model084c 5
+...
+0, 0, 1000000, 1000000, ok	410213		328101		235058		26628		0	
+...
+```
+
+We repeated for increasing path length -
+
+![actor002_model084_Film_Noir_002](images/actor002_model084_Film_Noir_003.png) 
+
+![actor002_model084_Film_Noir_002](images/actor002_model084_Film_Noir_004.png) 
+
+![actor002_model084_Film_Noir_002](images/actor002_model084_Film_Noir_005.png) 
+
+![actor002_model084_Film_Noir_002](images/actor002_model084_Film_Noir_006.png) 
+
+We can consider a particular *slice*, first for *model* 80 -
+
+![actor002_model080_Film_Noir_002](images/actor002_model080_Film_Noir_002.png) 
+
+and now for *model* 84 -
+
+![actor002_model084_Film_Noir_001](images/actor002_model084_Film_Noir_001.png) 
+
+The path length has increased from 8 to 11 and there are fewer siblings. The representation looks slightly better.
+
 TODO -
 
 The statistics are very good, but whether this translates into qualitative or as-underlying-model improvements we have yet to see.
