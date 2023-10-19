@@ -3340,6 +3340,12 @@ This is the configuration for *model* 76 -
 	"summary_active" : true
 }
 ```
+The `modeller001` was run as follows -
+```
+cd ~/WBOT02_ws
+./WBOT02 modeller001 model076.json >>model076.log 2>&1
+
+```
 *Model* 76 runs in mode 13. First, mode 13 takes the central subrecord of `40x40` cells, which have at least the minimum entropy of the records capture. Then this subrecord is divided up into 25 subrecord tiles of `8x8`, each of these forming an *event*. The maximum *events* is therefore set 25 times larger at 75m *events*. These are all in the active *size*, so at least 32GB is needed by *model* 76. The induce threshold is also set 25 times higher at 5,000. In addition there are some increased induction parameters - `"induceParameters.xmax" : 1024`, `"induceParameters.omax" : 20` and `"induceParameters.bmax" : 60`. 
 
 If we compare the statistics of `8x8` *model* 76 to `40x40` random centre *model* 52 we find that they are fairly similar, with *model* 76 having a slightly lower growth rate and multiplier. The mean number of *underlying variables* per *fud*, however, is higher at 8.9. This is due to the increased induction parameters. With an average path length of 8.5, the expected maximum number of *underlying variables* per path is over 75, i.e. 118% of the *substrate*. This may be compared to the 8% coverage of *model* 61. So the coverage of *model* 76 is more than sufficient. 
@@ -3474,7 +3480,9 @@ This may be compared to the very different position map for *model* 61 -
 
 That is, *model* 81 appears to be showing a degree of convolution that might mean that the upper *level* will be tolerant to small changes in centre.
 
-Before going on to investigate *2-level* *models*, let us consider a *substrate* that consists of  computed *variables* instead of straight-forward *multi-valent variables*. By a computed *variable* we mean a small *decomposition* per *variable* which consists of a binary tree of *slices*, each *slice* representing a range of *values*. Each of the paths of the *decomposition* resolves to a single *value*. All of the paths have the same length. At each step along the *decomposition* the *slices* partition the *valency* into smaller and smaller contiguous components. So at the first step along the *slice* path a *256-valent* *variable* will have two *slices* - one of the *values* less than or equal to 127, and the other of the *values* greater than 127. At the second there will be four *slices* with *value* ranges 0-63, 64-127, 128-191 and 192-255. At the last step the leaf *slices* represent a single *value*, so in this case there are 256 leaf *slices*. In total 511 *slices* are needed to represent one *256-valent* *variable* using this method. Although replacing a single *multi-valent variable* with many *bi-valent slices* is costly in terms of computation, it allows us to have larger *valencies* and therefore a much more fine-grained approach without needing very large induce thresholds. For example, to *model* two *substrate 32-valent variables* we would need at least a *slice* of `32^2 = 1,024` *events*. Even a *slice* of that *size* is likely to exclude many possible combinations of the two *values*. Furthermore, we would like large tuples in order to increase the coverage of the *substrate*, so in practive we are limited to a *valency* of around 10. Also, the *induction* does not necessarily *roll* contiguous *empty values* contiguously because *multi-valent variables* are not ordered. Computed *variables* both order and uniformly *classify* the *values*, making accessible *alignments* at the optimal level of granularity. Thus computed *variables* give us a much greater flexibility with respect to the definition of the *substrate*.
+###### Underlying models with computed substrate
+
+Before going on to investigate *2-level* *models*, let us consider a *substrate* that consists of  computed *variables* instead of straightforward *multi-valent variables*. By a computed *variable* we mean a small *decomposition* per *variable* which consists of a binary tree of *slices*, each *slice* representing a range of *values*. Each of the paths of the *decomposition* resolves to a single *value*. All of the paths have the same length. At each step along the *decomposition* the *slices* partition the *valency* into smaller and smaller contiguous components. So at the first step along the *slice* path a *256-valent* *variable* will have two *slices* - one of the *values* less than or equal to 127, and the other of the *values* greater than 127. At the second there will be four *slices* with *value* ranges 0-63, 64-127, 128-191 and 192-255. At the last step the leaf *slices* represent a single *value*, so in this case there are 256 leaf *slices*. In total 511 *slice variables* are needed to represent one *256-valent* *variable* using this method. Although replacing a single *multi-valent variable* with many *bi-valent slices* is costly in terms of computation, it allows us to have larger *valencies* and therefore a much more fine-grained approach without needing very large induce thresholds. For example, to *model* two *substrate 32-valent variables* we would need at least a *slice* of `32^2 = 1,024` *events*. Even a *slice* of that *size* is likely to exclude many possible combinations of the two *values*. Furthermore, we would like large tuples in order to increase the coverage of the *substrate*, so in practice we are limited to a *valency* of around 10. Also, the *induction* does not necessarily *roll* contiguous *empty values* contiguously because *multi-valent variables* are not ordered. Computed *variables* both order and uniformly *classify* the *values*, making *alignments* accessible at the optimal level of granularity. Thus computed *variables* give us a much greater flexibility with respect to the definition of the *substrate*.
 
 We ran *models* 84 and 86 using *computed variables*. They are shown along with  *models* 80 and 81 for comparison below -
 
@@ -3518,7 +3526,9 @@ This is the configuration for *model* 84 -
 	"summary_active" : true
 }
 ```
-There is a new structure (4) which sets the active to use computed *variables* for the *substrate*. The configuration is otherwise very similar to the configuration of *model* 80 except that here (a) the *valency* is 32 instead of the default 10, and (b) the `ZNNMAX` induce parameter is set in order to restrict the large number of *substrate slice variables*. (For a *valency* of 32 there are up to `63x8x8 = 4,032` *slice variables*.) Also the *model* is configured to run up to 8 induces simultaneously, `"induceParameters.asyncThreadMax" : 8`, to improve performance.
+There is a new structure (4) which sets the active to use computed *variables* for the *substrate*. The configuration is otherwise very similar to the configuration of *model* 80 except that here (a) the *valency* is 32 instead of the default 10, and (b) the `ZNNMAX` induce parameter is set in order to restrict the large number of *substrate slice variables*. (For a *valency* of 32 there are up to `63x8x8 = 4,032` *slice variables*.) Also the *model* is configured to run up to 8 induces simultaneously, `"induceParameters.asyncThreadMax" : 8`, to improve performance. 
+
+Note that, before settling on the exact values of the parameters, we experimented with them to strike a balance between performance and *model likelihood*. In general, larger parameter values generate higher *alignments* and longer *diagonals*. 
 
 We rethresholded in two stages to produce the final *underlying model*, 86 -
 ```
@@ -3536,7 +3546,7 @@ We rethresholded in two stages to produce the final *underlying model*, 86 -
 	"induceThreshold" : 200
 }
 ```
-Note that *model* 86 is not directly comparable to *model* 81 because the higher parameterisation was retained from *model* 84, so we would expect higher *diagonals* and a lower *multiplier*.
+Note that *model* 86 is not directly comparable to *model* 81 because the higher parameterisation was retained from *model* 84, with the exception of `XMAX` which was reduced to 256, so we would expect higher *diagonals* and a lower *multiplier*.
 
 Now let us consider the results for *model* 84. First, the multiplier of 2.46 is low for a non-scanning mode. It is much lower than the multiplier for *model* 80 at 3.00. The reason is due to the computed *slice* *valency* of 2 compared to the *substrate variable* *valency* of 10. We can see that in the high median *diagonal* of 32.1. If we view the *slice sizes* of the first 10 *fuds* we can see that *on-diagonal* *slices* are very much larger than the *off-diagonal* *slices* and that there are often only a few *off-diagonal* *slices* -
 
@@ -3556,7 +3566,24 @@ cd ~/WBOT02_ws
 9, 2, 67318, 67318, ok	36460		28098		587		485		454		415		246		239		96		88		67		46		37	
 ...
 ```
-The growth is also very good for a non-scanning mode - this is probably due to the small *off-diagonal slices*. The mean length is 10.7, much higher than for *model* 80 at 8.4. The negative hyperskew is much greater suggesting that un-interesting paths terminate quickly. The mean *underlying* has increased from 9.0 to 15.1, again because the tuples can hold more *variables* of smaller *valency*.
+By comparison the *diagonals* of *model* 80 are lower in the root *fuds* with a more gradual transition from *on-diagonal* *slices* to *off-diagonal* *slices* -
+```
+cd ~/WBOT02_ws
+./WBOT02 view_sizes model080c 5 >~/tmp/model080c_sizes.txt
+...
+0, 0, 1000000, 1000000, ok	265462		243357		230362		169926		17595		16661		15162		11643		9792		8724		4624		3117		1904		614		529		528	
+1, 1, 265462, 265462, ok	114217		78565		45305		20910		4810		1211		176		104		102		55		7	
+2, 1, 243357, 243357, ok	110885		98247		5725		3684		3603		3385		3305		3227		3151		2216		2183		1108		1075		572		515		476	
+3, 1, 230362, 230362, ok	90613		54164		48960		11558		10262		6331		2417		1690		1195		845		776		612		370		243		95		82		76		73	
+4, 1, 169926, 169926, ok	85015		76457		1238		1181		1069		1029		800		775		612		428		408		333		327		128		65		61	
+5, 2, 114217, 114217, ok	52570		48002		2778		2645		2388		1390		1153		1088		563		416		311		295		232		205		164		17	
+6, 2, 110885, 110885, ok	62570		47125		527		394		147		122	
+7, 2, 98247, 98247, ok	43742		37971		5766		2927		1915		1525		1113		975		796		443		368		245		196		166		52		47	
+8, 2, 90613, 90613, ok	42478		30779		7823		2273		1977		1932		1380		750		443		243		164		152		136		32		31		20	
+9, 2, 85015, 85015, ok	45552		37642		788		303		223		153		117		112		81		27		17	
+...
+```
+The growth for *model* 84 is also very good for a non-scanning mode - this is probably due to the small *off-diagonal slices*. The mean length is 10.7, much higher than for *model* 80 at 8.4. The negative hyperskew is much greater suggesting that un-interesting paths terminate quickly. The mean *underlying* has increased from 9.0 to 15.1, again because the tuples can hold more *variables* of smaller *valency*.
 
 TODO -
 
