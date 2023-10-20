@@ -3583,9 +3583,9 @@ cd ~/WBOT02_ws
 9, 2, 85015, 85015, ok	45552		37642		788		303		223		153		117		112		81		27		17	
 ...
 ```
-The growth for *model* 84 is also very good for a non-scanning mode - this is probably due to the small *off-diagonal slices*. The mean length is 10.7, much higher than for *model* 80 at 8.4. The negative hyperskew is much greater suggesting that un-interesting paths terminate quickly. The mean *underlying* has increased from 9.0 to 15.1, again because the tuples can hold more *variables* of smaller *valency*.
+The growth for *model* 84 is also very good for a non-scanning mode - this is probably due to the small *off-diagonal slices*. The mean length is 10.7, much higher than for *model* 80 at 8.4. The negative hyperskew is much greater suggesting that uninteresting paths terminate quickly. The mean *underlying* has increased from 9.0 to 15.1, again because the tuples can hold more *variables* of smaller *valency*.
 
-To get an idea of how the *model* *slices* up the *history* we restricted the path length using `"length_maximum" : 1`. We ran `actor002` with this actor.json -
+To get an idea of how the *decomposition* *slices* up the *history* we restricted the path length using `"length_maximum" : 1` in the `actor002` configuration, actor.json -
 
 ```
 {
@@ -3616,7 +3616,7 @@ To get an idea of how the *model* *slices* up the *history* we restricted the pa
 ```
 ![actor002_model084_Film_Noir_002](images/actor002_model084_Film_Noir_002.png) 
 
-We can see that there are 3 *on-diagonal slices* which divide the *events* into dark, bright and intermediate -
+We can see that there are 3 *on-diagonal slices* in the root *fud* which divide the *events* into dark, bright and intermediate -
 
 ```
 cd ~/WBOT02_ws
@@ -3634,9 +3634,13 @@ We repeated for increasing path length -
 
 ![actor002_model084_Film_Noir_002](images/actor002_model084_Film_Noir_005.png) 
 
+This is the full path -
+
 ![actor002_model084_Film_Noir_002](images/actor002_model084_Film_Noir_006.png) 
 
-We can consider a particular *slice*, first for *model* 80 -
+At each step there seems to be a clear distinction between the *on-diagonal* and *off-diagonal* *slices*. The final path uses only *on-diagonal* *slices*. The *classification* at each step seems natural. It is likely that a large enough *model* would eventually resolve the representations quite closely to the given frame.
+
+We can consider another *slice*, this time with examples, first for *model* 80 -
 
 ![actor002_model080_Film_Noir_002](images/actor002_model080_Film_Noir_002.png) 
 
@@ -3644,11 +3648,13 @@ and now for *model* 84 -
 
 ![actor002_model084_Film_Noir_001](images/actor002_model084_Film_Noir_001.png) 
 
-The path length has increased from 8 to 11 and there are fewer siblings. The representation looks slightly better.
+The path length has increased from 8 to 11 and there are fewer siblings. The representation looks slightly better, but is still quite a long way off from an exact representation even though all of the *slices* along the path are *on-diagonal*. The examples are very varied and many do not resemble the original frame. Note that the entropies are higher because of the higher *valency* (32 versus 10).
+
+The statistics are very good for *model* 84, but this only partly translates into qualitative improvements. 
+
+Let us consider the rethresholded  *model* 86. The statistics have remained much the same with high growth and a low multiplier. The mean path length is now 13.9, which is more than 3 steps longer than the mean path length for the corresponding non-computed *substrate* *model* 81.
 
 TODO -
-
-The statistics are very good, but whether this translates into qualitative or as-underlying-model improvements we have yet to see.
 
 compare 84 to 80 and 86 to 81
 
