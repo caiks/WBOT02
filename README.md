@@ -3550,7 +3550,7 @@ We rethresholded in two stages to produce the final *underlying model*, 86 -
 ```
 Note that *model* 86 is not directly comparable to *model* 81 because the higher parameterisation was retained from *model* 84, with the exception of `XMAX` which was reduced to 256, so we would expect higher *diagonals* and a lower *multiplier*.
 
-Now let us consider the results for *model* 84. First, the multiplier of 2.46 is low for a non-scanning mode. It is much lower than the multiplier for *model* 80 at 3.00. The reason is due to the computed *slice* *valency* of 2 compared to the *substrate variable* *valency* of 10. We can see that in the high median *diagonal* of 32.1. If we view the *slice sizes* of the first 10 *fuds* we can see that *on-diagonal* *slices* are very much larger than the *off-diagonal* *slices* and that there are often only a few *off-diagonal* *slices* -
+Now let us consider the results for *model* 84. First, the multiplier of 2.46 is low for a non-scanning mode. It is much lower than the multiplier for *model* 80 at 3.00. The reason is due to the computed *slice* *valency* of 2 compared to the *substrate variable* *valency* of 10. We can see that in the high median *diagonal* of 32.1 - considerably higher than the median *diagonal* of 23.6 for *model* 80. If we view the *slice sizes* of the first 10 *fuds* we can see that *on-diagonal* *slices* are very much larger than the *off-diagonal* *slices* and that there are often only a few *off-diagonal* *slices* -
 
 ```
 cd ~/WBOT02_ws
@@ -3585,7 +3585,35 @@ cd ~/WBOT02_ws
 9, 2, 85015, 85015, ok	45552		37642		788		303		223		153		117		112		81		27		17	
 ...
 ```
-The growth for *model* 84 is also very good for a non-scanning mode - this is probably due to the small *off-diagonal slices*. The mean length is 10.7, much higher than for *model* 80 at 8.4. The negative hyperskew is much greater suggesting that uninteresting paths terminate quickly. The mean *underlying* has increased from 9.0 to 15.1, again because the tuples can hold more *variables* of smaller *valency*.
+The growth for *model* 84 is also very good for a non-scanning mode - this is probably due to the small *off-diagonal slices*. The mean length is 10.7, much higher than for *model* 80 at 8.4. The negative hyperskew is much greater suggesting that uninteresting paths terminate quickly. The mean *underlying* has increased from 9.0 to 15.1, again because the tuples can hold more *variables* of smaller *valency*. We can view the *underlying* thus -
+```
+cd ~/WBOT02_ws
+./WBOT02 view_underlying model084c
+...
+1, 0, (10101, 11100, 12101, 18100, 18101, 19101, 1a100, 20101, 21101, 22101, 29101)
+2, 1, (10304, 11304, 18304, 19304, 1a304, 1b304, 21304, 22304, 29304, 70001)
+3, 1, (2e100, 2e101, 2f100, 2f101, 36100, 36101, 37100, 3e100, 3e101, 3f100, 46100, 46101, 47100, 47101, 4e100, 4e101, 4f101, 70000)
+4, 1, (10303, 11303, 12303, 18303, 19303, 1a303, 20303, 21303, 22303, 28303, 29303, 2a303, 70003)
+5, 2, (35202, 36202, 3d202, 3e202, 3f202, 45202, 46202, 47202, 4d202, 4e202, 70005)
+6, 2, (10408, 10409, 11408, 12408, 18409, 19408, 19409, 1a409, 20408, 21409, 22409, 29409, 7000f)
+7, 2, (10407, 11407, 18407, 19407, 1a407, 20407, 21406, 21407, 22406, 22407, 28406, 28407, 29407, 70017)
+8, 2, (34302, 35302, 36302, 3c302, 3d302, 3e302, 44302, 45302, 46302, 4c302, 4d302, 4e302, 70015)
+9, 2, (2e304, 2f304, 35304, 36304, 37304, 3e304, 3f304, 45304, 46304, 47304, 4e304, 70013)
+10, 2, (2e302, 2e303, 2f302, 2f303, 36303, 37303, 3e303, 3f303, 46303, 47303, 4e302, 4e303, 4f302, 4f303, 70012)
+...
+```
+The third digit shows the number of steps along the computed *variable's decomposition*. The last two hexadeceimal digits show the *value* at that granularity. The first two hexadeceimal digits show the position in the frame. Use the following map to work out where the *variables* are -
+```
+10	11	12	13	14	15	16	17
+18	19	1A	1B	1C	1D	1E	1F
+20	21	22	23	24	25	26	27
+28	29	2A	2B	2C	2D	2E	2F
+30	31	32	33	34	35	36	37
+38	39	3A	3B	3C	3D	3E	3F
+40	41	42	43	44	45	46	47
+48	49	4A	4B	4C	4D	4E	4F
+```
+The first *fud's underlyings* form a blob in the top left of the frame, for example. The *underlyings* for *model* 80 have similar blob-like shapes and positions generally in corners and edges (where the frame entropy would be slightly lower).
 
 To get an idea of how the *decomposition* *slices* up the *history* we restricted the path length using `"length_maximum" : 1` in the `actor002` configuration, actor.json -
 
@@ -3627,8 +3655,11 @@ cd ~/WBOT02_ws
 0, 0, 1000000, 1000000, ok	410213		328101		235058		26628		0	
 ...
 ```
+By contrast *model* 80 has four *on-diagonal slices* and many more siblings -
 
-We repeated for increasing path length -
+![actor002_model080_Film_Noir_003](images/actor002_model080_Film_Noir_003.png) 
+
+Here are the *model* 84 *slices* at increasing path lengths -
 
 ![actor002_model084_Film_Noir_002](images/actor002_model084_Film_Noir_003.png) 
 
@@ -3654,7 +3685,7 @@ The path length has increased from 8 to 11 and there are fewer siblings. The rep
 
 The statistics are very good for *model* 84, but this only partly translates into qualitative improvements. 
 
-Let us consider the rethresholded *model* 86. The statistics have remained much the same with high growth and a low multiplier. The mean path length is now 13.9, which is more than 3 steps longer than the mean path length for the corresponding non-computed *substrate* *model* 81. In fact, *model* 86 is the largest *model* that we have generated at 341,235 *fuds*, but because it is un-scanned and quite normal there are few hotspots and so the mean and maximum path lengths are moderate compared to some of the other *models*. We can see this if we examine the length contour map, which is very uniform -
+Let us consider the rethresholded *model* 86. The statistics have remained much the same with high growth and a low multiplier. The mean *underlying* has decreased to 13.3 from 15.1 because of the `XMAX` parameter decreased by 2 bits. The median *diagonal* has also decreased to 24.9, but it is still ahead of the median *diagonal* of 21.0 for *model* 81 even though it is a much larger *model*. The mean path length is now 13.9, which is more than 3 steps longer than the mean path length for the corresponding non-computed *substrate* *model* 81. In fact, *model* 86 is the largest *model* that we have generated at 341,235 *fuds*, but because it is un-scanned and quite normal there are few hotspots and so the mean and maximum path lengths are moderate compared to some of the other *models*. We can see this if we examine the length contour map, which is very uniform -
 
 ![contour005_086_minent_length](images/contour005_086_minent_length.png) 
 
@@ -3664,35 +3695,13 @@ If we compare the length contour map to that of *model* 81, [above](#contour005_
 
 ![contour005_086_minent_representation](images/contour005_086_minent_representation.png) 
 
-Perhaps some of the facial detail is not as good as for *model* 81, but backgrounds and shading are smoother at the higher *valency* and are better represented. Also note that while the whole `40x40` frame is balanced, the `8x8` frame is not itself balanced, which could explain the apparent jaggedness of the represnetions at their edges.
+Perhaps some of the facial detail is not as good as for *model* 81, but backgrounds and shading are smoother at the higher *valency* and are better represented. Also note that while the whole `40x40` frame is balanced, the `8x8` frame is not itself balanced, which could explain the apparent jaggedness of the representations at their edges.
 
 Looking at the *model* position map, we can see that, like *model* 81, *model* 86 also has a high degree of convolution, changing smoothly in large areas, with sudden changes the position at the boundaries of these areas -
 
 ![contour005_086_minent_position](images/contour005_086_minent_position.png)
 
 Overall, the computed *substrate* *model* 86 does not seem to be much better qualitatively than the non-computed *substrate* *model* 81, at least with respect to foreground objects, although it is certainly better quantitatively. Let us go on now to consider whether it might produce higher *alignments* in a *2-level model*.
-
-TODO -
-
-Re computed variables as we shall see, however, these *alignments* are not always in the most interesting foreground objects. 
-
-model 86 -
-
-`exp(ln(341235)/13.9361) = 2.49` (cf 2.46 for model 84) - so still very small and stable. The growth is 0.91 (cf growth of 1.024 for model 84) so very good too. Slightly more normal than model 84 but not much difference.
-
-The mean underlying has decreased to 13.3 (cf 15.1) because of the smaller xmax by 2 bits.
-
-median diagonal 24.9061 (cf 32.0944 for model 84), max diagonal 42.494, bucket for 12 diagonal is smaller than 13 which is smaller than 14, so after shuffle minimum.
-
-The rethrehold model 86 median diagonal at 24.9 is not much higher than the model 81 med diag at 21.0, but there are 80% more fuds so not quite comparable. The key thing is that the model 84 med diag is very high at 32.1.
-
-Computed variable versus simple variable. Computed picks up fine grained global alignments at the cost of detail compared to simple valent, although the high valency alignments partly come for free because they are generally much higher. We will need to focus on hotspots driven by higher levels to pick up more alignments in facial features because these are relatively weak. We have already seen that we need entropy restrictions to avoid the dull areas of the image. Our challenge is to use hints from biology to enhance the alignments that are interesting to humans, eg entropy, hotspots, gradients spatial and dynamic, central area limits or valency variations.
-
-Model 86. Browsing around it seems that we would like the model to be a good deal larger still, but we cannot use scanning for underlying. Perhaps we could scan in higher level and then have 25 separate underlying models which 'specialise' in a region.
-
-actor002_model080_Film_Noir_003 cf actor002_model084_Film_Noir_002 - we can see that model 84 has higher alignment in the first fud with 3 on-diagonal slices instead of 4 and fewer off-diagonal, which explains lower multipier. The underlyings seem to be in similar places - blobs around the edges (where the entropy would be slightly lower), and the slice representations of the first fud are similar too - dividing into general brightness levels. No doubt we have gained by using balanced valency to avoid 'duplicating' the model. Consider smaller underlying substrates, edge detection and fourier.
-
-The paths are too short to see features
 
 ###### 2-level models
 
@@ -3874,6 +3883,11 @@ Why does model 88 and 86 have the same multiplier but different median diagonals
 
 future developments - 
 
+
+We will need to focus on hotspots driven by higher levels to pick up more alignments in facial features because these are relatively weak. We have already seen that we need entropy restrictions to avoid the dull areas of the image. Our challenge is to use hints from biology to enhance the alignments that are interesting to humans, eg entropy, hotspots, gradients spatial and dynamic, central area limits or valency variations.
+ 
+Consider smaller underlying substrates, edge detection and fourier.
+ 
 The conclusion to this stage is that we are beginning to see features classified together with the compute resources so far, but we will need new substrates and structures to make further progress especially because proper classification requires dynamic gradients and ideally temporal agent manipulation to separate objects from background. For example ornaments sitting on shelves are not grouped together as bowls, vases, statuettes, etc regardless of the shelf. Multi-scale will be able to improve this for faces which appear frequently at different distances but objects infrequently seen in film noir would require embodied interactional experience - the sort of knowledge acquired by infants playing with toys.
 
 Offline modelling. Because we don't have a synchronous Qt layer over ffmpeg we will have to cache records. These files would be too large if we scan the whole screen so ultimately might be best to drill down into the video library and decode explicitly. That way we could scale the compute without the tyranny of timer callbacks. Very time consuming.
