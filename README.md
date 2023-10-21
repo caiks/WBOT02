@@ -3468,6 +3468,8 @@ The statistics of *model* 81 are, again, very similar to *model* 78. These are t
 
 They are, perhaps, slightly better. The path length maps show that the face is not being neglected, although the *model* is less developed around the eyes and lips -
 
+<a name="contour005_081_minent_length"></a>
+
 ![contour005_081_minent_length](images/contour005_081_minent_length.png) 
 
 Looking at the *model* position map, there is also some suggestion that *model* 81 changes smoothly in large areas, with sudden changes the position at the boundaries of these areas -
@@ -3648,17 +3650,29 @@ and now for *model* 84 -
 
 ![actor002_model084_Film_Noir_001](images/actor002_model084_Film_Noir_001.png) 
 
-The path length has increased from 8 to 11 and there are fewer siblings. The representation looks slightly better, but is still quite a long way off from an exact representation even though all of the *slices* along the path are *on-diagonal*. The examples are very varied and many do not resemble the original frame. Note that the entropies are higher because of the higher *valency* (32 versus 10).
+The path length has increased from 8 to 11 and there are fewer siblings. The representation looks slightly better, but is still quite a long way off from an exact representation even though all of the *slices* along the path are *on-diagonal*. The examples are very varied and many do not resemble the original frame. Note that the entropies are higher because of the higher *valency* (32 versus 10). This perhaps also gives the impression that the examples are more varied.
 
 The statistics are very good for *model* 84, but this only partly translates into qualitative improvements. 
 
-Let us consider the rethresholded  *model* 86. The statistics have remained much the same with high growth and a low multiplier. The mean path length is now 13.9, which is more than 3 steps longer than the mean path length for the corresponding non-computed *substrate* *model* 81.
+Let us consider the rethresholded *model* 86. The statistics have remained much the same with high growth and a low multiplier. The mean path length is now 13.9, which is more than 3 steps longer than the mean path length for the corresponding non-computed *substrate* *model* 81. In fact, *model* 86 is the largest *model* that we have generated at 341,235 *fuds*, but because it is un-scanned and quite normal there are few hotspots and so the mean and maximum path lengths are moderate compared to some of the other *models*. We can see this if we examine the length contour map, which is very uniform -
+
+![contour005_086_minent_length](images/contour005_086_minent_length.png) 
+
+If we compare the length contour map to that of *model* 81, [above](#contour005_081_minent_length), there seems to be more emphasis on background and shading. We can see this if we compare the representations themselves. These are the *model* 86 representations at the second smallest scale -
+
+![contour004_086_minent_representation](images/contour004_086_minent_representation.png) 
+
+![contour005_086_minent_representation](images/contour005_086_minent_representation.png) 
+
+Perhaps some of the facial detail is not as good as for *model* 81, but backgrounds and shading are smoother at the higher *valency* and are better represented. Also note that while the whole `40x40` frame is balanced, the `8x8` frame is not itself balanced, which could explain the apparent jaggedness of the represnetions at their edges.
+
+Looking at the *model* position map, we can see that, like *model* 81, *model* 86 also has a high degree of convolution, changing smoothly in large areas, with sudden changes the position at the boundaries of these areas -
+
+![contour005_086_minent_position](images/contour005_086_minent_position.png)
+
+Overall, the computed *substrate* *model* 86 does not seem to be much better qualitatively than the non-computed *substrate* *model* 81, at least with respect to foreground objects, although it is certainly better quantitatively. Let us go on now to consider whether it might produce higher *alignments* in a *2-level model*.
 
 TODO -
-
-compare 84 to 80 and 86 to 81
-
-Model 84 contour. Representation seems a little worse than model 80 for foreground better for background/surfaces. Position maps a little less detailed? Perhaps because of higher neg skew. Perhaps because of crown alignments with same variable, which we see sometimes, e.g. 18100, 18101. Less contrast in length maps - paths are longer around the face, so a more uniform model might explain why the facial detail is not so good. Need to rethreshold to see if helps. On the face of it, computed does not seem to be much better qualitatively although better quantitatively. Perhaps might produce higher alignments in 2-level model.
 
 Re computed variables as we shall see, however, these *alignments* are not always in the most interesting foreground objects. 
 
@@ -3679,9 +3693,6 @@ Model 86. Browsing around it seems that we would like the model to be a good dea
 actor002_model080_Film_Noir_003 cf actor002_model084_Film_Noir_002 - we can see that model 84 has higher alignment in the first fud with 3 on-diagonal slices instead of 4 and fewer off-diagonal, which explains lower multipier. The underlyings seem to be in similar places - blobs around the edges (where the entropy would be slightly lower), and the slice representations of the first fud are similar too - dividing into general brightness levels. No doubt we have gained by using balanced valency to avoid 'duplicating' the model. Consider smaller underlying substrates, edge detection and fourier.
 
 The paths are too short to see features
-
-shading of model 86 is much better than model 81
-
 
 ###### 2-level models
 
