@@ -1547,8 +1547,8 @@ model081|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 80|13|balanced
 model082|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised level 2|14|balanced|48 B&W videos|3,000,000|12,107|0.807|9.3|2.3|19|0.4|0.0|3.2|2.74|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8
 model084|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced computed 32-valent|48 B&W videos|75,000,000|15,362|1.024|10.7|2.0|18|-0.5|0.5|-4.8|2.46|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at randomised records006
 model086|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 84|13|balanced computed 32-valent|48 B&W videos|75,000,000|341,235|0.910|13.9|2.4|23|-0.4|0.2|-3.9|2.49|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 256, omax 20, bmax 60, threshold 200
-model087|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised level 2|13|balanced computed 32-valent|48 B&W videos|3,000,000|5,139|0.857|9.6|2.4|17|0.0|-0.4|0.1|2.44|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60, threshold 500
-model088|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 87 level 2|13|balanced computed 32-valent|48 B&W videos|3,000,000|12,976|0.865|10.4|2.5|18|0.0|-0.4|0.2|2.49|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60, threshold 200
+model087|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised level 2|14|balanced computed 32-valent|48 B&W videos|3,000,000|5,139|0.857|9.6|2.4|17|0.0|-0.4|0.1|2.44|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 512, omax 20, bmax 60, threshold 500
+model088|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 87 level 2|14|balanced computed 32-valent|48 B&W videos|3,000,000|12,976|0.865|10.4|2.5|18|0.0|-0.4|0.2|2.49|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60, threshold 200
 
 The table above does not show the median and maximum *diagonals*. The median *diagonals* for the actor 2 and actor 3 *models* were consistently around 23-27, and the maximum *diagonals* were consistently around 37-39.
 
@@ -3701,11 +3701,11 @@ Looking at the *model* position map, we can see that, like *model* 81, *model* 8
 
 ![contour005_086_minent_position](images/contour005_086_minent_position.png)
 
-Overall, the computed *substrate* *model* 86 does not seem to be much better qualitatively than the non-computed *substrate* *model* 81, at least with respect to foreground objects, although it is certainly better quantitatively. Let us go on now to consider whether it might produce higher *alignments* in a *2-level model*.
+Overall, the computed *substrate* *model* 86 does not seem to be much better qualitatively than the non-computed *substrate* *model* 81, at least with respect to foreground objects, although it is certainly better quantitatively. The main advantage is that it allows us to have *substrates* with ordered *variables* and high *valencies*. Let us go on now to consider whether it might also produce  higher *alignments* in a *2-level model*.
 
 ###### 2-level models
 
-For the first *2-level model* we continued with the offline process `modeller001`, which we used for random centre *1-level model* 73 (mode 12) and random centre *underlying level models* 76-81 (mode 13). Now we add mode 14 for the *2-level model* 82. For each *event*, mode 14 takes the central `40x40` frame from each `60x60` record in the record set (which is guaranteed to be higher than the minimum entropy requirement) and then divides it into `5x5` tiles of `8x8`. It then *applies* the *underlying model* to each tile. These *underlying slices* and their ancestor *slices* are reframed by the higher *level* active according to their positions. The *2-level model* is then *applied* to the resultant *substrate* for active update and induce.
+For the first *2-level model* we continued with the offline process `modeller001`, which we used for random centre *1-level model* 73 (mode 12) and random centre *underlying level models* 76-81 (mode 13). Now we add mode 14 for the *2-level models* 82 and 87. For each *event*, mode 14 takes the central `40x40` frame from each `60x60` record in the record set (which is guaranteed to be higher than the minimum entropy requirement for *10-valent*) and then divides it into `5x5` tiles of `8x8`. It then *applies* the *underlying model* to each tile. These *underlying slices* and their ancestor *slices* are reframed by the higher *level* active according to their positions. The *2-level model* is then *applied* to the resultant *substrate* for active update and induce.
 
 This is the configuration for *model* 82 -
 ```
@@ -3742,16 +3742,21 @@ cd /mnt/vol01/WBOT02_ws
 ```
 Note that the first record set, `records006`, has been shuffled.
 
-Here are the statistics for *model* 82 compared to *1-level model* 66 -
+Here are the statistics for *model* 82 compared to randomised *1-level model* 66 and scanned *model* 61 -
 
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 model066|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised|9|balanced|48 B&W videos|500,000|1,822|0.7288|6.4|1.7|11|0.1|-0.5|0.6|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy
+model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
 model082|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised level 2|14|balanced|48 B&W videos|3,000,000|12,107|0.807|9.3|2.3|19|0.4|0.0|3.2|2.74|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8
 
-We can see that the growth rate at  0.807 is quite good for a random frame *model* and the multiplier at 2.74 is also quite good, but the mean path length of 9.3 is still far less than we have obtained from potential, actual-potential and scanned *models*. We can see this if we look at a representation, which is fairly mediocre -
+We can see that the growth rate at  0.807 is quite good for a random frame *model* and the multiplier at 2.74 is also quite good, but the mean path length of 9.3 is still far less than we have obtained from potential, actual-potential and scanned *models*. We can see this if we look at a representation,
 
 ![contour004_082_scale3_minent_representation](images/contour004_082_scale3_minent_representation.png) 
+
+It is not much worse than scanned *model* 61, however, given that *model* 61 has an average path more than 4 steps longer at 14.6 -
+
+![contour004_061_minent_representation](images/contour004_061_minent_representation.png) 
 
 The average number of *underlying variables* per *fud* is much higher at 14.47 than for *model* 61 at 6.16. There are only 25 *underlying* actives so the coverage is very high at up to 58% per *fud*, although there may be more than one *variable* from an *underlying model*.
 
@@ -3812,8 +3817,8 @@ model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld 
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 model066|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised|9|balanced|48 B&W videos|500,000|1,822|0.7288|6.4|1.7|11|0.1|-0.5|0.6|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy
 model082|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised level 2|14|balanced|48 B&W videos|3,000,000|12,107|0.807|9.3|2.3|19|0.4|0.0|3.2|2.74|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8
-model087|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised level 2|13|balanced computed 32-valent|48 B&W videos|3,000,000|5,139|0.857|9.6|2.4|17|0.0|-0.4|0.1|2.44|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60, threshold 500
-model088|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 87 level 2|13|balanced computed 32-valent|48 B&W videos|3,000,000|12,976|0.865|10.4|2.5|18|0.0|-0.4|0.2|2.49|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60, threshold 200
+model087|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised level 2|14|balanced computed 32-valent|48 B&W videos|3,000,000|5,139|0.857|9.6|2.4|17|0.0|-0.4|0.1|2.44|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 512, omax 20, bmax 60, threshold 500
+model088|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 87 level 2|14|balanced computed 32-valent|48 B&W videos|3,000,000|12,976|0.865|10.4|2.5|18|0.0|-0.4|0.2|2.49|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60, threshold 200
 
 growth is slightly higher than for model 82
 
@@ -3874,6 +3879,8 @@ model 88 underlying length distribution -
 18|||||||||||||||||||||||
 
 The variance of the underlying lengths in model 88 is higher than 82. For example, at overlying path length of 10, there are more than twice as many underlying paths of length 7 (1303 versus 532).
+
+Why are there so many underlying from the same level1 decomp in models 82 and 88? Are these crown alignments? There are only 15 unique underlying models of 26 underlying variables in the last fud of model 88. Could be ancestors if have different entropies, but not likely given shuffle. Probably just ORing different underlying slices.
 
 entropy limit is different in model 88 versus 82 because of 32-valency
 
