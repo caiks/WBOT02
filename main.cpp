@@ -618,6 +618,23 @@ int main(int argc, char *argv[])
 				}
 				std::cout << endl;
 			}
+			std::map<std::size_t,std::size_t> counts;
+			std::map<std::size_t,std::size_t> sums;
+			for (auto& pp : lengths)
+				for (auto& qq : pp.second)
+				{
+					counts[pp.first] += qq.second;
+					sums[pp.first] += qq.second * qq.first;
+				}
+			std::cout << endl;
+			for (int i = 1; i <= level2; i++)
+				std::cout << "\t" << i;
+			std::cout << endl;
+			for (int i = 1; i <= level2; i++)
+			{
+				std::cout << "\t" << std::setprecision(3) << (double)sums[i]/counts[i];
+			}
+			std::cout << endl;
 			stage++;
 			EVAL(stage);
 			TRUTH(ok);		
