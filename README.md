@@ -3705,9 +3705,9 @@ Overall, the computed *substrate* *model* 86 does not seem to be much better qua
 
 ###### 2-level models
 
-For the first *2-level model* we continued with the offline process `modeller001`, which we used for random centre *1-level model* 73 (mode 12) and random centre *underlying level models* 76-81 (mode 13). Now we add mode 14 for the *2-level models* 82 and 87. For each *event*, mode 14 takes the central `40x40` frame from each `60x60` record in the record set (which is guaranteed to be higher than the minimum entropy requirement for *10-valent*) and then divides it into `5x5` tiles of `8x8`. It then *applies* the *underlying model* to each tile. These *underlying slices* and their ancestor *slices* are reframed by the higher *level* active according to their positions. The *2-level model* is then *applied* to the resultant *substrate* for active update and induce.
+For the first *2-level model* we continued with the offline process `modeller001`, which we used for random centre *1-level model* 73 (mode 12) and random centre *underlying level models* 76-81 (mode 13). Now we add mode 14 for the *2-level models* 82 and 87. For each *event*, mode 14 takes the central `40x40` frame from each `60x60` record in the record set (which is guaranteed to be higher than the minimum entropy requirement for *10-valent*) and then divides it into `5x5` tiles of `8x8`. It then *applies* the *underlying model* to each tile. These *underlying slices* and their ancestor *slices* are reframed by the higher *level* active according to their positions. The *2-level model* is then *applied* to the resultant intermediate *substrate* for active update and induce.
 
-This is the configuration for *model* 82 -
+This is the configuration for *model* 82 which takes *model* 81 as its *1-level underlying* -
 ```
 {
 	"structure" : "struct002",
@@ -3747,10 +3747,10 @@ Here are the statistics for *model* 82 compared to randomised *1-level model* 66
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 model066|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised|9|balanced|48 B&W videos|500,000|1,822|0.7288|6.4|1.7|11|0.1|-0.5|0.6|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy
-model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
 model082|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised level 2|14|balanced|48 B&W videos|3,000,000|12,107|0.807|9.3|2.3|19|0.4|0.0|3.2|2.74|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8
+model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
 
-We can see that the growth rate at  0.807 is quite good for a random frame *model* and the multiplier at 2.74 is also quite good, but the mean path length of 9.3 is still far less than we have obtained from potential, actual-potential and scanned *models*. We can see this if we look at a representation,
+Qualitatively, *model* 82 is between *model* 66 and 61 except for skew. We can see that the growth rate at 0.807 is quite good for a random frame *model*, although note that there was no overflow whereas *model* 61 was in overflow. The multiplier at 2.74 is also quite good, but the mean path length of 9.3 is still far less than we have obtained from potential, actual-potential and scanned *models*. We can see this if we look at a representation,
 
 ![contour004_082_scale3_minent_representation](images/contour004_082_scale3_minent_representation.png) 
 
@@ -3776,8 +3776,46 @@ cd ~/WBOT02_ws
 12106, 9, (5172b7, 520038, 5200aa, 540038, 5400aa, 5900aa, 5e00aa, 6300aa, 6500aa, 6a00aa, 6a0167, 6e00aa, 7500aa, 82077b, 85c755, 922faa)
 12107, 5, (510362, 520008, 520017, 520057, 520dd3, 523e5b, 540057, 63a8a5, 650008, 650050, 6a0008, 7f00cc, 850008, 1419029, 235a13b, 2c77c30, 2d40f15)
 ```
+The different actives can be distinguished by the block number (i.e. a left shift of 16 bits) of the *reframed underlying slices*. The *underlying slices* themselves are modulo the block. The cases where there are *underlying variables* from the same *underlying slice* path are quite common, in spite of being shuffled together, so perhaps we should consider larger induce thresholds. 
 
-The different actives can be distinguished by the block number (i.e. a left shift of 16 bits) of the *reframed underlying slices*. The *underlying slices* themselves are modulo the block. We can see that most of the *underlying variables* are in separate actives as would be expected. Near the *2-level* root the *underlying variables* tend to be small and therefore near their *1-level* root. The *2-level* leaf *fuds* tend to have *underlying variables* further along their *slice* paths. The cases where there are *underlying variables* from the same *underlying slice* path are quite common, in spite of being shuffled together, so perhaps we should consider larger induce thresholds.
+We can see that most of the *underlying variables* are in separate actives as would be expected. Near the *2-level* root the *underlying variables* tend to be small and therefore they are also near their *1-level* root. The *2-level* leaf *fuds* tend to have *underlying variables* further along their *slice* paths. We can view the distribution of the *model* 82 *underlying* path lengths -
+
+```
+cd ~/WBOT02_ws
+./WBOT02 view_underlying_lengths_demoted model082c >~/tmp/model082c_underlying_lengths_demoted.txt 
+
+```
+
+0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+1|16|12|8|5|3|1|2||||||||||||||||
+2|72|75|68|48|10|8|2|2|2|1||1|||1||||||||
+3|352|372|321|223|68|41|26|15|8|7|2|3|||||||||||
+4|1262|1305|1185|841|311|197|96|53|35|23|12|10|9|3|3||||||||
+5|2610|2847|2770|1947|701|423|245|123|82|49|29|23|13|4|5|3|||||||
+6|4208|4722|4674|3345|1331|764|424|261|139|79|42|42|31|15|2|2|1||||||
+7|4809|5803|6039|4455|1834|1047|574|352|175|118|73|45|22|14|7|2|1|1|||||
+8|5070|5899|6516|4757|2038|1247|671|354|219|124|86|55|24|12|10|1|2|1|||||
+9|4613|5005|5746|4410|1886|1221|626|383|179|116|62|46|27|9|9||3||||||
+10|3782|3972|4660|3489|1492|926|532|282|180|94|63|35|21|5|3|3|||||||
+11|2388|2449|3079|2500|1113|727|385|250|102|59|42|20|18|8|6|2|1|1|||||
+12|1442|1392|1817|1374|700|446|234|114|56|34|32|16|8|2|4|1|||||||
+13|839|751|906|724|374|235|119|62|30|15|13|8||1|1|2|||||||
+14|380|407|516|379|212|106|83|37|19|15|7|3|3||||||||||
+15|159|179|197|137|97|43|25|11|8|4|2|1|||||||||||
+16|66|66|67|45|17|10|7|3|3|1|||||||||||||
+17|18|15|19|15|7|10|3||||1||||||||||||
+18|7|9|5|2|1||||||||||||||||||
+
+The rows show the *slice* path length of the *overlying decomposition*. The columns show the path length of the *underlying decompositions*. The counts show the distribution of *underlying variables* over for each *overlying* and *underlying* length. We can see that the mode of the *underlying* path length does not vary very much with *overlying* path length, but remains fairly constant at 3 steps only. 
+
+This shows the mean *underlying* *slice* path length for each of the *overlying* path lengths -
+
+1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18
+--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--
+2.53|2.76|2.81|2.92|2.97|3.04|3.13|3.18|3.22|3.21|3.34|3.32|3.26|3.37|3.25|2.93|3.32|2.21
+
+The mean *underlying* path length tends to increase with increasing *overlying* path length. The maximum also varies with *overlying* path length if one adjusts for the normal distribution of the path lengths. This suggests that greater and greater detail is required as the *slices* become more specialised. In fact, the longest *underlying* path length is 18 only one less than the maximum path length for the whole *underlying model* (81). The low mean and mode suggests that general brightness is all that is interesting in most cases, i.e. the strongest *alignments* are of global changes on brightness.
 
 The median *diagonal* at 18.3 is much less than that for *model* 66 at 26.0, which also suggests that a larger threshold might be considered. However, we can expect higher *level* *alignments* to be somewhat lower than for lower *level models* because the *alignments* are global rather than local.
 
@@ -3832,29 +3870,6 @@ model 82 has a lower multiplier but it still too high to obtain long paths
 
 Now we wish to move to scanning modes. Contrary to earlier ideas about offline processsing, we can scan without having to have 25+1 model applications at each cell by tiling underlying, possibly with several offset tile sets, over the scan area and then do the higher level with these tile sets. Now the scan will require only 1-2 model applications per cell. We will also cover much larger scan areas. The downside is that we will be below maximal path lengths sometimes, but this should be less of a problem with the evident convolution (which implies a lot of duplicated model at small translations), although there are still disconinutities in the map. Also, offline record sets are unmanagably large, although randomising is an advantage at the substrate. We will handle the the additional load due to the higher scan multiple and the multi-scale by having asynchronous image capture from video in a actor004 which will be similar to actor003 and modeller001. Also, there is an advantage to centering when scanning to improve burstiness and ultimately we need it for the 3-level temporaral or saccade-sequence features of 3-level which will use slice topology. So we have random for 1-level, centered scanning search for 2-level, and topology search for 3-level. With scanning we are hoping to see long enough paths to see high-frequency features in the examples and similar features spread over only a few hotspots (we can test this by moving an image horizontally/vertically and by scaling), i.e. a sparsity of hotspots implying a degree of 'convolution' between hotspots.
 
-model 82 underlying length distribution -
-
-0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-1|16|12|8|5|3|1|2||||||||||||||||
-2|72|75|68|48|10|8|2|2|2|1||1|||1||||||||
-3|352|372|321|223|68|41|26|15|8|7|2|3|||||||||||
-4|1262|1305|1185|841|311|197|96|53|35|23|12|10|9|3|3||||||||
-5|2610|2847|2770|1947|701|423|245|123|82|49|29|23|13|4|5|3|||||||
-6|4208|4722|4674|3345|1331|764|424|261|139|79|42|42|31|15|2|2|1||||||
-7|4809|5803|6039|4455|1834|1047|574|352|175|118|73|45|22|14|7|2|1|1|||||
-8|5070|5899|6516|4757|2038|1247|671|354|219|124|86|55|24|12|10|1|2|1|||||
-9|4613|5005|5746|4410|1886|1221|626|383|179|116|62|46|27|9|9||3||||||
-10|3782|3972|4660|3489|1492|926|532|282|180|94|63|35|21|5|3|3|||||||
-11|2388|2449|3079|2500|1113|727|385|250|102|59|42|20|18|8|6|2|1|1|||||
-12|1442|1392|1817|1374|700|446|234|114|56|34|32|16|8|2|4|1|||||||
-13|839|751|906|724|374|235|119|62|30|15|13|8||1|1|2|||||||
-14|380|407|516|379|212|106|83|37|19|15|7|3|3||||||||||
-15|159|179|197|137|97|43|25|11|8|4|2|1|||||||||||
-16|66|66|67|45|17|10|7|3|3|1|||||||||||||
-17|18|15|19|15|7|10|3||||1||||||||||||
-18|7|9|5|2|1||||||||||||||||||
-
 model 88 underlying length distribution -
 
 0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23
@@ -3876,7 +3891,12 @@ model 88 underlying length distribution -
 15|195|468|407|370|292|162|96|34|10|5|2||||||||||||
 16|97|135|113|113|86|60|32|15|9|1|||||||||||||
 17|24|23|24|30|20|14|6|4|1||||||||||||||
-18|||||||||||||||||||||||
+
+model 88 underlying length means -
+
+|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17
+--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--
+|2.12|2.45|2.89|2.97|3.13|3.22|3.34|3.46|3.51|3.65|3.71|3.7|3.73|3.73|3.61|3.61|3.62
 
 The variance of the underlying lengths in model 88 is higher than 82. For example, at overlying path length of 10, there are more than twice as many underlying paths of length 7 (1303 versus 532).
 
