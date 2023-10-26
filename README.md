@@ -3482,6 +3482,8 @@ This may be compared to the very different position map for *model* 61 -
 
 That is, *model* 81 appears to be showing a degree of convolution that might mean that the upper *level* will be tolerant to small changes in centre.
 
+<a name="computed_substrate"></a>
+
 ###### Underlying models with computed substrate
 
 Before going on to investigate *2-level* *models*, let us consider a *substrate* that consists of  computed *variables* instead of straightforward *multi-valent variables*. By a computed *variable* we mean a small *decomposition* per *variable* which consists of a binary tree of *slices*, each *slice* representing a range of *values*. Each of the paths of the *decomposition* resolves to a single *value*. All of the paths have the same length. At each step along the *decomposition* the *slices* partition the *valency* into smaller and smaller contiguous components. So at the first step along the *slice* path a *256-valent* *variable* will have two *slices* - one of the *values* less than or equal to 127, and the other of the *values* greater than 127. At the second there will be four *slices* with *value* ranges 0-63, 64-127, 128-191 and 192-255. At the last step the leaf *slices* represent a single *value*, so in this case there are 256 leaf *slices*. In total 511 *slice variables* are needed to represent one *256-valent* *variable* using this method. Although replacing a single *multi-valent variable* with many *bi-valent slices* is costly in terms of computation, it allows us to have larger *valencies* and therefore a much more fine-grained approach without needing very large induce thresholds. For example, to *model* two *substrate 32-valent variables* we would need at least a *slice* of `32^2 = 1,024` *events*. Even a *slice* of that *size* is likely to exclude many possible combinations of the two *values*. Furthermore, we would like large tuples in order to increase the coverage of the *substrate*, so in practice we are limited to a *valency* of around 10. Also, the *induction* does not necessarily *roll* contiguous *empty values* contiguously because *multi-valent variables* are not ordered. Computed *variables* both order and uniformly *classify* the *values*, making *alignments* accessible at the optimal level of granularity. Thus computed *variables* give us a much greater flexibility with respect to the definition of the *substrate*.
@@ -3742,7 +3744,7 @@ cd /mnt/vol01/WBOT02_ws
 ```
 Note that the first record set, `records006`, has been shuffled.
 
-Here are the statistics for *model* 82 compared to randomised *1-level model* 66 and scanned *model* 61 -
+Here are the statistics for *model* 82 compared to randomised *1-level model* 66 and scanned *1-level model* 61 -
 
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -3758,7 +3760,7 @@ It is not much worse than scanned *model* 61, however, given that *model* 61 has
 
 ![contour004_061_minent_representation](images/contour004_061_minent_representation.png) 
 
-The average number of *underlying variables* per *fud* is much higher at 14.47 than for *model* 61 at 6.16. There are only 25 *underlying* actives so the coverage is very high at up to 58% per *fud*, although there may be more than one *variable* from an *underlying model*.
+The average number of *underlying variables* per *fud* is much higher at 14.47 than for *model* 61 at 6.16 because *slices* are *bivalent*. There are only 25 *underlying* actives so the coverage is very high at up to 58% per *fud*, although there may be more than one *variable* from an *underlying model*.
 
 We can examine the *underlying variables* as follows -
 
@@ -3776,7 +3778,7 @@ cd ~/WBOT02_ws
 12106, 9, (5172b7, 520038, 5200aa, 540038, 5400aa, 5900aa, 5e00aa, 6300aa, 6500aa, 6a00aa, 6a0167, 6e00aa, 7500aa, 82077b, 85c755, 922faa)
 12107, 5, (510362, 520008, 520017, 520057, 520dd3, 523e5b, 540057, 63a8a5, 650008, 650050, 6a0008, 7f00cc, 850008, 1419029, 235a13b, 2c77c30, 2d40f15)
 ```
-The different actives can be distinguished by the block number (i.e. a left shift of 16 bits) of the *reframed underlying slices*. The *underlying slices* themselves are modulo the block. The cases where there are *underlying variables* from the same *underlying slice* path are quite common, in spite of being shuffled together, so perhaps we should consider larger induce thresholds. 
+The different actives can be distinguished by the block number (i.e. a left shift of 16 bits) of the *reframed underlying slices*. The *underlying slices* themselves are modulo the block. The cases where there are *underlying variables* from the same *underlying slice* path are quite common, in spite of being shuffled together, so perhaps we should consider larger induce thresholds in case these are not *crown alignments*, i.e. not ancestor *slices*. 
 
 We can see that most of the *underlying variables* are in separate actives as would be expected. Near the *2-level* root the *underlying variables* tend to be small and therefore they are also near their *1-level* root. The *2-level* leaf *fuds* tend to have *underlying variables* further along their *slice* paths. We can view the distribution of the *model* 82 *underlying* path lengths -
 
@@ -3807,7 +3809,7 @@ cd ~/WBOT02_ws
 17|18|15|19|15|7|10|3||||1||||||||||||
 18|7|9|5|2|1||||||||||||||||||
 
-The rows show the *slice* path length of the *overlying decomposition*. The columns show the path length of the *underlying decompositions*. The counts show the distribution of *underlying variables* over for each *overlying* and *underlying* length. We can see that the mode of the *underlying* path length does not vary very much with *overlying* path length, but remains fairly constant at 3 steps only. 
+The rows show the *slice* path lengths of the *overlying decomposition*. The columns show the path lengths of the *underlying decompositions*. The counts show the distribution of *underlying variables* over each *overlying* and *underlying* length. We can see that the mode of the *underlying* path length does not vary very much with *overlying* path length, but remains fairly constant at 3 steps only. 
 
 This shows the mean *underlying* *slice* path length for each of the *overlying* path lengths -
 
@@ -3815,7 +3817,7 @@ This shows the mean *underlying* *slice* path length for each of the *overlying*
 --|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--
 2.53|2.76|2.81|2.92|2.97|3.04|3.13|3.18|3.22|3.21|3.34|3.32|3.26|3.37|3.25|2.93|3.32|2.21
 
-The mean *underlying* path length tends to increase with increasing *overlying* path length. The maximum also varies with *overlying* path length if one adjusts for the normal distribution of the path lengths. This suggests that greater and greater detail is required as the *slices* become more specialised. In fact, the longest *underlying* path length is 18 only one less than the maximum path length for the whole *underlying model* (81). The low mean and mode suggests that general brightness is all that is interesting in most cases, i.e. the strongest *alignments* are of global changes on brightness.
+The mean *underlying* path length tends to increase with increasing *overlying* path length. The maximum also varies with *overlying* path length if one adjusts for the normal distribution of the path lengths. This suggests that greater and greater detail is required as the *slices* become more specialised. In fact, the longest *underlying* path length is 18 - only one less than the maximum path length for the whole *underlying model* (81). The low mean and mode suggests that general brightness is all that is interesting in most cases, i.e. the strongest *alignments* are of global brightness relations.
 
 The median *diagonal* at 18.3 is much less than that for *model* 66 at 26.0, which also suggests that a larger threshold might be considered. However, we can expect higher *level* *alignments* to be somewhat lower than for lower *level models* because the *alignments* are global rather than local.
 
@@ -3849,14 +3851,65 @@ and
 
 The position map also shows that the *model* is now centered over the original image, rather than having 'shadows' (similar copies of *model* at approximately frame-size offsets). This is because global *alignments* are spread over the whole *substrate*.
 
-TODO 2-level -
+Now let us consider a *2-level model* where the [*substrate* is computed](#computed_substrate). This is the configuration for *model* 87 which takes *model* 86 as its *1-level underlying* -
+```
+{
+	"model" : "model087",
+	"structure" : "struct005",
+	"level1_model" : "model086",
+	"records_sources" : ["records006","records002","records003"],
+	"checkpointing" : true,
+	"mode" : "mode014",
+	"valency" : 32,
+	"valency_balanced" : true,
+	"size" : 40,
+	"level1_size" : 8,
+	"level2_size" : 5,
+	"cumulative_active" : false,
+	"activeSize" : 3000000,
+	"level1_activeSize" : 10,
+	"induceThreadCount" : 1,
+	"induceParameters.asyncThreadMax" : 8,
+	"induceParameters.diagonalMin" : 12.0,
+	"induceThreshold" : 500,
+	"induceParameters.induceThresholds" : [500,1000,1500],
+	"induceParameters.asyncUpdateLimit" : 1000,
+	"induceParameters.xmax" : 512,
+	"induceParameters.omax" : 20,
+	"induceParameters.bmax" : 60,
+	"induceParameters.znnmax" : 1310720000.0,
+	"scales" : [0.250, 0.210, 0.177, 0.149, 0.125, 0.105],
+	"event_maximum" : 3000000,
+	"logging_event" : true,
+	"logging_event_factor" : 10000,
+	"summary_active" : true
+}
+```
+This is the configuration for rethresholded *model* 88 -
+```
+{
+	"model" : "model088",
+	"model_initial" : "model087",
+	"new_representations" : true,
+	"induceThreadCount" : 1,
+	"induceParameters.asyncThreadMax" : 8,
+	"induceParameters.diagonalMin" : 12.0,
+	"induceParameters.xmax" : 256,
+	"induceParameters.omax" : 20,
+	"induceParameters.bmax" : 60,
+	"induceParameters.znnmax" : 1310720000.0,
+	"induceThreshold" : 200
+}
+```
+
+Here are the results showing *2-level model* 88 alongside the previous results -
 
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 model066|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised|9|balanced|48 B&W videos|500,000|1,822|0.7288|6.4|1.7|11|0.1|-0.5|0.6|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy
 model082|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised level 2|14|balanced|48 B&W videos|3,000,000|12,107|0.807|9.3|2.3|19|0.4|0.0|3.2|2.74|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8
-model087|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised level 2|14|balanced computed 32-valent|48 B&W videos|3,000,000|5,139|0.857|9.6|2.4|17|0.0|-0.4|0.1|2.44|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 512, omax 20, bmax 60, threshold 500
 model088|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 87 level 2|14|balanced computed 32-valent|48 B&W videos|3,000,000|12,976|0.865|10.4|2.5|18|0.0|-0.4|0.2|2.49|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60, threshold 200
+model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
 
 growth is slightly higher than for model 82
 
