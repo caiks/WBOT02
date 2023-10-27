@@ -3754,11 +3754,15 @@ model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W
 
 Qualitatively, *model* 82 is between *model* 66 and 61 except for skew. We can see that the growth rate at 0.807 is quite good for a random frame *model*, although note that there was no overflow whereas *model* 61 was in overflow. The multiplier at 2.74 is also quite good, but the mean path length of 9.3 is still far less than we have obtained from potential, actual-potential and scanned *models*. We can see this if we look at a representation,
 
+<a name="contour004_082_scale3_minent_representation"></a>
+
 ![contour004_082_scale3_minent_representation](images/contour004_082_scale3_minent_representation.png) 
 
 It is not much worse than scanned *model* 61, however, given that *model* 61 has an average path more than 4 steps longer at 14.6 -
 
 ![contour004_061_minent_representation](images/contour004_061_minent_representation.png) 
+
+The median *diagonal* at 18.3 is much less than that for *model* 66 at 26.0, which also suggests that a larger threshold might be considered. However, we can expect higher *level* *alignments* to be somewhat lower than for lower *level models* because the *alignments* are global rather than local.
 
 The average number of *underlying variables* per *fud* is much higher at 14.47 than for *model* 61 at 6.16 because *slices* are *bivalent*. There are only 25 *underlying* actives so the coverage is very high at up to 58% per *fud*, although there may be more than one *variable* from an *underlying model*.
 
@@ -3819,9 +3823,7 @@ This shows the mean *underlying* *slice* path length for each of the *overlying*
 
 The mean *underlying* path length tends to increase with increasing *overlying* path length. The maximum also varies with *overlying* path length if one adjusts for the normal distribution of the path lengths. This suggests that greater and greater detail is required as the *slices* become more specialised. In fact, the longest *underlying* path length is 18 - only one less than the maximum path length for the whole *underlying model* (81). The low mean and mode suggests that general brightness is all that is interesting in most cases, i.e. the strongest *alignments* are of global brightness relations.
 
-The median *diagonal* at 18.3 is much less than that for *model* 66 at 26.0, which also suggests that a larger threshold might be considered. However, we can expect higher *level* *alignments* to be somewhat lower than for lower *level models* because the *alignments* are global rather than local.
-
-The random *model* has nearly normal *slice* path statistics as can be seen by the fairly uniform brightnesses in the contour map (for scale 0.177) -
+The random *model* has nearly normal *slice* path statistics as can be seen by the fairly uniform brightnesses in the length contour map (for scale 0.177) -
 
 ![contour004_082_scale3_minent_length](images/contour004_082_scale3_minent_length.png) 
 
@@ -3911,19 +3913,9 @@ model082|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised level 2|14|balanced|4
 model088|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 87 level 2|14|balanced computed 32-valent|48 B&W videos|3,000,000|12,976|0.865|10.4|2.5|18|0.0|-0.4|0.2|2.49|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60, threshold 200
 model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
 
-growth is slightly higher than for model 82
+Quantitatively, the statistics of *model* 88 are similar to *model* 82 - the growth is slightly higher and the path lengths are more normal. The multiplier is lower at 2.49 and equal to *1-level* computed *substrate model* 86. The lower multiplier and slightly larger *model* means that the mean path length at 10.4 is more than one step larger than the mean path length of *model* 82. The median *diagonal* at 19.9 is also larger than in *model* 82 which has a median *diagonal* of 17.6, although this may partly be due to a the higher induce parameters and the higher threshold of the intermediate *model* 87. The median *diagonal* of *model* 88 is lower than the median *diagonal* of *1-level* computed *substrate model* 86 at 24.9. This has not, however, increased the multiplier, so clearly the *off-diagonal* *slices* are still too infrequent to breach the thresholds.
 
-max diagonal 41.6165 med diagonal 19.9203, 75% 23.926 cf model 82 max 37.6907, med 17.5706, 75% 20.4629 Higher threshold in first model?
-
-`exp(ln(12976)/10.3694) = 2.49` - like model 87 - still very good and better than model 82, although this may be because of higher parameters as well as computed underlying substrate. Less skewed but a little more kurtosis. Similar growth. Higher underlying because of xmax.
-
-underlying is 16.2 cf 14.5 for model 82
-
-model 82 has a lower multiplier but it still too high to obtain long paths
-
-Now we wish to move to scanning modes. Contrary to earlier ideas about offline processsing, we can scan without having to have 25+1 model applications at each cell by tiling underlying, possibly with several offset tile sets, over the scan area and then do the higher level with these tile sets. Now the scan will require only 1-2 model applications per cell. We will also cover much larger scan areas. The downside is that we will be below maximal path lengths sometimes, but this should be less of a problem with the evident convolution (which implies a lot of duplicated model at small translations), although there are still disconinutities in the map. Also, offline record sets are unmanagably large, although randomising is an advantage at the substrate. We will handle the the additional load due to the higher scan multiple and the multi-scale by having asynchronous image capture from video in a actor004 which will be similar to actor003 and modeller001. Also, there is an advantage to centering when scanning to improve burstiness and ultimately we need it for the 3-level temporaral or saccade-sequence features of 3-level which will use slice topology. So we have random for 1-level, centered scanning search for 2-level, and topology search for 3-level. With scanning we are hoping to see long enough paths to see high-frequency features in the examples and similar features spread over only a few hotspots (we can test this by moving an image horizontally/vertically and by scaling), i.e. a sparsity of hotspots implying a degree of 'convolution' between hotspots.
-
-model 88 underlying length distribution -
+The average number of *underlying variables* per *fud* is much higher at 16.2 than for *model* 82 at 14.5 because of the higher `XMAX`. Here is the distribution of the *model* 88 *underlying* path lengths -
 
 0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -3945,24 +3937,37 @@ model 88 underlying length distribution -
 16|97|135|113|113|86|60|32|15|9|1|||||||||||||
 17|24|23|24|30|20|14|6|4|1||||||||||||||
 
-model 88 underlying length means -
+These are the *model* 88 *underlying* length means -
 
 |1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17
 --|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--
 |2.12|2.45|2.89|2.97|3.13|3.22|3.34|3.46|3.51|3.65|3.71|3.7|3.73|3.73|3.61|3.61|3.62
 
-The variance of the underlying lengths in model 88 is higher than 82. For example, at overlying path length of 10, there are more than twice as many underlying paths of length 7 (1303 versus 532).
+The mode is lower at 2 than the mode of 3 for *model* 82, but the mean *underlying* lengths are generally higher so the variance of the *underlying lengths* in *model* 88 is higher than in *model* 82. For example, at an *overlying* path length of 10, there are more than twice as many *underlying* paths of length 7 - 1303 versus 532). That is, there seems to be more specialisation of the *underlying level models* in *model* 88 than in *model* 82. These larger actual *underlying likelihoods* are therefore more important. Presumably this is due to the computed *substrate*. The representations for *model* 88, 
 
-Why are there so many underlying from the same level1 decomp in models 82 and 88? Are these crown alignments? There are only 15 unique underlying models of 26 underlying variables in the last fud of model 88. Could be ancestors if have different entropies, but not likely given shuffle. Probably just ORing different underlying slices.
+![contour004_088_scale3_minent_representation](images/contour004_088_scale3_minent_representation.png) 
 
-entropy limit is different in model 88 versus 82 because of 32-valency
+when compared to those of [*model* 82](#contour004_082_scale3_minent_representation) do not seem much improved in spite of the longer *overlying* and *underlying* path lengths. Here is another representation showing *model* 88 and then *model* 82 -
 
-model 88 contour seems slightly better than model 82 - especially forehead and edge of face, but confused by reflection behind the shoulder. Would be interesting to see how a gradient model handles the reflection.
+![contour005_088_scale3_minent_representation](images/contour005_088_scale3_minent_representation.png) ![contour005_082_scale3_minent_representation](images/contour005_082_scale3_minent_representation.png) 
 
-Why does model 88 and 86 have the same multiplier but different median diagonals?
+The normal *slice* path statistics are reflected by the fairly uniform brightnesses in the length contour map (for scale 0.177) -
 
-future developments - 
+![contour004_088_scale3_minent_length](images/contour004_088_scale3_minent_length.png) 
 
+Similarly to *model* 82, the position map shows quite a lot of convolution, i.e. gradual changes in the position of the *slice* within the *model* -
+
+![contour004_088_scale3_minent_position](images/contour004_088_scale3_minent_position.png) 
+
+Note that the contour map entropy limit is different in *model* 88 versus *model* 82 because of the *32-valency*, so there are fewer areas where the map is not calculated.
+
+TODO -scanned 2-level
+
+randomised models 82 and 88 have low multipliers but they are still too high to obtain long paths
+
+Now we wish to move to scanning modes. Contrary to earlier ideas about offline processsing, we can scan without having to have 25+1 model applications at each cell by tiling underlying, possibly with several offset tile sets, over the scan area and then do the higher level with these tile sets. Now the scan will require only 1-2 model applications per cell. We will also cover much larger scan areas. The downside is that we will be below maximal path lengths sometimes, but this should be less of a problem with the evident convolution (which implies a lot of duplicated model at small translations), although there are still disconinutities in the map. Also, offline record sets are unmanagably large, although randomising is an advantage at the substrate. We will handle the the additional load due to the higher scan multiple and the multi-scale by having asynchronous image capture from video in a actor004 which will be similar to actor003 and modeller001. Also, there is an advantage to centering when scanning to improve burstiness and ultimately we need it for the 3-level temporaral or saccade-sequence features of 3-level which will use slice topology. So we have random for 1-level, centered scanning search for 2-level, and topology search for 3-level. With scanning we are hoping to see long enough paths to see high-frequency features in the examples and similar features spread over only a few hotspots (we can test this by moving an image horizontally/vertically and by scaling), i.e. a sparsity of hotspots implying a degree of 'convolution' between hotspots.
+
+TODO - future developments - 
 
 We will need to focus on hotspots driven by higher levels to pick up more alignments in facial features because these are relatively weak. We have already seen that we need entropy restrictions to avoid the dull areas of the image. Our challenge is to use hints from biology to enhance the alignments that are interesting to humans, eg entropy, hotspots, gradients spatial and dynamic, central area limits or valency variations.
  
