@@ -2436,7 +2436,7 @@ model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|k
 model029|0.177|5 scanned potential tiled actual-potential|5|bucketed|Film Noir|526,345|3,386|1.287|13.5|2.6|23|-0.4|0.8|-5.0|1.83|
 model030|0.177|5 scanned potential tiled actual-potential|5|fixed|Film Noir|527,045|3,816|1.448|15.6|3.7|31|0.3|1.0|4.0|1.70|
 
-The difference here is that we have moved from bucketed *valency* to fixed *valency*. The growth is considerably higher at 1.448, but the multiplier is lower at 1.74. The skew has flipped from negative to positive, but the *model* is no more normal. Probably more of the *model* is given over to low entropy frames. Growth remains higher in the following *models* which carry on with fixed *valency*. There are indications that features are being captured, for example -
+The difference here is that we have moved from bucketed *valency* to fixed *valency*. The growth is considerably higher at 1.448, but the multiplier is lower at 1.70. The skew has flipped from negative to positive, but the *model* is no more normal. Probably more of the *model* is given over to low entropy frames. Growth remains higher in the following *models* which carry on with fixed *valency*. There are indications that features are being captured, for example -
 
 ![actor002_model030_Film_Noir_008](images/actor002_model030_Film_Noir_008.png) 
 
