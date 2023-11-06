@@ -932,6 +932,147 @@ void Modeller001::model()
 					eventCount++;	
 				}	
 		}
+		else if (_mode == "mode016" && (_struct=="struct002"  || _struct=="struct005") && _scales.size() && _recordsFile.is_open())
+		{
+			std::vector<Record> records;
+			for (std::size_t k = 0; k < _scanSize; k++)	
+			{
+                Record record;
+				{
+					try
+					{
+						_recordsFile.read(reinterpret_cast<char*>(&record.scaleX), sizeof(double));
+						if (_recordsFile.eof())
+						{
+							_recordsFile.close();
+							_recordsIndex++;
+							if (_recordsIndex >= _recordsFileNames.size())
+								_recordsIndex = 0;
+							_recordsFile.open(_recordsFileNames[_recordsIndex] + ".rec", std::ios::binary);
+							if (!_recordsFile.is_open() || _recordsFile.eof())
+							{
+								LOG "modeller\terror: failed to open records file" << _recordsFileNames[_recordsIndex] + ".rec" UNLOG
+								this->terminate = true;
+								return;
+							}	
+							_recordsFile.read(reinterpret_cast<char*>(&record.scaleX), sizeof(double));
+							if (_recordsFile.eof())
+							{
+								LOG "modeller\terror: failed to open records file" << _recordsFileNames[_recordsIndex] + ".rec" UNLOG
+								this->terminate = true;
+								return;
+							}
+							else
+							{
+								LOG "modeller\tmodel: opened records file" << _recordsFileNames[_recordsIndex] + ".rec" UNLOG
+							}								
+						}
+						_recordsFile.read(reinterpret_cast<char*>(&record.scaleY), sizeof(double));
+						_recordsFile.read(reinterpret_cast<char*>(&record.centreX), sizeof(double));
+						_recordsFile.read(reinterpret_cast<char*>(&record.centreY), sizeof(double));
+						_recordsFile.read(reinterpret_cast<char*>(&record.sizeX), sizeof(std::size_t));
+						_recordsFile.read(reinterpret_cast<char*>(&record.sizeY), sizeof(std::size_t));
+						record.arr->resize(record.sizeX*record.sizeY);
+						_recordsFile.read(reinterpret_cast<char*>((char*)record.arr->data()), record.sizeX*record.sizeY);
+					}
+					catch (const std::exception&)
+					{
+						LOG "modeller\terror: failed to read records file" << _recordsFileNames[_recordsIndex] + ".rec" UNLOG
+						this->terminate = true;
+						return;
+					}
+				}
+				records.push_back(record);
+			}
+			std::vector<std::tuple<std::size_t,std::size_t,std::size_t,double,double,std::size_t,std::size_t,std::size_t,std::size_t>> actsPotsCoordTop;
+			// {
+				// std::lock_guard<std::mutex> guard(activeA.mutex);
+				// std::vector<std::thread> threads;
+				// threads.reserve(_threadCount);
+				// for (std::size_t t = 0; t < _threadCount; t++)
+					// threads.push_back(std::thread(
+						// [&actor, &activeA, sizeD, &record, &actsPotsCoord] (int t)
+						// {
+							// auto drmul = listVarValuesDecompFudSlicedRepasPathSlice_u;
+							// auto& sizes = activeA.historySlicesSize;
+							// auto& lengths = activeA.historySlicesLength;
+							// auto& fails = activeA.induceSliceFailsSize;
+							// auto& dr = *activeA.decomp;		
+							// auto cap = (unsigned char)(actor._updateParameters.mapCapacity);
+							// auto size = actor._size;
+							// auto valency = actor._valency;
+							// auto valencyBalanced = actor._valencyBalanced;
+							// auto hr = sizesHistoryRepa(actor._scaleValency, valency, size*size);
+							// auto n = hr->dimension;
+							// auto vv = hr->vectorVar;
+							// auto rr = hr->arr;
+							// rr[n-1] = 0;
+							// for (std::size_t y = 0, z = 0; y < sizeD; y++)	
+								// for (std::size_t x = 0; x < sizeD; x++, z++)	
+									// if (z % actor._threadCount == t)
+									// {
+										// Record recordSub(record,size,size,x,y);
+										// Record recordValent = recordSub.valentFixed(valency,valencyBalanced);
+										// auto& arr1 = *recordValent.arr;	
+										// SizeUCharStructList jj;
+										// jj.reserve(n);
+										// for (std::size_t i = 0; i < n-1; i++)
+										// {
+											// SizeUCharStruct qq;
+											// qq.uchar = arr1[i];	
+											// qq.size = vv[i];
+											// if (qq.uchar)
+												// jj.push_back(qq);
+										// }
+										// {
+											// SizeUCharStruct qq;
+											// qq.uchar = rr[n-1];	
+											// qq.size = vv[n-1];
+											// if (qq.uchar)
+												// jj.push_back(qq);
+										// }
+										// auto ll = drmul(jj,dr,cap);	
+										// std::size_t slice = 0;
+										// if (ll && ll->size()) slice = ll->back();	
+										// if (slice && !fails.count(slice))
+										// {
+											// actsPotsCoord[z] = std::make_tuple(lengths[slice],sizes[slice],0.0,0.0,x,y);
+										// }
+										// else
+											// actsPotsCoord[z] = std::make_tuple(0,0,0.0,0.0,x,y);	
+									// }
+						// }, t));
+				// for (auto& t : threads)
+					// t.join();
+			// }
+			std::sort(actsPotsCoordTop.rbegin(), actsPotsCoordTop.rend());
+			for (std::size_t k = 0; eventCount < _eventSize && k < actsPotsCoordTop.size(); k++)	
+			{
+				auto pos = actsPotsCoordTop[k];
+				auto likelihood = std::get<0>(pos);
+				auto posX = std::get<3>(pos);
+				auto posY = std::get<4>(pos);	
+				auto x = std::get<5>(pos);
+				auto y = std::get<6>(pos);
+				auto& record = records[std::get<7>(pos)];
+				auto scaleValue = std::get<8>(pos);
+				auto scale =  _scales[scaleValue];
+				Record recordSub(record,_size,_size,x,y);
+				Record recordValent = recordSub.valentFixed(_valency,_valencyBalanced);
+				for (std::size_t y = 0, m = 0; y < _level2Size; y++)	
+					for (std::size_t x = 0; x < _level2Size; x++, m++)	
+					{
+						Record recordTile(recordValent,_level1Size,_level1Size,x*_level1Size,y*_level1Size);
+						auto hr = recordsHistoryRepa(_scaleValency,scaleValue,_valency,recordTile);
+						if (!_updateDisable)
+							_level1Events[m]->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_level1Events[m]->references);	
+					}	
+				auto hr = recordsHistoryRepa(_scaleValency, scaleValue, _valency, recordValent);
+				_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
+				this->eventId++;		
+				eventCount++;	
+			}				
+		}
 		if (!_updateDisable)
 		{
 			if (_struct=="struct002" || _struct=="struct005")
