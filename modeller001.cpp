@@ -160,6 +160,7 @@ Modeller001::Modeller001(const std::string& configA)
 		_level2Size = ARGS_INT_DEF(level2_size,5);	
 		_sizeRecords = ARGS_INT_DEF(records_size,40);	
 		_sizeTile = ARGS_INT_DEF(tile_size,_size/2);	
+		_sizeScanStep = ARGS_INT_DEF(scan_step,_level1Size);	
 		_eventSize = ARGS_INT_DEF(event_size,1);	
 		_scanSize = ARGS_INT_DEF(scan_size,1);	
 		_threadCount = ARGS_INT_DEF(threads,1);	
@@ -985,66 +986,147 @@ void Modeller001::model()
 				records.push_back(record);
 			}
 			std::vector<std::tuple<std::size_t,std::size_t,std::size_t,double,double,std::size_t,std::size_t,std::size_t,std::size_t>> actsPotsCoordTop;
-			// {
-				// std::lock_guard<std::mutex> guard(activeA.mutex);
-				// std::vector<std::thread> threads;
-				// threads.reserve(_threadCount);
-				// for (std::size_t t = 0; t < _threadCount; t++)
-					// threads.push_back(std::thread(
-						// [&actor, &activeA, sizeD, &record, &actsPotsCoord] (int t)
-						// {
-							// auto drmul = listVarValuesDecompFudSlicedRepasPathSlice_u;
-							// auto& sizes = activeA.historySlicesSize;
-							// auto& lengths = activeA.historySlicesLength;
-							// auto& fails = activeA.induceSliceFailsSize;
-							// auto& dr = *activeA.decomp;		
-							// auto cap = (unsigned char)(actor._updateParameters.mapCapacity);
-							// auto size = actor._size;
-							// auto valency = actor._valency;
-							// auto valencyBalanced = actor._valencyBalanced;
-							// auto hr = sizesHistoryRepa(actor._scaleValency, valency, size*size);
-							// auto n = hr->dimension;
-							// auto vv = hr->vectorVar;
-							// auto rr = hr->arr;
-							// rr[n-1] = 0;
-							// for (std::size_t y = 0, z = 0; y < sizeD; y++)	
-								// for (std::size_t x = 0; x < sizeD; x++, z++)	
-									// if (z % actor._threadCount == t)
+			{
+				auto& activeA = *_active;
+				auto& actor = *this;
+				std::lock_guard<std::mutex> guard(activeA.mutex);
+				std::vector<std::thread> threads;
+				threads.reserve(_threadCount);
+				for (std::size_t t = 0; t < records.size() && t < _threadCount; t++)
+					threads.push_back(std::thread(
+						[&actor, &activeA, &records, &actsPotsCoordTop] (int t)
+						{
+							auto drmul = listVarValuesDecompFudSlicedRepasPathSlice_u;
+							auto cap = (unsigned char)(actor._updateParameters.mapCapacity);
+							auto& dr = *activeA.decomp;	
+							auto& dr1 = *actor._level1Decomp;	
+							auto& cv = dr.mapVarParent();
+							auto& vi = dr.mapVarInt();
+							auto& cv1 = dr1.mapVarParent();
+							auto& vi1 = dr1.mapVarInt();
+							auto& sizes = activeA.historySlicesSize;
+							auto& lengths = activeA.historySlicesLength;
+							auto& fails = activeA.induceSliceFailsSize;
+							auto size = actor._size;
+							auto level1Size = actor._level1Size;
+							auto level2Size = actor._level2Size;
+							auto sizeScanStep = actor._sizeScanStep;
+							auto valency = actor._valency;
+							auto valencyBalanced = actor._valencyBalanced;
+							auto scaleValency = actor._scaleValency;
+							auto hr1 = sizesHistoryRepa(scaleValency, valency, level1Size*level1Size);
+							auto n1 = hr1->dimension;
+							auto vv1 = hr1->vectorVar;
+							auto& proms = activeA.underlyingsVarsOffset;
+							bool isComputed = actor._struct == "struct005";
+							std::size_t b = 0; 
+							if (isComputed)
+							{
+								std::size_t s = valency;
+								if (s)
+								{
+									s--;
+									while (s >> b)
+										b++;
+								}								
+							}
+							for (std::size_t r = 0; r < records.size(); r++)	
+								if (r % actor._threadCount == t)
+								{
+									auto& record = records[r];
+									auto sizeX = record.sizeX;
+									auto sizeY = record.sizeY;
+									double interval = record.scaleY / sizeY;	
+									auto scale =  interval * size;	
+									std::size_t scaleValue = 0;
+									{
+										for (auto scaleA : actor._scales)
+										{
+											if (scaleA - scale > -0.00001 && scaleA - scale < 0.00001)
+												break;
+											scaleValue++;
+										}
+										if (scaleValue >= actor._scales.size())
+											scaleValue = 0;
+									}
+									Record recordValent = record.valentFixed(valency,valencyBalanced);
+									auto& arr1 = *recordValent.arr;	
+									auto level1SlicesCount = (sizeX - level1Size) * (sizeY - level1Size) / sizeScanStep / sizeScanStep;
+									std::vector<std::size_t> level1Slices(level1SlicesCount);
+									for (std::size_t y = 0, z = 0; y < sizeY - level1Size; y += sizeScanStep)	
+										for (std::size_t x = 0; x < sizeX - level1Size; x += sizeScanStep, z++)
+											for (std::size_t y1 = 0; y1 < level1Size; y1++)
+											{
+												auto yx1 = (y1 + y) * sizeX;
+												for (std::size_t x1 = 0; x1 < level1Size; x1++)
+												{
+													auto w = arr1[yx1 + x1 + x];				
+													SizeUCharStructList kk;
+													kk.reserve(n1);
+													if (isComputed)
+														for (std::size_t i = 0; i < n1-1; i++)
+														{
+															SizeUCharStruct qq;
+															qq.uchar = 1;	
+															for (int k = b; k > 0; k--)
+															{
+																qq.size = 65536 + (vv1[i] << 12) + (k << 8) + (w >> b-k);
+																kk.push_back(qq);
+															}
+														}											
+													else
+														for (std::size_t i = 0; i < n1-1; i++)
+														{
+															SizeUCharStruct qq;
+															qq.uchar = w;	
+															qq.size = vv1[i];
+															if (qq.uchar)
+																kk.push_back(qq);
+														}
+													{
+														SizeUCharStruct qq;
+														qq.uchar = scaleValue;	
+														qq.size = vv1[n1-1];
+														if (qq.uchar)
+															kk.push_back(qq);
+													}										
+													auto ll = drmul(kk,dr1,cap);	
+													if (ll && ll->size() && ll->back()) 
+														level1Slices[z] = ll->back();
+												}
+											}											
+									// Record recordSub(record,size,size,x,y);
+									// SizeUCharStructList jj;
+									// jj.reserve(n);
+									// for (std::size_t i = 0; i < n-1; i++)
 									// {
-										// Record recordSub(record,size,size,x,y);
-										// Record recordValent = recordSub.valentFixed(valency,valencyBalanced);
-										// auto& arr1 = *recordValent.arr;	
-										// SizeUCharStructList jj;
-										// jj.reserve(n);
-										// for (std::size_t i = 0; i < n-1; i++)
-										// {
-											// SizeUCharStruct qq;
-											// qq.uchar = arr1[i];	
-											// qq.size = vv[i];
-											// if (qq.uchar)
-												// jj.push_back(qq);
-										// }
-										// {
-											// SizeUCharStruct qq;
-											// qq.uchar = rr[n-1];	
-											// qq.size = vv[n-1];
-											// if (qq.uchar)
-												// jj.push_back(qq);
-										// }
-										// auto ll = drmul(jj,dr,cap);	
-										// std::size_t slice = 0;
-										// if (ll && ll->size()) slice = ll->back();	
-										// if (slice && !fails.count(slice))
-										// {
-											// actsPotsCoord[z] = std::make_tuple(lengths[slice],sizes[slice],0.0,0.0,x,y);
-										// }
-										// else
-											// actsPotsCoord[z] = std::make_tuple(0,0,0.0,0.0,x,y);	
+										// SizeUCharStruct qq;
+										// qq.uchar = arr1[i];	
+										// qq.size = vv[i];
+										// if (qq.uchar)
+											// jj.push_back(qq);
 									// }
-						// }, t));
-				// for (auto& t : threads)
-					// t.join();
-			// }
+									// {
+										// SizeUCharStruct qq;
+										// qq.uchar = rr[n-1];	
+										// qq.size = vv[n-1];
+										// if (qq.uchar)
+											// jj.push_back(qq);
+									// }
+									// auto ll = drmul(jj,dr,cap);	
+									// std::size_t slice = 0;
+									// if (ll && ll->size()) slice = ll->back();	
+									// if (slice && !fails.count(slice))
+									// {
+										// actsPotsCoord[z] = std::make_tuple(lengths[slice],sizes[slice],0.0,0.0,x,y);
+									// }
+									// else
+										// actsPotsCoord[z] = std::make_tuple(0,0,0.0,0.0,x,y);	
+								}
+						}, t));
+				for (auto& t : threads)
+					t.join();
+			}
 			std::sort(actsPotsCoordTop.rbegin(), actsPotsCoordTop.rend());
 			for (std::size_t k = 0; eventCount < _eventSize && k < actsPotsCoordTop.size(); k++)	
 			{

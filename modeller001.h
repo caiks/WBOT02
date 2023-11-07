@@ -86,6 +86,7 @@ namespace WBOT02
 		std::size_t _level2Size;
 		std::size_t _sizeRecords;
 		std::size_t _sizeTile;
+		std::size_t _sizeScanStep;
 		std::size_t _threadCount;
 		std::size_t _eventIdPrev;
 		double _entropyMinimum;
