@@ -871,8 +871,8 @@ void Win007::act()
 								auto vv = hr->vectorVar;
 								auto rr = hr->arr;
 								rr[n-1] = 0;
-								for (std::size_t y = 0, z = 0; y < sizeY1; y++)	
-									for (std::size_t x = 0; x < sizeX1; x++, z++)	
+								for (std::size_t y = 0, z = 0; y < sizeY1; y++) // should be <=
+									for (std::size_t x = 0; x < sizeX1; x++, z++) // should be <=
 										if (z % actor._threadCount == t)
 										{
 											Record recordSub(record,size,size,x,y);

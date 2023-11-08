@@ -895,8 +895,8 @@ void Win008::act()
 							auto vv = hr->vectorVar;
 							auto rr = hr->arr;
 							rr[n-1] = 0;
-							for (std::size_t y = 0, z = 0; y < sizeY1; y++)	
-								for (std::size_t x = 0; x < sizeX1; x++, z++)	
+							for (std::size_t y = 0, z = 0; y < sizeY1; y++) // should be <=
+								for (std::size_t x = 0; x < sizeX1; x++, z++) // should be <=
 									if (z % actor._threadCount == t)
 									{
 										Record recordSub(record,size,size,x,y);
@@ -1270,7 +1270,7 @@ void Win008::act()
 				double interval = scale / _size;		
 				std::size_t sizeY = _size + _sizeTile;
 				if (sizeY % 2 != _size % 2) sizeY++;
-				auto sizeD = sizeY - _size;
+				auto sizeD = sizeY - _size; // should be +1
 				auto scaleY = sizeY * interval;
 				auto scaleX = scaleY * _captureHeight / _captureWidth;
 				auto offset = (scaleY - scale) / 2.0;
@@ -1317,8 +1317,8 @@ void Win008::act()
 								auto vv = hr->vectorVar;
 								auto rr = hr->arr;
 								rr[n-1] = 0;
-								for (std::size_t y = 0, z = 0; y < sizeD; y++)	
-									for (std::size_t x = 0; x < sizeD; x++, z++)	
+								for (std::size_t y = 0, z = 0; y < sizeD; y++)
+									for (std::size_t x = 0; x < sizeD; x++, z++)
 										if (z % actor._threadCount == t)
 										{
 											Record recordSub(record,size,size,x,y);
@@ -1414,7 +1414,7 @@ void Win008::act()
 				double interval = scale / _size;		
 				std::size_t sizeY = _size + _sizeTile;
 				if (sizeY % 2 != _size % 2) sizeY++;
-				auto sizeD = sizeY - _size;
+				auto sizeD = sizeY - _size; // should be +1
 				auto scaleY = sizeY * interval;
 				auto scaleX = scaleY * _captureHeight / _captureWidth;
 				auto offset = (scaleY - scale) / 2.0;

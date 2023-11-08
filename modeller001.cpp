@@ -554,7 +554,7 @@ void Modeller001::model()
 					}
 				}
 				records.push_back(record);
-				auto sizeD = record.sizeY - _size;		
+				auto sizeD = record.sizeY - _size; // should be +1
 				double interval = record.scaleY / record.sizeY;	
 				auto scale =  interval * _size;	
 				std::size_t scaleValue = 0;
@@ -1051,16 +1051,17 @@ void Modeller001::model()
 									}
 									Record recordValent = record.valentFixed(valency,valencyBalanced);
 									auto& arr1 = *recordValent.arr;	
-									auto level1SlicesCount = (sizeX - level1Size) * (sizeY - level1Size) / sizeScanStep / sizeScanStep;
-									std::vector<std::size_t> level1Slices(level1SlicesCount);
-									for (std::size_t y = 0, z = 0; y < sizeY - level1Size; y += sizeScanStep)	
-										for (std::size_t x = 0; x < sizeX - level1Size; x += sizeScanStep, z++)
+									auto countX = (sizeX - level1Size)/sizeScanStep;
+									auto countY = (sizeY - level1Size)/sizeScanStep;
+									std::vector<std::size_t> level1Slices(countX*countY);
+									for (std::size_t y = 0, z = 0; y < countY; y++)	
+										for (std::size_t x = 0; x < countX; x++, z++)
 											for (std::size_t y1 = 0; y1 < level1Size; y1++)
 											{
-												auto yx1 = (y1 + y) * sizeX;
+												auto yx1 = (y1 + y*sizeScanStep) * sizeX;
 												for (std::size_t x1 = 0; x1 < level1Size; x1++)
 												{
-													auto w = arr1[yx1 + x1 + x];				
+													auto w = arr1[yx1 + x1 + x*sizeScanStep];
 													SizeUCharStructList kk;
 													kk.reserve(n1);
 													if (isComputed)
