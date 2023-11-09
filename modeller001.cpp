@@ -994,7 +994,7 @@ void Modeller001::model()
 				threads.reserve(_threadCount);
 				for (std::size_t t = 0; t < records.size() && t < _threadCount; t++)
 					threads.push_back(std::thread(
-						[&actor, &activeA, &records, &actsPotsCoordTop] (int t)
+						[&actor, &activeA, &records,&actsPotsCoordTop] (int t)
 						{
 							auto drmul = listVarValuesDecompFudSlicedRepasPathSlice_u;
 							auto cap = (unsigned char)(actor._updateParameters.mapCapacity);
@@ -1014,20 +1014,24 @@ void Modeller001::model()
 							auto valency = actor._valency;
 							auto valencyBalanced = actor._valencyBalanced;
 							auto scaleValency = actor._scaleValency;
+							auto substrateInclude = actor._substrateInclude;
+							auto hr = sizesHistoryRepa(scaleValency, valency, size*size);
+							auto n = hr->dimension;
+							auto vv = hr->vectorVar;
 							auto hr1 = sizesHistoryRepa(scaleValency, valency, level1Size*level1Size);
 							auto n1 = hr1->dimension;
 							auto vv1 = hr1->vectorVar;
 							auto& proms = activeA.underlyingsVarsOffset;
 							bool isComputed = actor._struct == "struct005";
-							std::size_t b = 0; 
+							std::size_t bits = 0; 
 							if (isComputed)
 							{
 								std::size_t s = valency;
 								if (s)
 								{
 									s--;
-									while (s >> b)
-										b++;
+									while (s >> bits)
+										bits++;
 								}								
 							}
 							for (std::size_t r = 0; r < records.size(); r++)	
@@ -1055,13 +1059,17 @@ void Modeller001::model()
 									auto countY = (sizeY - level1Size)/sizeScanStep;
 									std::vector<std::size_t> level1Slices(countX*countY);
 									for (std::size_t y = 0, z = 0; y < countY; y++)	
+									{
+										auto y0 = y*sizeScanStep;
 										for (std::size_t x = 0; x < countX; x++, z++)
+										{
+											auto x0 = x*sizeScanStep;
 											for (std::size_t y1 = 0; y1 < level1Size; y1++)
 											{
-												auto yx1 = (y1 + y*sizeScanStep) * sizeX;
+												auto yx1 = (y1 + y0) * sizeX;
 												for (std::size_t x1 = 0; x1 < level1Size; x1++)
 												{
-													auto w = arr1[yx1 + x1 + x*sizeScanStep];
+													auto w = arr1[yx1 + x1 + x0];
 													SizeUCharStructList kk;
 													kk.reserve(n1);
 													if (isComputed)
@@ -1069,9 +1077,9 @@ void Modeller001::model()
 														{
 															SizeUCharStruct qq;
 															qq.uchar = 1;	
-															for (int k = b; k > 0; k--)
+															for (int k = bits; k > 0; k--)
 															{
-																qq.size = 65536 + (vv1[i] << 12) + (k << 8) + (w >> b-k);
+																qq.size = 65536 + (vv1[i] << 12) + (k << 8) + (w >> bits-k);
 																kk.push_back(qq);
 															}
 														}											
@@ -1093,9 +1101,56 @@ void Modeller001::model()
 													}										
 													auto ll = drmul(kk,dr1,cap);	
 													if (ll && ll->size() && ll->back()) 
-														level1Slices[z] = ll->back();
+														level1Slices[z] = ll->back(); // need the whole path
 												}
-											}											
+											}	
+										}
+									}	
+									// std::vector<std::tuple<std::size_t,double,std::size_t,std::size_t,std::size_t,std::size_t>> actsPotsCoord(sizeY*sizeX);
+									// auto countX2 = (sizeX - size)/sizeScanStep;
+									// auto countY2 = (sizeY - size)/sizeScanStep;
+									// for (std::size_t y = 0, z = 0; y < countY2; y++)	
+									// {
+										// for (std::size_t x = 0; x < countX2; x++, z++)
+										// {
+											// SizeUCharStructList jj;
+											// jj.reserve(n + level2Size*level2Size*20);
+											// for (std::size_t y1 = 0, m = 0; y1 < level2Size; y1++)	
+											// {
+												// auto yx1 = (y1 + y) * countX;
+												// for (std::size_t x1 = 0; x1 < level2Size; x1++, m++)	
+												// {
+													// auto slice = level1Slices[yx1 + x1 + x];
+													// if (slice)
+													// {
+														// SizeUCharStruct qq;
+														// qq.uchar = 1;			
+														// qq.size = slice;
+														// activeA.varPromote(proms[m], qq.size);
+														// jj.push_back(qq);
+													// }
+												// }
+											// }	
+											// if (substrateInclude)
+												// for (std::size_t i = 0; i < n-1; i++)
+												// {
+													// SizeUCharStruct qq;
+													// qq.uchar = arr1[i];	
+													// qq.size = vv[i];
+													// if (qq.uchar)
+														// jj.push_back(qq);
+												// }
+											// {
+												// SizeUCharStruct qq;
+												// qq.uchar = scaleValue;	
+												// qq.size = vv[n-1];
+												// if (qq.uchar)
+													// jj.push_back(qq);
+											// }
+											// auto ll = drmul(jj,dr,cap);	
+											// if (ll && ll->size()) slice = ll->back();											
+										// }
+									// }										
 									// Record recordSub(record,size,size,x,y);
 									// SizeUCharStructList jj;
 									// jj.reserve(n);
