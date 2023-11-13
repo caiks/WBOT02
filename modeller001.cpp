@@ -985,7 +985,7 @@ void Modeller001::model()
 				}
 				records.push_back(record);
 			}
-			std::vector<std::tuple<std::size_t,std::size_t,std::size_t,double,double,std::size_t,std::size_t,std::size_t,std::size_t>> actsPotsCoordTop;
+			std::vector<std::tuple<std::size_t,std::size_t,std::size_t,std::size_t,std::size_t,std::size_t>> actsPotsCoordTop;
 			{
 				auto& activeA = *_active;
 				auto& actor = *this;
@@ -1011,6 +1011,7 @@ void Modeller001::model()
 							auto level1Size = actor._level1Size;
 							auto level2Size = actor._level2Size;
 							auto sizeScanStep = actor._sizeScanStep;
+							auto level1Step = level1Size/sizeScanStep;
 							auto valency = actor._valency;
 							auto valencyBalanced = actor._valencyBalanced;
 							auto scaleValency = actor._scaleValency;
@@ -1057,127 +1058,107 @@ void Modeller001::model()
 									auto& arr1 = *recordValent.arr;	
 									auto countX = (sizeX - level1Size)/sizeScanStep;
 									auto countY = (sizeY - level1Size)/sizeScanStep;
-									std::vector<std::size_t> level1Slices(countX*countY);
+									std::vector<SizeList> level1Slices(countX*countY);
 									for (std::size_t y = 0, z = 0; y < countY; y++)	
 									{
 										auto y0 = y*sizeScanStep;
 										for (std::size_t x = 0; x < countX; x++, z++)
 										{
 											auto x0 = x*sizeScanStep;
-											for (std::size_t y1 = 0; y1 < level1Size; y1++)
+											SizeUCharStructList kk;
+											kk.reserve(n1);
+											for (std::size_t y1 = 0, i = 0; y1 < level1Size; y1++)
 											{
 												auto yx1 = (y1 + y0) * sizeX;
-												for (std::size_t x1 = 0; x1 < level1Size; x1++)
+												for (std::size_t x1 = 0; x1 < level1Size; x1++, i++)
 												{
 													auto w = arr1[yx1 + x1 + x0];
-													SizeUCharStructList kk;
-													kk.reserve(n1);
 													if (isComputed)
-														for (std::size_t i = 0; i < n1-1; i++)
-														{
-															SizeUCharStruct qq;
-															qq.uchar = 1;	
-															for (int k = bits; k > 0; k--)
-															{
-																qq.size = 65536 + (vv1[i] << 12) + (k << 8) + (w >> bits-k);
-																kk.push_back(qq);
-															}
-														}											
-													else
-														for (std::size_t i = 0; i < n1-1; i++)
-														{
-															SizeUCharStruct qq;
-															qq.uchar = w;	
-															qq.size = vv1[i];
-															if (qq.uchar)
-																kk.push_back(qq);
-														}
 													{
 														SizeUCharStruct qq;
-														qq.uchar = scaleValue;	
-														qq.size = vv1[n1-1];
-														if (qq.uchar)
+														qq.uchar = 1;	
+														for (int k = bits; k > 0; k--)
+														{
+															qq.size = 65536 + (vv1[i] << 12) + (k << 8) + (w >> bits-k);
 															kk.push_back(qq);
-													}										
-													auto ll = drmul(kk,dr1,cap);	
-													if (ll && ll->size() && ll->back()) 
-														level1Slices[z] = ll->back(); // need the whole path
+														}
+													}											
+													else if (w)
+													{
+														SizeUCharStruct qq;
+														qq.uchar = w;	
+														qq.size = vv1[i];
+														kk.push_back(qq);
+													}
 												}
 											}	
+											if (scaleValue)
+											{
+												SizeUCharStruct qq;
+												qq.uchar = scaleValue;	
+												qq.size = vv1[n1-1];
+												kk.push_back(qq);
+											}										
+											auto ll = drmul(kk,dr1,cap);	
+											if (ll && ll->size() && ll->back()) 
+												level1Slices[z] = *ll;
 										}
 									}	
-									// std::vector<std::tuple<std::size_t,double,std::size_t,std::size_t,std::size_t,std::size_t>> actsPotsCoord(sizeY*sizeX);
-									// auto countX2 = (sizeX - size)/sizeScanStep;
-									// auto countY2 = (sizeY - size)/sizeScanStep;
-									// for (std::size_t y = 0, z = 0; y < countY2; y++)	
-									// {
-										// for (std::size_t x = 0; x < countX2; x++, z++)
-										// {
-											// SizeUCharStructList jj;
-											// jj.reserve(n + level2Size*level2Size*20);
-											// for (std::size_t y1 = 0, m = 0; y1 < level2Size; y1++)	
-											// {
-												// auto yx1 = (y1 + y) * countX;
-												// for (std::size_t x1 = 0; x1 < level2Size; x1++, m++)	
-												// {
-													// auto slice = level1Slices[yx1 + x1 + x];
-													// if (slice)
-													// {
-														// SizeUCharStruct qq;
-														// qq.uchar = 1;			
-														// qq.size = slice;
-														// activeA.varPromote(proms[m], qq.size);
-														// jj.push_back(qq);
-													// }
-												// }
-											// }	
-											// if (substrateInclude)
-												// for (std::size_t i = 0; i < n-1; i++)
-												// {
-													// SizeUCharStruct qq;
-													// qq.uchar = arr1[i];	
-													// qq.size = vv[i];
-													// if (qq.uchar)
-														// jj.push_back(qq);
-												// }
-											// {
-												// SizeUCharStruct qq;
-												// qq.uchar = scaleValue;	
-												// qq.size = vv[n-1];
-												// if (qq.uchar)
-													// jj.push_back(qq);
-											// }
-											// auto ll = drmul(jj,dr,cap);	
-											// if (ll && ll->size()) slice = ll->back();											
-										// }
-									// }										
-									// Record recordSub(record,size,size,x,y);
-									// SizeUCharStructList jj;
-									// jj.reserve(n);
-									// for (std::size_t i = 0; i < n-1; i++)
-									// {
-										// SizeUCharStruct qq;
-										// qq.uchar = arr1[i];	
-										// qq.size = vv[i];
-										// if (qq.uchar)
-											// jj.push_back(qq);
-									// }
-									// {
-										// SizeUCharStruct qq;
-										// qq.uchar = rr[n-1];	
-										// qq.size = vv[n-1];
-										// if (qq.uchar)
-											// jj.push_back(qq);
-									// }
-									// auto ll = drmul(jj,dr,cap);	
-									// std::size_t slice = 0;
-									// if (ll && ll->size()) slice = ll->back();	
-									// if (slice && !fails.count(slice))
-									// {
-										// actsPotsCoord[z] = std::make_tuple(lengths[slice],sizes[slice],0.0,0.0,x,y);
-									// }
-									// else
-										// actsPotsCoord[z] = std::make_tuple(0,0,0.0,0.0,x,y);	
+									auto countX2 = (sizeX - size)/sizeScanStep;
+									auto countY2 = (sizeY - size)/sizeScanStep;
+									std::vector<std::tuple<std::size_t,std::size_t,std::size_t,std::size_t,std::size_t>> actsPotsCoord(countX2*countY2);
+									for (std::size_t y = 0, z = 0; y < countY2; y++)	
+									{
+										for (std::size_t x = 0; x < countX2; x++, z++)
+										{
+											SizeUCharStructList jj;
+											jj.reserve(n + level2Size*level2Size*20);
+											for (std::size_t y1 = 0, m = 0; y1 < level2Size; y1++)	
+											{
+												auto yx1 = (y1*level1Step + y) * countX;
+												for (std::size_t x1 = 0; x1 < level2Size; x1++, m++)	
+												{
+													auto& path = level1Slices[yx1 + x1*level1Step + x];
+													for (auto slice : path)
+														if (slice)
+														{
+															SizeUCharStruct qq;
+															qq.uchar = 1;			
+															qq.size = slice;
+															activeA.varPromote(proms[m], qq.size);
+															jj.push_back(qq);
+														}
+												}
+											}	
+											{
+												SizeUCharStruct qq;
+												qq.uchar = scaleValue;	
+												qq.size = vv[n-1];
+												if (qq.uchar)
+													jj.push_back(qq);
+											}
+											auto ll = drmul(jj,dr,cap);	
+											std::size_t slice = 0;
+											if (ll && ll->size()) slice = ll->back();	
+											if (slice && !fails.count(slice))
+											{
+												actsPotsCoord[z] = std::make_tuple(lengths[slice],sizes[slice],x*sizeScanStep,y*sizeScanStep,r);
+											}
+											else
+												actsPotsCoord[z] = std::make_tuple(0,0,x*sizeScanStep,y*sizeScanStep,r);
+										}
+									}
+									if (actsPotsCoord.size())
+									{
+										std::sort(actsPotsCoord.begin(), actsPotsCoord.end());
+										auto& pos = actsPotsCoord.back();
+										auto length = std::get<0>(pos);
+										auto likelihood = std::get<1>(pos);
+										auto x = std::get<2>(pos);
+										auto y = std::get<3>(pos);
+										auto r = std::get<4>(pos);
+										actsPotsCoordTop.push_back(std::make_tuple(likelihood,length,x,y,r,scaleValue));
+									}										
 								}
 						}, t));
 				for (auto& t : threads)
@@ -1187,16 +1168,14 @@ void Modeller001::model()
 			for (std::size_t k = 0; eventCount < _eventSize && k < actsPotsCoordTop.size(); k++)	
 			{
 				auto pos = actsPotsCoordTop[k];
-				auto likelihood = std::get<0>(pos);
-				auto posX = std::get<3>(pos);
-				auto posY = std::get<4>(pos);	
-				auto x = std::get<5>(pos);
-				auto y = std::get<6>(pos);
-				auto& record = records[std::get<7>(pos)];
-				auto scaleValue = std::get<8>(pos);
+				auto x = std::get<2>(pos);
+				auto y = std::get<3>(pos);
+				auto& record = records[std::get<4>(pos)];
+				auto scaleValue = std::get<5>(pos);
 				auto scale =  _scales[scaleValue];
 				Record recordSub(record,_size,_size,x,y);
 				Record recordValent = recordSub.valentFixed(_valency,_valencyBalanced);
+				// TODO check for entropy
 				for (std::size_t y = 0, m = 0; y < _level2Size; y++)	
 					for (std::size_t x = 0; x < _level2Size; x++, m++)	
 					{
