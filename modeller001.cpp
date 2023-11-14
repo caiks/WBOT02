@@ -827,16 +827,18 @@ void Modeller001::model()
 			}			
 			Record recordSub(record,_size,_size,_size/4,_size/4);
 			Record recordValent = recordSub.valentFixed(_valency,_valencyBalanced);
-			for (std::size_t y = 0, m = 0; y < _level2Size; y++)	
-				for (std::size_t x = 0; x < _level2Size; x++, m++)	
-				{
-					Record recordTile(recordValent,_level1Size,_level1Size,x*_level1Size,y*_level1Size);
-					auto hr = recordsHistoryRepa(_scaleValency,scaleValue,_valency,recordTile);
-					if (!_updateDisable)
+			if (!_updateDisable)
+			{
+				for (std::size_t y = 0, m = 0; y < _level2Size; y++)	
+					for (std::size_t x = 0; x < _level2Size; x++, m++)	
+					{
+						Record recordTile(recordValent,_level1Size,_level1Size,x*_level1Size,y*_level1Size);
+						auto hr = recordsHistoryRepa(_scaleValency,scaleValue,_valency,recordTile);
 						_level1Events[m]->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_level1Events[m]->references);	
-				}	
-			auto hr = recordsHistoryRepa(_scaleValency, scaleValue, _valency, recordValent);
-			_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
+					}	
+				auto hr = recordsHistoryRepa(_scaleValency, scaleValue, _valency, recordValent);
+				_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);					
+			}
 			this->eventId++;		
 			eventCount++;	
 		}
@@ -983,9 +985,9 @@ void Modeller001::model()
 						return;
 					}
 				}
-				records.push_back(record);
+				records.push_back(record.valentFixed(_valency,_valencyBalanced));
 			}
-			std::vector<std::tuple<std::size_t,std::size_t,std::size_t,std::size_t,std::size_t,std::size_t>> actsPotsCoordTop;
+			std::vector<std::tuple<std::size_t,std::size_t,std::size_t,std::size_t,std::size_t,std::size_t>> actsPotsCoordTop(records.size());
 			{
 				auto& activeA = *_active;
 				auto& actor = *this;
@@ -1054,8 +1056,7 @@ void Modeller001::model()
 										if (scaleValue >= actor._scales.size())
 											scaleValue = 0;
 									}
-									Record recordValent = record.valentFixed(valency,valencyBalanced);
-									auto& arr1 = *recordValent.arr;	
+									auto& arr1 = *record.arr;	
 									auto countX = (sizeX - level1Size)/sizeScanStep;
 									auto countY = (sizeY - level1Size)/sizeScanStep;
 									std::vector<SizeList> level1Slices(countX*countY);
@@ -1148,7 +1149,6 @@ void Modeller001::model()
 												actsPotsCoord[z] = std::make_tuple(0,0,x*sizeScanStep,y*sizeScanStep,r);
 										}
 									}
-									if (actsPotsCoord.size())
 									{
 										std::sort(actsPotsCoord.begin(), actsPotsCoord.end());
 										auto& pos = actsPotsCoord.back();
@@ -1157,7 +1157,7 @@ void Modeller001::model()
 										auto x = std::get<2>(pos);
 										auto y = std::get<3>(pos);
 										auto r = std::get<4>(pos);
-										actsPotsCoordTop.push_back(std::make_tuple(likelihood,length,x,y,r,scaleValue));
+										actsPotsCoordTop[r] = std::make_tuple(likelihood,length,x,y,r,scaleValue);
 									}										
 								}
 						}, t));
@@ -1168,24 +1168,24 @@ void Modeller001::model()
 			for (std::size_t k = 0; eventCount < _eventSize && k < actsPotsCoordTop.size(); k++)	
 			{
 				auto pos = actsPotsCoordTop[k];
-				auto x = std::get<2>(pos);
-				auto y = std::get<3>(pos);
+				auto x0 = std::get<2>(pos);
+				auto y0 = std::get<3>(pos);
 				auto& record = records[std::get<4>(pos)];
 				auto scaleValue = std::get<5>(pos);
-				auto scale =  _scales[scaleValue];
-				Record recordSub(record,_size,_size,x,y);
-				Record recordValent = recordSub.valentFixed(_valency,_valencyBalanced);
-				// TODO check for entropy
-				for (std::size_t y = 0, m = 0; y < _level2Size; y++)	
-					for (std::size_t x = 0; x < _level2Size; x++, m++)	
-					{
-						Record recordTile(recordValent,_level1Size,_level1Size,x*_level1Size,y*_level1Size);
-						auto hr = recordsHistoryRepa(_scaleValency,scaleValue,_valency,recordTile);
-						if (!_updateDisable)
+				auto scale = _scales[scaleValue];
+				Record recordSub(record,_size,_size,x0,y0);
+				if (!_updateDisable)
+				{
+					for (std::size_t y = 0, m = 0; y < _level2Size; y++)	
+						for (std::size_t x = 0; x < _level2Size; x++, m++)	
+						{
+							Record recordTile(recordSub,_level1Size,_level1Size,x*_level1Size,y*_level1Size);
+							auto hr = recordsHistoryRepa(_scaleValency,scaleValue,_valency,recordTile);
 							_level1Events[m]->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_level1Events[m]->references);	
-					}	
-				auto hr = recordsHistoryRepa(_scaleValency, scaleValue, _valency, recordValent);
-				_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
+						}	
+					auto hr = recordsHistoryRepa(_scaleValency, scaleValue, _valency, recordSub);
+					_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);					
+				}
 				this->eventId++;		
 				eventCount++;	
 			}				
