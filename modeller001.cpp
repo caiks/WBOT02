@@ -1174,6 +1174,8 @@ void Modeller001::model()
 				auto scaleValue = std::get<5>(pos);
 				auto scale = _scales[scaleValue];
 				Record recordSub(record,_size,_size,x0,y0);
+				if (_entropyMinimum > 0.0 && recordSub.entropy() < _entropyMinimum)
+					continue;	
 				if (!_updateDisable)
 				{
 					for (std::size_t y = 0, m = 0; y < _level2Size; y++)	
