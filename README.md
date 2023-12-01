@@ -3707,7 +3707,7 @@ Looking at the *model* position map, we can see that, like *model* 81, *model* 8
 
 Overall, the computed *substrate* *model* 86 does not seem to be much better qualitatively than the non-computed *substrate* *model* 81, at least with respect to foreground objects, although it is certainly better quantitatively. The main advantage is that it allows us to have *substrates* with ordered *variables* and high *valencies*. Let us go on now to consider whether it might also produce  higher *alignments* in a *2-level model*.
 
-###### 2-level models
+###### Random centre 2-level models
 
 For the first *2-level model* we continued with the offline process `modeller001`, which we used for random centre *1-level model* 73 (mode 12) and random centre *underlying level models* 76-81 (mode 13). Now we add mode 14 for the *2-level models* 82 and 87. For each *event*, mode 14 takes the central `40x40` frame from each `60x60` record in the record set (which is guaranteed to be higher than the minimum entropy requirement for *10-valent*) and then divides it into `5x5` tiles of `8x8`. It then *applies* the *underlying model* to each tile. These *underlying slices* and their ancestor *slices* are reframed by the higher *level* active according to their positions. The *2-level model* is then *applied* to the resultant intermediate *substrate* for active update and induce.
 
@@ -3963,11 +3963,16 @@ Similarly to *model* 82, the position map shows quite a lot of convolution, i.e.
 
 Note that the contour map entropy limit is different in *model* 88 versus *model* 82 because of the *32-valency*, so there are fewer areas where the map is not calculated.
 
+###### Scanned 2-level models
+
+
 TODO -scanned 2-level
 
 randomised models 82 and 88 have low multipliers but they are still too high to obtain long paths
 
 Now we wish to move to scanning modes. Contrary to earlier ideas about offline processsing, we can scan without having to have 25+1 model applications at each cell by tiling underlying, possibly with several offset tile sets, over the scan area and then do the higher level with these tile sets. Now the scan will require only 1-2 model applications per cell. We will also cover much larger scan areas. The downside is that we will be below maximal path lengths sometimes, but this should be less of a problem with the evident convolution (which implies a lot of duplicated model at small translations), although there are still disconinutities in the map. Also, offline record sets are unmanagably large, although randomising is an advantage at the substrate. We will handle the the additional load due to the higher scan multiple and the multi-scale by having asynchronous image capture from video in a actor004 which will be similar to actor003 and modeller001. Also, there is an advantage to centering when scanning to improve burstiness and ultimately we need it for the 3-level temporaral or saccade-sequence features of 3-level which will use slice topology. So we have random for 1-level, centered scanning search for 2-level, and topology search for 3-level. With scanning we are hoping to see long enough paths to see high-frequency features in the examples and similar features spread over only a few hotspots (we can test this by moving an image horizontally/vertically and by scaling), i.e. a sparsity of hotspots implying a degree of 'convolution' between hotspots.
+
+1-level model 61/73 representations are better than 2-level models 89 or 90 for contour005. Could the entropy threshold be causing the model to grow in dull places? Should the scan be every 2 cells instead of 4? (Need 4x scan compute.)
 
 TODO - future developments - 
 
