@@ -3965,16 +3965,65 @@ Note that the contour map entropy limit is different in *model* 88 versus *model
 
 ###### Scanned 2-level models
 
+Now we wish to move to scanning modes for *2-level models*. Contrary to earlier ideas about *2-level* processsing, we can scan without having to have make 25+1 model applications at each cell by tiling the *underlying*, possibly at regular cell intervals to make separate tile sets, over the whole scan area and then do the higher *level* sharing the tile sets. Now the scan will require only 1-2 *model applications* per cell. That is, the compute will be of the same order of magnitude as for *1-level models*. Note that we will be below maximal path lengths if we do not take tile sets for every cell, i.e. 8 tile sets for a tile of size 8, but this should be less of a problem with the evident convolution (which implies a lot of duplicated *model* at small translations), although there are still discontinuities in the map. 
 
-TODO -scanned 2-level
+The first scanned *2-level model* 89 is configured similarly to random *2-level model* 82 except for the new mode and ayschronous induce. This is the configuration for *model* 89 which takes *model* 81 as its *1-level underlying* -
+```
+{
+	"model" : "model089",
+	"structure" : "struct002",
+	"level1_model" : "model081",
+	"records_sources" : ["records006","records002","records003"],
+	"checkpointing" : true,
+	"mode" : "mode016",
+	"valency" : 10,
+	"valency_balanced" : true,
+	"entropy_minimum" : 1.2,
+	"size" : 40,
+	"level1_size" : 8,
+	"level2_size" : 5,
+	"scan_step" : 4,
+	"event_size" : 4,
+	"scan_size" : 20,
+	"threads" : 8,
+	"cumulative_active" : false,
+	"activeSize" : 3000000,
+	"level1_activeSize" : 10,
+	"induceThreadCount" : 1,
+	"induceParameters.asyncThreadMax" : 8,
+	"induceThreshold" : 200,
+	"induceParameters.asyncUpdateLimit" : 400,
+	"induceParameters.diagonalMin" : 12.0,
+	"induceParameters.xmax" : 256,
+	"induceParameters.omax" : 20,
+	"induceParameters.bmax" : 60,
+	"induceParameters.znnmax" : 1310720000.0,
+	"scales" : [0.250, 0.210, 0.177, 0.149, 0.125, 0.105],
+	"event_maximum" : 3000000,
+	"logging_event" : true,
+	"logging_event_factor" : 1000,
+	"summary_active" : true
+}
+```
+It was run in the cloud as follows -
+```
+cd /mnt/vol01/WBOT02_ws
+/usr/bin/time ./WBOT02 modeller001 model089.json >>model089.log 2>&1
+
+```
+Mode 16 'randomised size-potential scanned actual-potential level 2' takes `"scan_size" : 20` records and for each record creates tiles of size 8x8 at `"scan_step" : 4` cell intervals. So for the record size of 60x60, we have 13x13 *underlying* *model applications* and we have `20/4 = 5` scans, i.e 5x5  *overlying* *model applications*. Once the *overlying* paths are determined the top path is chosen first by path length and then by *slice size*, i.e. actual-potential *likelihood*. The `"event_size" : 4` top *events* are then selected from the `"scan_size" : 20` set of records by *slice size*, i.e. potential *likelihood*, to form the *events*.
+
+TODO -
 
 randomised models 82 and 88 have low multipliers but they are still too high to obtain long paths
 
-Now we wish to move to scanning modes. Contrary to earlier ideas about offline processsing, we can scan without having to have 25+1 model applications at each cell by tiling underlying, possibly with several offset tile sets, over the scan area and then do the higher level with these tile sets. Now the scan will require only 1-2 model applications per cell. We will also cover much larger scan areas. The downside is that we will be below maximal path lengths sometimes, but this should be less of a problem with the evident convolution (which implies a lot of duplicated model at small translations), although there are still disconinutities in the map. Also, offline record sets are unmanagably large, although randomising is an advantage at the substrate. We will handle the the additional load due to the higher scan multiple and the multi-scale by having asynchronous image capture from video in a actor004 which will be similar to actor003 and modeller001. Also, there is an advantage to centering when scanning to improve burstiness and ultimately we need it for the 3-level temporaral or saccade-sequence features of 3-level which will use slice topology. So we have random for 1-level, centered scanning search for 2-level, and topology search for 3-level. With scanning we are hoping to see long enough paths to see high-frequency features in the examples and similar features spread over only a few hotspots (we can test this by moving an image horizontally/vertically and by scaling), i.e. a sparsity of hotspots implying a degree of 'convolution' between hotspots.
 
 1-level model 61/73 representations are better than 2-level models 89 or 90 for contour005. Could the entropy threshold be causing the model to grow in dull places? Should the scan be every 2 cells instead of 4? (Need 4x scan compute.)
 
 TODO - future developments - 
+
+Also, offline record sets are unmanagably large, although randomising is an advantage at the substrate. We will handle the the additional load due to the higher scan multiple and the multi-scale by having asynchronous image capture from video in a actor004 which will be similar to actor003 and modeller001. Also, there is an advantage to centering when scanning to improve burstiness and ultimately we need it for the 3-level temporaral or saccade-sequence features of 3-level which will use slice topology. So we have random for 1-level, centered scanning search for 2-level, and topology search for 3-level. With scanning we are hoping to see long enough paths to see high-frequency features in the examples and similar features spread over only a few hotspots (we can test this by moving an image horizontally/vertically and by scaling), i.e. a sparsity of hotspots implying a degree of 'convolution' between hotspots.
+
 
 We will need to focus on hotspots driven by higher levels to pick up more alignments in facial features because these are relatively weak. We have already seen that we need entropy restrictions to avoid the dull areas of the image. Our challenge is to use hints from biology to enhance the alignments that are interesting to humans, eg entropy, hotspots, gradients spatial and dynamic, central area limits or valency variations.
  
