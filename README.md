@@ -3794,6 +3794,8 @@ cd ~/WBOT02_ws
 
 ```
 
+<a name="view_underlying_lengths_demoted_model082"></a>
+
 0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 1|16|12|8|5|3|1|2||||||||||||||||
@@ -4011,7 +4013,71 @@ cd /mnt/vol01/WBOT02_ws
 /usr/bin/time ./WBOT02 modeller001 model089.json >>model089.log 2>&1
 
 ```
-Mode 16 'randomised size-potential scanned actual-potential level 2' takes `"scan_size" : 20` records and for each record creates tiles of size 8x8 at `"scan_step" : 4` cell intervals. So for the record size of 60x60, we have 13x13 *underlying* *model applications* and we have `20/4 = 5` scans, i.e 5x5  *overlying* *model applications*. Once the *overlying* paths are determined the top path is chosen first by path length and then by *slice size*, i.e. actual-potential *likelihood*. The `"event_size" : 4` top *events* are then selected from the `"scan_size" : 20` set of records by *slice size*, i.e. potential *likelihood*, to form the *events*.
+Mode 16 'randomised size-potential scanned actual-potential level 2' takes `"scan_size" : 20` records and for each record creates tiles of size `"level1_size" : 8` at `"scan_step" : 4` cell intervals. So for the record size of 60x60, we have 13x13 *underlying* *model applications* and we have `(60-40)/4 = 5` scans, i.e 5x5  *overlying* *model applications*. Once the *overlying* paths are determined, the top path is chosen first by path length and then by *slice size*, i.e. by actual-potential *likelihood*. The `"event_size" : 4` top *events* are then selected from the `"scan_size" : 20` set of records by *slice size*, i.e. by potential *likelihood*, to form the *events*.
+
+Here are the statistics for scanned *2-level model* 89 compared to randomised *1-level model* 66, randomised *2-level model* 82 and scanned *1-level model* 61 -
+
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model066|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised|9|balanced|48 B&W videos|500,000|1,822|0.7288|6.4|1.7|11|0.1|-0.5|0.6|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy
+model082|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised level 2|14|balanced|48 B&W videos|3,000,000|12,107|0.807|9.3|2.3|19|0.4|0.0|3.2|2.74|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8
+model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
+model089|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential level 2|16|balanced|48 B&W videos|3,000,001|24,731|1.649|15.8|3.1|27|-0.3|0.2|-2.9|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60, threshold 200
+
+Qualitatively, *model* 89 is now much more similar to *model* 61 than *model* 82. The growth rate is very high at 1.649 and the multiplier quite low at 1.89, so the mean path length is very high at 15.8. The other statistics are also similar to *model* 61, although the maximum path length is longer at 27 and hence the negative skew is lower because of the low kurtosis. 
+
+The median *diagonal* at 20.0 is somewhat higher than the 17.6 of *model* 82, but still less than that for *model* 66 at 26.0. The average number of *underlying variables* per *fud* has also increased to 18.52 compared to 14.47 for *model* 82. Perhaps we are seeing higher global *alignments* as the paths lengthen.
+
+These are the *underlying* path lengths -
+
+0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+1|11|6|13|8|1|||||||||||
+2|27|40|18|16|4|4||||||||||
+3|49|53|54|32|9|5|1|||||||||
+4|81|107|97|90|37|16|3|2|1|||||||
+5|168|178|195|181|75|33|21|11|2|2|2|1||||
+6|318|454|423|355|161|81|42|21|12|8|2|||||
+7|580|749|795|701|346|180|94|31|14|9|3|1||||
+8|1103|1349|1222|1123|555|325|144|79|41|16|10|4||||
+9|1748|2167|2173|1850|920|540|282|150|65|36|9|13|1|||
+10|2764|3302|3421|2904|1613|931|469|239|132|85|21|6||||
+11|4304|4894|5318|4345|2492|1501|728|425|197|87|44|20|5|2||
+12|5799|6709|7125|6162|3433|2211|1160|562|309|137|56|30|9|1|1|
+13|7616|8812|9839|8198|4823|3117|1614|842|472|217|99|31|12|5|1|
+14|9212|10345|11293|9557|5696|3557|1952|1131|513|289|110|58|20|2||
+15|9538|10784|12041|10248|6163|4012|2239|1137|524|312|132|53|25|7|4|1
+16|8691|9851|11278|9593|5915|3914|2191|1118|504|292|103|52|13|5|2|
+17|7395|8272|9447|7915|5021|3317|1739|870|447|258|104|30|15|3|1|
+18|5430|6212|7103|6006|3944|2562|1439|733|340|172|76|31|10|6|1|
+19|3860|4181|4995|4169|2760|1818|968|526|241|128|49|17|6|2||
+20|2179|2302|2707|2336|1683|1057|601|295|134|69|26|15|4|1||
+21|1171|1098|1318|1025|735|481|271|128|65|27|13|5|1|1|1|
+22|398|443|566|460|325|226|99|65|23|6|3|1||||
+23|149|177|196|155|122|92|63|22|11|3|2|1|2|||
+24|34|22|30|42|14|16|6|2|2|||||||
+25|7|12|18|18|17|9|1|1||||||||
+26|7|16|10|12|10|9|1|2||||||||
+
+Compare them to [*model* 82](#view_underlying_lengths_demoted_model082).
+
+This shows the mean *underlying* *slice* path length for each of the *overlying* path lengths -
+
+1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26
+--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--
+2.56|2.47|2.61|2.94|3.12|3.13|3.21|3.18|3.24|3.3|3.32|3.37|3.43|3.43|3.47|3.5|3.49|3.54|3.54|3.58|3.47|3.53.7|3.44|3.75|3.64
+
+There is only a small increase in the lengths of the *underlying* paths compared to *model* 82.
+
+Qualitatively, there is no much of an advance over *model* 82, even though the *model* is twice the size and the mean path is 6.5 steps longer. These are two representations for *model* 89 -
+
+![contour004_089_scale3_minent_representation](images/contour004_089_scale3_minent_representation.png) 
+
+![contour004_089_scale3_minent_representation](images/contour005_089_scale3_minent_representation.png) 
+
+The scanned *model* is much less normal than *model* 82, which we can see by the hotspots in the length contour map (for scale 0.177) -
+
+![contour004_089_scale3_minent_length](images/contour004_089_scale3_minent_length.png) 
 
 TODO -
 
