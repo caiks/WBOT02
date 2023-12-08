@@ -1549,8 +1549,8 @@ model084|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced com
 model086|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 84|13|balanced computed 32-valent|48 B&W videos|75,000,000|341,235|0.910|13.9|2.4|23|-0.4|0.2|-3.9|2.49|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 256, omax 20, bmax 60, threshold 200
 model087|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised level 2|14|balanced computed 32-valent|48 B&W videos|3,000,000|5,139|0.857|9.6|2.4|17|0.0|-0.4|0.1|2.44|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 512, omax 20, bmax 60, threshold 500
 model088|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 87 level 2|14|balanced computed 32-valent|48 B&W videos|3,000,000|12,976|0.865|10.4|2.5|18|0.0|-0.4|0.2|2.49|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60, threshold 200
-model089|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential level 2|16|balanced|48 B&W videos|3,000,001|24,731|1.649|15.8|3.1|27|-0.3|0.2|-2.9|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60, threshold 200
-model090|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential level 2|16|balanced computed 32-valent|48 B&W videos|2,999,999|25,488|1.699|16.1|2.8|26|-0.4|0.4|-4.6|1.88|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60, threshold 200
+model089|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential level 2|16|balanced|48 B&W videos|3,000,001|24,731|1.649|15.8|3.1|27|-0.3|0.2|-2.9|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60
+model090|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential level 2|16|balanced computed 32-valent|48 B&W videos|2,999,999|25,488|1.699|16.1|2.8|26|-0.4|0.4|-4.6|1.88|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60
 
 The table above does not show the median and maximum *diagonals*. The median *diagonals* for the actor 2 and actor 3 *models* were consistently around 23-27, and the maximum *diagonals* were consistently around 37-39.
 
@@ -3967,7 +3967,7 @@ Note that the contour map entropy limit is different in *model* 88 versus *model
 
 ###### Scanned 2-level models
 
-Now we wish to move to scanning modes for *2-level models*. Contrary to earlier ideas about *2-level* processsing, we can scan without having to have make 25+1 model applications at each cell by tiling the *underlying*, possibly at regular cell intervals to make separate tile sets, over the whole scan area and then do the higher *level* sharing the tile sets. Now the scan will require only 1-2 *model applications* per cell. That is, the compute will be of the same order of magnitude as for *1-level models*. Note that we will be below maximal path lengths if we do not take tile sets for every cell, i.e. 8 tile sets for a tile of size 8, but this should be less of a problem with the evident convolution (which implies a lot of duplicated *model* at small translations), although there are still discontinuities in the map. 
+Now we wish to move to scanning modes for *2-level models*. Contrary to earlier ideas about *2-level* processsing, we can scan without having to have make 25+1 model applications at each cell by tiling the *underlying*, optionally with a cell offset, to make one or more tile sets over the whole scan area, and then do the higher *level* sharing the tile sets. Now the scan will require only 1-2 *model applications* per cell. That is, the compute will be of the same order of magnitude as for *1-level models*. Note that we may be below maximal path lengths if we do not take tile sets for every cell, i.e. 8 tile sets for a tile of size 8, but this should be less of a problem with the evident convolution (which implies a lot of duplicated *model* at small translations), although there are still discontinuities in the map. 
 
 The first scanned *2-level model* 89 is configured similarly to random *2-level model* 82 except for the new mode and ayschronous induce. This is the configuration for *model* 89 which takes *model* 81 as its *1-level underlying* -
 ```
@@ -4013,7 +4013,7 @@ cd /mnt/vol01/WBOT02_ws
 /usr/bin/time ./WBOT02 modeller001 model089.json >>model089.log 2>&1
 
 ```
-Mode 16 'randomised size-potential scanned actual-potential level 2' takes `"scan_size" : 20` records and for each record creates tiles of size `"level1_size" : 8` at `"scan_step" : 4` cell intervals. So for the record size of 60x60, we have 13x13 *underlying* *model applications* and we have `(60-40)/4 = 5` scans, i.e 5x5  *overlying* *model applications*. Once the *overlying* paths are determined, the top path is chosen first by path length and then by *slice size*, i.e. by actual-potential *likelihood*. The `"event_size" : 4` top *events* are then selected from the `"scan_size" : 20` set of records by *slice size*, i.e. by potential *likelihood*, to form the *events*.
+Mode 16 'randomised size-potential scanned actual-potential level 2' takes a set of `"scan_size" : 20` records. For each record creates tiles of size `"level1_size" : 8` at `"scan_step" : 4` cell intervals, so effectively creating two tile sets at offsets 0 and 4. So for the record size of 60x60, we have 13x13 *underlying* *model applications* and we have `(60-40)/4 = 5` scans, i.e 5x5  *overlying* *model applications*. Once the *overlying* paths are determined for each scan, the top path is chosen first by path length and then by *slice size*, i.e. by actual-potential *likelihood*. The `"event_size" : 4` top *events* are then selected from the `"scan_size" : 20` set of records by *slice size*, i.e. by potential *likelihood*, to form the *events*.
 
 Here are the statistics for scanned *2-level model* 89 compared to randomised *1-level model* 66, randomised *2-level model* 82 and scanned *1-level model* 61 -
 
@@ -4022,11 +4022,11 @@ model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld 
 model066|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised|9|balanced|48 B&W videos|500,000|1,822|0.7288|6.4|1.7|11|0.1|-0.5|0.6|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy
 model082|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised level 2|14|balanced|48 B&W videos|3,000,000|12,107|0.807|9.3|2.3|19|0.4|0.0|3.2|2.74|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8
 model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
-model089|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential level 2|16|balanced|48 B&W videos|3,000,001|24,731|1.649|15.8|3.1|27|-0.3|0.2|-2.9|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60, threshold 200
+model089|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential level 2|16|balanced|48 B&W videos|3,000,001|24,731|1.649|15.8|3.1|27|-0.3|0.2|-2.9|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60
 
 Qualitatively, *model* 89 is now much more similar to *model* 61 than *model* 82. The growth rate is very high at 1.649 and the multiplier quite low at 1.89, so the mean path length is very high at 15.8. The other statistics are also similar to *model* 61, although the maximum path length is longer at 27 and hence the negative skew is lower because of the low kurtosis. 
 
-The median *diagonal* at 20.0 is somewhat higher than the 17.6 of *model* 82, but still less than that for *model* 66 at 26.0. The average number of *underlying variables* per *fud* has also increased to 18.52 compared to 14.47 for *model* 82. Perhaps we are seeing higher global *alignments* as the paths lengthen.
+The median *diagonal* at 20.0 is somewhat higher than the 17.6 of *model* 82, but still less than that for *1-level model* 66 at 26.0. The average number of *underlying variables* per *fud* has also increased to 18.52 compared to 14.47 for *model* 82. Perhaps we are seeing higher global *alignments* as the paths lengthen.
 
 These are the *underlying* path lengths -
 
@@ -4067,7 +4067,7 @@ This shows the mean *underlying* *slice* path length for each of the *overlying*
 --|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--
 2.56|2.47|2.61|2.94|3.12|3.13|3.21|3.18|3.24|3.3|3.32|3.37|3.43|3.43|3.47|3.5|3.49|3.54|3.54|3.58|3.47|3.53.7|3.44|3.75|3.64
 
-There is only a small increase in the lengths of the *underlying* paths compared to *model* 82.
+There is only a small increase in the lengths of the *underlying* paths compared to *model* 82. The higher numbers of *underlying* mean that there will be a larger probablity that some of the *underlying* have long paths.
 
 Qualitatively, there is no much of an advance over *model* 82, even though the *model* is twice the size and the mean path is 6.5 steps longer. These are two representations for *model* 89 -
 
@@ -4085,6 +4085,8 @@ randomised models 82 and 88 have low multipliers but they are still too high to 
 
 
 1-level model 61/73 representations are better than 2-level models 89 or 90 for contour005. Could the entropy threshold be causing the model to grow in dull places? Should the scan be every 2 cells instead of 4? (Need 4x scan compute.)
+
+model 90 has very good tie and generally is smoother than either 61 or 89. Does the backgrounds better. 61 does the face much better. Probably this is just the higher valency which gives many smooth gradient alignments that are not available to the other models. Could try re-running model 90 with a valency of 10 to see what effect it has on the smoothness and the weight given to backgrounds and surfaces. Let's do the contour distributions first.
 
 TODO - future developments - 
 
