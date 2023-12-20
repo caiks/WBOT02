@@ -4013,7 +4013,7 @@ cd /mnt/vol01/WBOT02_ws
 /usr/bin/time ./WBOT02 modeller001 model089.json >>model089.log 2>&1
 
 ```
-Mode 16 'randomised size-potential scanned actual-potential level 2' takes a set of `"scan_size" : 20` records. For each record creates tiles of size `"level1_size" : 8` at `"scan_step" : 4` cell intervals, so effectively creating two tile sets at offsets 0 and 4. So for the record size of 60x60, we have 13x13 *underlying* *model applications* and we have `(60-40)/4 = 5` scans, i.e 5x5  *overlying* *model applications*. Once the *overlying* paths are determined for each scan, the top path is chosen first by path length and then by *slice size*, i.e. by actual-potential *likelihood*. The `"event_size" : 4` top *events* are then selected from the `"scan_size" : 20` set of records by *slice size*, i.e. by potential *likelihood*, to form the *events*.
+Mode 16 'randomised size-potential scanned actual-potential level 2' takes a set of `"scan_size" : 20` records. For each record it creates tiles of size `"level1_size" : 8` at `"scan_step" : 4` cell intervals, so effectively creating two tile sets at offsets 0 and 4. So for the record size of 60x60, we have 13x13 *underlying* *model applications* and we have `(60-40)/4 = 5` scans, i.e 5x5  *overlying* *model applications*. Once the *overlying* paths are determined for each scan, the top path is chosen first by path length and then by *slice size*, i.e. by actual-potential *likelihood*. The `"event_size" : 4` top *events* are then selected from the `"scan_size" : 20` set of records by *slice size*, i.e. by potential *likelihood*, to form the *events*.
 
 Here are the statistics for scanned *2-level model* 89 compared to randomised *1-level model* 66, randomised *2-level model* 82 and scanned *1-level model* 61 -
 
@@ -4024,7 +4024,7 @@ model082|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised level 2|14|balanced|4
 model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
 model089|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential level 2|16|balanced|48 B&W videos|3,000,001|24,731|1.649|15.8|3.1|27|-0.3|0.2|-2.9|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60
 
-Qualitatively, *model* 89 is now much more similar to *model* 61 than *model* 82. The growth rate is very high at 1.649 and the multiplier quite low at 1.89, so the mean path length is very high at 15.8. The other statistics are also similar to *model* 61, although the maximum path length is longer at 27 and hence the negative skew is lower because of the low kurtosis. 
+Quantitatively, *model* 89 is now much more similar to *model* 61 than *model* 82. The growth rate is very high at 1.649 and the multiplier quite low at 1.89, so the mean path length is very high at 15.8. The other statistics are also similar to *model* 61, although the maximum path length is longer at 27 and hence the negative skew is lower because of the low kurtosis. 
 
 The median *diagonal* at 20.0 is somewhat higher than the 17.6 of *model* 82, but still less than that for *1-level model* 66 at 26.0. The average number of *underlying variables* per *fud* has also increased to 18.52 compared to 14.47 for *model* 82. Perhaps we are seeing higher global *alignments* as the paths lengthen.
 
@@ -4069,7 +4069,7 @@ This shows the mean *underlying* *slice* path length for each of the *overlying*
 
 There is only a small increase in the lengths of the *underlying* paths compared to *model* 82. The higher numbers of *underlying* mean that there will be a larger probablity that some of the *underlying* have long paths.
 
-Qualitatively, there is no much of an advance over *model* 82, even though the *model* is twice the size and the mean path is 6.5 steps longer. These are two representations for *model* 89 -
+Qualitatively, there is not much of an advance over *model* 82, even though the *model* is twice the size and the mean path is 6.5 steps longer. These are two representations for *model* 89 -
 
 ![contour004_089_scale3_minent_representation](images/contour004_089_scale3_minent_representation.png) 
 
@@ -4078,6 +4078,19 @@ Qualitatively, there is no much of an advance over *model* 82, even though the *
 The scanned *model* is much less normal than *model* 82, which we can see by the hotspots in the length contour map (for scale 0.177) -
 
 ![contour004_089_scale3_minent_length](images/contour004_089_scale3_minent_length.png) 
+
+The position map still shows quite a lot of convolution, but there is perhaps less detail - presumably because of the hotspots -
+
+![contour004_089_scale3_minent_position](images/contour004_089_scale3_minent_position.png) 
+
+Looking at the actor002 screenshots, we can see that the examples appear to be more consistent -
+
+![actor002_model089_Film_Noir_002](images/actor002_model089_Film_Noir_002.png) 
+
+This suggests that *2-level models* are picking up global *alignments* as we intended. However, even with long paths, the examples still require a lot of *classification* -
+
+![actor002_model089_Film_Noir_004](images/actor002_model089_Film_Noir_004.png) 
+
 
 TODO -
 
