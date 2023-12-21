@@ -4065,7 +4065,7 @@ This shows the mean *underlying* *slice* path length for each of the *overlying*
 
 1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25|26
 --|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--
-2.56|2.47|2.61|2.94|3.12|3.13|3.21|3.18|3.24|3.3|3.32|3.37|3.43|3.43|3.47|3.5|3.49|3.54|3.54|3.58|3.47|3.53.7|3.44|3.75|3.64
+2.56|2.47|2.61|2.94|3.12|3.13|3.21|3.18|3.24|3.3|3.32|3.37|3.43|3.43|3.47|3.5|3.49|3.54|3.54|3.58|3.47|3.5|3.7|3.44|3.75|3.64
 
 There is only a small increase in the lengths of the *underlying* paths compared to *model* 82. The higher numbers of *underlying* mean that there will be a larger probablity that some of the *underlying* have long paths.
 
@@ -4091,8 +4091,125 @@ This suggests that *2-level models* are picking up global *alignments* as we int
 
 ![actor002_model089_Film_Noir_004](images/actor002_model089_Film_Noir_004.png) 
 
+Now let us consider the euqivalent scanned *2-level model* where the [*substrate* is computed](#computed_substrate). This is the configuration for *model* 90 which takes *model* 86 as its *1-level underlying* -
+```
+{
+	"model" : "model090",
+	"structure" : "struct005",
+	"level1_model" : "model086c",
+	"records_sources" : ["records006","records002","records003"],
+	"checkpointing" : true,
+	"mode" : "mode016",
+	"valency" : 32,
+	"valency_balanced" : true,
+	"entropy_minimum" : 1.2,
+	"size" : 40,
+	"level1_size" : 8,
+	"level2_size" : 5,
+	"scan_step" : 4,
+	"event_size" : 4,
+	"scan_size" : 20,
+	"threads" : 8,
+	"cumulative_active" : false,
+	"activeSize" : 3000000,
+	"level1_activeSize" : 10,
+	"induceThreadCount" : 1,
+	"induceParameters.asyncThreadMax" : 8,
+	"induceThreshold" : 200,
+	"induceParameters.asyncUpdateLimit" : 400,
+	"induceParameters.diagonalMin" : 12.0,
+	"induceParameters.xmax" : 256,
+	"induceParameters.omax" : 20,
+	"induceParameters.bmax" : 60,
+	"induceParameters.znnmax" : 1310720000.0,
+	"scales" : [0.250, 0.210, 0.177, 0.149, 0.125, 0.105],
+	"event_maximum" : 3000000,
+	"logging_event" : true,
+	"logging_event_factor" : 1000,
+	"summary_active" : true
+}
+```
+It was run in the cloud as follows -
+```
+cd /mnt/vol01/WBOT02_ws
+/usr/bin/time ./WBOT02 modeller001 model090.json >>model090.log 2>&1
+
+```
+The configuration is very similar to that of *model* 89 except that the *valency* is 32 and computed. The mode remains at 16. Note that the minimum entropy has stayed the same, so the higher *valency* will allow relatively low entropy *events*, possibly diluting the *size* of interesting features.
+
+Here are the statistics for scanned *2-level model* 90 compared to scanned non-computed*2-level model* 89, randomised *1-level model* 66, randomised *2-level model* 88 and scanned *1-level model* 61 -
+
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model066|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised|9|balanced|48 B&W videos|500,000|1,822|0.7288|6.4|1.7|11|0.1|-0.5|0.6|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy
+model088|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 87 level 2|14|balanced computed 32-valent|48 B&W videos|3,000,000|12,976|0.865|10.4|2.5|18|0.0|-0.4|0.2|2.49|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60, threshold 200
+model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
+model089|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential level 2|16|balanced|48 B&W videos|3,000,001|24,731|1.649|15.8|3.1|27|-0.3|0.2|-2.9|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60
+model090|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential level 2|16|balanced computed 32-valent|48 B&W videos|2,999,999|25,488|1.699|16.1|2.8|26|-0.4|0.4|-4.6|1.88|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60
+
+Quantitatively, computed *model* 90 is very similar to non-computed *model* 89. The growth rate and multipliers are only slightly better, so the mean path length increases slightly to 16.1, although the variance and maximum are slightly lower. The higher order statistics are very similar to *model* 61.
+
+The median *diagonal* at 20.4 is slightly higher than the 20.0 of *model* 89, suggesting that either the higher *valency* or computed *substrate* has increased the number of *alignments* available. The average number of *underlying variables* per *fud* has decreased to 17.55 compared to 18.52 for *model* 89.
+
+These are the *underlying* path lengths -
+
+0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+1|10|6|13|1|2
+2|14|9|3|16|5|3|2
+3|12|38|32|16|11|14|4
+4|21|55|27|42|37|43|29|4|5|1
+5|100|87|73|90|70|65|38|24|7|1
+6|171|216|192|195|155|143|71|24|17|8|2|1
+7|258|329|357|362|333|260|174|72|41|22|8|2|1
+8|398|666|705|789|630|461|324|124|57|36|11|4
+9|774|1304|1137|1237|1169|823|559|241|104|58|23|12|2
+10|1120|1926|1927|1965|1843|1443|872|454|236|96|29|13|11|2
+11|1787|3053|3206|3248|2894|2271|1535|755|350|207|74|41|12|1|2
+12|2717|4373|4484|4976|4396|3577|2436|1230|671|303|118|49|13|7|2|3
+13|3786|6477|6035|7037|6096|4719|3200|1754|937|474|200|100|26|12|3
+14|4516|8061|7618|9054|7922|6173|4240|2320|1252|645|246|111|35|14|3|2|1
+15|4863|9013|8697|10112|9033|7123|4893|2910|1573|715|363|143|53|12|6|||1
+16|4867|8982|8797|10282|9246|7209|5227|2973|1626|850|451|173|54|19|8|5|1
+17|4269|7490|7292|9009|7952|6443|4531|2683|1415|746|363|158|52|19|4
+18|3169|5388|5338|6561|5924|4619|3431|2016|1184|575|269|106|42|15|7|2
+19|1920|3119|3132|3826|3508|2779|2010|1211|623|331|123|66|20|5|4
+20|1011|1714|1537|1820|1685|1417|965|621|307|171|75|27|12|4|1
+21|330|613|644|751|751|575|338|212|110|51|30|5|2|1
+22|127|222|222|290|241|223|160|100|31|18|9|8|2|||1
+23|21|82|72|45|44|22|20|8|3|4|||||1
+24|15|23|28|38|25|23|5|6|2
+25|1|6|1|1|3|1|||1
+
+The mode has increased from 3 to 4. This is reflected in the mean *underlying* *slice* path length for each of the *overlying* path lengths -
+
+1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23|24|25
+--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--|--
+2.34|3.12|3.27|4.22|3.83|3.81|4.13|4.09|4.07|4.18|4.22|4.31|4.29|4.35|4.42|4.47|4.5|4.53|4.51|4.47|4.46|4.57|3.78|4.01|3.5
+
+These are two representations for *model* 90 -
+
+![contour004_090_scale3_minent_representation](images/contour004_090_scale3_minent_representation.png) 
+
+![contour004_090_scale3_minent_representation](images/contour005_090_scale3_minent_representation.png) 
+
+The qualitative differences compared to *model* 89 seem to be smoother backgrounds and less resolution in the foregrounds. This can be seen in the length contour map (for scale 0.177) -
+
+![contour004_090_scale3_minent_length](images/contour004_090_scale3_minent_length.png) 
+
+There are many hotspots in the background and fewer around the face - possibly partly due to the minimum entropy. We can also see this in the position map -
+
+![contour004_090_scale3_minent_position](images/contour004_090_scale3_minent_position.png) 
+
+The detail around the face seems a little less compared to *model* 89. Some features have improved, however, especially the hair and the man's tie. Overall, the combination of higher *valency* and lower relative minimum entropy together with similar statistics suggests that *model* 90 is finding many smooth gradient alignments that are not available to *model* 89. Also the fact that the *variables* are computed may also increase this. 
+
+Let us investigate the effect of minimum entropy by comparing the path distributions in the contour maps with the distribution in the *model* itself.
 
 TODO -
+
+could regenerate for higher min entropy
+
+could re-run with random model as initial into overflow
 
 randomised models 82 and 88 have low multipliers but they are still too high to obtain long paths
 
