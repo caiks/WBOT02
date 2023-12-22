@@ -3969,6 +3969,7 @@ int main(int argc, char *argv[])
 			EVAL(stage);
 			TRUTH(ok);				
 		}
+		std::vector<std::string> listNames;
 		std::vector<std::vector<std::size_t>> listCounts;
 		if (ok)
 		{
@@ -3977,12 +3978,17 @@ int main(int argc, char *argv[])
 			{
 				auto& arr = args["distributions"];
 				for (int i = 0; i < arr.Size(); i++)
-					if (arr[i].IsArray())	
+					if (arr[i].HasMember("distribution") && arr[i]["distribution"].IsArray())	
 					{
+						auto& dist = arr[i]["distribution"];
 						std::vector<std::size_t> counts;
-						for (int j = 0; j < arr[i].Size(); j++)
-							counts.push_back(arr[i][j].GetInt());
+						for (int j = 0; j < dist.Size(); j++)
+							counts.push_back(dist[j].GetInt());
 						listCounts.push_back(counts);
+						std::string name = "";
+						if (arr[i].HasMember("name") && arr[i]["name"].IsString())
+							name = arr[i]["name"].GetString();
+						listNames.push_back(name);
 					}
 			}
 			stage++;
@@ -3991,10 +3997,19 @@ int main(int argc, char *argv[])
 		}
 		if (ok)
 		{
-			for (auto& counts : listCounts)
+			double firstTotal = 0.0;	
+			std::vector<std::size_t> firstCounts;
+			double firstEntropy = 0.0;	
+			cout << "name|mean length|std dev length|max length|skew|kurtosis|hyperskew|entropy|relativeEntropy" << endl
+				<< "---|---|---|---|---|---|---|---|---" << endl;
+			for (std::size_t k = 0; k < listCounts.size(); k++)
 			{
+				auto& name = listNames[k];
+				EVAL(name);
+				auto& counts = listCounts[k];
 				EVAL(counts);
-				std::size_t count= 0;
+				if (!k) firstCounts = counts;
+				std::size_t count = 0;
 				double total = 0.0;	
 				for (std::size_t i = 0; i < counts.size(); i++)
 				{
@@ -4003,6 +4018,7 @@ int main(int argc, char *argv[])
 					total += length*counts[i];
 				}
 				EVAL(count);
+				if (!k) firstTotal = total;
 				double mean = total / count;
 				EVAL(mean);
 				double square = 0;
@@ -4025,6 +4041,33 @@ int main(int argc, char *argv[])
 				EVAL(kurtosisExcess);
 				double hyperSkewness =  quin/count/std::pow(square/count,2.5);
 				EVAL(hyperSkewness);
+				double entropy = 0.0;
+				for (std::size_t i = 0; i < counts.size(); i++)
+				{
+					auto fraction = (double)counts[i]/total; 
+					entropy -= fraction * std::log(fraction);
+				}
+				EVAL(entropy);
+				if (!k) firstEntropy = entropy;
+				std::map<std::size_t, std::size_t> sumCounts;
+				for (std::size_t i = 0; i < counts.size(); i++)
+					sumCounts[i] += counts[i];
+				for (std::size_t i = 0; i < firstCounts.size(); i++)
+					sumCounts[i] += firstCounts[i];
+				double sumEntropy = 0.0;
+				for (auto& pp : sumCounts)
+				{
+					auto fraction = (double)pp.second/(total+firstTotal); 
+					sumEntropy -= fraction * std::log(fraction);
+				}
+				EVAL(sumEntropy);
+				double relativeEntropy = sumEntropy 
+					- firstEntropy*firstTotal/(total+firstTotal)
+					- entropy*total/(total+firstTotal);
+				EVAL(relativeEntropy);
+				cout << name << "|" << mean << "|" << deviation << "|" << counts.size() 
+					<< "|" << skewness << "|" << kurtosisExcess << "|" << hyperSkewness 
+					<< "|" << entropy << "|" << relativeEntropy << endl;
 				stage++;
 			}
 			EVAL(stage);
