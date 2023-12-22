@@ -3932,5 +3932,105 @@ int main(int argc, char *argv[])
 		}
 	}
 	
+	if (argc >= 2 && string(argv[1]) == "compare_distributions")
+	{
+		bool ok = true;
+		int stage = 0;
+		
+		js::Document args;
+		if (ok)
+		{
+			string config = "distributions.json";
+			if (argc >= 3) config = string(argv[2]);
+			if (ok && !config.empty())
+			{
+				std::ifstream in;
+				try 
+				{
+					in.open(config);
+					js::IStreamWrapper isw(in);
+					args.ParseStream(isw);
+				}
+				catch (const std::exception&) 
+				{
+					ok = false;
+				}	
+				if (!args.IsObject())
+				{
+					ok = false;
+				}
+			}
+			else
+			{
+				args.Parse("{}");
+				ok = false;
+			}
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);				
+		}
+		std::vector<std::vector<std::size_t>> listCounts;
+		if (ok)
+		{
+			ok = ok && args.HasMember("distributions") && args["distributions"].IsArray();
+			if (ok)
+			{
+				auto& arr = args["distributions"];
+				for (int i = 0; i < arr.Size(); i++)
+					if (arr[i].IsArray())	
+					{
+						std::vector<std::size_t> counts;
+						for (int j = 0; j < arr[i].Size(); j++)
+							counts.push_back(arr[i][j].GetInt());
+						listCounts.push_back(counts);
+					}
+			}
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);	
+		}
+		if (ok)
+		{
+			for (auto& counts : listCounts)
+			{
+				EVAL(counts);
+				std::size_t count= 0;
+				double total = 0.0;	
+				for (std::size_t i = 0; i < counts.size(); i++)
+				{
+					count += counts[i];
+					auto length = i+1;
+					total += length*counts[i];
+				}
+				EVAL(count);
+				double mean = total / count;
+				EVAL(mean);
+				double square = 0;
+				double cube = 0;
+				double quad = 0;
+				double quin = 0;
+				for (std::size_t i = 0; i < counts.size(); i++)
+				{
+					auto length = i+1;
+					square += std::pow((double)length - mean, 2.0)*counts[i];
+					cube += std::pow((double)length - mean, 3.0)*counts[i];
+					quad += std::pow((double)length - mean, 4.0)*counts[i];
+					quin += std::pow((double)length - mean, 5.0)*counts[i];
+				}
+				double deviation =  std::sqrt(square/(count-1));
+				EVAL(deviation);
+				double skewness =  cube/count/std::pow(square/count,1.5);
+				EVAL(skewness);
+				double kurtosisExcess =  quad/count/std::pow(square/count,2.0) - 3.0;
+				EVAL(kurtosisExcess);
+				double hyperSkewness =  quin/count/std::pow(square/count,2.5);
+				EVAL(hyperSkewness);
+				stage++;
+			}
+			EVAL(stage);
+			TRUTH(ok);	
+		}
+	}
+	
 	return 0;
 }
