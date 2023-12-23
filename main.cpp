@@ -4000,7 +4000,7 @@ int main(int argc, char *argv[])
 			double firstTotal = 0.0;	
 			std::vector<std::size_t> firstCounts;
 			double firstEntropy = 0.0;	
-			cout << "name|mean length|std dev length|max length|skew|kurtosis|hyperskew|entropy|relativeEntropy" << endl
+			cout << "name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|entropy|relativeEntropy" << endl
 				<< "---|---|---|---|---|---|---|---|---" << endl;
 			for (std::size_t k = 0; k < listCounts.size(); k++)
 			{
@@ -4025,6 +4025,7 @@ int main(int argc, char *argv[])
 				double cube = 0;
 				double quad = 0;
 				double quin = 0;
+				double hex = 0;
 				for (std::size_t i = 0; i < counts.size(); i++)
 				{
 					auto length = i+1;
@@ -4032,6 +4033,7 @@ int main(int argc, char *argv[])
 					cube += std::pow((double)length - mean, 3.0)*counts[i];
 					quad += std::pow((double)length - mean, 4.0)*counts[i];
 					quin += std::pow((double)length - mean, 5.0)*counts[i];
+					hex += std::pow((double)length - mean, 6.0)*counts[i];
 				}
 				double deviation =  std::sqrt(square/(count-1));
 				EVAL(deviation);
@@ -4041,11 +4043,14 @@ int main(int argc, char *argv[])
 				EVAL(kurtosisExcess);
 				double hyperSkewness =  quin/count/std::pow(square/count,2.5);
 				EVAL(hyperSkewness);
+				double hyperKurtosisExcess =  hex/count/std::pow(square/count,3.0) - 7.5;
+				EVAL(hyperKurtosisExcess);
 				double entropy = 0.0;
 				for (std::size_t i = 0; i < counts.size(); i++)
 				{
 					auto fraction = (double)counts[i]/total; 
-					entropy -= fraction * std::log(fraction);
+					if (fraction > 0.0)
+						entropy -= fraction * std::log(fraction);
 				}
 				EVAL(entropy);
 				if (!k) firstEntropy = entropy;
@@ -4058,7 +4063,8 @@ int main(int argc, char *argv[])
 				for (auto& pp : sumCounts)
 				{
 					auto fraction = (double)pp.second/(total+firstTotal); 
-					sumEntropy -= fraction * std::log(fraction);
+					if (fraction > 0.0)
+						sumEntropy -= fraction * std::log(fraction);
 				}
 				EVAL(sumEntropy);
 				double relativeEntropy = sumEntropy 
@@ -4066,7 +4072,8 @@ int main(int argc, char *argv[])
 					- entropy*total/(total+firstTotal);
 				EVAL(relativeEntropy);
 				cout << name << "|" << mean << "|" << deviation << "|" << counts.size() 
-					<< "|" << skewness << "|" << kurtosisExcess << "|" << hyperSkewness 
+					<< "|" << skewness << "|" << kurtosisExcess 
+					<< "|" << hyperSkewness << "|" << hyperKurtosisExcess
 					<< "|" << entropy << "|" << relativeEntropy << endl;
 				stage++;
 			}
