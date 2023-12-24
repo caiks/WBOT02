@@ -187,12 +187,14 @@ int main(int argc, char *argv[])
 				double lengthsCube = 0;
 				double lengthsQuad = 0;
 				double lengthsQuin = 0;
+				double lengthsHex = 0;
 				for (auto length : lengths)
 				{
 					lengthsSquare += std::pow((double)length - lengthsMean, 2.0);
 					lengthsCube += std::pow((double)length - lengthsMean, 3.0);
 					lengthsQuad += std::pow((double)length - lengthsMean, 4.0);
 					lengthsQuin += std::pow((double)length - lengthsMean, 5.0);
+					lengthsHex += std::pow((double)length - lengthsMean, 6.0);
 				}
 				double lengthsDeviation =  std::sqrt(lengthsSquare/(lengthsCount-1));
 				EVAL(lengthsDeviation);
@@ -202,6 +204,8 @@ int main(int argc, char *argv[])
 				EVAL(lengthsKurtosisExcess);
 				double lengthsHyperSkewness =  lengthsQuin/lengthsCount/std::pow(lengthsSquare/lengthsCount,2.5);
 				EVAL(lengthsHyperSkewness);
+				double lengthsHyperKurtosisExcess =  lengthsHex/lengthsCount/std::pow(lengthsSquare/lengthsCount,3.0) - 7.5;
+				EVAL(lengthsHyperKurtosisExcess);
 			}
 			for (auto& hr : activeA.underlyingHistoryRepa)
 			{
@@ -4001,7 +4005,7 @@ int main(int argc, char *argv[])
 			std::vector<std::size_t> firstCounts;
 			double firstEntropy = 0.0;	
 			cout << "name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|entropy|relativeEntropy" << endl
-				<< "---|---|---|---|---|---|---|---|---" << endl;
+				<< "---|---|---|---|---|---|---|---|---|---" << endl;
 			for (std::size_t k = 0; k < listCounts.size(); k++)
 			{
 				auto& name = listNames[k];

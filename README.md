@@ -1481,76 +1481,78 @@ scale|2^(-x/2)|1/tan(2^(-x/2))
 
 This summarises the *model* results for both `actor002` and `actor003` -
 
-model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model010|0.5|4 randomised|1|bucketed|Fireman Sam|720,000|2,567|0.713|6.8|1.8|12|0.1|-0.4|0.7|3.16|25 FPS
-model011|0.354|4 randomised|1|bucketed|Fireman Sam|720,000|2,699|0.75|7.2|1.9|12|-0.1|-0.5|-0.8|2.99|
-model012|0.25|4 randomised|1|bucketed|Fireman Sam|720,000|2,664|0.74|7.2|1.9|12|0.0|-0.7|0.1|2.98|
-model014|0.25|4 randomised|1|bucketed|Fireman Sam|720,000|492|0.683|5.4|1.6|9|0.0|-0.9|0.1|3.15|1000 threshold
-model013|0.177|4 randomised|1|bucketed|Fireman Sam|720,000|2,719|0.755|7.2|1.9|13|0.0|-0.5|0.0|3.00|
-model036|0.177|4 randomised|1|fixed|12 B&W videos|500,000|1,931|0.772|7.2|2.0|17|0.2|0.1|3.8|2.86|
-model052|0.177|4 randomised|1|fixed|48 B&W videos|500,000|1,887|0.753|6.7|1.6|11|0.1|-0.6|0.7|3.08|30s unique, 12.0 min diagonal, 1.2 min entropy
-model053|0.177|4 randomised|1|fixed|48 B&W videos|500,000|1,910|0.764|6.6|1.6|11|0.0|-0.5|0.0|3.14|30s unique, 12.0 min diagonal, 1.2 min entropy
-model064|0.177|4 randomised|1|balanced|48 B&W videos|500,000|1,837|0.735|6.6|1.6|11|0.0|-0.6|0.0|3.13|30s unique, 12.0 min diagonal, 1.2 min entropy
-model066|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised|9|balanced|48 B&W videos|500,000|1,822|0.7288|6.4|1.7|11|0.1|-0.5|0.6|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy
-model015|0.177|4 potential|2|bucketed|Fireman Sam|720,000|4,131|1.148|9.5|1.7|14|-0.6|0.6|-6.5|2.40|20 randomised
-model019|0.177|4 potential|2|bucketed|Fireman Sam|1,000,000|5,738|1.148|9.8|1.8|15|-0.6|0.6|-6.3|2.42|20 randomised
-model038|0.177|4 potential|2|fixed|12 B&W videos|500,000|2,488|0.995|9.0|2.1|18|-0.1|0.3|-0.1|2.37|20 randomised
-model016|0.177|4 actual-potential|3|bucketed|Fireman Sam|720,000|3,014|0.838|10.1|1.9|14|-0.7|0.7|-7.5|2.21|20 randomised
-model018|0.177|4 actual-potential|3|bucketed|Fireman Sam|1,000,000|4,194|0.839|10.5|1.9|15|-0.6|0.7|-7.2|2.22|20 randomised
-model060|0.177|5 actual-potential|3|fixed|48 B&W videos|1,000,000|4,550|0.91|16.0|2.9|22|-1.1|1.8|-13.5|1.69|2000 randomised, 30s unique, 12.0 min diagonal, 1.2 min entropy
-model017|0.177|10 scanned actual-potential|3,4|bucketed|Fireman Sam|1,000,000|4,397|0.88|11.6|2.8|20|0.2|-0.1|0.4|2.06|4 FPS
-model020|0.177|10 scanned actual-potential|2,4|bucketed|Fireman Sam|1,000,000|5,526|1.106|10.8|2.8|19|0.4|-0.1|2.0|2.23|
-model021|0.177|10 scanned actual-potential|4|bucketed|Fireman Sam|720,000|3,389|0.942|13.8|2.8|21|-0.5|0.4|-4.9|1.80|
-model022|0.177|10 scanned actual-potential|4|bucketed|Fireman Sam|1,000,000|4,729|0.946|14.4|2.9|22|-0.5|0.5|-5.3|1.80|
-model023|0.177|10 scanned actual-potential|4|bucketed|Fireman Sam|1,300,000|5,488|0.845 (0.946)|14.7|2.9|22|-0.5|0.4|-5.4|1.80|
-model024|0.177|10 scanned actual-potential|4|bucketed|Fireman Sam|1,700,000|6,172|0.726 (0.946)|14.8|2.9|22|-0.5|0.4|-5.2|1.80|
-model027|0.177|10 scanned actual-potential|4|bucketed|Film Noir|759,760|3,757|0.989|14.1|3.1|24|-0.2|0.4|-2.4|1.79|
-model028|0.177|10 scanned actual-potential|4|bucketed|Film Noir|659,550|3,203|0.971|14.8|3.1|27|-0.1|0.7|-1.6|1.72|
-model025|0.177|10 scanned actual-potential|4|fixed|Film Noir|865,170|5,283|1.221|18.7|7.4|50|0.8|0.3|6.1|1.58|
-model065|0.177|5 scanned actual-potential|4|fixed|48 B&W videos|1,000,000|4,959|0.992|15.1|3.1|24|-0.5|0.9|-6.1|1.76|30s unique, 12.0 min diagonal, 1.2 min entropy
-model029|0.177|5 scanned potential tiled actual-potential|5|bucketed|Film Noir|526,345|3,386|1.287|13.5|2.6|23|-0.4|0.8|-5.0|1.83|
-model030|0.177|5 scanned potential tiled actual-potential|5|fixed|Film Noir|527,045|3,816|1.448|15.6|3.7|31|0.3|1.0|4.0|1.70|
-model031|0.177|5 scanned potential tiled actual-potential|5|fixed|Film Noir|452,255|3,197|1.414|14.6|3.7|32|0.4|0.8|4.5|1.74|12.0 min diagonal
-model034|0.177|5 scanned potential tiled actual-potential|5|fixed|10 B&W videos|527,045|3,846|1.459|15.2|4.4|35|0.7|1.2|7.4|1.72|first actor003 model
-model035|0.177|5 scanned potential tiled actual-potential|5|fixed|14 B&W videos|1,000,000|7,069|1.414|15.9|3.5|35|0.2|1.1|4.0|1.74|
-model037|0.177|5 scanned potential tiled actual-potential|1,5|fixed|12 B&W videos|1,000,000|6,033|1.207|12.6|5.1|35|0.4|0.1|5.0|2.00|initial *model* 36
-model039|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|1,000,000|7,214|1.443|16.4|5.4|46|1.8|5.6|32.3|1.72|30s unique
-model040|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|2,000,000|12,262|1.226 (1.443)|17.8|6.0|54|1.9|5.2|29.4|1.70|30s unique
-model041|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|2,656,962|14,079|1.060 (1.443)|18.3|6.6|62|2.1|6.3|36.3|1.69|30s unique
-model045|0.177|5 scanned potential tiled actual-potential|5|fixed 5-valent|48 B&W videos|2,656,963|34,557|1.300 (1.643)|20.2|5.1|44|0.7|0.7|5.9|1.68|30s unique, 12.0 min diagonal, 100 threshold
-model046|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,965|13,432|1.011 (1.406)|16.8|4.5|36|0.8|1.1|7.4|1.76|30s unique, 12.0 min diagonal
-model047|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,963|13,688|1.030 (1.364)|15.9|3.1|25|-0.4|0.2|-3.9|1.82|30s unique, 12.0 min diagonal, 1.2 min entropy
-model048|0.177|5 scanned potential tiled actual-potential|5|fixed 5-valent|48 B&W videos|2,656,965|38,124|1.434|18.9|3.4|30|-0.4|0.3|-4.3|1.75|30s unique, 12.0 min diagonal, 100 threshold, 0.8 min entropy, no overflow
-model049|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,964|36,146|1.36|16.7|2.9|28|-0.4|0.5|-4.8|1.87|30s unique, 12.0 min diagonal, 100 threshold, 1.2 min entropy, no overflow
-model050|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,962|16,980|1.278|15.3|2.8|23|-0.5|0.4|-5.2|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow
-model051|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,963|8,079|1.216|15.1|2.9|23|-0.5|0.4|-5.6|1.81|30s unique, 12.0 min diagonal, 400 threshold, 1.2 min entropy, no overflow
-model054|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|3,000,065|12,390|0.826 (1.294)|15.5|2.9|24|-0.4|0.5|-5.0|1.84|30s unique, 12.0 min diagonal, 1.2 min entropy
-model055|0.177|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|15,050|1.003 (1.489)|14.8|2.9|24|-0.4|0.3|-4.1|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy
-model056|0.177|5 scanned size-potential tiled actual-potential|6|fixed 5-valent|48 B&W videos|3,000,000|34,859|1.162 (1.643)|19.7|4.0|32|-0.4|0.0|-3.5|1.70|30s unique, 12.0 min diagonal,  100 threshold, 0.8 min entropy
-model057|0.354|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|15,433|1.003 (1.480)|15.5|3.2|25|-0.2|0.2|-2.4|1.86|30s unique, 12.0 min diagonal, 1.2 min entropy
-model058|0.088|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|13,999|0.933 (1.447)|15.4|3.0|25|-0.5|0.3|-4.9|1.86|30s unique, 12.0 min diagonal, 1.2 min entropy
-model059|0.177|5 scanned active-size-potential tiled actual-potential|8|fixed|48 B&W videos|3,000,000|16,735|1.116 (1.501)|15.2|2.8|23|-0.6|0.6|-6.2|1.90|30s unique, 12.0 min diagonal, 1.2 min entropy
-model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
-model062|0.177|5 scanned size-potential tiled actual-potential|6|balanced 5-valent|48 B&W videos|3,000,000|33,612|1.120 (1.634)|18.4|3.7|31|-0.2|0.2|-2.1|1.76|30s unique, 12.0 min diagonal, 0.8 min entropy
-model063|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|15,013|1.001 (1.494)|15.7|3.0|24|-0.4|0.3|-4.4|1.84|30s unique, 12.0 min diagonal, 1.0 min entropy
-model069|0.177|5 scanned size-potential tiled entropy|11|balanced|48 B&W videos|3,000,000|10,993|0.733 (1.290)|8.6|2.2|16|0.2|-0.2|1.6|2.96|30s unique, 12.0 min diagonal, 1.2 min entropy
-model067|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|12 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|6,815|0.454 (0.910)|14.1|2.6|21|-0.7|0.7|-7.3|1.87|30s unique, 12.0 min diagonal, 1.2 min entropy
-model068|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|12 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|7,303|0.487 (0.947)|14.0|2.5|20|-0.7|0.7|-8.1|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy
-model070|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential|12|balanced|48 B&W videos|2,400,024|15,817|1.054 (1.561)|14.8|2.5|22|-0.7|0.8|-7.8|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy, 20 randomised
-model073|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential|12|balanced|48 B&W videos|3,000,001|23,661|1.577|16.6|2.9|25|-0.5|0.5|-5.9|1.83|30s unique, 12.0 min diagonal, 1.2 min entropy, 20 randomised, no overflow
-model076|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|75,000,000|10,833|0.722|8.5|2.5|16|0.1|-0.5|0.7|2.99|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000
-model078|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 76|13|balanced|48 B&W videos|75,000,000|189,538|0.505|10.3|2.7|22|0.2|-0.3|1.4|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, threshold 200
-model079|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|65,000,000|9,298|0.715|8.7|2.3|16|-0.1|-0.5|-0.5|2.85|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at records002
-model080|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|75,000,000|10,768|0.718|8.4|2.3|15|-0.1|-0.6|-0.5|3.00|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at randomised records006
-model081|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 80|13|balanced|48 B&W videos|75,000,000|188,056|0.501|10.4|2.6|20|0.1|-0.4|0.5|3.23|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, threshold 200
-model082|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised level 2|14|balanced|48 B&W videos|3,000,000|12,107|0.807|9.3|2.3|19|0.4|0.0|3.2|2.74|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8
-model084|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced computed 32-valent|48 B&W videos|75,000,000|15,362|1.024|10.7|2.0|18|-0.5|0.5|-4.8|2.46|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at randomised records006
-model086|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 84|13|balanced computed 32-valent|48 B&W videos|75,000,000|341,235|0.910|13.9|2.4|23|-0.4|0.2|-3.9|2.49|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 256, omax 20, bmax 60, threshold 200
-model087|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised level 2|14|balanced computed 32-valent|48 B&W videos|3,000,000|5,139|0.857|9.6|2.4|17|0.0|-0.4|0.1|2.44|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 512, omax 20, bmax 60, threshold 500
-model088|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 87 level 2|14|balanced computed 32-valent|48 B&W videos|3,000,000|12,976|0.865|10.4|2.5|18|0.0|-0.4|0.2|2.49|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60, threshold 200
-model089|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential level 2|16|balanced|48 B&W videos|3,000,001|24,731|1.649|15.8|3.1|27|-0.3|0.2|-2.9|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60
-model090|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential level 2|16|balanced computed 32-valent|48 B&W videos|2,999,999|25,488|1.699|16.1|2.8|26|-0.4|0.4|-4.6|1.88|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|Hyper-skew|Hyper-kurtosis|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model010|0.5|4 randomised|1|bucketed|Fireman Sam|720,000|2,567|0.713|6.8|1.8|12|0.1|-0.4|0.7||3.16|25 FPS
+model011|0.354|4 randomised|1|bucketed|Fireman Sam|720,000|2,699|0.75|7.2|1.9|12|-0.1|-0.5|-0.8||2.99|
+model012|0.25|4 randomised|1|bucketed|Fireman Sam|720,000|2,664|0.74|7.2|1.9|12|0.0|-0.7|0.1||2.98|
+model014|0.25|4 randomised|1|bucketed|Fireman Sam|720,000|492|0.683|5.4|1.6|9|0.0|-0.9|0.1||3.15|1000 threshold
+model013|0.177|4 randomised|1|bucketed|Fireman Sam|720,000|2,719|0.755|7.2|1.9|13|0.0|-0.5|0.0||3.00|
+model036|0.177|4 randomised|1|fixed|12 B&W videos|500,000|1,931|0.772|7.2|2.0|17|0.2|0.1|3.8|15.6|2.86|
+model052|0.177|4 randomised|1|fixed|48 B&W videos|500,000|1,887|0.753|6.7|1.6|11|0.1|-0.6|0.7|1.0|3.08|30s unique, 12.0 min diagonal, 1.2 min entropy
+model053|0.177|4 randomised|1|fixed|48 B&W videos|500,000|1,910|0.764|6.6|1.6|11|0.0|-0.5|0.0|1.6|3.14|30s unique, 12.0 min diagonal, 1.2 min entropy
+model064|0.177|4 randomised|1|balanced|48 B&W videos|500,000|1,837|0.735|6.6|1.6|11|0.0|-0.6|0.0|0.7|3.13|30s unique, 12.0 min diagonal, 1.2 min entropy
+model066|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised|9|balanced|48 B&W videos|500,000|1,822|0.7288|6.4|1.7|11|0.1|-0.5|0.6|1.5|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy
+model015|0.177|4 potential|2|bucketed|Fireman Sam|720,000|4,131|1.148|9.5|1.7|14|-0.6|0.6|-6.5||2.40|20 randomised
+model019|0.177|4 potential|2|bucketed|Fireman Sam|1,000,000|5,738|1.148|9.8|1.8|15|-0.6|0.6|-6.3||2.42|20 randomised
+model038|0.177|4 potential|2|fixed|12 B&W videos|500,000|2,488|0.995|9.0|2.1|18|-0.1|0.3|-0.1|13.2|2.37|20 randomised
+model016|0.177|4 actual-potential|3|bucketed|Fireman Sam|720,000|3,014|0.838|10.1|1.9|14|-0.7|0.7|-7.5||2.21|20 randomised
+model018|0.177|4 actual-potential|3|bucketed|Fireman Sam|1,000,000|4,194|0.839|10.5|1.9|15|-0.6|0.7|-7.2||2.22|20 randomised
+model060|0.177|5 actual-potential|3|fixed|48 B&W videos|1,000,000|4,550|0.91|16.0|2.9|22|-1.1|1.8|-13.5|45.3|1.69|2000 randomised, 30s unique, 12.0 min diagonal, 1.2 min entropy
+model017|0.177|10 scanned actual-potential|3,4|bucketed|Fireman Sam|1,000,000|4,397|0.88|11.6|2.8|20|0.2|-0.1|0.4||2.06|4 FPS
+model020|0.177|10 scanned actual-potential|2,4|bucketed|Fireman Sam|1,000,000|5,526|1.106|10.8|2.8|19|0.4|-0.1|2.0||2.23|
+model021|0.177|10 scanned actual-potential|4|bucketed|Fireman Sam|720,000|3,389|0.942|13.8|2.8|21|-0.5|0.4|-4.9||1.80|
+model022|0.177|10 scanned actual-potential|4|bucketed|Fireman Sam|1,000,000|4,729|0.946|14.4|2.9|22|-0.5|0.5|-5.3||1.80|
+model023|0.177|10 scanned actual-potential|4|bucketed|Fireman Sam|1,300,000|5,488|0.845 (0.946)|14.7|2.9|22|-0.5|0.4|-5.4||1.80|
+model024|0.177|10 scanned actual-potential|4|bucketed|Fireman Sam|1,700,000|6,172|0.726 (0.946)|14.8|2.9|22|-0.5|0.4|-5.2||1.80|
+model027|0.177|10 scanned actual-potential|4|bucketed|Film Noir|759,760|3,757|0.989|14.1|3.1|24|-0.2|0.4|-2.4||1.79|
+model028|0.177|10 scanned actual-potential|4|bucketed|Film Noir|659,550|3,203|0.971|14.8|3.1|27|-0.1|0.7|-1.6||1.72|
+model025|0.177|10 scanned actual-potential|4|fixed|Film Noir|865,170|5,283|1.221|18.7|7.4|50|0.8|0.3|6.1||1.58|
+model065|0.177|5 scanned actual-potential|4|fixed|48 B&W videos|1,000,000|4,959|0.992|15.1|3.1|24|-0.5|0.9|-6.1|21.2|1.76|30s unique, 12.0 min diagonal, 1.2 min entropy
+model029|0.177|5 scanned potential tiled actual-potential|5|bucketed|Film Noir|526,345|3,386|1.287|13.5|2.6|23|-0.4|0.8|-5.0||1.83|
+model030|0.177|5 scanned potential tiled actual-potential|5|fixed|Film Noir|527,045|3,816|1.448|15.6|3.7|31|0.3|1.0|4.0||1.70|
+model031|0.177|5 scanned potential tiled actual-potential|5|fixed|Film Noir|452,255|3,197|1.414|14.6|3.7|32|0.4|0.8|4.5||1.74|12.0 min diagonal
+model034|0.177|5 scanned potential tiled actual-potential|5|fixed|10 B&W videos|527,045|3,846|1.459|15.2|4.4|35|0.7|1.2|7.4|24.5|1.72|first actor003 model
+model035|0.177|5 scanned potential tiled actual-potential|5|fixed|14 B&W videos|1,000,000|7,069|1.414|15.9|3.5|35|0.2|1.1|4.0|30.8|1.74|
+model037|0.177|5 scanned potential tiled actual-potential|1,5|fixed|12 B&W videos|1,000,000|6,033|1.207|12.6|5.1|35|0.4|0.1|5.0|12.5|2.00|initial *model* 36
+model039|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|1,000,000|7,214|1.443|16.4|5.4|46|1.8|5.6|32.3|134.5|1.72|30s unique
+model040|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|2,000,000|12,262|1.226 (1.443)|17.8|6.0|54|1.9|5.2|29.4|114.6|1.70|30s unique
+model041|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|2,656,962|14,079|1.060 (1.443)|18.3|6.6|62|2.1|6.3|36.3|152.3|1.69|30s unique
+model045|0.177|5 scanned potential tiled actual-potential|5|fixed 5-valent|48 B&W videos|2,656,963|34,557|1.300 (1.643)|20.2|5.1|44|0.7|0.7|5.9|16.9|1.68|30s unique, 12.0 min diagonal, 100 threshold
+model046|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,965|13,432|1.011 (1.406)|16.8|4.5|36|0.8|1.1|7.4|22.0|1.76|30s unique, 12.0 min diagonal
+model047|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,963|13,688|1.030 (1.364)|15.9|3.1|25|-0.4|0.2|-3.9|12.3|1.82|30s unique, 12.0 min diagonal, 1.2 min entropy
+model048|0.177|5 scanned potential tiled actual-potential|5|fixed 5-valent|48 B&W videos|2,656,965|38,124|1.434|18.9|3.4|30|-0.4|0.3|-4.3|12.8|1.75|30s unique, 12.0 min diagonal, 100 threshold, 0.8 min entropy, no overflow
+model049|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,964|36,146|1.36|16.7|2.9|28|-0.4|0.5|-4.8|17.8|1.87|30s unique, 12.0 min diagonal, 100 threshold, 1.2 min entropy, no overflow
+model050|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,962|16,980|1.278|15.3|2.8|23|-0.5|0.4|-5.2|15.9|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow
+model051|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,963|8,079|1.216|15.1|2.9|23|-0.5|0.4|-5.6|16.1|1.81|30s unique, 12.0 min diagonal, 400 threshold, 1.2 min entropy, no overflow
+model054|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|3,000,065|12,390|0.826 (1.294)|15.5|2.9|24|-0.4|0.5|-5.0|16.7|1.84|30s unique, 12.0 min diagonal, 1.2 min entropy
+model055|0.177|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|15,050|1.003 (1.489)|14.8|2.9|24|-0.4|0.3|-4.1|12.3|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy
+model056|0.177|5 scanned size-potential tiled actual-potential|6|fixed 5-valent|48 B&W videos|3,000,000|34,859|1.162 (1.643)|19.7|4.0|32|-0.4|0.0|-3.5|8.3|1.70|30s unique, 12.0 min diagonal,  100 threshold, 0.8 min entropy
+model057|0.354|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|15,433|1.003 (1.480)|15.5|3.2|25|-0.2|0.2|-2.4|10.0|1.86|30s unique, 12.0 min diagonal, 1.2 min entropy
+model058|0.088|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|13,999|0.933 (1.447)|15.4|3.0|25|-0.5|0.3|-4.9|13.8|1.86|30s unique, 12.0 min diagonal, 1.2 min entropy
+model059|0.177|5 scanned active-size-potential tiled actual-potential|8|fixed|48 B&W videos|3,000,000|16,735|1.116 (1.501)|15.2|2.8|23|-0.6|0.6|-6.2|19.1|1.90|30s unique, 12.0 min diagonal, 1.2 min entropy
+model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|13.5|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
+model062|0.177|5 scanned size-potential tiled actual-potential|6|balanced 5-valent|48 B&W videos|3,000,000|33,612|1.120 (1.634)|18.4|3.7|31|-0.2|0.2|-2.1|9.8|1.76|30s unique, 12.0 min diagonal, 0.8 min entropy
+model063|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|15,013|1.001 (1.494)|15.7|3.0|24|-0.4|0.3|-4.4|13.1|1.84|30s unique, 12.0 min diagonal, 1.0 min entropy
+model069|0.177|5 scanned size-potential tiled entropy|11|balanced|48 B&W videos|3,000,000|10,993|0.733 (1.290)|8.6|2.2|16|0.2|-0.2|1.6|4.5|2.96|30s unique, 12.0 min diagonal, 1.2 min entropy
+model067|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|12 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|6,815|0.454 (0.910)|14.1|2.6|21|-0.7|0.7|-7.3|22.1|1.87|30s unique, 12.0 min diagonal, 1.2 min entropy
+model068|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|12 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|7,303|0.487 (0.947)|14.0|2.5|20|-0.7|0.7|-8.1|23.6|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy
+model070|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential|12|balanced|48 B&W videos|2,400,024|15,817|1.054 (1.561)|14.8|2.5|22|-0.7|0.8|-7.8|24.1|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy, 20 randomised
+model073|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential|12|balanced|48 B&W videos|3,000,001|23,661|1.577|16.6|2.9|25|-0.5|0.5|-5.9|18.2|1.83|30s unique, 12.0 min diagonal, 1.2 min entropy, 20 randomised, no overflow
+model075|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|57,500,000|8,362|0.727|8.3|2.4|16|0.1|-0.5|0.7|1.1|2.96|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000
+model076|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|75,000,000|10,833|0.722|8.5|2.5|16|0.1|-0.5|0.7|1.2|2.99|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000
+model077|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 76|13|balanced|48 B&W videos|75,000,000|35,955|0.599|9.3|2.6|19|0.1|-0.4|1.0|2.4|3.09|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, threshold 1250
+model078|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 77|13|balanced|48 B&W videos|75,000,000|189,538|0.505|10.3|2.7|22|0.2|-0.3|1.4|3.5|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, threshold 200
+model079|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|65,000,000|9,298|0.715|8.7|2.3|16|-0.1|-0.5|-0.5|1.9|2.85|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at records002
+model080|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|75,000,000|10,768|0.718|8.4|2.3|15|-0.1|-0.6|-0.5|1.0|3.00|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at randomised records006
+model081|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 80|13|balanced|48 B&W videos|75,000,000|188,056|0.501|10.4|2.6|20|0.1|-0.4|0.5|2.5|3.23|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, threshold 200
+model082|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised level 2|14|balanced|48 B&W videos|3,000,000|12,107|0.807|9.3|2.3|19|0.4|0.0|3.2|8.3|2.74|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8
+model084|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced computed 32-valent|48 B&W videos|75,000,000|15,362|1.024|10.7|2.0|18|-0.5|0.5|-4.8|14.1|2.46|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at randomised records006
+model086|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 84|13|balanced computed 32-valent|48 B&W videos|75,000,000|341,235|0.910|13.9|2.4|23|-0.4|0.2|-3.9|10.5|2.49|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 256, omax 20, bmax 60, threshold 200
+model087|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised level 2|14|balanced computed 32-valent|48 B&W videos|3,000,000|5,139|0.857|9.6|2.4|17|0.0|-0.4|0.1|2.9|2.44|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 512, omax 20, bmax 60, threshold 500
+model088|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 87 level 2|14|balanced computed 32-valent|48 B&W videos|3,000,000|12,976|0.865|10.4|2.5|18|0.0|-0.4|0.2|3.2|2.49|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60
+model089|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential level 2|16|balanced|48 B&W videos|3,000,001|24,731|1.649|15.8|3.1|27|-0.3|0.2|-2.9|11.5|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60
+model090|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential level 2|16|balanced computed 32-valent|48 B&W videos|2,999,999|25,488|1.699|16.1|2.8|26|-0.4|0.4|-4.6|15.8|1.88|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60
 
 The table above does not show the median and maximum *diagonals*. The median *diagonals* for the actor 2 and actor 3 *models* were consistently around 23-27, and the maximum *diagonals* were consistently around 37-39.
 
@@ -4206,6 +4208,62 @@ The detail around the face seems a little less compared to *model* 89. Some feat
 Let us investigate the effect of minimum entropy by comparing the path distributions in the contour maps with the distribution in the *model* itself.
 
 TODO -
+
+name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|entropy|relativeEntropy
+---|---|---|---|---|---|---|---|---|---
+model089|15.8303|3.09595|27|-0.273364|0.231408|-2.92203|11.5375|0.335085|0
+model033|15.3297|4.67248|39|1.30922|2.78361|15.6378|51.6066|0.361012|0.00176781
+model034|15.1661|4.40486|35|0.713972|1.23021|7.38672|24.4504|0.36674|0.0015692
+model035|15.9227|3.49762|35|0.18291|1.12668|4.04904|30.8245|0.340701|0.000274355
+model036|7.2012|1.99541|17|0.1987|0.14558|3.80436|15.577|0.564608|0.0148691
+model037|12.6032|5.10577|35|0.420192|0.117277|5.01677|12.4878|0.438406|0.00631998
+model038|9.03969|2.12513|18|-0.0742126|0.337508|-0.0980822|13.1709|0.483408|0.01291
+model039|16.4177|5.40135|46|1.84597|5.5689|32.3268|134.496|0.347186|0.00175941
+model040|17.7662|6.01157|54|1.88511|5.17104|29.4225|114.568|0.329591|0.00256184
+model041|18.2962|6.61144|62|2.12267|6.27214|36.2822|152.269|0.324172|0.00305469
+model042|19.2669|4.73917|39|0.587085|0.637021|5.10393|15.5311|0.305997|0.00611346
+model045|20.2058|5.08845|44|0.665683|0.663065|5.91677|16.8889|0.297248|0.00832566
+model046|16.8148|4.48833|36|0.768545|1.05939|7.36744|22.0019|0.337949|0.00202306
+model047|15.856|3.06973|25|-0.376717|0.249775|-3.94355|12.2938|0.333759|2.89139e-05
+model048|18.9173|3.43071|30|-0.418654|0.262438|-4.25479|12.7582|0.294807|0.00655884
+model049|16.7084|2.87266|28|-0.429888|0.533755|-4.75567|17.8254|0.3157|0.000760753
+model050|15.2807|2.77706|23|-0.484274|0.422492|-5.18706|15.885|0.336889|0.00069557
+model051|15.1173|2.94219|23|-0.544695|0.436537|-5.63131|16.0815|0.343239|0.000660322
+model052|6.70086|1.63718|11|0.124128|-0.572394|0.68236|1.04415|0.566476|0.0168215
+model053|6.62178|1.58436|11|0.0174681|-0.522234|0.0158004|1.63806|0.567503|0.0171984
+model054|15.4762|2.90557|24|-0.441921|0.472183|-5.00758|16.6501|0.336609|0.000255091
+model055|14.7936|2.9219|24|-0.397247|0.274909|-4.06495|12.3044|0.349591|0.00118284
+model056|19.7067|4.01717|32|-0.403701|-0.014491|-3.53141|8.30271|0.29292|0.00889488
+model057|15.4514|3.21902|25|-0.196809|0.163358|-2.37392|10.0287|0.344373|0.000166283
+model058|15.431|2.97585|25|-0.50156|0.335398|-4.91419|13.7997|0.338536|0.000314396
+model059|15.173|2.7713|23|-0.562656|0.591728|-6.21028|19.0916|0.338271|0.000927485
+model060|16.0253|2.86887|22|-1.07932|1.79519|-13.4868|45.2712|0.321818|0.000619503
+model061|14.5965|2.81447|22|-0.489616|0.306854|-4.87173|13.5217|0.350329|0.00189929
+model062|18.3574|3.74259|31|-0.174835|0.174702|-2.13643|9.81549|0.307455|0.00458823
+model063|15.7069|3.01358|24|-0.412472|0.250724|-4.40199|13.0706|0.334964|9.4935e-05
+model064|6.57929|1.59403|11|0.0313136|-0.584289|0.0058955|0.740202|0.57008|0.0173141
+model065|15.0705|3.09069|24|-0.546323|0.880217|-6.13352|21.1641|0.347238|0.000389081
+model066|6.38335|1.66527|11|0.102699|-0.494841|0.57775|1.53435|0.590519|0.0180298
+model067|14.0776|2.58877|21|-0.65765|0.697647|-7.32596|22.0728|0.353711|0.00321281
+model068|14.0128|2.54047|20|-0.740554|0.742176|-8.13539|23.6141|0.352628|0.00382016
+model069|8.57419|2.20572|16|0.223678|-0.180239|1.64162|4.5129|0.507217|0.0356049
+model070|14.8296|2.54226|22|-0.696725|0.780944|-7.80513|24.12|0.337792|0.0023926
+model071|7.02347|2.28498|11|-0.406994|-0.064745|-3.41516|6.04957|0.583545|0.000302261
+model073|16.6345|2.8549|25|-0.544737|0.483479|-5.93599|18.2495|0.315902|0.000736249
+model075|8.31282|2.43785|16|0.104568|-0.543657|0.653979|1.1184|0.530949|0.0377778
+model076|8.48058|2.47482|16|0.118256|-0.5318|0.72948|1.18274|0.524573|0.0395448
+model077|9.30126|2.57369|19|0.139428|-0.413559|0.987212|2.37216|0.492919|0.0334964
+model078|10.335|2.72063|22|0.17828|-0.317382|1.37083|3.45917|0.459378|0.0115053
+model079|8.72972|2.32191|16|-0.0619882|-0.50215|-0.504347|1.8655|0.505832|0.0374052
+model080|8.4489|2.30523|15|-0.0602701|-0.572861|-0.4826|1.02121|0.517462|0.0414834
+model081|10.3536|2.62577|20|0.0733801|-0.390548|0.481173|2.49788|0.455434|0.0123875
+model082|9.33707|2.3007|19|0.351736|0.0108361|3.23887|8.32245|0.479095|0.0287103
+model084|10.6978|2.02721|18|-0.53704|0.470949|-4.77906|14.1148|0.417649|0.0251905
+model085|12.384|2.22374|20|-0.511846|0.306299|-4.53137|12.2548|0.380333|0.0135707
+model086|13.9361|2.44981|23|-0.447918|0.177944|-3.90211|10.4892|0.353786|0.00191661
+model087|9.59449|2.35058|17|0.00221306|-0.380135|0.0880659|2.88679|0.472096|0.0187267
+model088|10.3694|2.45757|18|0.029027|-0.352635|0.218492|3.20981|0.448669|0.0233993
+model090|16.1025|2.84006|26|-0.429136|0.435141|-4.62141|15.8038|0.324604|0.000216102
 
 could regenerate for higher min entropy
 
