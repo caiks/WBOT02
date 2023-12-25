@@ -1169,7 +1169,7 @@ lengthsHyperSkewness: -4.06495
 
 `lengthsDist` shows the distribution of the lengths of the paths of the leaf *slices*. The modal length is 15 for *model* 55 above. The maximum length is 24.
 
-`lengthsMean` is mean path length. In this case it is 14.8, very similar to the modal length. The `lengthsDeviation` is the standard deviation and the remaining statistics are the higher moments. In the example above, the hyper-skew is quite high suggesting a slight preponderance of short paths, but otherwise the path length distribution is fairly normal.
+`lengthsMean` is mean path length. In this case it is 14.8, very similar to the modal length. The `lengthsDeviation` is the standard deviation and the remaining statistics are the higher moments. Note that kurtosis is really the excess over a standard normal, so 3.0 is subtracted from the moment. In a later version we also add hyper-kurtosis. Again this moment is an excess - in this case 7.5 is subtracted. In this way all of the moments above the deviation are zero when normal. In the example above, the hyper-skew is quite high suggesting a preponderance of short paths, but otherwise the path length distribution is fairly normal.
 
 The statistics for the *decomposition's fuds' underlying* cardinalities are also shown -
 ```
