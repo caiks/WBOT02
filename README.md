@@ -1223,6 +1223,9 @@ mean: 6.77868
 ```
 In the example above for *model* 66 the scales were defined as `"scales" : [0.5, 0.354, 0.25, 0.177, 0.125, 0.088]`. The scale index is zero-based, so '0' corresponds to 0.5 in this case. We can see that, in this example, the mean path length increases with decreasing scale.
 
+##### compare_distributions TODO
+
+
 <a name="view_decomp"></a>
 
 ##### Decomposition tools
