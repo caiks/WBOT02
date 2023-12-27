@@ -4004,7 +4004,7 @@ int main(int argc, char *argv[])
 			double firstTotal = 0.0;	
 			std::vector<std::size_t> firstCounts;
 			double firstEntropy = 0.0;	
-			cout << "name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|entropy|relativeEntropy" << endl
+			cout << "name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|entropy|relative entropy" << endl
 				<< "---|---|---|---|---|---|---|---|---|---" << endl;
 			for (std::size_t k = 0; k < listCounts.size(); k++)
 			{

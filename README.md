@@ -1223,8 +1223,63 @@ mean: 6.77868
 ```
 In the example above for *model* 66 the scales were defined as `"scales" : [0.5, 0.354, 0.25, 0.177, 0.125, 0.088]`. The scale index is zero-based, so '0' corresponds to 0.5 in this case. We can see that, in this example, the mean path length increases with decreasing scale.
 
-##### compare_distributions TODO
+##### compare_distributions 
 
+We can show the statistics for any list of distributions using `compare_distributions`. For example, if we have a file `distributions.json`, which contains path length distributions for several *models*,
+```json
+{
+	"distributions" : [
+		{
+			"name" : "model089",
+			"distribution" : [7,14,28,74,165,327,616,1223,2066,3651,5817,8923,12433,17163,20760,22022,20867,17647,13579,9304,5248,2533,1068,391,68,28,25]
+		},
+		{
+			"name" : "model066",
+			"distribution" : [0,31,534,1490,3028,3802,2961,2503,1369,415,40]
+		},
+		{
+			"name" : "model082",
+			"distribution" : [0,2,46,414,2185,5521,10078,13029,13992,12602,10209,6593,3728,2057,986,436,142,31,13]
+		},
+		{
+			"name" : "model088",
+			"distribution" : [0,12,58,325,1504,3479,6400,10653,13472,14410,13636,12488,9253,6011,2758,1025,339,70]
+		},
+		{
+			"name" : "model061",
+			"distribution" : [4,18,48,104,190,413,831,1539,2552,4247,6562,9256,12453,16216,17306,17081,14041,9570,5226,1904,531,107]
+		},
+		{
+			"name" : "model090",
+			"distribution" : [4,8,21,68,93,207,408,858,1555,2827,4663,7520,11299,16107,21153,24451,25362,22374,16481,9866,4791,1911,703,137,66,7]
+		}
+	]
+}
+```
+and we run a filtered `compare_distributions`,
+```
+cd ~/WBOT02_ws
+./WBOT02 compare_distributions | grep "|"
+
+```
+we generate the following table -
+
+name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|entropy|relative entropy
+---|---|---|---|---|---|---|---|---|---
+model089|15.8303|3.09595|27|-0.273364|0.231408|-2.92203|11.5375|0.335085|0
+model066|6.38335|1.66527|11|0.102699|-0.494841|0.57775|1.53435|0.590519|0.0180298
+model082|9.33707|2.3007|19|0.351736|0.0108361|3.23887|8.32245|0.479095|0.0287103
+model088|10.3694|2.45757|18|0.029027|-0.352635|0.218492|3.20981|0.448669|0.0233993
+model061|14.5965|2.81447|22|-0.489616|0.306854|-4.87173|13.5217|0.350329|0.00189929
+model090|16.1025|2.84006|26|-0.429136|0.435141|-4.62141|15.8038|0.324604|0.000216102
+
+The statistics for each distribution is shown up to hyper-kurtosis. Then we have the distribution entropy, and lastly the sum relative entropy between each distribution and the first distribution. The sum relative entropy is defined here as the entropy of the sum of the two distributions minus the entropy of each distribution scaled by the size of each distribution per the sum of the sizes minus the entropy of the first distribution scaled by the size of the first distribution per the sum of the sizes. (See P137 of the *The Theory and Practice of Induction by Alignment* at https://greenlake.co.uk/ for the similar definition of *size-volume scaled component size cardinality sum relative entropy*.)
+
+In this example, the distributions were obtained from `view_active_concise` for each *model*, e.g.
+```
+lengthsDist: {(1,7),(2,14),(3,28),(4,74),(5,165),(6,327),(7,616),(8,1223),(9,2066),(10,3651),(11,5817),(12,8923),(13,12433),(14,17163),(15,20760),(16,22022),(17,20867),(18,17647),(19,13579),(20,9304),(21,5248),(22,2533),(23,1068),(24,391),(25,68),(26,28),(27,25)}
+```
+The example table above shows various *models* that are compared to *model* 89 ([see below](#Scanned_2_level_models)). We can see that the distribution of *model* 90 has the lowest sum relative entropy, so it is most similar to *model* 89. *Model* 82 has the highest sum relative entropy, so it is least similar.
 
 <a name="view_decomp"></a>
 
@@ -3970,6 +4025,8 @@ Similarly to *model* 82, the position map shows quite a lot of convolution, i.e.
 
 Note that the contour map entropy limit is different in *model* 88 versus *model* 82 because of the *32-valency*, so there are fewer areas where the map is not calculated.
 
+<a name="Scanned_2_level_models"></a>
+
 ###### Scanned 2-level models
 
 Now we wish to move to scanning modes for *2-level models*. Contrary to earlier ideas about *2-level* processsing, we can scan without having to have make 25+1 model applications at each cell by tiling the *underlying*, optionally with a cell offset, to make one or more tile sets over the whole scan area, and then do the higher *level* sharing the tile sets. Now the scan will require only 1-2 *model applications* per cell. That is, the compute will be of the same order of magnitude as for *1-level models*. Note that we may be below maximal path lengths if we do not take tile sets for every cell, i.e. 8 tile sets for a tile of size 8, but this should be less of a problem with the evident convolution (which implies a lot of duplicated *model* at small translations), although there are still discontinuities in the map. 
@@ -4212,61 +4269,29 @@ Let us investigate the effect of minimum entropy by comparing the path distribut
 
 TODO -
 
-name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|entropy|relativeEntropy
+name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|entropy|relative entropy
 ---|---|---|---|---|---|---|---|---|---
 model089|15.8303|3.09595|27|-0.273364|0.231408|-2.92203|11.5375|0.335085|0
-model033|15.3297|4.67248|39|1.30922|2.78361|15.6378|51.6066|0.361012|0.00176781
-model034|15.1661|4.40486|35|0.713972|1.23021|7.38672|24.4504|0.36674|0.0015692
-model035|15.9227|3.49762|35|0.18291|1.12668|4.04904|30.8245|0.340701|0.000274355
-model036|7.2012|1.99541|17|0.1987|0.14558|3.80436|15.577|0.564608|0.0148691
-model037|12.6032|5.10577|35|0.420192|0.117277|5.01677|12.4878|0.438406|0.00631998
-model038|9.03969|2.12513|18|-0.0742126|0.337508|-0.0980822|13.1709|0.483408|0.01291
-model039|16.4177|5.40135|46|1.84597|5.5689|32.3268|134.496|0.347186|0.00175941
-model040|17.7662|6.01157|54|1.88511|5.17104|29.4225|114.568|0.329591|0.00256184
-model041|18.2962|6.61144|62|2.12267|6.27214|36.2822|152.269|0.324172|0.00305469
-model042|19.2669|4.73917|39|0.587085|0.637021|5.10393|15.5311|0.305997|0.00611346
-model045|20.2058|5.08845|44|0.665683|0.663065|5.91677|16.8889|0.297248|0.00832566
-model046|16.8148|4.48833|36|0.768545|1.05939|7.36744|22.0019|0.337949|0.00202306
-model047|15.856|3.06973|25|-0.376717|0.249775|-3.94355|12.2938|0.333759|2.89139e-05
-model048|18.9173|3.43071|30|-0.418654|0.262438|-4.25479|12.7582|0.294807|0.00655884
-model049|16.7084|2.87266|28|-0.429888|0.533755|-4.75567|17.8254|0.3157|0.000760753
-model050|15.2807|2.77706|23|-0.484274|0.422492|-5.18706|15.885|0.336889|0.00069557
-model051|15.1173|2.94219|23|-0.544695|0.436537|-5.63131|16.0815|0.343239|0.000660322
-model052|6.70086|1.63718|11|0.124128|-0.572394|0.68236|1.04415|0.566476|0.0168215
-model053|6.62178|1.58436|11|0.0174681|-0.522234|0.0158004|1.63806|0.567503|0.0171984
-model054|15.4762|2.90557|24|-0.441921|0.472183|-5.00758|16.6501|0.336609|0.000255091
-model055|14.7936|2.9219|24|-0.397247|0.274909|-4.06495|12.3044|0.349591|0.00118284
-model056|19.7067|4.01717|32|-0.403701|-0.014491|-3.53141|8.30271|0.29292|0.00889488
-model057|15.4514|3.21902|25|-0.196809|0.163358|-2.37392|10.0287|0.344373|0.000166283
-model058|15.431|2.97585|25|-0.50156|0.335398|-4.91419|13.7997|0.338536|0.000314396
-model059|15.173|2.7713|23|-0.562656|0.591728|-6.21028|19.0916|0.338271|0.000927485
-model060|16.0253|2.86887|22|-1.07932|1.79519|-13.4868|45.2712|0.321818|0.000619503
-model061|14.5965|2.81447|22|-0.489616|0.306854|-4.87173|13.5217|0.350329|0.00189929
-model062|18.3574|3.74259|31|-0.174835|0.174702|-2.13643|9.81549|0.307455|0.00458823
-model063|15.7069|3.01358|24|-0.412472|0.250724|-4.40199|13.0706|0.334964|9.4935e-05
-model064|6.57929|1.59403|11|0.0313136|-0.584289|0.0058955|0.740202|0.57008|0.0173141
-model065|15.0705|3.09069|24|-0.546323|0.880217|-6.13352|21.1641|0.347238|0.000389081
 model066|6.38335|1.66527|11|0.102699|-0.494841|0.57775|1.53435|0.590519|0.0180298
-model067|14.0776|2.58877|21|-0.65765|0.697647|-7.32596|22.0728|0.353711|0.00321281
-model068|14.0128|2.54047|20|-0.740554|0.742176|-8.13539|23.6141|0.352628|0.00382016
-model069|8.57419|2.20572|16|0.223678|-0.180239|1.64162|4.5129|0.507217|0.0356049
-model070|14.8296|2.54226|22|-0.696725|0.780944|-7.80513|24.12|0.337792|0.0023926
-model071|7.02347|2.28498|11|-0.406994|-0.064745|-3.41516|6.04957|0.583545|0.000302261
-model073|16.6345|2.8549|25|-0.544737|0.483479|-5.93599|18.2495|0.315902|0.000736249
-model075|8.31282|2.43785|16|0.104568|-0.543657|0.653979|1.1184|0.530949|0.0377778
-model076|8.48058|2.47482|16|0.118256|-0.5318|0.72948|1.18274|0.524573|0.0395448
-model077|9.30126|2.57369|19|0.139428|-0.413559|0.987212|2.37216|0.492919|0.0334964
-model078|10.335|2.72063|22|0.17828|-0.317382|1.37083|3.45917|0.459378|0.0115053
-model079|8.72972|2.32191|16|-0.0619882|-0.50215|-0.504347|1.8655|0.505832|0.0374052
-model080|8.4489|2.30523|15|-0.0602701|-0.572861|-0.4826|1.02121|0.517462|0.0414834
-model081|10.3536|2.62577|20|0.0733801|-0.390548|0.481173|2.49788|0.455434|0.0123875
 model082|9.33707|2.3007|19|0.351736|0.0108361|3.23887|8.32245|0.479095|0.0287103
-model084|10.6978|2.02721|18|-0.53704|0.470949|-4.77906|14.1148|0.417649|0.0251905
-model085|12.384|2.22374|20|-0.511846|0.306299|-4.53137|12.2548|0.380333|0.0135707
-model086|13.9361|2.44981|23|-0.447918|0.177944|-3.90211|10.4892|0.353786|0.00191661
-model087|9.59449|2.35058|17|0.00221306|-0.380135|0.0880659|2.88679|0.472096|0.0187267
 model088|10.3694|2.45757|18|0.029027|-0.352635|0.218492|3.20981|0.448669|0.0233993
+model061|14.5965|2.81447|22|-0.489616|0.306854|-4.87173|13.5217|0.350329|0.00189929
 model090|16.1025|2.84006|26|-0.429136|0.435141|-4.62141|15.8038|0.324604|0.000216102
+
+The example table above shows various *models* that are compared to *model* 89 ([see below](#Scanned_2_level_models)). We can see that the distribution of *model* 90 has the lowest sum relative entropy, so it is most similar to *model* 89. *Model* 82 has the highest sum relative entropy, so it is least similar.
+
+Here is the same comparing to *model* 90 -
+
+name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|entropy|relative entropy
+---|---|---|---|---|---|---|---|---|---
+model090|16.1025|2.84006|26|-0.429136|0.435141|-4.62141|15.8038|0.324604|0
+model066|6.38335|1.66527|11|0.102699|-0.494841|0.57775|1.53435|0.590519|0.0179729
+model082|9.33707|2.3007|19|0.351736|0.0108361|3.23887|8.32245|0.479095|0.0303377
+model088|10.3694|2.45757|18|0.029027|-0.352635|0.218492|3.20981|0.448669|0.0254866
+model061|14.5965|2.81447|22|-0.489616|0.306854|-4.87173|13.5217|0.350329|0.00244039
+model089|15.8303|3.09595|27|-0.273364|0.231408|-2.92203|11.5375|0.335085|0.000216102
+
+Interestingly, scanned non-computed *model* 89 is more similar to randomised computed *model* 88 than scanned computed *model* 90, probably because of the low hyper-kurtosis.
 
 could regenerate for higher min entropy
 
