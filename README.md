@@ -1264,7 +1264,7 @@ cd ~/WBOT02_ws
 ```
 we generate the following table -
 
-name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|entropy|relative entropy
+name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyperkurtosis|entropy|relative entropy
 ---|---|---|---|---|---|---|---|---|---
 model089|15.8303|3.09595|27|-0.273364|0.231408|-2.92203|11.5375|0.335085|0
 model066|6.38335|1.66527|11|0.102699|-0.494841|0.57775|1.53435|0.590519|0.0180298
@@ -1539,7 +1539,7 @@ scale|2^(-x/2)|1/tan(2^(-x/2))
 
 This summarises the *model* results for both `actor002` and `actor003` -
 
-model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|Hyper-skew|Hyper-kurtosis|multiplier|notes
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 model010|0.5|4 randomised|1|bucketed|Fireman Sam|720,000|2,567|0.713|6.8|1.8|12|0.1|-0.4|0.7||3.16|25 FPS
 model011|0.354|4 randomised|1|bucketed|Fireman Sam|720,000|2,699|0.75|7.2|1.9|12|-0.1|-0.5|-0.8||2.99|
@@ -2484,7 +2484,7 @@ We can often observe stable arrangements of hotspots form during a camera shot, 
 
 ###### Model 29 versus model 27 
 
-model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
+model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyper-skew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 model027|0.177|10 scanned actual-potential|4|bucketed|Film Noir|759,760|3,757|0.989|14.1|3.1|24|-0.2|0.4|-2.4|1.79|
 model029|0.177|5 scanned potential tiled actual-potential|5|bucketed|Film Noir|526,345|3,386|1.287|13.5|2.6|23|-0.4|0.8|-5.0|1.83|
@@ -2493,7 +2493,7 @@ model029|0.177|5 scanned potential tiled actual-potential|5|bucketed|Film Noir|5
 
 ###### Model 30 versus model 29
 
-model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
+model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyper-skew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 model029|0.177|5 scanned potential tiled actual-potential|5|bucketed|Film Noir|526,345|3,386|1.287|13.5|2.6|23|-0.4|0.8|-5.0|1.83|
 model030|0.177|5 scanned potential tiled actual-potential|5|fixed|Film Noir|527,045|3,816|1.448|15.6|3.7|31|0.3|1.0|4.0|1.70|
@@ -2504,7 +2504,7 @@ The difference here is that we have moved from bucketed *valency* to fixed *vale
 
 ###### Model 30 versus model 25
 
-model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
+model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyper-skew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 model025|0.177|10 scanned actual-potential|4|fixed|Film Noir|865,170|5,283|1.221|18.7|7.4|50|0.8|0.3|6.1|1.58|
 model030|0.177|5 scanned potential tiled actual-potential|5|fixed|Film Noir|527,045|3,816|1.448|15.6|3.7|31|0.3|1.0|4.0|1.70|
@@ -2521,7 +2521,7 @@ This suggests that the tiling is more uniformly interested in features. The very
 
 ###### Model 31 versus model 30
 
-model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
+model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyper-skew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 model030|0.177|5 scanned potential tiled actual-potential|5|fixed|Film Noir|527,045|3,816|1.448|15.6|3.7|31|0.3|1.0|4.0|1.70|
 model031|0.177|5 scanned potential tiled actual-potential|5|fixed|Film Noir|452,255|3,197|1.414|14.6|3.7|32|0.4|0.8|4.5|1.74|12.0 min diagonal
@@ -2530,7 +2530,7 @@ The only difference is that the *diagonal* is constrained to be at least 12.0. T
 
 ###### Model 34 versus model 30
 
-model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
+model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyper-skew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
 model030|0.177|5 scanned potential tiled actual-potential|5|fixed|Film Noir|527,045|3,816|1.448|15.6|3.7|31|0.3|1.0|4.0|1.70|
 model034|0.177|5 scanned potential tiled actual-potential|5|fixed|10 B&W videos|527,045|3,846|1.459|15.2|4.4|35|0.7|1.2|7.4|1.72|first actor003 model
@@ -2539,40 +2539,40 @@ model034|0.177|5 scanned potential tiled actual-potential|5|fixed|10 B&W videos|
 
 ###### Model 35 versus model 34
 
-model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model030|0.177|5 scanned potential tiled actual-potential|5|fixed|Film Noir|527,045|3,816|1.448|15.6|3.7|31|0.3|1.0|4.0|1.70|
-model034|0.177|5 scanned potential tiled actual-potential|5|fixed|10 B&W videos|527,045|3,846|1.459|15.2|4.4|35|0.7|1.2|7.4|1.72|first actor003 model
-model035|0.177|5 scanned potential tiled actual-potential|5|fixed|14 B&W videos|1,000,000|7,069|1.414|15.9|3.5|35|0.2|1.1|4.0|1.74|
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model030|0.177|5 scanned potential tiled actual-potential|5|fixed|Film Noir|527,045|3,816|1.448|15.6|3.7|31|0.3|1.0|4.0||1.70|
+model034|0.177|5 scanned potential tiled actual-potential|5|fixed|10 B&W videos|527,045|3,846|1.459|15.2|4.4|35|0.7|1.2|7.4|24.5|1.72|first actor003 model
+model035|0.177|5 scanned potential tiled actual-potential|5|fixed|14 B&W videos|1,000,000|7,069|1.414|15.9|3.5|35|0.2|1.1|4.0|30.8|1.74|
 
 *Model* 35 is also an `actor003` *model*, but with a larger *history* and an expanded set of videos. It has slightly reduced growth, but similar multiplier. The higher moments are much more like those of *model* 30. 
 
 ###### Model 37 versus model 35
 
-model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model036|0.177|4 randomised|1|fixed|12 B&W videos|500,000|1,931|0.772|7.2|2.0|17|0.2|0.1|3.8|2.86|
-model035|0.177|5 scanned potential tiled actual-potential|5|fixed|14 B&W videos|1,000,000|7,069|1.414|15.9|3.5|35|0.2|1.1|4.0|1.74|
-model037|0.177|5 scanned potential tiled actual-potential|1,5|fixed|12 B&W videos|1,000,000|6,033|1.207|12.6|5.1|35|0.4|0.1|5.0|2.00|initial *model* 36
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model036|0.177|4 randomised|1|fixed|12 B&W videos|500,000|1,931|0.772|7.2|2.0|17|0.2|0.1|3.8|15.6|2.86|
+model035|0.177|5 scanned potential tiled actual-potential|5|fixed|14 B&W videos|1,000,000|7,069|1.414|15.9|3.5|35|0.2|1.1|4.0|30.8|1.74|
+model037|0.177|5 scanned potential tiled actual-potential|1,5|fixed|12 B&W videos|1,000,000|6,033|1.207|12.6|5.1|35|0.4|0.1|5.0|12.5|2.00|initial *model* 36
 
 *Model* 37 has a random mode beginning for the first 500,000 *events*, and so has two modal lengths (at 7 and 15). It has a lower mean, and intermediate growth and multiplier. Although it added 4102 *fuds* in the last 500,000 *events*, and so had a better rate (1.641) than *model* 35 in the second half, randomising the beginning merely appears to interpolate between the two modes.
 
 ###### Model 39 versus model 35
 
-model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model035|0.177|5 scanned potential tiled actual-potential|5|fixed|14 B&W videos|1,000,000|7,069|1.414|15.9|3.5|35|0.2|1.1|4.0|1.74|
-model039|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|1,000,000|7,214|1.443|16.4|5.4|46|1.8|5.6|32.3|1.72|30s unique
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model035|0.177|5 scanned potential tiled actual-potential|5|fixed|14 B&W videos|1,000,000|7,069|1.414|15.9|3.5|35|0.2|1.1|4.0|30.8|1.74|
+model039|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|1,000,000|7,214|1.443|16.4|5.4|46|1.8|5.6|32.3|134.5|1.72|30s unique
 
-In *model* 39 we added `"unique_records" : 333` to the configuration compared to *model* 35. This prevents identical records within the previous 20 seconds approximately from being added to the *history*. The list of videos was slightly changed too. The growth and multiplier are around the same. Although we would expect the *model* to be a little more normal, the maximum length and skew have increased greatly. Possibly this is simply because of path dependence and the consequence variation between otherwise identical runs, but we do find that subsequent *models* with the same uniqueness constraint also have very high positive skew and long paths. So the effect appears to be to increase interest in low entropy frames, possibly because without uniqueness there would be very little *alignment* if many of the *events* were identical.
+In *model* 39 we added `"unique_records" : 333` to the configuration compared to *model* 35. This prevents identical records within the previous 20 seconds approximately from being added to the *history*. The list of videos was slightly changed too. The growth and multiplier are around the same. Although we would expect the *model* to be a little more normal, the maximum length, skew and kurtosis have increased greatly. Possibly this is simply because of path dependence and the consequence variation between otherwise identical runs, but we do find that subsequent *models* with the same uniqueness constraint also have very high positive skew, very high kurtosis and long paths. So the effect appears to be to increase interest in low entropy frames, possibly because without uniqueness there would be very little *alignment* if many of the *events* were identical.
 
 ###### Models 40 and 41 versus model 39
 
-model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model039|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|1,000,000|7,214|1.443|16.4|5.4|46|1.8|5.6|32.3|1.72|30s unique
-model040|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|2,000,000|12,262|1.226 (1.443)|17.8|6.0|54|1.9|5.2|29.4|1.70|30s unique
-model041|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|2,656,962|14,079|1.060 (1.443)|18.3|6.6|62|2.1|6.3|36.3|1.69|30s unique
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model039|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|1,000,000|7,214|1.443|16.4|5.4|46|1.8|5.6|32.3|134.5|1.72|30s unique
+model040|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|2,000,000|12,262|1.226 (1.443)|17.8|6.0|54|1.9|5.2|29.4|114.6|1.70|30s unique
+model041|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|2,656,962|14,079|1.060 (1.443)|18.3|6.6|62|2.1|6.3|36.3|152.3|1.69|30s unique
 
 *Model* 40 loads initial *model* 39 and continues into overflow. *Model* 41 loads initial *model* 41 and carries on further. We can see the actual *model* growth is close to expected -
 
@@ -2610,10 +2610,10 @@ The lighting of the image is important too - sibling and examples all have the s
 
 ###### Models 42 to 45 versus model 41
 
-model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model041|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|2,656,962|14,079|1.060 (1.443)|18.3|6.6|62|2.1|6.3|36.3|1.69|30s unique
-model045|0.177|5 scanned potential tiled actual-potential|5|fixed 5-valent|48 B&W videos|2,656,963|34,557|1.300 (1.643)|20.2|5.1|44|0.7|0.7|5.9|1.68|30s unique, 12.0 min diagonal, 100 threshold
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model041|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|2,656,962|14,079|1.060 (1.443)|18.3|6.6|62|2.1|6.3|36.3|152.3|1.69|30s unique
+model045|0.177|5 scanned potential tiled actual-potential|5|fixed 5-valent|48 B&W videos|2,656,963|34,557|1.300 (1.643)|20.2|5.1|44|0.7|0.7|5.9|16.9|1.68|30s unique, 12.0 min diagonal, 100 threshold
 
 We ran *models* 42 to 45 in sequence each with the previous *model* as its initial, in order to determine the effect of overflow. First, though, compare *model* 45 to *model* 41. The differences are that *model* 45 is *5-valent*, has an expanded set of videos, has a minimum *diagonal* of 12.0 and an induce threshold reduced to 100 *events*. The lower *valency* has a very high growth rate of 1.643. The multiplier is similar, but the *model* is much more normal and the maximum path length is considerably reduced. *Model* 45 only has one mode at 18, instead of the 8 modes of *model* 41. Probably the lower *valency* reduces the *alignments* in low entropy frames to below the minimum *diagonal*, thus preventing the very long paths. 
 
@@ -2643,11 +2643,11 @@ Note that at this point we developed checkpointing to handle recovery in case of
 
 ###### Model 46 versus models 45 and 41
 
-model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model041|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|2,656,962|14,079|1.060 (1.443)|18.3|6.6|62|2.1|6.3|36.3|1.69|30s unique
-model045|0.177|5 scanned potential tiled actual-potential|5|fixed 5-valent|48 B&W videos|2,656,963|34,557|1.300 (1.643)|20.2|5.1|44|0.7|0.7|5.9|1.68|30s unique, 12.0 min diagonal, 100 threshold
-model046|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,965|13,432|1.011 (1.406)|16.8|4.5|36|0.8|1.1|7.4|1.76|30s unique, 12.0 min diagonal
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model041|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|2,656,962|14,079|1.060 (1.443)|18.3|6.6|62|2.1|6.3|36.3|152.3|1.69|30s unique
+model045|0.177|5 scanned potential tiled actual-potential|5|fixed 5-valent|48 B&W videos|2,656,963|34,557|1.300 (1.643)|20.2|5.1|44|0.7|0.7|5.9|16.9|1.68|30s unique, 12.0 min diagonal, 100 threshold
+model046|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,965|13,432|1.011 (1.406)|16.8|4.5|36|0.8|1.1|7.4|22.0|1.76|30s unique, 12.0 min diagonal
 
 With *model* 46 we are back to *10-valent*. We have retained the expanded set of videos and minimum *diagonal* of *model* 45. The growth rate is a little below the growth of *model* 41 because of the minimum *diagonal*. The multiplier is similar but now the *model* is much more normal than *model* 41, although not quite as normal as *model* 45. There is only one mode (at 16) and the maximum length is much more moderate. A combination of the larger set of videos and the minimum *diagonal* has improved the normality without much cost to growth.
 
@@ -2671,10 +2671,10 @@ This is the representation for *model* 46 -
 
 ###### Model 47 versus model 46
 
-model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model046|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,965|13,432|1.011 (1.406)|16.8|4.5|36|0.8|1.1|7.4|1.76|30s unique, 12.0 min diagonal
-model047|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,963|13,688|1.030 (1.364)|15.9|3.1|25|-0.4|0.2|-3.9|1.82|30s unique, 12.0 min diagonal, 1.2 min entropy
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model046|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,965|13,432|1.011 (1.406)|16.8|4.5|36|0.8|1.1|7.4|22.0|1.76|30s unique, 12.0 min diagonal
+model047|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,963|13,688|1.030 (1.364)|15.9|3.1|25|-0.4|0.2|-3.9|12.3|1.82|30s unique, 12.0 min diagonal, 1.2 min entropy
 
 In *model* 47 we added minimum entropy. The growth is reduced but the multiplier increases slightly. The kurtosis is much smaller and the skew is halved, but is negative rather than positive. The maximum path length has reduced again to only 25. The mean and deviation are reduced, but the mode is unchanged at 16. The statistics suggest that the long paths were mainly low entropy frames, but there is now a small excess of short paths. In addition, there are no fails - implying that the long paths had low *alignments*, which agrees with the our interpretation of the effect of minimum entropy. As well as excluding frames with weak *alignments*, the low entropy frames were poor at resolving hotspots and so increased the duplication of *model* due to small translations.
 
@@ -2716,10 +2716,10 @@ There is a lot of detail around the head, neck and collar and a hint of a mouth.
 
 ###### Model 50 versus model 47
 
-model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model047|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,963|13,688|1.030 (1.364)|15.9|3.1|25|-0.4|0.2|-3.9|1.82|30s unique, 12.0 min diagonal, 1.2 min entropy
-model050|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,962|16,980|1.278|15.3|2.8|23|-0.5|0.4|-5.2|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model047|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,963|13,688|1.030 (1.364)|15.9|3.1|25|-0.4|0.2|-3.9|12.3|1.82|30s unique, 12.0 min diagonal, 1.2 min entropy
+model050|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,962|16,980|1.278|15.3|2.8|23|-0.5|0.4|-5.2|15.9|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow
 
 Here the only difference between *models* 50 and 47 is that *model* 50 is run with no overflow. (It was run in the cloud with a *history size* of 3 million *events*.) We can see that the growth of *model* 50 at 1.278 is lower than that of *model* 47 before it went into overflow (1.364), so as the average path length increases the growth slows gradually, presumably because the remaining *alignments* tend to be smaller. Note that the mean path is actually slightly shorter at 15.3. This is explained by the slightly increased negative skew. The multiplier is a little larger too. Possibly these differences are due to the variation between runs rather than because of the absence of overflow.
 
@@ -2735,11 +2735,11 @@ Qualitatively, *model* 50 is picking up features, for example -
 
 ###### Models 49 and 51 versus model 50
 
-model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model049|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,964|36,146|1.36|16.7|2.9|28|-0.4|0.5|-4.8|1.87|30s unique, 12.0 min diagonal, 100 threshold, 1.2 min entropy, no overflow
-model050|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,962|16,980|1.278|15.3|2.8|23|-0.5|0.4|-5.2|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow
-model051|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,963|8,079|1.216|15.1|2.9|23|-0.5|0.4|-5.6|1.81|30s unique, 12.0 min diagonal, 400 threshold, 1.2 min entropy, no overflow
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model049|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,964|36,146|1.36|16.7|2.9|28|-0.4|0.5|-4.8|17.8|1.87|30s unique, 12.0 min diagonal, 100 threshold, 1.2 min entropy, no overflow
+model050|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,962|16,980|1.278|15.3|2.8|23|-0.5|0.4|-5.2|15.9|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow
+model051|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,963|8,079|1.216|15.1|2.9|23|-0.5|0.4|-5.6|16.1|1.81|30s unique, 12.0 min diagonal, 400 threshold, 1.2 min entropy, no overflow
 
 Here we experimented with the threshold. *Model* 49 has a threshold of 100, *model* 50 has the default threshold of 200, and *model* 51 has a threshold of 400. We can see that the threshold affects growth a little, but does not make much difference to the multiplier. The deviation and higher moments are all very similar. Quantitatively, there does not seem to be much of a cost to using the lower threshold of 100, even though it is only the square of the *valency*. Qualitatively, however, the representation of *model* 49 appears to be worse than that of *model* 50, presumably because of smaller *slices*. 
 
@@ -2753,12 +2753,12 @@ and this is *model* 49 -
 
 ###### Model 48 versus model 49
 
-model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model049|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,964|36,146|1.36|16.7|2.9|28|-0.4|0.5|-4.8|1.87|30s unique, 12.0 min diagonal, 100 threshold, 1.2 min entropy, no overflow
-model048|0.177|5 scanned potential tiled actual-potential|5|fixed 5-valent|48 B&W videos|2,656,965|38,124|1.434|18.9|3.4|30|-0.4|0.3|-4.3|1.75|30s unique, 12.0 min diagonal, 100 threshold, 0.8 min entropy, no overflow
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model049|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,964|36,146|1.36|16.7|2.9|28|-0.4|0.5|-4.8|17.8|1.87|30s unique, 12.0 min diagonal, 100 threshold, 1.2 min entropy, no overflow
+model048|0.177|5 scanned potential tiled actual-potential|5|fixed 5-valent|48 B&W videos|2,656,965|38,124|1.434|18.9|3.4|30|-0.4|0.3|-4.3|12.8|1.75|30s unique, 12.0 min diagonal, 100 threshold, 0.8 min entropy, no overflow
 
-Here the difference is that *model* 48 is *5-valent* whereas *model* 49 is *10-valent*. The thresholds are the same, but the minimum entropy is set lower at 0.8 instead of 1.2. The growth for the *5-valent model* is higher and the multiplier lower, but the higher moments are very similar.
+Here the difference is that *model* 48 is *5-valent* whereas *model* 49 is *10-valent*. The thresholds are the same, but the minimum entropy is set lower at 0.8 instead of 1.2. The growth for the *5-valent model* is higher and the multiplier lower, but the higher moments are similar.
 
 The representation for *model* 48 is perhaps better than that of *model* 49 -
 
@@ -2768,24 +2768,24 @@ So the larger threshold of 200 is probably better for the higher *valency*.
 
 ###### Model 54 versus models 47 and 50
 
-model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model047|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,963|13,688|1.030 (1.364)|15.9|3.1|25|-0.4|0.2|-3.9|1.82|30s unique, 12.0 min diagonal, 1.2 min entropy
-model050|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,962|16,980|1.278|15.3|2.8|23|-0.5|0.4|-5.2|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow
-model054|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|3,000,065|12,390|0.826 (1.294)|15.5|2.9|24|-0.4|0.5|-5.0|1.84|30s unique, 12.0 min diagonal, 1.2 min entropy
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model047|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,963|13,688|1.030 (1.364)|15.9|3.1|25|-0.4|0.2|-3.9|12.3|1.82|30s unique, 12.0 min diagonal, 1.2 min entropy
+model050|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|2,656,962|16,980|1.278|15.3|2.8|23|-0.5|0.4|-5.2|15.9|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow
+model054|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|3,000,065|12,390|0.826 (1.294)|15.5|2.9|24|-0.4|0.5|-5.0|16.7|1.84|30s unique, 12.0 min diagonal, 1.2 min entropy
 
 With *model* 54 we went back to the smaller *history* so it is essentially identical to *model* 47 except that it terminates a little later. *Model* 54 is intermediate between the two earlier *models*, which suggests that the differences between all three are simply due to the variations between runs.
 
 ###### Model 55 versus model 54
 
-model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model054|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|3,000,065|12,390|0.826 (1.294)|15.5|2.9|24|-0.4|0.5|-5.0|1.84|30s unique, 12.0 min diagonal, 1.2 min entropy
-model055|0.177|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|15,050|1.003 (1.489)|14.8|2.9|24|-0.4|0.3|-4.1|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model054|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|3,000,065|12,390|0.826 (1.294)|15.5|2.9|24|-0.4|0.5|-5.0|16.7|1.84|30s unique, 12.0 min diagonal, 1.2 min entropy
+model055|0.177|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|15,050|1.003 (1.489)|14.8|2.9|24|-0.4|0.3|-4.1|12.3|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy
 
 *Model* 55 is identical to *model* 54 except for its mode. A problem with calculating the potential *likelihood* in terms of the ratio between a *slice's size* and its parent's *size* is that *on-diagonal* siblings of ancestor *slices* may end up being ignored. This is because the ratio between *slice size* and parent *slice size* is only comparable where the siblings are leaf *slices*. The siblings of ancestor *slices* will probably have larger parents, and so the potential *likelihood* appears to decrease. To fix this in 'scanned size-potential tiled actual-potential' mode (6) we simply use the *slice size* as the measure for potential *likelihood*. 
 
-In *model* 55 the effect of the mode is to increase both the growth and the multiplier. The growth probably increases because the *alignments* of the neglected siblings are probably higher than for *slices* on longer paths. The multiplier would be expected to be higher in this mode; now it is closer to the ideal multiplier of around two. The kurtosis and hyperskew are a little lower, and so the *model* is slightly more normal. *Model* 55 has many more paths (121,505 versus 98,696), so we seem to have solved the lost sibling problem.
+In *model* 55 the effect of the mode is to increase both the growth and the multiplier. The growth probably increases because the *alignments* of the neglected siblings are probably higher than for *slices* on longer paths. The multiplier would be expected to be higher in this mode; now it is closer to the ideal multiplier of around two. The kurtosis, hyper-skew and hyper-kurtosis are a little lower, and so the *model* is slightly more normal. *Model* 55 has many more paths (121,505 versus 98,696), so we seem to have solved the lost sibling problem.
 
 The use of *slice size* as the measure for potential *likelihood* can also be applied to non-tiled 'scanned actual-potential' mode 4 to create scanned actual-size-potential mode 7. That is, the scanned *slices* are ordered first by path length and then by *size*. We have not used this mode in any `actor003` runs, but in an interactive `actor002` session where we grab the camera. We ran
 ```
@@ -2881,12 +2881,12 @@ This [video](images/actor003_model055_Film_Noir_002.mp4?raw=true) from around 1:
 
 ###### Model 56 versus model 55
 
-model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model055|0.177|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|15,050|1.003 (1.489)|14.8|2.9|24|-0.4|0.3|-4.1|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy
-model056|0.177|5 scanned size-potential tiled actual-potential|6|fixed 5-valent|48 B&W videos|3,000,000|34,859|1.162 (1.643)|19.7|4.0|32|-0.4|0.0|-3.5|1.70|30s unique, 12.0 min diagonal,  100 threshold, 0.8 min entropy
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model055|0.177|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|15,050|1.003 (1.489)|14.8|2.9|24|-0.4|0.3|-4.1|12.3|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy
+model056|0.177|5 scanned size-potential tiled actual-potential|6|fixed 5-valent|48 B&W videos|3,000,000|34,859|1.162 (1.643)|19.7|4.0|32|-0.4|0.0|-3.5|8.3|1.70|30s unique, 12.0 min diagonal,  100 threshold, 0.8 min entropy
 
-Here the difference is that *model* 56 is *5-valent* whereas *model* 55 is *10-valent*. A similar comparison was made between *model* 48 and *model* 49, both at non-tiled mode 5 instead of mode 6. The change in both cases is very similar - the growth for the *5-valent model* is higher and the multiplier lower, but the higher moments are similar. Both of the mode 6 *models* grow faster than their corresponding mode 5 *model*.
+Here the difference is that *model* 56 is *5-valent* whereas *model* 55 is *10-valent*. A similar comparison was made between *model* 48 and *model* 49, both at non-tiled mode 5 instead of mode 6. The change in both cases is very similar - the growth for the *5-valent model* is higher and the multiplier lower, and the higher moments are slightly more normal. Both of the mode 6 *models* grow faster than their corresponding mode 5 *model*.
 
 Here are some qualitative comparisons with *model* 55 on the left and *model* 56 on the right -
 
@@ -2914,11 +2914,11 @@ This [video](images/actor003_model056_Film_Noir_003.mp4?raw=true) from around 1:
 
 ###### Models 57 and 58 versus model 55
 
-model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model055|0.177|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|15,050|1.003 (1.489)|14.8|2.9|24|-0.4|0.3|-4.1|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy
-model057|0.354|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|15,433|1.003 (1.480)|15.5|3.2|25|-0.2|0.2|-2.4|1.86|30s unique, 12.0 min diagonal, 1.2 min entropy
-model058|0.088|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|13,999|0.933 (1.447)|15.4|3.0|25|-0.5|0.3|-4.9|1.86|30s unique, 12.0 min diagonal, 1.2 min entropy
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model055|0.177|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|15,050|1.003 (1.489)|14.8|2.9|24|-0.4|0.3|-4.1|12.3|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy
+model057|0.354|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|15,433|1.003 (1.480)|15.5|3.2|25|-0.2|0.2|-2.4|10.0|1.86|30s unique, 12.0 min diagonal, 1.2 min entropy
+model058|0.088|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|13,999|0.933 (1.447)|15.4|3.0|25|-0.5|0.3|-4.9|13.8|1.86|30s unique, 12.0 min diagonal, 1.2 min entropy
 
 Here we test the *model* 55 configuration's sensitivity to scale. *Model* 57 doubles the scale, and *Model* 58 halves the scale. The statistics in both cases are very similar to the statistics of *model* 55, although the growth is a little reduced for the smaller scale.
 
@@ -2934,10 +2934,10 @@ Clearly the whole image improves with decreasing scale, but this is probably not
 
 ###### Model 59 versus model 55
 
-model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model055|0.177|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|15,050|1.003 (1.489)|14.8|2.9|24|-0.4|0.3|-4.1|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy
-model059|0.177|5 scanned active-size-potential tiled actual-potential|8|fixed|48 B&W videos|3,000,000|16,735|1.116 (1.501)|15.2|2.8|23|-0.6|0.6|-6.2|1.90|30s unique, 12.0 min diagonal, 1.2 min entropy
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model055|0.177|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|15,050|1.003 (1.489)|14.8|2.9|24|-0.4|0.3|-4.1|12.3|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy
+model059|0.177|5 scanned active-size-potential tiled actual-potential|8|fixed|48 B&W videos|3,000,000|16,735|1.116 (1.501)|15.2|2.8|23|-0.6|0.6|-6.2|19.1|1.90|30s unique, 12.0 min diagonal, 1.2 min entropy
 
 Here we considered the question of growth in overflow. Mode 'scanned active-size-potential tiled actual-potential' (8) uses the active *history slice size* rather than the accumulated cached *slice size*. Before overflow, mode 8 and mode 6 should be exactly the same. Afterwards, mode 8 should give some advantage for a while, although perhaps there might be a disadvantage later on when there is a preponderance of long paths with few remaining *alignments*. Comparing the *models* above we can see that there is a growth advantage for the active-size-potential mode, but at the cost of a more negatively skewed path length distribution and higher kurtosis. These are the overflow statistics for *model* 55 -
 
@@ -2973,10 +2973,10 @@ it suggests that perhaps mode 8 produces a less diverse *model* with more premat
 
 ###### Model 61 versus model 55
 
-model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model055|0.177|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|15,050|1.003 (1.489)|14.8|2.9|24|-0.4|0.3|-4.1|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy
-model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model055|0.177|5 scanned size-potential tiled actual-potential|6|fixed|48 B&W videos|3,000,000|15,050|1.003 (1.489)|14.8|2.9|24|-0.4|0.3|-4.1|12.3|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy
+model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|13.5|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
 
 In the section on [Records and representations](#Records_and_representations) above we mentioned a variation of the fixed *valency* method, called balanced *valency*, which is to calculate the average brightness of the record and then add the difference between the mid point of the brightness (127) and the average brightness to each cell's brightness before dividing it into regular intervals. This method adjusts the mean brightness, but not the deviation, so there may be a loss of information around the extreme *values*. *Model* 61 has the same configuration as *model* 55 except that it uses balanced *valency*. The quantitative effect seems to be to reduce the growth a little and increase the negative skew a little. Qualitatively, there seems to be a slight improvement in the representations when compared side by side -
 
@@ -3008,10 +3008,10 @@ However, we must bear in mind that it has no sense of global *alignments* - it i
 
 ###### Model 62 versus model 56
 
-model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model056|0.177|5 scanned size-potential tiled actual-potential|6|fixed 5-valent|48 B&W videos|3,000,000|34,859|1.162 (1.643)|19.7|4.0|32|-0.4|0.0|-3.5|1.70|30s unique, 12.0 min diagonal,  100 threshold, 0.8 min entropy
-model062|0.177|5 scanned size-potential tiled actual-potential|6|balanced 5-valent|48 B&W videos|3,000,000|33,612|1.120 (1.634)|18.4|3.7|31|-0.2|0.2|-2.1|1.76|30s unique, 12.0 min diagonal, 0.8 min entropy
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model056|0.177|5 scanned size-potential tiled actual-potential|6|fixed 5-valent|48 B&W videos|3,000,000|34,859|1.162 (1.643)|19.7|4.0|32|-0.4|0.0|-3.5|8.3|1.70|30s unique, 12.0 min diagonal,  100 threshold, 0.8 min entropy
+model062|0.177|5 scanned size-potential tiled actual-potential|6|balanced 5-valent|48 B&W videos|3,000,000|33,612|1.120 (1.634)|18.4|3.7|31|-0.2|0.2|-2.1|9.8|1.76|30s unique, 12.0 min diagonal, 0.8 min entropy
 
 In this comparison we test the effect of balanced *valency* in the *5-valent* case. Quantitatively, the statistics are very similar. Qualitatively, the representation is perhaps slightly better, although still inferior to the *10-valent* equivalent, *model* 61 -
 
@@ -3023,10 +3023,10 @@ From the evidence of this and the previous comparison we can also guess that bal
 
 ###### Model 63 versus model 61
 
-model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
-model063|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|15,013|1.001 (1.494)|15.7|3.0|24|-0.4|0.3|-4.4|1.84|30s unique, 12.0 min diagonal, 1.0 min entropy
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|13.5|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
+model063|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|15,013|1.001 (1.494)|15.7|3.0|24|-0.4|0.3|-4.4|13.1|1.84|30s unique, 12.0 min diagonal, 1.0 min entropy
 
 The balanced *valency* method slightly modifies the areas where the minimum entropy cutoff takes place, but there still remains an entropy hole in the face of the image of the man facing right. In *model* 63 we reduced the minimum entropy from 1.2 to 1.0. The effect is to increase growth a little, but reduce the multiplier. Perhaps lower entropy *events* are making the *diagonals* more lopsided. If we compare the representations,
 
@@ -3040,10 +3040,10 @@ Although the low entropy hole is smaller, we can see that the *model* is less de
 
 ###### Model 69 versus model 61
 
-model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyperskew|multiplier|notes
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
-model069|0.177|5 scanned size-potential tiled entropy|11|balanced|48 B&W videos|3,000,000|10,993|0.733 (1.290)|8.6|2.2|16|0.2|-0.2|1.6|2.96|30s unique, 12.0 min diagonal, 1.2 min entropy
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|13.5|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
+model069|0.177|5 scanned size-potential tiled entropy|11|balanced|48 B&W videos|3,000,000|10,993|0.733 (1.290)|8.6|2.2|16|0.2|-0.2|1.6|4.5|2.96|30s unique, 12.0 min diagonal, 1.2 min entropy
 
 Scanning is a highly compute intensive process, so we created a new mode 'scanned size-potential tiled entropy' (11) which simply calculates a frame's entropy instead of its *slice*. The idea is that hotspots might also be high entropy locations. The calculation of a frame's entropy could be very fast, since it only requires the calculation of the changes to the distribution of pixels over *values* due to a shift sideways between neighbouring frames. 
 
@@ -3126,17 +3126,17 @@ Here is the configuration for *model* 67 -
 ```
 It is similar to *model* 66 except that the mode is 10 instead of 9, there are 12 *events* per frame instead of 4, the *model* has 3 million *events*, partly in overflow, instead of 0.5 million *events*, and the active is non-cumulative. Let us compare these two *models* -
 
-model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model066|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised|9|balanced|48 B&W videos|500,000|1,822|0.7288|6.4|1.7|11|0.1|-0.5|0.6|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy
-model067|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|12 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|6,815|0.454 (0.910)|14.1|2.6|21|-0.7|0.7|-7.3|1.87|30s unique, 12.0 min diagonal, 1.2 min entropy
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model066|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised|9|balanced|48 B&W videos|500,000|1,822|0.7288|6.4|1.7|11|0.1|-0.5|0.6|1.5|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy
+model067|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|12 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|6,815|0.454 (0.910)|14.1|2.6|21|-0.7|0.7|-7.3|22.1|1.87|30s unique, 12.0 min diagonal, 1.2 min entropy
 
 We can see that *model* 67 has a higher growth rate, a lower multiplier and is much less normal than *model* 66. In fact, *model* 67 looks much more like *model* 61 -
 
-model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
-model067|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|12 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|6,815|0.454 (0.910)|14.1|2.6|21|-0.7|0.7|-7.3|1.87|30s unique, 12.0 min diagonal, 1.2 min entropy
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|13.5|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
+model067|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|12 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|6,815|0.454 (0.910)|14.1|2.6|21|-0.7|0.7|-7.3|22.1|1.87|30s unique, 12.0 min diagonal, 1.2 min entropy
 
 The statistics apart from growth are much more similar to 'scanned size-potential tiled actual-potential' mode (6) *model* 61. Clearly the local scanning is the main factor contributing to the longer paths. The growth is lower, however, probably because (a) the *alignments* are lowered by multi-scale dilution, (b) mode 10 does not filter hotspots by potential *likelihood* (*slice size*), or (c) the centre is not maintained between captures. 
 
@@ -3198,10 +3198,11 @@ mean: 14.8826
 We can see that the second scale of 0.354 has the shortest mean path length (14.278), while the smallest scale of 0.088 has the longest mean path length (14.883). This time the largest scale of 0.5 does not have the shortest mean path length, but that could be because is has the most *events* (due to minimum entropy biasing toward larger scales). This suggests that multi-scale is causing dilution. 
 
 In order to see the effect of the choice of scales, in *model* 68 we ran with this set of scales: 0.25, 0.21, 0.177, 0.149, 0.125 and 0.105, i.e. six quarter-integral powers of a half -
-model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model067|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|12 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|6,815|0.454 (0.910)|14.1|2.6|21|-0.7|0.7|-7.3|1.87|30s unique, 12.0 min diagonal, 1.2 min entropy
-model068|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|12 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|7,303|0.487 (0.947)|14.0|2.5|20|-0.7|0.7|-8.1|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy
+
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model067|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|12 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|6,815|0.454 (0.910)|14.1|2.6|21|-0.7|0.7|-7.3|22.1|1.87|30s unique, 12.0 min diagonal, 1.2 min entropy
+model068|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|12 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|7,303|0.487 (0.947)|14.0|2.5|20|-0.7|0.7|-8.1|23.6|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy
 
 The growth and multiplier are both slightly higher. The growth in overflow is slightly improved too -
 
@@ -3235,10 +3236,10 @@ At a scale of 0.125 they are similar too -
 
 With *model* 70 we keep the same scales as *model* 68 but move to filtering by potential *likelihood*. In mode 'randomised size-potential scanned actual-potential' (12) we first scan the local tile for a batch of random centre frames. We then choose the top frames of these with the highest potential *likelihood* (active *slice size*). Comparing to *model* 68 we can see that the growth is much higher, but otherwise the statistics are similar -
 
-model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model068|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|12 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|7,303|0.487 (0.947)|14.0|2.5|20|-0.7|0.7|-8.1|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy
-model070|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential|12|balanced|48 B&W videos|2,400,024|15,817|1.054 (1.561)|14.8|2.5|22|-0.7|0.8|-7.8|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy, 20 randomised
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model068|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|12 randomised scanned actual-potential|10|balanced|48 B&W videos|3,000,000|7,303|0.487 (0.947)|14.0|2.5|20|-0.7|0.7|-8.1|23.6|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy
+model070|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential|12|balanced|48 B&W videos|2,400,024|15,817|1.054 (1.561)|14.8|2.5|22|-0.7|0.8|-7.8|24.1|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy, 20 randomised
 
 The growth in overflow looks more like active-*size* *model* 59 because we are not accumulating cached *size* - 
 
@@ -3251,10 +3252,10 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 
 In *model* 70 the filter ratio of 1 to 5 is around the same as in *model* 61 and so the growths are similar -
 
-model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
-model070|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential|12|balanced|48 B&W videos|2,400,024|15,817|1.054 (1.561)|14.8|2.5|22|-0.7|0.8|-7.8|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy, 20 randomised
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|13.5|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
+model070|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential|12|balanced|48 B&W videos|2,400,024|15,817|1.054 (1.561)|14.8|2.5|22|-0.7|0.8|-7.8|24.1|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy, 20 randomised
 
 The position map at scale 0.177 is slightly more detailed than *model* 68, but still not as detailed as *model* 61 -
 
@@ -3338,17 +3339,17 @@ Note that we are no longer using `actor003`, but are using the offline process `
 
 Here we compare *model* 73 to online *model* 70 -
 
-model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model070|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential|12|balanced|48 B&W videos|2,400,024|15,817|1.054 (1.561)|14.8|2.5|22|-0.7|0.8|-7.8|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy, 20 randomised
-model073|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential|12|balanced|48 B&W videos|3,000,001|23,661|1.577|16.6|2.9|25|-0.5|0.5|-5.9|1.83|30s unique, 12.0 min diagonal, 1.2 min entropy, 20 randomised, no overflow
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model070|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential|12|balanced|48 B&W videos|2,400,024|15,817|1.054 (1.561)|14.8|2.5|22|-0.7|0.8|-7.8|24.1|1.92|30s unique, 12.0 min diagonal, 1.2 min entropy, 20 randomised
+model073|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential|12|balanced|48 B&W videos|3,000,001|23,661|1.577|16.6|2.9|25|-0.5|0.5|-5.9|18.2|1.83|30s unique, 12.0 min diagonal, 1.2 min entropy, 20 randomised, no overflow
 
 As expected the statistics are fairly similar, but the distribution is more normal and closer now to *model* 61 -
 
-model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
-model073|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential|12|balanced|48 B&W videos|3,000,001|23,661|1.577|16.6|2.9|25|-0.5|0.5|-5.9|1.83|30s unique, 12.0 min diagonal, 1.2 min entropy, 20 randomised, no overflow
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|13.5|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
+model073|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential|12|balanced|48 B&W videos|3,000,001|23,661|1.577|16.6|2.9|25|-0.5|0.5|-5.9|18.2|1.83|30s unique, 12.0 min diagonal, 1.2 min entropy, 20 randomised, no overflow
 
 The larger *model* 73 does not seem to be as detailed as *model* 70 at scale 0.177 -
 
@@ -3366,14 +3367,14 @@ Now that we have established that there is not much cost to processing offline, 
 
 These are the results of the various *underlying models* with randomised *model* 52 at the beginning for comparison:
 
-model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model052|0.177|4 randomised|1|fixed|48 B&W videos|500,000|1,887|0.753|6.7|1.6|11|0.1|-0.6|0.7|3.08|30s unique, 12.0 min diagonal, 1.2 min entropy
-model076|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|75,000,000|10,833|0.722|8.5|2.5|16|0.1|-0.5|0.7|2.99|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000
-model078|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 76|13|balanced|48 B&W videos|75,000,000|189,538|0.505|10.3|2.7|22|0.2|-0.3|1.4|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, threshold 200
-model079|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|65,000,000|9,298|0.715|8.7|2.3|16|-0.1|-0.5|-0.5|2.85|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at records002
-model080|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|75,000,000|10,768|0.718|8.4|2.3|15|-0.1|-0.6|-0.5|3.00|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at randomised records006
-model081|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 80|13|balanced|48 B&W videos|75,000,000|188,056|0.501|10.4|2.6|20|0.1|-0.4|0.5|3.23|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, threshold 200
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model052|0.177|4 randomised|1|fixed|48 B&W videos|500,000|1,887|0.753|6.7|1.6|11|0.1|-0.6|0.7|1.0|3.08|30s unique, 12.0 min diagonal, 1.2 min entropy
+model076|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|75,000,000|10,833|0.722|8.5|2.5|16|0.1|-0.5|0.7|1.2|2.99|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000
+model078|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 77|13|balanced|48 B&W videos|75,000,000|189,538|0.505|10.3|2.7|22|0.2|-0.3|1.4|3.5|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, threshold 200
+model079|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|65,000,000|9,298|0.715|8.7|2.3|16|-0.1|-0.5|-0.5|1.9|2.85|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at records002
+model080|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|75,000,000|10,768|0.718|8.4|2.3|15|-0.1|-0.6|-0.5|1.0|3.00|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at randomised records006
+model081|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 80|13|balanced|48 B&W videos|75,000,000|188,056|0.501|10.4|2.6|20|0.1|-0.4|0.5|2.5|3.23|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, threshold 200
 
 This is the configuration for *model* 76 -
 ```
@@ -3552,13 +3553,13 @@ Before going on to investigate *2-level* *models*, let us consider a *substrate*
 
 We ran *models* 84 and 86 using *computed variables*. They are shown along with  *models* 80 and 81 for comparison below -
 
-model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model052|0.177|4 randomised|1|fixed|48 B&W videos|500,000|1,887|0.753|6.7|1.6|11|0.1|-0.6|0.7|3.08|30s unique, 12.0 min diagonal, 1.2 min entropy
-model080|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|75,000,000|10,768|0.718|8.4|2.3|15|-0.1|-0.6|-0.5|3.00|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at randomised records006
-model081|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 80|13|balanced|48 B&W videos|75,000,000|188,056|0.501|10.4|2.6|20|0.1|-0.4|0.5|3.23|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, threshold 200
-model084|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced computed 32-valent|48 B&W videos|75,000,000|15,362|1.024|10.7|2.0|18|-0.5|0.5|-4.8|2.46|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at randomised records006
-model086|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 84|13|balanced computed 32-valent|48 B&W videos|75,000,000|341,235|0.910|13.9|2.4|23|-0.4|0.2|-3.9|2.49|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 256, omax 20, bmax 60, threshold 200
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model052|0.177|4 randomised|1|fixed|48 B&W videos|500,000|1,887|0.753|6.7|1.6|11|0.1|-0.6|0.7|1.0|3.08|30s unique, 12.0 min diagonal, 1.2 min entropy
+model080|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced|48 B&W videos|75,000,000|10,768|0.718|8.4|2.3|15|-0.1|-0.6|-0.5|1.0|3.00|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at randomised records006
+model081|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 80|13|balanced|48 B&W videos|75,000,000|188,056|0.501|10.4|2.6|20|0.1|-0.4|0.5|2.5|3.23|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, threshold 200
+model084|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised tiled|13|balanced computed 32-valent|48 B&W videos|75,000,000|15,362|1.024|10.7|2.0|18|-0.5|0.5|-4.8|14.1|2.46|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 1024, omax 20, bmax 60, threshold 5000, start at randomised records006
+model086|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 84|13|balanced computed 32-valent|48 B&W videos|75,000,000|341,235|0.910|13.9|2.4|23|-0.4|0.2|-3.9|10.5|2.49|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, tile size 8x8, xmax 256, omax 20, bmax 60, threshold 200
 
 This is the configuration for *model* 84 -
 ```
@@ -3649,7 +3650,7 @@ cd ~/WBOT02_ws
 9, 2, 85015, 85015, ok	45552		37642		788		303		223		153		117		112		81		27		17	
 ...
 ```
-The growth for *model* 84 is also very good for a non-scanning mode - this is probably due to the small *off-diagonal slices*. The mean length is 10.7, much higher than for *model* 80 at 8.4. The negative hyperskew is much greater suggesting that uninteresting paths terminate quickly. The mean *underlying* has increased from 9.0 to 15.1, again because the tuples can hold more *variables* of smaller *valency*. We can view the *underlying* thus -
+The growth for *model* 84 is also very good for a non-scanning mode - this is probably due to the small *off-diagonal slices*. The mean length is 10.7, much higher than for *model* 80 at 8.4. The negative hyper-skew is much greater suggesting that uninteresting paths terminate quickly. The mean *underlying* has increased from 9.0 to 15.1, again because the tuples can hold more *variables* of smaller *valency*. We can view the *underlying* thus -
 ```
 cd ~/WBOT02_ws
 ./WBOT02 view_underlying model084c
@@ -3808,11 +3809,11 @@ Note that the first record set, `records006`, has been shuffled.
 
 Here are the statistics for *model* 82 compared to randomised *1-level model* 66 and scanned *1-level model* 61 -
 
-model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model066|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised|9|balanced|48 B&W videos|500,000|1,822|0.7288|6.4|1.7|11|0.1|-0.5|0.6|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy
-model082|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised level 2|14|balanced|48 B&W videos|3,000,000|12,107|0.807|9.3|2.3|19|0.4|0.0|3.2|2.74|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8
-model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model066|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised|9|balanced|48 B&W videos|500,000|1,822|0.7288|6.4|1.7|11|0.1|-0.5|0.6|1.5|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy
+model082|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised level 2|14|balanced|48 B&W videos|3,000,000|12,107|0.807|9.3|2.3|19|0.4|0.0|3.2|8.3|2.74|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8
+model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|13.5|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
 
 Qualitatively, *model* 82 is between *model* 66 and 61 except for skew. We can see that the growth rate at 0.807 is quite good for a random frame *model*, although note that there was no overflow whereas *model* 61 was in overflow. The multiplier at 2.74 is also quite good, but the mean path length of 9.3 is still far less than we have obtained from potential, actual-potential and scanned *models*. We can see this if we look at a representation,
 
@@ -3970,12 +3971,12 @@ This is the configuration for rethresholded *model* 88 -
 
 Here are the results showing *2-level model* 88 alongside the previous results -
 
-model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model066|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised|9|balanced|48 B&W videos|500,000|1,822|0.7288|6.4|1.7|11|0.1|-0.5|0.6|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy
-model082|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised level 2|14|balanced|48 B&W videos|3,000,000|12,107|0.807|9.3|2.3|19|0.4|0.0|3.2|2.74|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8
-model088|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 87 level 2|14|balanced computed 32-valent|48 B&W videos|3,000,000|12,976|0.865|10.4|2.5|18|0.0|-0.4|0.2|2.49|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60, threshold 200
-model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model066|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised|9|balanced|48 B&W videos|500,000|1,822|0.7288|6.4|1.7|11|0.1|-0.5|0.6|1.5|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy
+model082|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised level 2|14|balanced|48 B&W videos|3,000,000|12,107|0.807|9.3|2.3|19|0.4|0.0|3.2|8.3|2.74|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8
+model088|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 87 level 2|14|balanced computed 32-valent|48 B&W videos|3,000,000|12,976|0.865|10.4|2.5|18|0.0|-0.4|0.2|3.2|2.49|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60
+model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|13.5|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
 
 Quantitatively, the statistics of *model* 88 are similar to *model* 82 - the growth is slightly higher and the path lengths are more normal. The multiplier is lower at 2.49 and equal to *1-level* computed *substrate model* 86. The lower multiplier and slightly larger *model* means that the mean path length at 10.4 is more than one step larger than the mean path length of *model* 82. The median *diagonal* at 19.9 is also larger than in *model* 82 which has a median *diagonal* of 17.6, although this may partly be due to a the higher induce parameters and the higher threshold of the intermediate *model* 87. The median *diagonal* of *model* 88 is lower than the median *diagonal* of *1-level* computed *substrate model* 86 at 24.9. This has not, however, increased the multiplier, so clearly the *off-diagonal* *slices* are still too infrequent to breach the thresholds.
 
@@ -4079,12 +4080,12 @@ Mode 16 'randomised size-potential scanned actual-potential level 2' takes a set
 
 Here are the statistics for scanned *2-level model* 89 compared to randomised *1-level model* 66, randomised *2-level model* 82 and scanned *1-level model* 61 -
 
-model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model066|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised|9|balanced|48 B&W videos|500,000|1,822|0.7288|6.4|1.7|11|0.1|-0.5|0.6|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy
-model082|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised level 2|14|balanced|48 B&W videos|3,000,000|12,107|0.807|9.3|2.3|19|0.4|0.0|3.2|2.74|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8
-model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
-model089|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential level 2|16|balanced|48 B&W videos|3,000,001|24,731|1.649|15.8|3.1|27|-0.3|0.2|-2.9|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model066|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised|9|balanced|48 B&W videos|500,000|1,822|0.7288|6.4|1.7|11|0.1|-0.5|0.6|1.5|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy
+model082|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised level 2|14|balanced|48 B&W videos|3,000,000|12,107|0.807|9.3|2.3|19|0.4|0.0|3.2|8.3|2.74|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8
+model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|13.5|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
+model089|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential level 2|16|balanced|48 B&W videos|3,000,001|24,731|1.649|15.8|3.1|27|-0.3|0.2|-2.9|11.5|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60
 
 Quantitatively, *model* 89 is now much more similar to *model* 61 than *model* 82. The growth rate is very high at 1.649 and the multiplier quite low at 1.89, so the mean path length is very high at 15.8. The other statistics are also similar to *model* 61, although the maximum path length is longer at 27 and hence the negative skew is lower because of the low kurtosis. 
 
@@ -4201,13 +4202,13 @@ The configuration is very similar to that of *model* 89 except that the *valency
 
 Here are the statistics for scanned *2-level model* 90 compared to scanned non-computed*2-level model* 89, randomised *1-level model* 66, randomised *2-level model* 88 and scanned *1-level model* 61 -
 
-model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyperskew|multiplier|notes
----|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
-model066|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised|9|balanced|48 B&W videos|500,000|1,822|0.7288|6.4|1.7|11|0.1|-0.5|0.6|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy
-model088|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 87 level 2|14|balanced computed 32-valent|48 B&W videos|3,000,000|12,976|0.865|10.4|2.5|18|0.0|-0.4|0.2|2.49|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60, threshold 200
-model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
-model089|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential level 2|16|balanced|48 B&W videos|3,000,001|24,731|1.649|15.8|3.1|27|-0.3|0.2|-2.9|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60
-model090|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential level 2|16|balanced computed 32-valent|48 B&W videos|2,999,999|25,488|1.699|16.1|2.8|26|-0.4|0.4|-4.6|1.88|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model066|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised|9|balanced|48 B&W videos|500,000|1,822|0.7288|6.4|1.7|11|0.1|-0.5|0.6|1.5|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy
+model088|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 87 level 2|14|balanced computed 32-valent|48 B&W videos|3,000,000|12,976|0.865|10.4|2.5|18|0.0|-0.4|0.2|3.2|2.49|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60
+model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|13.5|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
+model089|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential level 2|16|balanced|48 B&W videos|3,000,001|24,731|1.649|15.8|3.1|27|-0.3|0.2|-2.9|11.5|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60
+model090|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential level 2|16|balanced computed 32-valent|48 B&W videos|2,999,999|25,488|1.699|16.1|2.8|26|-0.4|0.4|-4.6|15.8|1.88|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60
 
 Quantitatively, computed *model* 90 is very similar to non-computed *model* 89. The growth rate and multipliers are only slightly better, so the mean path length increases slightly to 16.1, although the variance and maximum are slightly lower. The higher order statistics are very similar to *model* 61.
 
@@ -4269,7 +4270,7 @@ Let us investigate the effect of minimum entropy by comparing the path distribut
 
 TODO -
 
-name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|entropy|relative entropy
+name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyperkurtosis|entropy|relative entropy
 ---|---|---|---|---|---|---|---|---|---
 model089|15.8303|3.09595|27|-0.273364|0.231408|-2.92203|11.5375|0.335085|0
 model066|6.38335|1.66527|11|0.102699|-0.494841|0.57775|1.53435|0.590519|0.0180298
@@ -4282,7 +4283,7 @@ The example table above shows various *models* that are compared to *model* 89 (
 
 Here is the same comparing to *model* 90 -
 
-name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|entropy|relative entropy
+name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyperkurtosis|entropy|relative entropy
 ---|---|---|---|---|---|---|---|---|---
 model090|16.1025|2.84006|26|-0.429136|0.435141|-4.62141|15.8038|0.324604|0
 model066|6.38335|1.66527|11|0.102699|-0.494841|0.57775|1.53435|0.590519|0.0179729
