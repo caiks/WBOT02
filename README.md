@@ -3080,7 +3080,7 @@ In addition, scanning in any mode is compute intensive for large areas. This is 
 
 Another problem is the inherent limit to *model* growth of a passive observer. While the wotbot can direct its gaze it is not in control of the *events* available to it and so does not grow more than expected. Before *history* overflow, *fud* growth per *event* per threshold is limited to a theoretical maximum of around two; *model* growth per second is also limited by the rate at which *events* are obtained. Scanning modes have good *fud* growth but the compute requirements reduce *model* growth per second. In overflow, we have seen above that actual-potential *likelihood* modes tend to be below the theoretical growth rates as *events* roll off. Using active *size* rather than accumulated *size* pushes the rate a little above the expected overflow rate, but not enough to prevent negligible rates after a few multiples of overflow. The way to overcome this limitation is to be able to control the environment. An infant, for example, has agency and can vary the amount of attention given to a toy. Thus a small number of *slices* will receive a concentrated sequence of similar *events* repeatedly passing the threshold for *induction* in a short time. In other words an agent can overcome the overflow problem with 'burstiness'. Perhaps initially unusual *slices* attract attention (or fear) and then the momentum of *event* acquistion (possibly at a safe distance) carries the *slice* from negative *likelihood* through the zero *likelihood* doldrums into positive *likelihood* and then past the induce threshold. In this way, even with limited *history size* and compute resources, *models* could grow at reasonable rates indefinitely, given a suitably rich environment. We will have to give the wotbot locomotion and manipulation eventually. Patient watching of videos, especially the artificial productions of Hollywood, can only take us so far. 
 
-So, while scanning single *level models* has brought us almost to qualitative features with moderate realtime compute, we will focus on using offline processing for *multi-level models* in the short term. Later on, when we come back to realtime vision processing, we may be able to use *slice* topologies as a substitute for scanning. Eventually an embodied wotbot with multi-modal and temporal *multi-level models* that can interact burstily with its environment and other agents will certainly need to decide its actions based on *slice* transition expectations.
+So, while scanning single *level models* has brought us almost to qualitative features with moderate realtime compute, we will focus on using offline processing for *multi-level models* in the short term. Later on, when we come back to realtime vision processing, we may be able to use *slice* topologies as a substitute for scanning, although computation may still limit the contiguity of the stream of *events*. Eventually an embodied wotbot with multi-modal and temporal *multi-level models* that can interact burstily with its environment and other agents will certainly need to decide its actions based on *slice* transition expectations.
 
 <a name="Multi_level_models"></a>
 
@@ -3152,7 +3152,7 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 
 This is probably because the random frames have different centres, meaning that there are fewer, shorter bursts of similar frames.
 
-We can, perhaps, compensate for the lower growth by having larger active *histories* offline, but note that the kurtosis is more than twice the kurtosis of *model* 61, and the skew is much more negative, suggesting either that there are many more short paths or that there are many fewer long paths. In either case, feature detection is probably reduced. We can see this clearly if we compare the position map for *model* 61 -
+We can, perhaps, compensate for the lower growth by having larger active *histories* offline or by filtering hotspots by potential *likelihood*, but note that the kurtosis is more than twice the kurtosis of *model* 61, the hyper-kurtosis is larger, and the skew is much more negative, suggesting either that feature detection would be at least as good in a larger *model*. At this size of *model*, however, feature detection is probably reduced. We can see this if we compare the position map for *model* 61 -
 
 ![contour004_061_minent_position](images/contour004_061_minent_position.png) 
 
@@ -3650,7 +3650,7 @@ cd ~/WBOT02_ws
 9, 2, 85015, 85015, ok	45552		37642		788		303		223		153		117		112		81		27		17	
 ...
 ```
-The growth for *model* 84 is also very good for a non-scanning mode - this is probably due to the small *off-diagonal slices*. The mean length is 10.7, much higher than for *model* 80 at 8.4. The negative hyper-skew is much greater suggesting that uninteresting paths terminate quickly. The mean *underlying* has increased from 9.0 to 15.1, again because the tuples can hold more *variables* of smaller *valency*. We can view the *underlying* thus -
+The growth for *model* 84 is also very good for a non-scanning mode - this is probably due to the small *off-diagonal slices*. The mean length is 10.7, much higher than for *model* 80 at 8.4. The negative hyper-skew is much greater suggesting that uninteresting paths terminate quickly. The hyper-kurtosis is also greater, suggesting that the larger *on-diagoanl* *slices* are extending the paths where there are interesting locations with high *alignments*. The mean *underlying* has increased from 9.0 to 15.1, again because the tuples can hold more *variables* of smaller *valency*. We can view the *underlying* thus -
 ```
 cd ~/WBOT02_ws
 ./WBOT02 view_underlying model084c
@@ -3892,7 +3892,7 @@ The random *model* has nearly normal *slice* path statistics as can be seen by t
 
 ![contour004_082_scale3_minent_length](images/contour004_082_scale3_minent_length.png) 
 
-The hyper-skew is positive, suggesting that some locations have lots of actual *alignments*. These would be likely to form hotspots in scanning *models* initialised by *model* 82. Reassuringly, many of the longer paths are near interesting features, such as around the head and neck. Low entropy areas tend to have shorter paths.
+The hyper-skew is positive and the hyper-kurtosis is quite high, suggesting that some locations have lots of actual *alignments*. These would be likely to form hotspots in scanning *models* initialised by *model* 82. Reassuringly, many of the longer paths are near interesting features, such as around the head and neck. Low entropy areas tend to have shorter paths.
 
 The position map shows quite a lot of convolution, i.e. gradual changes in the position of the *slice* within the *model*, although these tend to be greatest for shorter paths -
 
@@ -4087,7 +4087,7 @@ model082|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised level 2|14|balanced|4
 model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|13.5|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
 model089|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential level 2|16|balanced|48 B&W videos|3,000,001|24,731|1.649|15.8|3.1|27|-0.3|0.2|-2.9|11.5|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60
 
-Quantitatively, *model* 89 is now much more similar to *model* 61 than *model* 82. The growth rate is very high at 1.649 and the multiplier quite low at 1.89, so the mean path length is very high at 15.8. The other statistics are also similar to *model* 61, although the maximum path length is longer at 27 and hence the negative skew is lower because of the low kurtosis. 
+Quantitatively, *model* 89 is now much more similar to *model* 61 than *model* 82. The growth rate is very high at 1.649 and the multiplier quite low at 1.89, so the mean path length is very high at 15.8. The other statistics are also similar to *model* 61, although the maximum path length is longer at 27 and hence the negative skew is lower because of the similar kurtosis. 
 
 The median *diagonal* at 20.0 is somewhat higher than the 17.6 of *model* 82, but still less than that for *1-level model* 66 at 26.0. The average number of *underlying variables* per *fud* has also increased to 18.52 compared to 14.47 for *model* 82. Perhaps we are seeing higher global *alignments* as the paths lengthen.
 
@@ -4200,7 +4200,7 @@ cd /mnt/vol01/WBOT02_ws
 ```
 The configuration is very similar to that of *model* 89 except that the *valency* is 32 and computed. The mode remains at 16. Note that the minimum entropy has stayed the same, so the higher *valency* will allow relatively low entropy *events*, possibly diluting the *size* of interesting features.
 
-Here are the statistics for scanned *2-level model* 90 compared to scanned non-computed*2-level model* 89, randomised *1-level model* 66, randomised *2-level model* 88 and scanned *1-level model* 61 -
+Here are the statistics for scanned *2-level model* 90 compared to scanned non-computed *2-level model* 89, randomised *1-level model* 66, randomised *2-level model* 88 and scanned *1-level model* 61 -
 
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -4270,7 +4270,7 @@ Let us investigate the effect of minimum entropy by comparing the path distribut
 
 TODO -
 
-name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyperkurtosis|entropy|relative entropy
+name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|entropy|relative entropy
 ---|---|---|---|---|---|---|---|---|---
 model089|15.8303|3.09595|27|-0.273364|0.231408|-2.92203|11.5375|0.335085|0
 model066|6.38335|1.66527|11|0.102699|-0.494841|0.57775|1.53435|0.590519|0.0180298
@@ -4283,7 +4283,7 @@ The example table above shows various *models* that are compared to *model* 89 (
 
 Here is the same comparing to *model* 90 -
 
-name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyperkurtosis|entropy|relative entropy
+name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|entropy|relative entropy
 ---|---|---|---|---|---|---|---|---|---
 model090|16.1025|2.84006|26|-0.429136|0.435141|-4.62141|15.8038|0.324604|0
 model066|6.38335|1.66527|11|0.102699|-0.494841|0.57775|1.53435|0.590519|0.0179729
