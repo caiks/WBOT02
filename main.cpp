@@ -3014,11 +3014,12 @@ int main(int argc, char *argv[])
 		int induceParameters_wmax = ARGS_INT_DEF(induceParameters.wmax,18);
 		int threadCount = ARGS_INT_DEF(threads,1);
 		double entropyMinimum = ARGS_DOUBLE(entropy_minimum);
+		bool distributionOnly = ARGS_BOOL(distribution_only);	
 		if (ok)
 		{
 			ok = ok && model.size();
 			ok = ok && inputFilename.size();
-			ok = ok && (likelihoodFilename.size() || lengthFilename.size() || positionFilename.size() || lengthPositionFilename.size() || representationFilename.size());
+			if (!distributionOnly) ok = ok && (likelihoodFilename.size() || lengthFilename.size() || positionFilename.size() || lengthPositionFilename.size() || representationFilename.size());
 			stage++;
 			EVAL(stage);
 			TRUTH(ok);	
@@ -3040,23 +3041,26 @@ int main(int argc, char *argv[])
 		std::unique_ptr<WBOT02::SliceRepresentationUMap> slicesRepresentation;
 		if (ok) 
 		{
-			try
+			if (!distributionOnly)
 			{
-				std::ifstream in(model + ".rep", std::ios::binary);
-				if (in.is_open())
+				try
 				{
-					slicesRepresentation = persistentsSliceRepresentationUMap(in);
-					in.close();
+					std::ifstream in(model + ".rep", std::ios::binary);
+					if (in.is_open())
+					{
+						slicesRepresentation = persistentsSliceRepresentationUMap(in);
+						in.close();
+					}
+					else
+					{
+						ok = false;
+					}
+					ok = ok && slicesRepresentation;
 				}
-				else
+				catch (const std::exception&)
 				{
 					ok = false;
-				}
-				ok = ok && slicesRepresentation;
-			}
-			catch (const std::exception&)
-			{
-				ok = false;
+				}				
 			}
 			stage++;
 			EVAL(stage);
@@ -3233,131 +3237,174 @@ int main(int argc, char *argv[])
 			for (auto& t : threads)
 				t.join();
 			applyTime += ((Sec)(Clock::now() - mark)).count();	
-			if (isLengthNormalise)
 			{
-				lengthMax = 1;
+				std::map<std::size_t, std::size_t> lengthsDist;
+				std::size_t lengthsCount = 0;
+				double lengthsTotal = 0;
 				for (auto length : lengthResults)
-					lengthMax = std::max(lengthMax,length);
-			}	
-			std::map<std::size_t,double> positions;
-			{
-				std::vector<std::size_t> slices;
-				for (auto& pp : lengths)
-					if (!vi.count(pp.first))
-						slices.push_back(pp.first);		
-				typedef std::pair<std::size_t,std::size_t> SizePair;
-				std::vector<std::vector<SizePair>> paths;
-				for (auto slice : slices)
-				{
-					std::vector<SizePair> path;
-					while (slice)
+					if (length)
 					{
-						path.push_back(SizePair(sizes[slice],slice));
-						slice = cv[slice];
+						lengthsCount += 1;
+						lengthsTotal += length;
+						lengthsDist[length] += 1;
 					}
-					std::reverse(path.begin(), path.end());
-					paths.push_back(path);
-				}
-				std::sort(paths.begin(), paths.end());	
-				std::reverse(paths.begin(), paths.end());
-				double total = 0;
-				for (auto& path : paths)
-				{
-					auto& pp = path.back();
-					positions[pp.second] = total;
-					total += pp.first;
-				}
-				for (auto& pp : positions)
-					pp.second /= total;
+				EVAL(lengthsDist);
+				EVAL(lengthsCount);
+				double lengthsMean = lengthsTotal / lengthsCount;
+				EVAL(lengthsMean);
+				double lengthsSquare = 0;
+				double lengthsCube = 0;
+				double lengthsQuad = 0;
+				double lengthsQuin = 0;
+				double lengthsHex = 0;
+				for (auto length : lengthResults)
+					if (length)
+					{
+						lengthsSquare += std::pow((double)length - lengthsMean, 2.0);
+						lengthsCube += std::pow((double)length - lengthsMean, 3.0);
+						lengthsQuad += std::pow((double)length - lengthsMean, 4.0);
+						lengthsQuin += std::pow((double)length - lengthsMean, 5.0);
+						lengthsHex += std::pow((double)length - lengthsMean, 6.0);
+					}
+				double lengthsDeviation =  std::sqrt(lengthsSquare/(lengthsCount-1));
+				EVAL(lengthsDeviation);
+				double lengthsSkewness =  lengthsCube/lengthsCount/std::pow(lengthsSquare/lengthsCount,1.5);
+				EVAL(lengthsSkewness);
+				double lengthsKurtosisExcess =  lengthsQuad/lengthsCount/std::pow(lengthsSquare/lengthsCount,2.0) - 3.0;
+				EVAL(lengthsKurtosisExcess);
+				double lengthsHyperSkewness =  lengthsQuin/lengthsCount/std::pow(lengthsSquare/lengthsCount,2.5);
+				EVAL(lengthsHyperSkewness);
+				double lengthsHyperKurtosisExcess =  lengthsHex/lengthsCount/std::pow(lengthsSquare/lengthsCount,3.0) - 7.5;
+				EVAL(lengthsHyperKurtosisExcess);
 			}
-			for (std::size_t y = 0, z = 0; y < sizeY - size; y++)	
-				for (std::size_t x = 0; x < sizeX - size; x++,z++)	
+			if (!distributionOnly)
+			{
+				if (isLengthNormalise)
 				{
-					auto posX = centreX + (interval * x - (scaleX - scale) / 2.0) * captureHeight / captureWidth;
-					auto posY = centreY + interval * y - (scaleY - scale) / 2.0;
-					double likelihood = likelihoodResults[z];				
-					auto length = lengthResults[z];
-					auto slice = std::get<4>(actsPotsCoord[z]);
-					QRectF rectangle(posX*captureWidth, posY*captureHeight, 
-						interval*captureHeight,interval*captureHeight);
-					{
-						int brightness = likelihood > 0.0 ? likelihood * 255 : 0;
-						brush.setColor(QColor(brightness,brightness,brightness));
-						likelihoodPainter.fillRect(rectangle,brush);					
-					}
-					if (lengthByHue)
-					{
-						QColor colour;
-						int hue = (lengthMax - length) * 300 / lengthMax;
-						int saturation = (likelihood > 0.0 ? likelihood * 127 : 0) + 128;
-						int brightness = 255;
-						colour.setHsv(hue, saturation, brightness);
-						if (length)
-							brush.setColor(colour);
-						else
-							brush.setColor(Qt::black);
-						lengthPainter.fillRect(rectangle,brush);					
-					}
-					else
-					{
-						int brightness = length * 255 / lengthMax;
-						brush.setColor(QColor(brightness,brightness,brightness));
-						lengthPainter.fillRect(rectangle,brush);					
-					}						
-					{
-						QColor colour;
-						int position = (int)(positions[slice] * 46080);
-						int hue = position/128;
-						int saturation = 128 + position%128;
-						int brightness = 255;
-						colour.setHsv(hue, saturation, brightness);
-						if (length)
-							brush.setColor(colour);
-						else
-							brush.setColor(Qt::black);
-						positionPainter.fillRect(rectangle,brush);					
-					}
-					{
-						QColor colour;
-						int position = (int)(positions[slice] * 46080);
-						int hue = position/128;
-						int saturation = 128 + position%128;
-						int brightness = length * 255 / lengthMax;
-						colour.setHsv(hue, saturation, brightness);
-						brush.setColor(colour);
-						lengthPositionPainter.fillRect(rectangle,brush);
-					}
+					lengthMax = 1;
+					for (auto length : lengthResults)
+						lengthMax = std::max(lengthMax,length);
 				}	
-            std::sort(actsPotsCoord.begin(), actsPotsCoord.end());			
-            auto& reps = *slicesRepresentation;
-			for (auto t : actsPotsCoord)	
-			{
-				auto slice = std::get<4>(t);
-				if (slice && reps.count(slice))
+				std::map<std::size_t,double> positions;
 				{
-					auto x = std::get<2>(t);
-					auto y = std::get<3>(t);
-					auto average = std::get<5>(t);
-					auto posX = centreX + (interval * x - scaleX / 2.0) * captureHeight / captureWidth;
-					auto posY = centreY + interval * y - scaleY / 2.0;
-					QPointF point(posX*captureWidth,posY*captureHeight);
-					auto rep = reps[slice].image(1,valency,average).scaledToHeight(scale*captureHeight);
-					representationPainter.drawImage(point,rep);
+					std::vector<std::size_t> slices;
+					for (auto& pp : lengths)
+						if (!vi.count(pp.first))
+							slices.push_back(pp.first);		
+					typedef std::pair<std::size_t,std::size_t> SizePair;
+					std::vector<std::vector<SizePair>> paths;
+					for (auto slice : slices)
+					{
+						std::vector<SizePair> path;
+						while (slice)
+						{
+							path.push_back(SizePair(sizes[slice],slice));
+							slice = cv[slice];
+						}
+						std::reverse(path.begin(), path.end());
+						paths.push_back(path);
+					}
+					std::sort(paths.begin(), paths.end());	
+					std::reverse(paths.begin(), paths.end());
+					double total = 0;
+					for (auto& path : paths)
+					{
+						auto& pp = path.back();
+						positions[pp.second] = total;
+						total += pp.first;
+					}
+					for (auto& pp : positions)
+						pp.second /= total;
 				}
+				for (std::size_t y = 0, z = 0; y < sizeY - size; y++)	
+					for (std::size_t x = 0; x < sizeX - size; x++,z++)	
+					{
+						auto posX = centreX + (interval * x - (scaleX - scale) / 2.0) * captureHeight / captureWidth;
+						auto posY = centreY + interval * y - (scaleY - scale) / 2.0;
+						double likelihood = likelihoodResults[z];				
+						auto length = lengthResults[z];
+						auto slice = std::get<4>(actsPotsCoord[z]);
+						QRectF rectangle(posX*captureWidth, posY*captureHeight, 
+							interval*captureHeight,interval*captureHeight);
+						{
+							int brightness = likelihood > 0.0 ? likelihood * 255 : 0;
+							brush.setColor(QColor(brightness,brightness,brightness));
+							likelihoodPainter.fillRect(rectangle,brush);					
+						}
+						if (lengthByHue)
+						{
+							QColor colour;
+							int hue = (lengthMax - length) * 300 / lengthMax;
+							int saturation = (likelihood > 0.0 ? likelihood * 127 : 0) + 128;
+							int brightness = 255;
+							colour.setHsv(hue, saturation, brightness);
+							if (length)
+								brush.setColor(colour);
+							else
+								brush.setColor(Qt::black);
+							lengthPainter.fillRect(rectangle,brush);					
+						}
+						else
+						{
+							int brightness = length * 255 / lengthMax;
+							brush.setColor(QColor(brightness,brightness,brightness));
+							lengthPainter.fillRect(rectangle,brush);					
+						}						
+						{
+							QColor colour;
+							int position = (int)(positions[slice] * 46080);
+							int hue = position/128;
+							int saturation = 128 + position%128;
+							int brightness = 255;
+							colour.setHsv(hue, saturation, brightness);
+							if (length)
+								brush.setColor(colour);
+							else
+								brush.setColor(Qt::black);
+							positionPainter.fillRect(rectangle,brush);					
+						}
+						{
+							QColor colour;
+							int position = (int)(positions[slice] * 46080);
+							int hue = position/128;
+							int saturation = 128 + position%128;
+							int brightness = length * 255 / lengthMax;
+							colour.setHsv(hue, saturation, brightness);
+							brush.setColor(colour);
+							lengthPositionPainter.fillRect(rectangle,brush);
+						}
+					}	
+				std::sort(actsPotsCoord.begin(), actsPotsCoord.end());			
+				auto& reps = *slicesRepresentation;
+				for (auto t : actsPotsCoord)	
+				{
+					auto slice = std::get<4>(t);
+					if (slice && reps.count(slice))
+					{
+						auto x = std::get<2>(t);
+						auto y = std::get<3>(t);
+						auto average = std::get<5>(t);
+						auto posX = centreX + (interval * x - scaleX / 2.0) * captureHeight / captureWidth;
+						auto posY = centreY + interval * y - scaleY / 2.0;
+						QPointF point(posX*captureWidth,posY*captureHeight);
+						auto rep = reps[slice].image(1,valency,average).scaledToHeight(scale*captureHeight);
+						representationPainter.drawImage(point,rep);
+					}
+				}
+				EVAL(recordTime);
+				EVAL(applyTime);		
+				EVAL(sizeY*sizeX);
+				if (likelihoodFilename.size())
+					ok = ok && likelihoodImage.save(QString(likelihoodFilename.c_str()));
+				if (lengthFilename.size())
+					ok = ok && lengthImage.save(QString(lengthFilename.c_str()));			
+				if (positionFilename.size())
+					ok = ok && positionImage.save(QString(positionFilename.c_str()));
+				if (lengthPositionFilename.size())
+					ok = ok && lengthPositionImage.save(QString(lengthPositionFilename.c_str()));
+				if (representationFilename.size())
+					ok = ok && representationImage.save(QString(representationFilename.c_str()));
 			}
-			EVAL(recordTime);
-			EVAL(applyTime);		
-			EVAL(sizeY*sizeX);
-			if (likelihoodFilename.size())
-				ok = ok && likelihoodImage.save(QString(likelihoodFilename.c_str()));
-			if (lengthFilename.size())
-				ok = ok && lengthImage.save(QString(lengthFilename.c_str()));			
-			if (positionFilename.size())
-				ok = ok && positionImage.save(QString(positionFilename.c_str()));
-			if (lengthPositionFilename.size())
-				ok = ok && lengthPositionImage.save(QString(lengthPositionFilename.c_str()));
-			if (representationFilename.size())
-				ok = ok && representationImage.save(QString(representationFilename.c_str()));
 			stage++;
 			EVAL(stage);
 			TRUTH(ok);	
