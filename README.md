@@ -4300,6 +4300,33 @@ could re-run with random model as initial into overflow
 
 randomised models 82 and 88 have low multipliers but they are still too high to obtain long paths
 
+name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|entropy|relative entropy
+---|---|---|---|---|---|---|---|---|---
+model066|6.38335|1.66527|11|0.102699|-0.494841|0.57775|1.53435|0.590519|0
+model066 4 0.250|6.16917|1.66536|11|0.00430155|-0.508166|-0.196071|1.22906|0.604193|0.000716164
+model066 4 0.177|6.25162|1.65973|11|0.00795288|-0.47381|-0.139152|1.6019|0.598294|0.000326546
+model066 4 0.125|6.43461|1.66288|11|-0.00691167|-0.481844|-0.318782|1.64597|0.585693|0.000229436
+model066 5 0.250|6.82602|1.60051|11|-0.117129|-0.458437|-1.11486|2.60961|0.554622|0.00186378
+model066 5 0.177|7.00579|1.63048|11|-0.18894|-0.437607|-1.45327|2.60844|0.547634|0.00272732
+model066 5 0.125|7.05459|1.62919|11|-0.180827|-0.47099|-1.43475|2.50258|0.544422|0.00274971
+
+With random 1-level model 66 contour 4 is  closer than closer than contour 5 and the contour 4 smaller scales are better, whereas with contour 5 the longest scale was preferred. Perhaps the busier backgrounds in contour 4 are matching better.  
+
+
+name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|entropy|relative entropy
+---|---|---|---|---|---|---|---|---|---
+model061|14.5965|2.81447|22|-0.489616|0.306854|-4.87173|13.5217|0.350329|0
+model061 4 0.250|3.43713|3.14339|20|1.66447|2.61984|17.6152|53.9716|0.951383|0.0335004
+model061 4 0.177|3.55244|3.29058|20|1.61311|2.38616|16.8048|51.7873|0.938041|0.0468248
+model061 4 0.125|3.53891|3.31199|21|1.67055|2.66395|18.2428|58.7509|0.93984|0.0616026
+model061 5 0.250|3.69838|3.45408|20|1.61319|2.06931|14.5031|38.4249|0.926007|0.0287267
+model061 5 0.177|4.1164|3.80563|20|1.39347|1.1954|10.7621|23.899|0.883317|0.0333762
+model061 5 0.125|4.60959|3.92461|21|1.13149|0.567524|8.40876|16.4893|0.842394|0.0393192
+
+As expected the scanned 1-level model 61 has very different statistics from the images. The means are far lower than the model mean and even lower than the random models. The relative entropy differs by the same order of magnitude as randomised differs from scanned. Otherwise, contour 5 is slightly preferred to contour 4 and the larger scales are better than the smaller.
+
+The low means suggest that we could combine random and scanned models when doing the contour map, choosing the longest path from either model. However, higher level models will be scanning and don't see the world as a contour map.
+
 
 1-level model 61/73 representations are better than 2-level models 89 or 90 for contour005. Could the entropy threshold be causing the model to grow in dull places? Should the scan be every 2 cells instead of 4? (Need 4x scan compute.)
 
