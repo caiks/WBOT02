@@ -4330,11 +4330,11 @@ The low means suggest that we could combine random and scanned models when doing
 name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|entropy|relative entropy
 ---|---|---|---|---|---|---|---|---|---
 model082|9.33707|2.3007|19|0.351736|0.0108361|3.23887|8.32245|0.479095|0
-model082 4 0.177|8.82846|2.69887|19|-0.27508|0.400825|-2.24498|10.5169|0.511521|0.0019098
 model082 4 0.250|8.97957|2.73251|19|-0.314304|0.47026|-2.5687|11.3547|0.505516|0.00161871
+model082 4 0.177|8.82846|2.69887|19|-0.27508|0.400825|-2.24498|10.5169|0.511521|0.0019098
 model082 4 0.125|8.81032|2.66502|19|-0.246524|0.379994|-2.175|10.2814|0.511634|0.00186347
-model082 5 0.177|9.0516|2.45329|18|-0.277391|0.62418|-3.21982|14.6277|0.49293|0.00107875
 model082 5 0.250|8.91659|2.4664|18|-0.295195|0.584709|-3.13553|13.7707|0.499125|0.00112874
+model082 5 0.177|9.0516|2.45329|18|-0.277391|0.62418|-3.21982|14.6277|0.49293|0.00107875
 model082 5 0.125|8.92518|2.49645|18|-0.224118|0.618074|-2.4636|13.7482|0.500045|0.00133413
 
 Model 82 looks very similar to model 66 wrt relative entropies, although contour 4 is slightly less matched to the model. There is little difference between the images or scales. The main interesting issue is that the images have negative skew whereas the model 82 has sigtnificant positive skew. That suggests that global alignments are slightly unrepresented in these images. This is confirmed in means which are slightly lower than the model mean. So 1-level models perhaps have an advantage in these images.
