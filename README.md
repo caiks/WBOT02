@@ -4323,9 +4323,21 @@ model061 5 0.250|3.69838|3.45408|20|1.61319|2.06931|14.5031|38.4249|0.926007|0.0
 model061 5 0.177|4.1164|3.80563|20|1.39347|1.1954|10.7621|23.899|0.883317|0.0333762
 model061 5 0.125|4.60959|3.92461|21|1.13149|0.567524|8.40876|16.4893|0.842394|0.0393192
 
-As expected the scanned 1-level model 61 has very different statistics from the images. The means are far lower than the model mean and even lower than the random models. The relative entropy differs by the same order of magnitude as randomised differs from scanned. Otherwise, contour 5 is slightly preferred to contour 4 and the larger scales are better than the smaller.
+As expected the scanned 1-level model 61 has very different statistics from the images. The means are far lower than the model mean and even lower than the random models. The relative entropy differs by the same order of magnitude as randomised differs from scanned. If the model were random, contour 5 would be slightly preferred to contour 4 and the larger scales are better than the smaller. However, with a scanned model we would like to see more longer paths to highlight the model's strengths. Here we can see that the higher moments are greatest for contour 4 and the model is insensitive to scale.
 
 The low means suggest that we could combine random and scanned models when doing the contour map, choosing the longest path from either model. However, higher level models will be scanning and don't see the world as a contour map.
+
+name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|entropy|relative entropy
+---|---|---|---|---|---|---|---|---|---
+model082|9.33707|2.3007|19|0.351736|0.0108361|3.23887|8.32245|0.479095|0
+model082 4 0.177|8.82846|2.69887|19|-0.27508|0.400825|-2.24498|10.5169|0.511521|0.0019098
+model082 4 0.250|8.97957|2.73251|19|-0.314304|0.47026|-2.5687|11.3547|0.505516|0.00161871
+model082 4 0.125|8.81032|2.66502|19|-0.246524|0.379994|-2.175|10.2814|0.511634|0.00186347
+model082 5 0.177|9.0516|2.45329|18|-0.277391|0.62418|-3.21982|14.6277|0.49293|0.00107875
+model082 5 0.250|8.91659|2.4664|18|-0.295195|0.584709|-3.13553|13.7707|0.499125|0.00112874
+model082 5 0.125|8.92518|2.49645|18|-0.224118|0.618074|-2.4636|13.7482|0.500045|0.00133413
+
+Model 82 looks very similar to model 66 wrt relative entropies, although contour 4 is slightly less matched to the model. There is little difference between the images or scales. The main interesting issue is that the images have negative skew whereas the model 82 has sigtnificant positive skew. That suggests that global alignments are slightly unrepresented in these images. This is confirmed in means which are slightly lower than the model mean. So 1-level models perhaps have an advantage in these images.
 
 
 1-level model 61/73 representations are better than 2-level models 89 or 90 for contour005. Could the entropy threshold be causing the model to grow in dull places? Should the scan be every 2 cells instead of 4? (Need 4x scan compute.)
