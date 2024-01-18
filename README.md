@@ -4292,7 +4292,7 @@ model088|10.3694|2.45757|18|0.029027|-0.352635|0.218492|3.20981|0.448669|0.02548
 model061|14.5965|2.81447|22|-0.489616|0.306854|-4.87173|13.5217|0.350329|0.00244039
 model089|15.8303|3.09595|27|-0.273364|0.231408|-2.92203|11.5375|0.335085|0.000216102
 
-Interestingly, scanned non-computed *model* 89 is more similar to randomised computed *model* 88 than scanned computed *model* 90, probably because of the low hyper-kurtosis.
+Interestingly, scanned non-computed *model* 89 is a little more similar to randomised computed *model* 88 than scanned computed *model* 90, probably because of the low hyper-kurtosis.
 
 could regenerate for higher min entropy
 
@@ -4312,6 +4312,29 @@ model066 5 0.125|7.05459|1.62919|11|-0.180827|-0.47099|-1.43475|2.50258|0.544422
 
 With random 1-level model 66 contour 4 is  closer than closer than contour 5 and the contour 4 smaller scales are better, whereas with contour 5 the longest scale was preferred. Perhaps the busier backgrounds in contour 4 are matching better.  
 
+name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|entropy|relative entropy
+---|---|---|---|---|---|---|---|---|---
+model082|9.33707|2.3007|19|0.351736|0.0108361|3.23887|8.32245|0.479095|0
+model082 4 0.250|8.97957|2.73251|19|-0.314304|0.47026|-2.5687|11.3547|0.505516|0.00161871
+model082 4 0.177|8.82846|2.69887|19|-0.27508|0.400825|-2.24498|10.5169|0.511521|0.0019098
+model082 4 0.125|8.81032|2.66502|19|-0.246524|0.379994|-2.175|10.2814|0.511634|0.00186347
+model082 5 0.250|8.91659|2.4664|18|-0.295195|0.584709|-3.13553|13.7707|0.499125|0.00112874
+model082 5 0.177|9.0516|2.45329|18|-0.277391|0.62418|-3.21982|14.6277|0.49293|0.00107875
+model082 5 0.125|8.92518|2.49645|18|-0.224118|0.618074|-2.4636|13.7482|0.500045|0.00133413
+
+Random 2-level model 82 looks very similar to 1-level model 66 wrt relative entropies, although contour 4 is slightly less matched to the model. There is little difference between the images or scales. The main interesting issue is that the images have negative skew whereas the model 82 has sigtnificant positive skew. That suggests that global alignments are slightly unrepresented in these images. This is confirmed in means which are slightly lower than the model mean. So 1-level models perhaps have an advantage in these images.
+
+name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|entropy|relative entropy
+---|---|---|---|---|---|---|---|---|---
+model088|10.3694|2.45757|18|0.029027|-0.352635|0.218492|3.20981|0.448669|0
+model088 4 0.250|10.3248|2.35832|18|-0.0722619|-0.214596|-0.597597|4.32559|0.446209|0.000104042
+model088 4 0.177|10.1876|2.41568|18|-0.0673792|-0.171958|-0.41493|4.64762|0.453298|0.000193518
+model088 4 0.125|10.2491|2.41862|18|-0.0914273|-0.175062|-0.795326|4.7348|0.451243|0.000177713
+model088 5 0.250|10.6918|2.28236|18|-0.168797|-0.151097|-1.36286|5.28086|0.430661|0.000439877
+model088 5 0.177|10.6222|2.19455|18|-0.223395|-0.115831|-1.68527|6.21152|0.429154|0.000645573
+model088 5 0.125|10.5612|2.18029|18|-0.341286|0.0335847|-2.75025|8.27795|0.429906|0.000886935
+
+Computed random model 88 looks even more similar to the images than non-computed model 89 or 1-level model 66. This suggests that the alignments available in the 32-valent computed variables better represent the images.
 
 name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|entropy|relative entropy
 ---|---|---|---|---|---|---|---|---|---
@@ -4329,16 +4352,27 @@ The low means suggest that we could combine random and scanned models when doing
 
 name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|entropy|relative entropy
 ---|---|---|---|---|---|---|---|---|---
-model082|9.33707|2.3007|19|0.351736|0.0108361|3.23887|8.32245|0.479095|0
-model082 4 0.250|8.97957|2.73251|19|-0.314304|0.47026|-2.5687|11.3547|0.505516|0.00161871
-model082 4 0.177|8.82846|2.69887|19|-0.27508|0.400825|-2.24498|10.5169|0.511521|0.0019098
-model082 4 0.125|8.81032|2.66502|19|-0.246524|0.379994|-2.175|10.2814|0.511634|0.00186347
-model082 5 0.250|8.91659|2.4664|18|-0.295195|0.584709|-3.13553|13.7707|0.499125|0.00112874
-model082 5 0.177|9.0516|2.45329|18|-0.277391|0.62418|-3.21982|14.6277|0.49293|0.00107875
-model082 5 0.125|8.92518|2.49645|18|-0.224118|0.618074|-2.4636|13.7482|0.500045|0.00133413
+model089|15.8303|3.09595|27|-0.273364|0.231408|-2.92203|11.5375|0.335085|0
+model089 4 0.250|5.83129|4.17759|24|0.878996|0.429974|7.60089|16.1782|0.748992|0.0185203
+model089 4 0.177|5.83133|4.20948|23|0.862421|0.277316|6.95106|13.387|0.750514|0.0265475
+model089 4 0.125|5.94226|4.22973|24|0.816038|0.166394|6.52167|12.0747|0.74332|0.0343593
+model089 5 0.250|6.27231|4.11505|23|0.77907|0.160848|6.14831|11.1234|0.716544|0.0158689
+model089 5 0.177|6.04754|4.24445|23|0.800705|0.0907793|6.07724|10.3237|0.7342|0.0204912
+model089 5 0.125|5.89619|4.31256|22|0.790687|-0.094146|5.47545|7.79529|0.745115|0.0266306
 
-Model 82 looks very similar to model 66 wrt relative entropies, although contour 4 is slightly less matched to the model. There is little difference between the images or scales. The main interesting issue is that the images have negative skew whereas the model 82 has sigtnificant positive skew. That suggests that global alignments are slightly unrepresented in these images. This is confirmed in means which are slightly lower than the model mean. So 1-level models perhaps have an advantage in these images.
+Scanned 2-level model 89 is much more similar to the image than model 61 with around half the relative entropy and much smaller higher moments and higher means and variances. This suggests that the model does not have long enough paths to detect features and this agrees qualitatively when we compare the model representations - the 1-level model seems noticeably better at foreground features.
 
+name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|entropy|relative entropy
+---|---|---|---|---|---|---|---|---|---
+model090|16.1025|2.84006|26|-0.429136|0.435141|-4.62141|15.8038|0.324604|0
+model090 4 0.250|5.77116|4.23732|24|0.833395|-0.0251592|5.79069|8.92763|0.747933|0.0225075
+model090 4 0.177|5.65892|4.20333|23|0.919031|0.171859|6.58165|11.2387|0.757402|0.0336303
+model090 4 0.125|5.80475|4.21318|24|0.884851|0.106763|6.34663|10.7682|0.746615|0.0450413
+model090 5 0.250|6.94671|4.33748|22|0.483357|-0.628856|3.00427|1.7388|0.669138|0.0210611
+model090 5 0.177|7.11887|4.41042|23|0.429019|-0.700508|2.65731|0.904264|0.658366|0.0286227
+model090 5 0.125|7.39234|4.41922|22|0.350936|-0.775628|2.2091|0.11521|0.640327|0.0353815
+
+Computed scanned 2-level model 90 is very similar to model 89 but with even smaller kurtosis. So seems to be detecting features in the images even less well. Could this be because model 61 did not use randomised recordsets? Maybe we need much more filtering during the scan. Differences in hyper-kurtosis is very stark, especially for image 5 - much less than even random model 88, which suggests that the scanned model is actually worse than the random model, although qualitatively 90 looks better than 88.
 
 1-level model 61/73 representations are better than 2-level models 89 or 90 for contour005. Could the entropy threshold be causing the model to grow in dull places? Should the scan be every 2 cells instead of 4? (Need 4x scan compute.)
 
