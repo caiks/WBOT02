@@ -4374,6 +4374,44 @@ model090 5 0.125|7.39234|4.41922|22|0.350936|-0.775628|2.2091|0.11521|0.640327|0
 
 Computed scanned 2-level model 90 is very similar to model 89 but with even smaller kurtosis. So seems to be detecting features in the images even less well. Could this be because model 61 did not use randomised recordsets? Maybe we need much more filtering during the scan. Differences in hyper-kurtosis is very stark, especially for image 5 - much less than even random model 88, which suggests that the scanned model is actually worse than the random model, although qualitatively 90 looks better than 88.
 
+Comparing distributions directly -
+
+length|model061|model061 4 0.177|model089|model089 4 0.177|model090|model090 4 0.177
+---|---|---|---|---|---|---
+1|4|14,121|7|6,780|4|10,416
+2|18|5,965|14|3,219|8|2,550
+3|48|3,229|28|3,426|21|7,936
+4|104|3,286|74|3,095|68|6,172
+5|190|2,662|165|3,235|93|4,293
+6|413|1,466|327|2,720|207|3,435
+7|831|1,373|616|3,026|408|2,578
+8|1,539|1,330|1,223|2,711|858|3,566
+9|2,552|745|2,066|1,894|1,555|2,046
+10|4,247|816|3,651|1,527|2,827|2,378
+11|6,562|485|5,817|1,092|4,663|2,146
+12|9,256|478|8,923|1,065|7,520|1,339
+13|12,453|361|12,433|1,059|11,299|1,341
+14|16,216|275|17,163|568|16,107|1,138
+15|17,306|127|20,760|446|21,153|673
+16|17,081|71|22,022|379|24,451|550
+17|14,041|64|20,867|255|25,362|368
+18|9,570|33|17,647|171|22,374|267
+19|5,226|27|13,579|138|16,481|130
+20|1,904|11|9,304|49|9,866|65
+21|531||5,248|56|4,791|20
+22|107||2,533|13|1,911|6
+23|||1,068|1|703|5
+24|||391||137|
+25|||68||66|
+26|||28||7|
+27|||25|||
+totals|120,199|36,925|166,047|36,925|172,940|53,418
+at or above mode|65,766|333|92,780|1,062|81,698|861
+at or above 15|65,766|333|113,540|1,508|127,302|2,084
+
+Now model 61 does not look so good - the high hyper-skew comes from the mode being length 1. At the modal length of 15 there are only 127 locations, with 333 locations at or above the mode. For model 89 at the modal length of 16 there are 379 locations, with 1062 locations at or above the mode and 1508 at or above length 15. For model 90 at the modal length of 17 there are 368 locations, with 861 locations at or above the mode and 2084 at or above length 15. So on the face of it, the 2-level models, has more locations with many alignments. Of course, those alignments are not necessarily the most interesting to us and so qualitatively the representations might appear less impressive.
+
+
 1-level model 61/73 representations are better than 2-level models 89 or 90 for contour005. Could the entropy threshold be causing the model to grow in dull places? Should the scan be every 2 cells instead of 4? (Need 4x scan compute.)
 
 model 90 has very good tie and generally is smoother than either 61 or 89. Does the backgrounds better. 61 does the face much better. Probably this is just the higher valency which gives many smooth gradient alignments that are not available to the other models. Could try re-running model 90 with a valency of 10 to see what effect it has on the smoothness and the weight given to backgrounds and surfaces. Let's do the contour distributions first.
