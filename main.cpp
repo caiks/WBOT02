@@ -4098,8 +4098,9 @@ int main(int argc, char *argv[])
 			double firstTotal = 0.0;	
 			std::vector<std::size_t> firstCounts;
 			double firstEntropy = 0.0;	
-			cout << "name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|entropy|relative entropy" << endl
-				<< "---|---|---|---|---|---|---|---|---|---" << endl;
+			std::size_t firstMode = 0;
+			cout << "name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|over-mode%|entropy|relative entropy" << endl
+				<< "---|---|---|---|---|---|---|---|---|---|---" << endl;
 			for (std::size_t k = 0; k < listCounts.size(); k++)
 			{
 				auto& name = listNames[k];
@@ -4109,21 +4110,31 @@ int main(int argc, char *argv[])
 				if (!k) firstCounts = counts;
 				std::size_t count = 0;
 				double total = 0.0;	
+				std::size_t mode = 0;
+				std::size_t modalCount = 0;
 				for (std::size_t i = 0; i < counts.size(); i++)
 				{
 					count += counts[i];
 					auto length = i+1;
 					total += length*counts[i];
+					if (counts[i] > modalCount)
+					{
+						mode = length;
+						modalCount = counts[i];
+					}
 				}
 				EVAL(count);
 				if (!k) firstTotal = total;
 				double mean = total / count;
 				EVAL(mean);
+				EVAL(mode);
+				if (!k) firstMode = mode;
 				double square = 0;
 				double cube = 0;
 				double quad = 0;
 				double quin = 0;
 				double hex = 0;
+				std::size_t overMode = 0;
 				for (std::size_t i = 0; i < counts.size(); i++)
 				{
 					auto length = i+1;
@@ -4132,6 +4143,8 @@ int main(int argc, char *argv[])
 					quad += std::pow((double)length - mean, 4.0)*counts[i];
 					quin += std::pow((double)length - mean, 5.0)*counts[i];
 					hex += std::pow((double)length - mean, 6.0)*counts[i];
+					if (length >= firstMode)
+						overMode += counts[i];
 				}
 				double deviation =  std::sqrt(square/(count-1));
 				EVAL(deviation);
@@ -4169,9 +4182,13 @@ int main(int argc, char *argv[])
 					- firstEntropy*firstTotal/(total+firstTotal)
 					- entropy*total/(total+firstTotal);
 				EVAL(relativeEntropy);
-				cout << name << "|" << mean << "|" << deviation << "|" << counts.size() 
-					<< "|" << skewness << "|" << kurtosisExcess 
+				cout << name << std::fixed << std::setprecision(2)
+					<< "|" << mean << "|" << deviation
+					<< std::setprecision(0) << "|" << counts.size() 
+					<< std::setprecision(2) << "|" << skewness << "|" << kurtosisExcess 
 					<< "|" << hyperSkewness << "|" << hyperKurtosisExcess
+					<< "|" << 100.0*overMode/count
+					<< std::setprecision(6)
 					<< "|" << entropy << "|" << relativeEntropy << endl;
 				stage++;
 			}
