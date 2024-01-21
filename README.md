@@ -4302,6 +4302,10 @@ randomised models 82 and 88 have low multipliers but they are still too high to 
 
 TODO - modify comments below in light of over-mode
 
+Mode 6 for model 61 has `4x4=16` tiles each of which is `20x20=400` scans and takes the topmost `"event_size" : 5` events of the 16 tiles. So the fraction of events is 1:1280. Mode 16 model 89 takes `"scan_size" : 20` records/tiles and does `20/"scan_step" : 4 = 5` scans in each dimension i.e. `5x5=25` scans for each and then selects the topmost `"event_size" : 4`, i.e. the fraction of events is 1:125. To make strictly comparable we should have to change as follows: `"scan_size" : 16`, `"scan_step" : 1` and `"event_size" : 5`. The scan compute would be 16 times longer. Might not get so much benefit if we can rely on convolution. Could go with `"scan_step" : 2`, i.e. 4 times compute and a ratio of 1:500. Given that we have over-mode% for model 61 of 0.8% to 2.6% (average 1.4%), but for model 89 it is 2.7% to 3.3% (average 2.9%), it seems clear that model 89 is quantitatively better - not only is it larger and with longer mean and mode, although not overflowing, but with 10 times less scanning it has twice as many features. Or could this be interpreted as being more normal? Model 89 is a little more normal than model 61, but it is much closer to model 61 than model 82. Don't confuse expected with normal - the difference is because scanned is much different from randomised.
+
+Model 90 has the same event fraction of 1:125, but its over-mode% ranges only 1.4% to 2.1% (average 1.7%) so seems less quantitatively better, but we need to adjust for min entropy.
+
 name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|over-mode%|entropy|relative entropy
 ---|---|---|---|---|---|---|---|---|---|---
 model066|6.38|1.67|11|0.10|-0.49|0.58|1.53|68.57|0.590519|0.000000
