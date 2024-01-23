@@ -4417,6 +4417,8 @@ at or above 15|65,766|333|113,540|1,508|127,302|2,084
 
 Now model 61 does not look so good - the high hyper-skew comes from the mode being length 1. At the modal length of 15 there are only 127 locations, with 333 locations at or above the mode. For model 89 at the modal length of 16 there are 379 locations, with 1062 locations at or above the mode and 1508 at or above length 15. For model 90 at the modal length of 17 there are 368 locations, with 861 locations at or above the mode and 2084 at or above length 15. So on the face of it, the 2-level models, has more locations with many alignments. Of course, those alignments are not necessarily the most interesting to us and so qualitatively the representations might appear less impressive.
 
+Let's say that that hotspots are the over-mode slices - their frequencies are of the order of the actual likelihood (length) filtering during the scan i.e. a few percent. Although Model 61 scans 400 locations and models 89 and 90 scan only 25, convolution probably means that the growth is lower rather than the hotspots are not well defined.
+
 
 1-level model 61/73 representations are better than 2-level models 89 or 90 for contour005. Could the entropy threshold be causing the model to grow in dull places? Should the scan be every 2 cells instead of 4? (Need 4x scan compute.)
 
