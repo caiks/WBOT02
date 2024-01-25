@@ -3015,6 +3015,7 @@ int main(int argc, char *argv[])
 		int threadCount = ARGS_INT_DEF(threads,1);
 		double entropyMinimum = ARGS_DOUBLE(entropy_minimum);
 		bool distributionOnly = ARGS_BOOL(distribution_only);	
+		int lengthOver = ARGS_INT(over_length);
 		if (ok)
 		{
 			ok = ok && model.size();
@@ -3086,6 +3087,8 @@ int main(int argc, char *argv[])
 			positionImage = image.copy();
 			lengthPositionImage = image.copy();
 			representationImage = image.copy();
+			if (lengthOver)
+				representationImage.fill(Qt::black);			
 			captureWidth = image.width();
 			EVAL(captureWidth);
 			captureHeight = image.height();
@@ -3329,6 +3332,8 @@ int main(int argc, char *argv[])
 						{
 							int brightness = likelihood > 0.0 ? likelihood * 255 : 0;
 							brush.setColor(QColor(brightness,brightness,brightness));
+							if (lengthOver && lengthOver >= length)
+								brush.setColor(Qt::black);
 							likelihoodPainter.fillRect(rectangle,brush);					
 						}
 						if (lengthByHue)
@@ -3342,12 +3347,16 @@ int main(int argc, char *argv[])
 								brush.setColor(colour);
 							else
 								brush.setColor(Qt::black);
+							if (lengthOver && lengthOver >= length)
+								brush.setColor(Qt::black);
 							lengthPainter.fillRect(rectangle,brush);					
 						}
 						else
 						{
 							int brightness = length * 255 / lengthMax;
 							brush.setColor(QColor(brightness,brightness,brightness));
+							if (lengthOver && lengthOver >= length)
+								brush.setColor(Qt::black);
 							lengthPainter.fillRect(rectangle,brush);					
 						}						
 						{
@@ -3361,6 +3370,8 @@ int main(int argc, char *argv[])
 								brush.setColor(colour);
 							else
 								brush.setColor(Qt::black);
+							if (lengthOver && lengthOver >= length)
+								brush.setColor(Qt::black);
 							positionPainter.fillRect(rectangle,brush);					
 						}
 						{
@@ -3371,6 +3382,8 @@ int main(int argc, char *argv[])
 							int brightness = length * 255 / lengthMax;
 							colour.setHsv(hue, saturation, brightness);
 							brush.setColor(colour);
+							if (lengthOver && lengthOver >= length)
+								brush.setColor(Qt::black);
 							lengthPositionPainter.fillRect(rectangle,brush);
 						}
 					}	
@@ -3378,8 +3391,9 @@ int main(int argc, char *argv[])
 				auto& reps = *slicesRepresentation;
 				for (auto t : actsPotsCoord)	
 				{
+					auto length = std::get<0>(t);
 					auto slice = std::get<4>(t);
-					if (slice && reps.count(slice))
+					if (slice && reps.count(slice) && (!lengthOver || lengthOver < length))
 					{
 						auto x = std::get<2>(t);
 						auto y = std::get<3>(t);
@@ -3482,6 +3496,7 @@ int main(int argc, char *argv[])
 		double entropyMinimum = ARGS_DOUBLE(entropy_minimum);
 		bool substrateInclude = ARGS_BOOL(include_substrate);
 		bool distributionOnly = ARGS_BOOL(distribution_only);
+		int lengthOver = ARGS_INT(over_length);
 		if (ok)
 		{
 			ok = ok && model.size() && level1Model.size();
@@ -3511,6 +3526,8 @@ int main(int argc, char *argv[])
 			positionImage = image.copy();
 			lengthPositionImage = image.copy();
 			representationImage = image.copy();
+			if (lengthOver)
+				representationImage.fill(Qt::black);
 			captureWidth = image.width();
 			EVAL(captureWidth);
 			captureHeight = image.height();
@@ -3821,6 +3838,8 @@ int main(int argc, char *argv[])
 						{
 							int brightness = likelihood > 0.0 ? likelihood * 255 : 0;
 							brush.setColor(QColor(brightness,brightness,brightness));
+							if (lengthOver && lengthOver >= length)
+								brush.setColor(Qt::black);
 							likelihoodPainter.fillRect(rectangle,brush);					
 						}
 						if (lengthByHue)
@@ -3834,12 +3853,16 @@ int main(int argc, char *argv[])
 								brush.setColor(colour);
 							else
 								brush.setColor(Qt::black);
+							if (lengthOver && lengthOver >= length)
+								brush.setColor(Qt::black);
 							lengthPainter.fillRect(rectangle,brush);					
 						}
 						else
 						{
 							int brightness = length * 255 / lengthMax;
 							brush.setColor(QColor(brightness,brightness,brightness));
+							if (lengthOver && lengthOver >= length)
+								brush.setColor(Qt::black);
 							lengthPainter.fillRect(rectangle,brush);					
 						}						
 						{
@@ -3853,6 +3876,8 @@ int main(int argc, char *argv[])
 								brush.setColor(colour);
 							else
 								brush.setColor(Qt::black);
+							if (lengthOver && lengthOver >= length)
+								brush.setColor(Qt::black);
 							positionPainter.fillRect(rectangle,brush);					
 						}
 						{
@@ -3863,6 +3888,8 @@ int main(int argc, char *argv[])
 							int brightness = length * 255 / lengthMax;
 							colour.setHsv(hue, saturation, brightness);
 							brush.setColor(colour);
+							if (lengthOver && lengthOver >= length)
+								brush.setColor(Qt::black);
 							lengthPositionPainter.fillRect(rectangle,brush);
 						}
 					}	
@@ -3911,8 +3938,9 @@ int main(int argc, char *argv[])
 				auto& reps = *slicesRepresentation;
 				for (auto t : actsPotsCoord)	
 				{
+					auto length = std::get<0>(t);
 					auto slice = std::get<4>(t);
-					if (slice && reps.count(slice))
+					if (slice && reps.count(slice) && (!lengthOver || lengthOver < length))
 					{
 						auto x = std::get<2>(t);
 						auto y = std::get<3>(t);
@@ -4117,8 +4145,9 @@ int main(int argc, char *argv[])
 			std::vector<std::size_t> firstCounts;
 			double firstEntropy = 0.0;	
 			std::size_t firstMode = 0;
-			cout << "name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|over-mode%|entropy|relative entropy" << endl
-				<< "---|---|---|---|---|---|---|---|---|---|---" << endl;
+			double firstMean = 0.0;	
+			cout << "name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|over-mode%|over-mean%|entropy|relative entropy" << endl
+				<< "---|---|---|---|---|---|---|---|---|---|---|---" << endl;
 			for (std::size_t k = 0; k < listCounts.size(); k++)
 			{
 				auto& name = listNames[k];
@@ -4145,6 +4174,7 @@ int main(int argc, char *argv[])
 				if (!k) firstTotal = total;
 				double mean = total / count;
 				EVAL(mean);
+				if (!k) firstMean = mean;
 				EVAL(mode);
 				if (!k) firstMode = mode;
 				double square = 0;
@@ -4153,6 +4183,7 @@ int main(int argc, char *argv[])
 				double quin = 0;
 				double hex = 0;
 				std::size_t overMode = 0;
+				double overMean = 0;
 				for (std::size_t i = 0; i < counts.size(); i++)
 				{
 					auto length = i+1;
@@ -4163,6 +4194,10 @@ int main(int argc, char *argv[])
 					hex += std::pow((double)length - mean, 6.0)*counts[i];
 					if (length >= firstMode)
 						overMode += counts[i];
+					if (length > 1 && length-1 < firstMean && length > firstMean)
+						overMean = ((double)length - firstMean)*(counts[i-1] + counts[i])/2.0;
+					if (length >= firstMean)
+						overMean += counts[i];
 				}
 				double deviation =  std::sqrt(square/(count-1));
 				EVAL(deviation);
@@ -4205,7 +4240,7 @@ int main(int argc, char *argv[])
 					<< std::setprecision(0) << "|" << counts.size() 
 					<< std::setprecision(2) << "|" << skewness << "|" << kurtosisExcess 
 					<< "|" << hyperSkewness << "|" << hyperKurtosisExcess
-					<< "|" << 100.0*overMode/count
+					<< "|" << 100.0*overMode/count<< "|" << 100.0*overMean/count
 					<< std::setprecision(6)
 					<< "|" << entropy << "|" << relativeEntropy << endl;
 				stage++;
