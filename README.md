@@ -4270,27 +4270,27 @@ Let us investigate the effect of minimum entropy by comparing the path distribut
 
 TODO -
 
-name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|over-mode%|entropy|relative entropy
----|---|---|---|---|---|---|---|---|---|---
-model089|15.83|3.10|27|-0.27|0.23|-2.92|11.54|55.88|0.335085|0.000000
-model066|6.38|1.67|11|0.10|-0.49|0.58|1.53|0.00|0.590519|0.018030
-model082|9.34|2.30|19|0.35|0.01|3.24|8.32|0.76|0.479095|0.028710
-model088|10.37|2.46|18|0.03|-0.35|0.22|3.21|1.50|0.448669|0.023399
-model061|14.60|2.81|22|-0.49|0.31|-4.87|13.52|40.32|0.350329|0.001899
-model090|16.10|2.84|26|-0.43|0.44|-4.62|15.80|61.38|0.324604|0.000216
+name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|over-mode%|over-mean%|entropy|relative entropy
+---|---|---|---|---|---|---|---|---|---|---|---
+model089|15.83|3.10|27|-0.27|0.23|-2.92|11.54|55.88|58.06|0.335085|0.000000
+model066|6.38|1.67|11|0.10|-0.49|0.58|1.53|0.00|0.00|0.590519|0.018030
+model082|9.34|2.30|19|0.35|0.01|3.24|8.32|0.76|0.90|0.479095|0.028710
+model088|10.37|2.46|18|0.03|-0.35|0.22|3.21|1.50|1.83|0.448669|0.023399
+model061|14.60|2.81|22|-0.49|0.31|-4.87|13.52|40.32|42.74|0.350329|0.001899
+model090|16.10|2.84|26|-0.43|0.44|-4.62|15.80|61.38|63.62|0.324604|0.000216
 
 The example table above shows various *models* that are compared to *model* 89 ([see below](#Scanned_2_level_models)). We can see that the distribution of *model* 90 has the lowest sum relative entropy, so it is most similar to *model* 89. *Model* 82 has the highest sum relative entropy, so it is least similar.
 
 Here is the same comparing to *model* 90 -
 
-name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|over-mode%|entropy|relative entropy
----|---|---|---|---|---|---|---|---|---|---
-model090|16.10|2.84|26|-0.43|0.44|-4.62|15.80|47.24|0.324604|0.000000
-model066|6.38|1.67|11|0.10|-0.49|0.58|1.53|0.00|0.590519|0.017973
-model082|9.34|2.30|19|0.35|0.01|3.24|8.32|0.23|0.479095|0.030338
-model088|10.37|2.46|18|0.03|-0.35|0.22|3.21|0.43|0.448669|0.025487
-model061|14.60|2.81|22|-0.49|0.31|-4.87|13.52|26.11|0.350329|0.002440
-model089|15.83|3.10|27|-0.27|0.23|-2.92|11.54|42.61|0.335085|0.000216
+name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|over-mode%|over-mean%|entropy|relative entropy
+---|---|---|---|---|---|---|---|---|---|---|---
+model090|16.10|2.84|26|-0.43|0.44|-4.62|15.80|47.24|60.17|0.324604|0.000000
+model066|6.38|1.67|11|0.10|-0.49|0.58|1.53|0.00|0.00|0.590519|0.017973
+model082|9.34|2.30|19|0.35|0.01|3.24|8.32|0.23|0.54|0.479095|0.030338
+model088|10.37|2.46|18|0.03|-0.35|0.22|3.21|0.43|1.06|0.448669|0.025487
+model061|14.60|2.81|22|-0.49|0.31|-4.87|13.52|26.11|37.73|0.350329|0.002440
+model089|15.83|3.10|27|-0.27|0.23|-2.92|11.54|42.61|54.20|0.335085|0.000216
 
 Interestingly, scanned non-computed *model* 89 is a little more similar to randomised computed *model* 88 than scanned computed *model* 90, probably because of the low hyper-kurtosis.
 
@@ -4306,119 +4306,141 @@ Mode 6 for model 61 has `4x4=16` tiles each of which is `20x20=400` scans and ta
 
 Model 90 has the same event fraction of 1:125, but its over-mode% ranges only 1.4% to 2.1% (average 1.7%) so seems less quantitatively better, but we need to adjust for min entropy.
 
-name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|over-mode%|entropy|relative entropy
----|---|---|---|---|---|---|---|---|---|---
-model066|6.38|1.67|11|0.10|-0.49|0.58|1.53|68.57|0.590519|0.000000
-model066 4 0.250|6.17|1.67|11|0.00|-0.51|-0.20|1.23|65.24|0.604193|0.000716
-model066 4 0.177|6.25|1.66|11|0.01|-0.47|-0.14|1.60|66.88|0.598294|0.000327
-model066 4 0.125|6.43|1.66|11|-0.01|-0.48|-0.32|1.65|70.37|0.585693|0.000229
-model066 5 0.250|6.83|1.60|11|-0.12|-0.46|-1.11|2.61|78.46|0.554622|0.001864
-model066 5 0.177|7.01|1.63|11|-0.19|-0.44|-1.45|2.61|81.22|0.547634|0.002727
-model066 5 0.125|7.05|1.63|11|-0.18|-0.47|-1.43|2.50|81.70|0.544422|0.002750
+name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|over-mode%|over-mean%|entropy|relative entropy
+---|---|---|---|---|---|---|---|---|---|---|---
+model066|6.38|1.67|11|0.10|-0.49|0.58|1.53|68.57|57.96|0.590519|0.000000
+model066 4 0.250|6.17|1.67|11|0.00|-0.51|-0.20|1.23|65.24|52.33|0.604193|0.000716
+model066 4 0.177|6.25|1.66|11|0.01|-0.47|-0.14|1.60|66.88|54.49|0.598294|0.000327
+model066 4 0.125|6.43|1.66|11|-0.01|-0.48|-0.32|1.65|70.37|58.71|0.585693|0.000229
+model066 5 0.250|6.83|1.60|11|-0.12|-0.46|-1.11|2.61|78.46|68.39|0.554622|0.001864
+model066 5 0.177|7.01|1.63|11|-0.19|-0.44|-1.45|2.61|81.22|73.41|0.547634|0.002727
+model066 5 0.125|7.05|1.63|11|-0.18|-0.47|-1.43|2.50|81.70|73.86|0.544422|0.002750
 
 With random 1-level model 66 contour 4 is  closer than closer than contour 5 and the contour 4 smaller scales are better, whereas with contour 5 the longest scale was preferred. Perhaps the busier backgrounds in contour 4 are matching better.  
 
-name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|over-mode%|entropy|relative entropy
----|---|---|---|---|---|---|---|---|---|---
-model082|9.34|2.30|19|0.35|0.01|3.24|8.32|61.89|0.479095|0.000000
-model082 4 0.250|8.98|2.73|19|-0.31|0.47|-2.57|11.35|58.13|0.505516|0.001619
-model082 4 0.177|8.83|2.70|19|-0.28|0.40|-2.24|10.52|56.18|0.511521|0.001910
-model082 4 0.125|8.81|2.67|19|-0.25|0.38|-2.17|10.28|55.59|0.511634|0.001863
-model082 5 0.250|8.92|2.47|18|-0.30|0.58|-3.14|13.77|58.36|0.499125|0.001129
-model082 5 0.177|9.05|2.45|18|-0.28|0.62|-3.22|14.63|59.75|0.492930|0.001079
-model082 5 0.125|8.93|2.50|18|-0.22|0.62|-2.46|13.75|57.34|0.500045|0.001334
+name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|over-mode%|over-mean%|entropy|relative entropy
+---|---|---|---|---|---|---|---|---|---|---|---
+model082|9.34|2.30|19|0.35|0.01|3.24|8.32|61.89|55.58|0.479095|0.000000
+model082 4 0.250|8.98|2.73|19|-0.31|0.47|-2.57|11.35|58.13|53.27|0.505516|0.001619
+model082 4 0.177|8.83|2.70|19|-0.28|0.40|-2.24|10.52|56.18|50.41|0.511521|0.001910
+model082 4 0.125|8.81|2.67|19|-0.25|0.38|-2.17|10.28|55.59|49.76|0.511634|0.001863
+model082 5 0.250|8.92|2.47|18|-0.30|0.58|-3.14|13.77|58.36|51.00|0.499125|0.001129
+model082 5 0.177|9.05|2.45|18|-0.28|0.62|-3.22|14.63|59.75|53.16|0.492930|0.001079
+model082 5 0.125|8.93|2.50|18|-0.22|0.62|-2.46|13.75|57.34|50.85|0.500045|0.001334
 
 Random 2-level model 82 looks very similar to 1-level model 66 wrt relative entropies, although contour 4 is slightly less matched to the model. There is little difference between the images or scales. The main interesting issue is that the images have negative skew whereas the model 82 has sigtnificant positive skew. That suggests that global alignments are slightly unrepresented in these images. This is confirmed in means which are slightly lower than the model mean. So 1-level models perhaps have an advantage in these images.
 
-name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|over-mode%|entropy|relative entropy
----|---|---|---|---|---|---|---|---|---|---
-model088|10.37|2.46|18|0.03|-0.35|0.22|3.21|62.56|0.448669|0.000000
-model088 4 0.250|10.32|2.36|18|-0.07|-0.21|-0.60|4.33|63.93|0.446209|0.000104
-model088 4 0.177|10.19|2.42|18|-0.07|-0.17|-0.41|4.65|62.01|0.453298|0.000194
-model088 4 0.125|10.25|2.42|18|-0.09|-0.18|-0.80|4.73|62.78|0.451243|0.000178
-model088 5 0.250|10.69|2.28|18|-0.17|-0.15|-1.36|5.28|69.84|0.430661|0.000440
-model088 5 0.177|10.62|2.19|18|-0.22|-0.12|-1.69|6.21|70.03|0.429154|0.000646
-model088 5 0.125|10.56|2.18|18|-0.34|0.03|-2.75|8.28|69.89|0.429906|0.000887
+name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|over-mode%|over-mean%|entropy|relative entropy
+---|---|---|---|---|---|---|---|---|---|---|---
+model088|10.37|2.46|18|0.03|-0.35|0.22|3.21|62.56|56.75|0.448669|0.000000
+model088 4 0.250|10.32|2.36|18|-0.07|-0.21|-0.60|4.33|63.93|57.27|0.446209|0.000104
+model088 4 0.177|10.19|2.42|18|-0.07|-0.17|-0.41|4.65|62.01|55.50|0.453298|0.000194
+model088 4 0.125|10.25|2.42|18|-0.09|-0.18|-0.80|4.73|62.78|55.84|0.451243|0.000178
+model088 5 0.250|10.69|2.28|18|-0.17|-0.15|-1.36|5.28|69.84|64.74|0.430661|0.000440
+model088 5 0.177|10.62|2.19|18|-0.22|-0.12|-1.69|6.21|70.03|64.19|0.429154|0.000646
+model088 5 0.125|10.56|2.18|18|-0.34|0.03|-2.75|8.28|69.89|64.60|0.429906|0.000887
 
 Computed random model 88 looks even more similar to the images than non-computed model 89 or 1-level model 66. This suggests that the alignments available in the 32-valent computed variables better represent the images.
 
-name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|over-mode%|entropy|relative entropy
----|---|---|---|---|---|---|---|---|---|---
-model061|14.60|2.81|22|-0.49|0.31|-4.87|13.52|54.71|0.350329|0
-model061 4 0.250|3.44|3.14|20|1.66|2.62|17.62|53.97|0.83|0.951383|0.033500
-model061 4 0.177|3.55|3.29|20|1.61|2.39|16.80|51.79|0.90|0.938041|0.046825
-model061 4 0.125|3.54|3.31|21|1.67|2.66|18.24|58.75|1.08|0.939840|0.061603
-model061 5 0.250|3.70|3.45|20|1.61|2.07|14.50|38.42|1.27|0.926007|0.028727
-model061 5 0.177|4.12|3.81|20|1.39|1.20|10.76|23.90|1.95|0.883317|0.033376
-model061 5 0.125|4.61|3.92|21|1.13|0.57|8.41|16.49|2.56|0.842394|0.039319
+name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|over-mode%|over-mean%|entropy|relative entropy
+---|---|---|---|---|---|---|---|---|---|---|---
+model061|14.60|2.81|22|-0.49|0.31|-4.87|13.52|54.71|60.34|0.350329|-0.000000
+model061 4 0.250|3.44|3.14|20|1.66|2.62|17.62|53.97|0.83|1.05|0.951383|0.033500
+model061 4 0.177|3.55|3.29|20|1.61|2.39|16.80|51.79|0.90|1.12|0.938041|0.046825
+model061 4 0.125|3.54|3.31|21|1.67|2.66|18.24|58.75|1.08|1.29|0.939840|0.061603
+model061 5 0.250|3.70|3.45|20|1.61|2.07|14.50|38.42|1.27|1.62|0.926007|0.028727
+model061 5 0.177|4.12|3.81|20|1.39|1.20|10.76|23.90|1.95|2.45|0.883317|0.033376
+model061 5 0.125|4.61|3.92|21|1.13|0.57|8.41|16.49|2.56|3.10|0.842394|0.039319
 
 As expected the scanned 1-level model 61 has very different statistics from the images. The means are far lower than the model mean and even lower than the random models. The relative entropy differs by the same order of magnitude as randomised differs from scanned. If the model were random, contour 5 would be slightly preferred to contour 4 and the larger scales are better than the smaller. However, with a scanned model we would like to see more longer paths to highlight the model's strengths. Here we can see that the higher moments are greatest for contour 4 and the model is insensitive to scale.
 
 The low means suggest that we could combine random and scanned models when doing the contour map, choosing the longest path from either model. However, higher level models will be scanning and don't see the world as a contour map.
 
-name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|over-mode%|entropy|relative entropy
----|---|---|---|---|---|---|---|---|---|---
-model089|15.83|3.10|27|-0.27|0.23|-2.92|11.54|55.88|0.335085|0.000000
-model089 4 0.250|5.83|4.18|24|0.88|0.43|7.60|16.18|2.72|0.748992|0.018520
-model089 4 0.177|5.83|4.21|23|0.86|0.28|6.95|13.39|2.88|0.750514|0.026547
-model089 4 0.125|5.94|4.23|24|0.82|0.17|6.52|12.07|2.74|0.743320|0.034359
-model089 5 0.250|6.27|4.12|23|0.78|0.16|6.15|11.12|2.88|0.716544|0.015869
-model089 5 0.177|6.05|4.24|23|0.80|0.09|6.08|10.32|3.23|0.734200|0.020491
-model089 5 0.125|5.90|4.31|22|0.79|-0.09|5.48|7.80|2.72|0.745115|0.026631
+Average over-mean% is 1.77 for model 61.
+
+name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|over-mode%|over-mean%|entropy|relative entropy
+---|---|---|---|---|---|---|---|---|---|---|---
+model089|15.83|3.10|27|-0.27|0.23|-2.92|11.54|55.88|58.06|0.335085|0.000000
+model089 4 0.250|5.83|4.18|24|0.88|0.43|7.60|16.18|2.72|2.90|0.748992|0.018520
+model089 4 0.177|5.83|4.21|23|0.86|0.28|6.95|13.39|2.88|3.07|0.750514|0.026547
+model089 4 0.125|5.94|4.23|24|0.82|0.17|6.52|12.07|2.74|2.93|0.743320|0.034359
+model089 5 0.250|6.27|4.12|23|0.78|0.16|6.15|11.12|2.88|3.10|0.716544|0.015869
+model089 5 0.177|6.05|4.24|23|0.80|0.09|6.08|10.32|3.23|3.45|0.734200|0.020491
+model089 5 0.125|5.90|4.31|22|0.79|-0.09|5.48|7.80|2.72|2.97|0.745115|0.026631
+
+Average over-mean% is 3.07 for model 89 or 1.7 times model61.
 
 Scanned 2-level model 89 is much more similar to the image than model 61 with around half the relative entropy and much smaller higher moments and higher means and variances. This suggests that the model does not have long enough paths to detect features and this agrees qualitatively when we compare the model representations - the 1-level model seems noticeably better at foreground features.
 
-name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|over-mode%|entropy|relative entropy
----|---|---|---|---|---|---|---|---|---|---
-model090|16.10|2.84|26|-0.43|0.44|-4.62|15.80|47.24|0.324604|0.000000
-model090 4 0.250|5.77|4.24|24|0.83|-0.03|5.79|8.93|1.35|0.747933|0.022508
-model090 4 0.177|5.66|4.20|23|0.92|0.17|6.58|11.24|1.61|0.757402|0.033630
-model090 4 0.125|5.80|4.21|24|0.88|0.11|6.35|10.77|1.50|0.746615|0.045041
-model090 5 0.250|6.95|4.34|22|0.48|-0.63|3.00|1.74|1.64|0.669138|0.021061
-model090 5 0.177|7.12|4.41|23|0.43|-0.70|2.66|0.90|1.98|0.658366|0.028623
-model090 5 0.125|7.39|4.42|22|0.35|-0.78|2.21|0.12|2.05|0.640327|0.035381
+name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|over-mode%|over-mean%|entropy|relative entropy
+---|---|---|---|---|---|---|---|---|---|---|---
+model090|16.10|2.84|26|-0.43|0.44|-4.62|15.80|47.24|60.17|0.324604|0.000000
+model090 4 0.250|5.77|4.24|24|0.83|-0.03|5.79|8.93|1.35|2.16|0.747933|0.022508
+model090 4 0.177|5.66|4.20|23|0.92|0.17|6.58|11.24|1.61|2.38|0.757402|0.033630
+model090 4 0.125|5.80|4.21|24|0.88|0.11|6.35|10.77|1.50|2.35|0.746615|0.045041
+model090 5 0.250|6.95|4.34|22|0.48|-0.63|3.00|1.74|1.64|2.53|0.669138|0.021061
+model090 5 0.177|7.12|4.41|23|0.43|-0.70|2.66|0.90|1.98|3.19|0.658366|0.028623
+model090 5 0.125|7.39|4.42|22|0.35|-0.78|2.21|0.12|2.05|3.33|0.640327|0.035381
+
+name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|over-mode%|over-mean%|entropy|relative entropy
+---|---|---|---|---|---|---|---|---|---|---|---
+model090|16.10|2.84|26|-0.43|0.44|-4.62|15.80|47.24|60.17|0.324604|0.000000
+model090 4 0.250 min ent 2.1|5.14|4.09|24|1.10|0.61|8.41|17.22|1.31|2.01|0.795927|0.018904
+model090 4 0.177 min ent 2.1|5.32|4.09|23|1.08|0.60|8.29|16.81|1.54|2.24|0.782887|0.028621
+model090 4 0.125 min ent 2.1|5.58|4.15|24|1.03|0.47|7.84|15.71|1.62|2.41|0.764745|0.037633
+model090 5 0.250 min ent 2.1|6.18|4.35|22|0.81|-0.17|5.15|6.63|1.79|2.69|0.721760|0.014573
+model090 5 0.177 min ent 2.1|6.20|4.23|23|0.78|-0.14|5.17|6.93|1.74|2.66|0.719898|0.019598
+model090 5 0.125 min ent 2.1|6.22|4.26|22|0.80|-0.09|5.38|7.50|2.02|2.89|0.718341|0.025280
+
+Average over-mean% is 2.66 for model 90 and 2.48 for min ent 2.1 or 1.4 times model 61.
 
 Computed scanned 2-level model 90 is very similar to model 89 but with even smaller kurtosis. So seems to be detecting features in the images even less well. Could this be because model 61 did not use randomised recordsets? Maybe we need much more filtering during the scan. Differences in hyper-kurtosis is very stark, especially for image 5 - much less than even random model 88, which suggests that the scanned model is actually worse than the random model, although qualitatively 90 looks better than 88.
 
+Min ent change make s very little difference.
+
+Reason why the over-mode between 90 and 89 is different might be because we should be interpolating from the mean rather than from the mode - which differs by 1. Can see this better if we look at total over 15 below, 89 has 1,508 and 90 has 1,375. So closer.
+
 Comparing distributions directly -
 
-length|model061|model061 4 0.177|model089|model089 4 0.177|model090|model090 4 0.177
----|---|---|---|---|---|---
-1|4|14,121|7|6,780|4|10,416
-2|18|5,965|14|3,219|8|2,550
-3|48|3,229|28|3,426|21|7,936
-4|104|3,286|74|3,095|68|6,172
-5|190|2,662|165|3,235|93|4,293
-6|413|1,466|327|2,720|207|3,435
-7|831|1,373|616|3,026|408|2,578
-8|1,539|1,330|1,223|2,711|858|3,566
-9|2,552|745|2,066|1,894|1,555|2,046
-10|4,247|816|3,651|1,527|2,827|2,378
-11|6,562|485|5,817|1,092|4,663|2,146
-12|9,256|478|8,923|1,065|7,520|1,339
-13|12,453|361|12,433|1,059|11,299|1,341
-14|16,216|275|17,163|568|16,107|1,138
-15|17,306|127|20,760|446|21,153|673
-16|17,081|71|22,022|379|24,451|550
-17|14,041|64|20,867|255|25,362|368
-18|9,570|33|17,647|171|22,374|267
-19|5,226|27|13,579|138|16,481|130
-20|1,904|11|9,304|49|9,866|65
-21|531||5,248|56|4,791|20
-22|107||2,533|13|1,911|6
-23|||1,068|1|703|5
-24|||391||137|
-25|||68||66|
-26|||28||7|
-27|||25|||
-totals|120,199|36,925|166,047|36,925|172,940|53,418
-at or above mode|65,766|333|92,780|1,062|81,698|861
-at or above 15|65,766|333|113,540|1,508|127,302|2,084
+length|model061|model061 4 0.177|model089|model089 4 0.177|model090|model090 4 0.177|model090 4 0.177 min ent 2.1
+---|---|---|---|---|---|---|---
+1|4|14,121|7|6,780|4|10,416|7800
+2|18|5,965|14|3,219|8|2,550|1969
+3|48|3,229|28|3,426|21|7,936|6004
+4|104|3,286|74|3,095|68|6,172|4997
+5|190|2,662|165|3,235|93|4,293|2988
+6|413|1,466|327|2,720|207|3,435|2552
+7|831|1,373|616|3,026|408|2,578|1675
+8|1,539|1,330|1,223|2,711|858|3,566|1668
+9|2,552|745|2,066|1,894|1,555|2,046|1543
+10|4,247|816|3,651|1,527|2,827|2,378|1589
+11|6,562|485|5,817|1,092|4,663|2,146|1091
+12|9,256|478|8,923|1,065|7,520|1,339|920
+13|12,453|361|12,433|1,059|11,299|1,341|822
+14|16,216|275|17,163|568|16,107|1,138|639
+15|17,306|127|20,760|446|21,153|673|455
+16|17,081|71|22,022|379|24,451|550|342
+17|14,041|64|20,867|255|25,362|368|249
+18|9,570|33|17,647|171|22,374|267|180
+19|5,226|27|13,579|138|16,481|130|86
+20|1,904|11|9,304|49|9,866|65|41
+21|531||5,248|56|4,791|20|12
+22|107||2,533|13|1,911|6|6
+23|||1,068|1|703|5|4
+24|||391||137||
+25|||68||66||
+26|||28||7||
+27|||25||||
+totals|120,199|36,925|166,047|36,925|172,940|53,418|37,632
+at or above mode|65,766|333|92,780|1,062|81,698|861|578
+at or above 15|65,766|333|113,540|1,508|127,302|2,084|1,375
+
 
 Now model 61 does not look so good - the high hyper-skew comes from the mode being length 1. At the modal length of 15 there are only 127 locations, with 333 locations at or above the mode. For model 89 at the modal length of 16 there are 379 locations, with 1062 locations at or above the mode and 1508 at or above length 15. For model 90 at the modal length of 17 there are 368 locations, with 861 locations at or above the mode and 2084 at or above length 15. So on the face of it, the 2-level models, has more locations with many alignments. Of course, those alignments are not necessarily the most interesting to us and so qualitatively the representations might appear less impressive.
 
 Let's say that that hotspots are the over-mode slices - their frequencies are of the order of the actual likelihood (length) filtering during the scan i.e. a few percent. Although Model 61 scans 400 locations and models 89 and 90 scan only 25, convolution probably means that the growth is lower rather than the hotspots are not well defined.
 
+Looking at the over 16 slices for model 89 and 90. 89 appears to be more interested in the edges and 90 is perhaps more interested in shading.
 
 1-level model 61/73 representations are better than 2-level models 89 or 90 for contour005. Could the entropy threshold be causing the model to grow in dull places? Should the scan be every 2 cells instead of 4? (Need 4x scan compute.)
 
