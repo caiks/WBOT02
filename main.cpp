@@ -3016,6 +3016,7 @@ int main(int argc, char *argv[])
 		double entropyMinimum = ARGS_DOUBLE(entropy_minimum);
 		bool distributionOnly = ARGS_BOOL(distribution_only);	
 		int lengthOver = ARGS_INT(over_length);
+		bool imageShowIs = ARGS_BOOL(show_image);	
 		if (ok)
 		{
 			ok = ok && model.size();
@@ -3334,7 +3335,8 @@ int main(int argc, char *argv[])
 							brush.setColor(QColor(brightness,brightness,brightness));
 							if (lengthOver && lengthOver >= length)
 								brush.setColor(Qt::black);
-							likelihoodPainter.fillRect(rectangle,brush);					
+							if (!imageShowIs || brush.color() != Qt::black)
+								likelihoodPainter.fillRect(rectangle,brush);					
 						}
 						if (lengthByHue)
 						{
@@ -3349,7 +3351,8 @@ int main(int argc, char *argv[])
 								brush.setColor(Qt::black);
 							if (lengthOver && lengthOver >= length)
 								brush.setColor(Qt::black);
-							lengthPainter.fillRect(rectangle,brush);					
+							if (!imageShowIs || brush.color() != Qt::black)
+								lengthPainter.fillRect(rectangle,brush);					
 						}
 						else
 						{
@@ -3357,7 +3360,8 @@ int main(int argc, char *argv[])
 							brush.setColor(QColor(brightness,brightness,brightness));
 							if (lengthOver && lengthOver >= length)
 								brush.setColor(Qt::black);
-							lengthPainter.fillRect(rectangle,brush);					
+							if (!imageShowIs || brush.color() != Qt::black)
+								lengthPainter.fillRect(rectangle,brush);					
 						}						
 						{
 							QColor colour;
@@ -3372,7 +3376,8 @@ int main(int argc, char *argv[])
 								brush.setColor(Qt::black);
 							if (lengthOver && lengthOver >= length)
 								brush.setColor(Qt::black);
-							positionPainter.fillRect(rectangle,brush);					
+							if (!imageShowIs || brush.color() != Qt::black)
+								positionPainter.fillRect(rectangle,brush);					
 						}
 						{
 							QColor colour;
@@ -3384,7 +3389,8 @@ int main(int argc, char *argv[])
 							brush.setColor(colour);
 							if (lengthOver && lengthOver >= length)
 								brush.setColor(Qt::black);
-							lengthPositionPainter.fillRect(rectangle,brush);
+							if (!imageShowIs || brush.color() != Qt::black)
+								lengthPositionPainter.fillRect(rectangle,brush);
 						}
 					}	
 				std::sort(actsPotsCoord.begin(), actsPotsCoord.end());			
@@ -3497,6 +3503,7 @@ int main(int argc, char *argv[])
 		bool substrateInclude = ARGS_BOOL(include_substrate);
 		bool distributionOnly = ARGS_BOOL(distribution_only);
 		int lengthOver = ARGS_INT(over_length);
+		bool imageShowIs = ARGS_BOOL(show_image);	
 		if (ok)
 		{
 			ok = ok && model.size() && level1Model.size();
@@ -3840,7 +3847,8 @@ int main(int argc, char *argv[])
 							brush.setColor(QColor(brightness,brightness,brightness));
 							if (lengthOver && lengthOver >= length)
 								brush.setColor(Qt::black);
-							likelihoodPainter.fillRect(rectangle,brush);					
+							if (!imageShowIs || brush.color() != Qt::black)
+								likelihoodPainter.fillRect(rectangle,brush);					
 						}
 						if (lengthByHue)
 						{
@@ -3855,7 +3863,8 @@ int main(int argc, char *argv[])
 								brush.setColor(Qt::black);
 							if (lengthOver && lengthOver >= length)
 								brush.setColor(Qt::black);
-							lengthPainter.fillRect(rectangle,brush);					
+							if (!imageShowIs || brush.color() != Qt::black)
+								lengthPainter.fillRect(rectangle,brush);					
 						}
 						else
 						{
@@ -3863,7 +3872,8 @@ int main(int argc, char *argv[])
 							brush.setColor(QColor(brightness,brightness,brightness));
 							if (lengthOver && lengthOver >= length)
 								brush.setColor(Qt::black);
-							lengthPainter.fillRect(rectangle,brush);					
+							if (!imageShowIs || brush.color() != Qt::black)
+								lengthPainter.fillRect(rectangle,brush);					
 						}						
 						{
 							QColor colour;
@@ -3878,7 +3888,8 @@ int main(int argc, char *argv[])
 								brush.setColor(Qt::black);
 							if (lengthOver && lengthOver >= length)
 								brush.setColor(Qt::black);
-							positionPainter.fillRect(rectangle,brush);					
+							if (!imageShowIs || brush.color() != Qt::black)
+								positionPainter.fillRect(rectangle,brush);					
 						}
 						{
 							QColor colour;
@@ -3890,7 +3901,8 @@ int main(int argc, char *argv[])
 							brush.setColor(colour);
 							if (lengthOver && lengthOver >= length)
 								brush.setColor(Qt::black);
-							lengthPositionPainter.fillRect(rectangle,brush);
+							if (!imageShowIs || brush.color() != Qt::black)
+								lengthPositionPainter.fillRect(rectangle,brush);
 						}
 					}	
 				std::sort(actsPotsCoord.begin(), actsPotsCoord.end());			
