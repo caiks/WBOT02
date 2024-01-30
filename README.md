@@ -4448,6 +4448,10 @@ model 90 has very good tie and generally is smoother than either 61 or 89. Does 
 
 At scale 0.125 model 90 is very good, probably better than model 61 at the background figures. Looking at scale 0.125 positions overmode, the convolution of the 2-level looks greater, with less mixing of disparate regions of the model compared to 1-level 61. More string-like groupings as the 2-level models follow edges or the route vertically through the nose or around the collar in contour 4. Model 90 is more interested in body rather than edges.
 
+Especially at the smaller scales, we see in models 89 and 90, for both images 4 and 5, convolution of the model around particular features such as hairline, edges of head, ties and collar and to a lesser extent  broach, eyes, eyebrows, nose, and mouth. Here is an semi-qualitative assessment - i.e. the particular regions of the image which are most interesting/likely to the model. Gives us an idea of where the model will go with more history. Probably want to go with model 90 i.e. 2-level computed.
+
+TODO Overmode 13 for 82 shows 4.47%. Overmode 14 for 88 shows 4.37%. 
+
 TODO - future developments - 
 
 Also, offline record sets are unmanagably large, although randomising is an advantage at the substrate. We will handle the the additional load due to the higher scan multiple and the multi-scale by having asynchronous image capture from video in a actor004 which will be similar to actor003 and modeller001. Also, there is an advantage to centering when scanning to improve burstiness and ultimately we need it for the 3-level temporaral or saccade-sequence features of 3-level which will use slice topology. So we have random for 1-level, centered scanning search for 2-level, and topology search for 3-level. With scanning we are hoping to see long enough paths to see high-frequency features in the examples and similar features spread over only a few hotspots (we can test this by moving an image horizontally/vertically and by scaling), i.e. a sparsity of hotspots implying a degree of 'convolution' between hotspots.
