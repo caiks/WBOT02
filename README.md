@@ -4452,6 +4452,10 @@ Especially at the smaller scales, we see in models 89 and 90, for both images 4 
 
 TODO Overmode 13 for 82 shows 4.47%. Overmode 14 for 88 shows 4.37%. 
 
+Looking at the length and overmode maps for image 4 and 5 for model 90, it appears that for image 4 the interest in the face is above the eybrows and around the cheek bones, with a circle of interest around the end of the nose and the mouth. For image 5 the facial interest is at the hairline, above the eybrows, the man's right eyebrow, at the corners of the lips and a little along the length of the nose. So perhaps we might guess that the representation of the face would improve. When we compare to model 61 using the overmode slices, there does not seem to be much advantage, if any, in the 1-level model.
+
+To conclude, computed 2-level model 90 appears to be the most promising basis for further investigation. But how many steps that would be needed to obtain animal-like vision is hard to say. Given the many possible hints, substrates and parameter-sets, we should use knowledge from neuro-physiology to guide us.
+
 TODO - future developments - 
 
 Also, offline record sets are unmanagably large, although randomising is an advantage at the substrate. We will handle the the additional load due to the higher scan multiple and the multi-scale by having asynchronous image capture from video in a actor004 which will be similar to actor003 and modeller001. Also, there is an advantage to centering when scanning to improve burstiness and ultimately we need it for the 3-level temporaral or saccade-sequence features of 3-level which will use slice topology. So we have random for 1-level, centered scanning search for 2-level, and topology search for 3-level. With scanning we are hoping to see long enough paths to see high-frequency features in the examples and similar features spread over only a few hotspots (we can test this by moving an image horizontally/vertically and by scaling), i.e. a sparsity of hotspots implying a degree of 'convolution' between hotspots.
