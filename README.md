@@ -4454,6 +4454,10 @@ TODO Overmode 13 for 82 shows 4.47%. Overmode 14 for 88 shows 4.37%.
 
 Looking at the length and overmode maps for image 4 and 5 for model 90, it appears that for image 4 the interest in the face is above the eybrows and around the cheek bones, with a circle of interest around the end of the nose and the mouth. For image 5 the facial interest is at the hairline, above the eybrows, the man's right eyebrow, at the corners of the lips and a little along the length of the nose. So perhaps we might guess that the representation of the face would improve. When we compare to model 61 using the overmode slices, there does not seem to be much advantage, if any, in the 1-level model.
 
+![contour004_090_scale3_minent_21_over14_show_image_position](images/contour004_090_scale3_minent_21_over14_show_image_position.png) 
+
+![contour005_090_scale3_minent_21_over14_show_image_position](images/contour005_090_scale3_minent_21_over14_show_image_position.png) 
+
 To conclude, computed 2-level model 90 appears to be the most promising basis for further investigation. But how many steps that would be needed to obtain animal-like vision is hard to say. Given the many possible hints, substrates and parameter-sets, we should use knowledge from neuro-physiology to guide us.
 
 TODO - future developments - 
