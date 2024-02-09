@@ -1264,7 +1264,7 @@ cd ~/WBOT02_ws
 ```
 we generate the following table -
 
-name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyperkurtosis|entropy|relative entropy
+name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|entropy|relative entropy
 ---|---|---|---|---|---|---|---|---|---
 model089|15.8303|3.09595|27|-0.273364|0.231408|-2.92203|11.5375|0.335085|0
 model066|6.38335|1.66527|11|0.102699|-0.494841|0.57775|1.53435|0.590519|0.0180298
@@ -1507,6 +1507,38 @@ We can compare the representations image to one for *model* 58 which at half the
 ![contour005_058_minent_representation](images/contour005_058_minent_representation.png) 
 
 Clearly the smaller scale *model* captures smaller features more closely.
+
+Note that we can run the `generate_contour` tools configured to generate only the statistics,  `"distribution_only" : true`, e.g. with `contour.json` -
+```
+{
+	"model" : "model066",
+	"threads" : 8,
+	"valency_balanced" : true,
+	"entropy_minimum" : 1.2,
+	"scale" : 0.177,
+	"range_centreX" : 0.786,
+	"range_centreY" :0.425,
+	"input_file" : "contour004.png",
+	"distribution_only" : true
+}
+```
+The following command
+```
+cd ~/WBOT02_ws
+./WBOT02 generate_contour009
+
+```
+produces these statistics -
+```
+lengthsDist: {(2,214),(3,1642),(4,3405),(5,6969),(6,9291),(7,6012),(8,6017),(9,2714),(10,641),(11,20)}
+lengthsCount: 36925
+lengthsMean: 6.25162
+lengthsDeviation: 1.65973
+lengthsSkewness: 0.00795288
+lengthsKurtosisExcess: -0.47381
+lengthsHyperSkewness: -0.139152
+lengthsHyperKurtosisExcess: 1.6019
+```
 
 <a name="actor003_models"></a>
 
@@ -3918,6 +3950,95 @@ and
 
 The position map also shows that the *model* is now centered over the original image, rather than having 'shadows' (similar copies of *model* at approximately frame-size offsets). This is because global *alignments* are spread over the whole *substrate*.
 
+Let us consider the convolution, i.e. the similarity of neighbouring areas, in *model* 82. First, let us show that the images we have chosen for the contour maps are typical. We can do this by showing that the distributions of the path lengths of the images are very close to the distribution of a random *model*, i.e. which has *modelled* frames at random from the training sets. We can do this for different scales and images by obtaining the path length distributions from the `generate_contour` tool and then use the `compare_distributions` tool to compare the relative entropies of the path length distributions. For example, with `distributions.json` -
+```
+{
+	"distributions" : [
+		{
+			"name" : "model082",
+			"distribution" : [0,2,46,414,2185,5521,10078,13029,13992,12602,10209,6593,3728,2057,986,436,142,31,13]
+		},
+		{
+			"name" : "model082 4 0.177",
+			"distribution" : [0,1545,51,348,1401,2847,4493,5497,5755,5189,4356,2473,1777,683,355,91,39,17,8]
+		},
+		{
+			"name" : "model082 4 0.250",
+			"distribution" : [0,906,38,171,667,1446,2519,3188,3109,3140,2562,1713,1156,357,237,78,33,13,6]
+		},
+		{
+			"name" : "model082 4 0.125",
+			"distribution" : [0,2317,73,572,2252,4798,7391,9009,9372,8433,6306,4438,2638,1113,489,191,58,22,2]
+		},
+		{
+			"name" : "model082 5 0.177",
+			"distribution" : [0,680,10,130,685,1837,2959,4189,4501,3894,3270,1984,1237,429,145,98,15,2]
+		},
+		{
+			"name" : "model082 5 0.250",
+			"distribution" : [0,533,17,118,572,1395,2252,2841,3363,2661,2316,1239,800,307,96,30,18,2]
+		},
+		{
+			"name" : "model082 5 0.125",
+			"distribution" : [0,1111,15,271,1239,2772,4708,6350,6523,5602,4710,2681,1546,522,342,190,13,3]
+		}
+	]
+}
+```
+The following command
+```
+cd ~/WBOT02_ws
+./WBOT02 compare_distributions | grep "|"
+
+``` 
+produces the following table (slightly reorganised) -
+
+name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|over-mode%|over-mean%|entropy|relative entropy
+---|---|---|---|---|---|---|---|---|---|---|---
+model082|9.34|2.30|19|0.35|0.01|3.24|8.32|61.89|55.58|0.479095|0.000000
+model082 4 0.250|8.98|2.73|19|-0.31|0.47|-2.57|11.35|58.13|53.27|0.505516|0.001619
+model082 4 0.177|8.83|2.70|19|-0.28|0.40|-2.24|10.52|56.18|50.41|0.511521|0.001910
+model082 4 0.125|8.81|2.67|19|-0.25|0.38|-2.17|10.28|55.59|49.76|0.511634|0.001863
+model082 5 0.250|8.92|2.47|18|-0.30|0.58|-3.14|13.77|58.36|51.00|0.499125|0.001129
+model082 5 0.177|9.05|2.45|18|-0.28|0.62|-3.22|14.63|59.75|53.16|0.492930|0.001079
+model082 5 0.125|8.93|2.50|18|-0.22|0.62|-2.46|13.75|57.34|50.85|0.500045|0.001334
+
+The `over-mode%`, `over-mean%` and `relative entropy` columns are all with respect to the first distribution. In this example, the fist distribution is that of *model* 82 itself. The following distributions are of the *application* of the *model* to the cells of contour images 4 and 5, each at three difference scales.
+
+The statistics for the image *applications* are very similar to those of the *model* itself, with the small exception that the hyper-skews turn negative, slightly reducing the very long paths in favour of very short paths. The relative entropies are very small, so we can be confident that these two images are fairly representative of the random *model* and therefore of the training set itself. There seems to be little difference between the scales or images.
+
+The mode of *model* 82 is 9 and the mean is 9.34. Around 8% of the paths are at least 12 steps. We can show the position map for these longer paths shown overlaid on the image itself to see in which parts of the image the *model* is most interested. The arrangement of these hotspots within the *model* will give us an idea of the degree of convolution. For example, with `contour.json` -
+```
+{
+	"model" : "model082c",
+	"level1_model" : "model081c",
+	"threads" : 8,
+	"valency_balanced" : true,
+	"entropy_minimum" : 1.2,
+	"scale" : 0.177,
+	"scale_value" : 2,
+	"range_centreX" : 0.786,
+	"range_centreY" :0.425,
+	"over_length" : 12,
+	"show_image" : true,	
+	"input_file" : "contour004.png",
+	"position_file" : "contour004_082_scale3_minent_over12_show_image_position.png"
+}
+```
+this command
+```
+cd ~/WBOT02_ws
+./WBOT02 generate_contour010
+
+```
+yields this image -
+
+![contour004_082_scale3_minent_over12_show_image_position](images/contour004_082_scale3_minent_over12_show_image_position.png) 
+
+If we consider the woman's head and neck we can see that there are broad areas of similar hue, i.e. areas that are closely related in the *decomposition* tree. For example, there is a band of green running up from the throat, through the lips and nose to the forehead. There is a smaller patch of red and orange on her left check just next to her nose. There is a still smaller patch of mauve/pink and blue at her right eye. Her left eye is not distinguished from the large band of green, however. And we can see that mauve/pink areas also run up the left side of her neck - so clearly we are very far from being able to identify features such as eyes within the *model*. Nonetheless, the gradual changes in hue over areas with  boundaries that correspond to general outlines in the image suggest that the *model* is indeed grouping similar frames closely together in the *decomposition*, i.e. the global *alignments* naturally occur in agreement with the convolution in the image.
+
+TODO compared to first; similar stats and low rel ent so typical for both images and scales; run for contour003, etc?
+
 Now let us consider a *2-level model* where the [*substrate* is computed](#computed_substrate). This is the configuration for *model* 87 which takes *model* 86 as its *1-level underlying* -
 ```
 {
@@ -4270,7 +4391,7 @@ Let us investigate the effect of minimum entropy by comparing the path distribut
 
 TODO -
 
-name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|over-mode%|over-mean%|entropy|relative entropy
+name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|over-mode%|over-mean%|entropy|relative entropy
 ---|---|---|---|---|---|---|---|---|---|---|---
 model089|15.83|3.10|27|-0.27|0.23|-2.92|11.54|55.88|58.06|0.335085|0.000000
 model066|6.38|1.67|11|0.10|-0.49|0.58|1.53|0.00|0.00|0.590519|0.018030
@@ -4283,7 +4404,7 @@ The example table above shows various *models* that are compared to *model* 89 (
 
 Here is the same comparing to *model* 90 -
 
-name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|over-mode%|over-mean%|entropy|relative entropy
+name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|over-mode%|over-mean%|entropy|relative entropy
 ---|---|---|---|---|---|---|---|---|---|---|---
 model090|16.10|2.84|26|-0.43|0.44|-4.62|15.80|47.24|60.17|0.324604|0.000000
 model066|6.38|1.67|11|0.10|-0.49|0.58|1.53|0.00|0.00|0.590519|0.017973
@@ -4306,7 +4427,7 @@ Mode 6 for model 61 has `4x4=16` tiles each of which is `20x20=400` scans and ta
 
 Model 90 has the same event fraction of 1:125, but its over-mode% ranges only 1.4% to 2.1% (average 1.7%) so seems less quantitatively better, but we need to adjust for min entropy.
 
-name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|over-mode%|over-mean%|entropy|relative entropy
+name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|over-mode%|over-mean%|entropy|relative entropy
 ---|---|---|---|---|---|---|---|---|---|---|---
 model066|6.38|1.67|11|0.10|-0.49|0.58|1.53|68.57|57.96|0.590519|0.000000
 model066 4 0.250|6.17|1.67|11|0.00|-0.51|-0.20|1.23|65.24|52.33|0.604193|0.000716
@@ -4318,7 +4439,7 @@ model066 5 0.125|7.05|1.63|11|-0.18|-0.47|-1.43|2.50|81.70|73.86|0.544422|0.0027
 
 With random 1-level model 66 contour 4 is  closer than closer than contour 5 and the contour 4 smaller scales are better, whereas with contour 5 the longest scale was preferred. Perhaps the busier backgrounds in contour 4 are matching better.  
 
-name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|over-mode%|over-mean%|entropy|relative entropy
+name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|over-mode%|over-mean%|entropy|relative entropy
 ---|---|---|---|---|---|---|---|---|---|---|---
 model082|9.34|2.30|19|0.35|0.01|3.24|8.32|61.89|55.58|0.479095|0.000000
 model082 4 0.250|8.98|2.73|19|-0.31|0.47|-2.57|11.35|58.13|53.27|0.505516|0.001619
@@ -4330,7 +4451,7 @@ model082 5 0.125|8.93|2.50|18|-0.22|0.62|-2.46|13.75|57.34|50.85|0.500045|0.0013
 
 Random 2-level model 82 looks very similar to 1-level model 66 wrt relative entropies, although contour 4 is slightly less matched to the model. There is little difference between the images or scales. The main interesting issue is that the images have negative skew whereas the model 82 has sigtnificant positive skew. That suggests that global alignments are slightly unrepresented in these images. This is confirmed in means which are slightly lower than the model mean. So 1-level models perhaps have an advantage in these images.
 
-name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|over-mode%|over-mean%|entropy|relative entropy
+name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|over-mode%|over-mean%|entropy|relative entropy
 ---|---|---|---|---|---|---|---|---|---|---|---
 model088|10.37|2.46|18|0.03|-0.35|0.22|3.21|62.56|56.75|0.448669|0.000000
 model088 4 0.250|10.32|2.36|18|-0.07|-0.21|-0.60|4.33|63.93|57.27|0.446209|0.000104
@@ -4342,7 +4463,7 @@ model088 5 0.125|10.56|2.18|18|-0.34|0.03|-2.75|8.28|69.89|64.60|0.429906|0.0008
 
 Computed random model 88 looks even more similar to the images than non-computed model 89 or 1-level model 66. This suggests that the alignments available in the 32-valent computed variables better represent the images.
 
-name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|over-mode%|over-mean%|entropy|relative entropy
+name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|over-mode%|over-mean%|entropy|relative entropy
 ---|---|---|---|---|---|---|---|---|---|---|---
 model061|14.60|2.81|22|-0.49|0.31|-4.87|13.52|54.71|60.34|0.350329|-0.000000
 model061 4 0.250|3.44|3.14|20|1.66|2.62|17.62|53.97|0.83|1.05|0.951383|0.033500
@@ -4358,7 +4479,7 @@ The low means suggest that we could combine random and scanned models when doing
 
 Average over-mean% is 1.77 for model 61.
 
-name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|over-mode%|over-mean%|entropy|relative entropy
+name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|over-mode%|over-mean%|entropy|relative entropy
 ---|---|---|---|---|---|---|---|---|---|---|---
 model089|15.83|3.10|27|-0.27|0.23|-2.92|11.54|55.88|58.06|0.335085|0.000000
 model089 4 0.250|5.83|4.18|24|0.88|0.43|7.60|16.18|2.72|2.90|0.748992|0.018520
@@ -4372,7 +4493,7 @@ Average over-mean% is 3.07 for model 89 or 1.7 times model61.
 
 Scanned 2-level model 89 is much more similar to the image than model 61 with around half the relative entropy and much smaller higher moments and higher means and variances. This suggests that the model does not have long enough paths to detect features and this agrees qualitatively when we compare the model representations - the 1-level model seems noticeably better at foreground features.
 
-name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|over-mode%|over-mean%|entropy|relative entropy
+name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|over-mode%|over-mean%|entropy|relative entropy
 ---|---|---|---|---|---|---|---|---|---|---|---
 model090|16.10|2.84|26|-0.43|0.44|-4.62|15.80|47.24|60.17|0.324604|0.000000
 model090 4 0.250|5.77|4.24|24|0.83|-0.03|5.79|8.93|1.35|2.16|0.747933|0.022508
@@ -4382,7 +4503,7 @@ model090 5 0.250|6.95|4.34|22|0.48|-0.63|3.00|1.74|1.64|2.53|0.669138|0.021061
 model090 5 0.177|7.12|4.41|23|0.43|-0.70|2.66|0.90|1.98|3.19|0.658366|0.028623
 model090 5 0.125|7.39|4.42|22|0.35|-0.78|2.21|0.12|2.05|3.33|0.640327|0.035381
 
-name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|over-mode%|over-mean%|entropy|relative entropy
+name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|over-mode%|over-mean%|entropy|relative entropy
 ---|---|---|---|---|---|---|---|---|---|---|---
 model090|16.10|2.84|26|-0.43|0.44|-4.62|15.80|47.24|60.17|0.324604|0.000000
 model090 4 0.250 min ent 2.1|5.14|4.09|24|1.10|0.61|8.41|17.22|1.31|2.01|0.795927|0.018904
