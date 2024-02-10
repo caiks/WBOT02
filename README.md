@@ -4031,13 +4031,21 @@ cd ~/WBOT02_ws
 ./WBOT02 generate_contour010
 
 ```
-yields this image -
+yields this image at scale 0.177 -
 
 ![contour004_082_scale3_minent_over12_show_image_position](images/contour004_082_scale3_minent_over12_show_image_position.png) 
 
-If we consider the woman's head and neck we can see that there are broad areas of similar hue, i.e. areas that are closely related in the *decomposition* tree. For example, there is a band of green running up from the throat, through the lips and nose to the forehead. There is a smaller patch of red and orange on her left check just next to her nose. There is a still smaller patch of mauve/pink and blue at her right eye. Her left eye is not distinguished from the large band of green, however. And we can see that mauve/pink areas also run up the left side of her neck - so clearly we are very far from being able to identify features such as eyes within the *model*. Nonetheless, the gradual changes in hue over areas with  boundaries that correspond to general outlines in the image suggest that the *model* is indeed grouping similar frames closely together in the *decomposition*, i.e. the global *alignments* naturally occur in agreement with the convolution in the image.
+If we consider the woman's head and neck we can see that there are broad areas of similar hue, i.e. areas that are closely related in the *decomposition* tree. For example, there is a band of green running up from the throat, through the lips and nose to the forehead. There is a smaller patch of red and orange on her left check just next to her nose. There is a still smaller patch of mauve/pink and blue at her left eye. Her right eye is not distinguished from the large band of green, however. And we can see that mauve/pink areas also run up the left side of her neck - so clearly we are very far from being able to identify features such as eyes within the *model*. Nonetheless, the gradual changes in hue over areas with  boundaries that correspond to general outlines in the image suggest that the *model* is indeed grouping similar frames closely together in the *decomposition*, i.e. the global *alignments* naturally occur in agreement with the convolution in the image.
 
-TODO compared to first; similar stats and low rel ent so typical for both images and scales; run for contour003, etc?
+Here is the over 12 position map for image 5 -
+
+![contour005_082_scale3_minent_over12_show_image_position](images/contour005_082_scale3_minent_over12_show_image_position.png) 
+
+The *model* seems to be les interested in the eyes, nose or mouth, but more in the cheeks, forehead and sides of the face. This could be because the scales is too high for this size of face within the image. If we run again at the smaller scale of 0.125, 
+
+![contour005_082_scale5_minent_over12_show_image_position](images/contour005_082_scale5_minent_over12_show_image_position.png) 
+
+the interest seems to move slightly closer to the eyes. Of course, features may appear off-centre in the frame, and the relationship between the pupil of the eye, for example, and the side of the nose or the edge of the face might mean an interest in the relationships between features. It is likely, however, that the *model* paths are still far too short to represent objects that interest us, and we must be careful to avoid reading too much into these qualitative results.
 
 Now let us consider a *2-level model* where the [*substrate* is computed](#computed_substrate). This is the configuration for *model* 87 which takes *model* 86 as its *1-level underlying* -
 ```
