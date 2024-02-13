@@ -3950,7 +3950,7 @@ and
 
 The position map also shows that the *model* is now centered over the original image, rather than having 'shadows' (similar copies of *model* at approximately frame-size offsets). This is because global *alignments* are spread over the whole *substrate*.
 
-Let us consider the convolution, i.e. the similarity of neighbouring areas, in *model* 82. First, let us show that the images we have chosen for the contour maps are typical. We can do this by showing that the distributions of the path lengths of the images are very close to the distribution of a random *model*, i.e. which has *modelled* frames at random from the training sets. We can do this for different scales and images by obtaining the path length distributions from the `generate_contour` tool and then use the `compare_distributions` tool to compare the relative entropies of the path length distributions. For example, with `distributions.json` -
+Let us continue to consider the convolution, i.e. the similarity of neighbouring areas, in *model* 82, now focussing on the areas where the interest is greatest, in order to see what progress we are making towards feature *classification*. First, let us show that the images we have chosen for the contour maps are typical. We can do this by showing that the distributions of the path lengths of the images are very close to the distribution of a random *model*, i.e. which has *modelled* frames at random from the training sets. We can do this for different scales and images by obtaining the path length distributions from the `generate_contour` tool, and then use the `compare_distributions` tool to compare the relative entropies of the path length distributions. For example, with `distributions.json` -
 ```
 {
 	"distributions" : [
@@ -3993,6 +3993,8 @@ cd ~/WBOT02_ws
 ``` 
 produces the following table (slightly reorganised) -
 
+<a name="model082_relative_entropy"></a>
+
 name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|over-mode%|over-mean%|entropy|relative entropy
 ---|---|---|---|---|---|---|---|---|---|---|---
 model082|9.34|2.30|19|0.35|0.01|3.24|8.32|61.89|55.58|0.479095|0.000000
@@ -4003,7 +4005,7 @@ model082 5 0.250|8.92|2.47|18|-0.30|0.58|-3.14|13.77|58.36|51.00|0.499125|0.0011
 model082 5 0.177|9.05|2.45|18|-0.28|0.62|-3.22|14.63|59.75|53.16|0.492930|0.001079
 model082 5 0.125|8.93|2.50|18|-0.22|0.62|-2.46|13.75|57.34|50.85|0.500045|0.001334
 
-The `over-mode%`, `over-mean%` and `relative entropy` columns are all with respect to the first distribution. In this example, the fist distribution is that of *model* 82 itself. The following distributions are of the *application* of the *model* to the cells of contour images 4 and 5, each at three difference scales.
+The `over-mode%`, `over-mean%` and `relative entropy` columns are all with respect to the first distribution. In this example, the first distribution is that of *model* 82 itself. The following distributions are of the *application* of the *model* to the cells of contour images 4 and 5, each at three difference scales.
 
 The statistics for the image *applications* are very similar to those of the *model* itself, with the small exception that the hyper-skews turn negative, slightly reducing the very long paths in favour of very short paths. The relative entropies are very small, so we can be confident that these two images are fairly representative of the random *model* and therefore of the training set itself. There seems to be little difference between the scales or images.
 
@@ -4035,17 +4037,17 @@ yields this image at scale 0.177 -
 
 ![contour004_082_scale3_minent_over12_show_image_position](images/contour004_082_scale3_minent_over12_show_image_position.png) 
 
-If we consider the woman's head and neck we can see that there are broad areas of similar hue, i.e. areas that are closely related in the *decomposition* tree. For example, there is a band of green running up from the throat, through the lips and nose to the forehead. There is a smaller patch of red and orange on her left check just next to her nose. There is a still smaller patch of mauve/pink and blue at her left eye. Her right eye is not distinguished from the large band of green, however. And we can see that mauve/pink areas also run up the left side of her neck - so clearly we are very far from being able to identify features such as eyes within the *model*. Nonetheless, the gradual changes in hue over areas with  boundaries that correspond to general outlines in the image suggest that the *model* is indeed grouping similar frames closely together in the *decomposition*, i.e. the global *alignments* naturally occur in agreement with the convolution in the image.
+If we consider the woman's head and neck we can see that there are broad areas of similar hue, i.e. areas that are closely related in the *decomposition* tree, even at these longer path lengths. For example, there is a band of green running up from the throat, through the lips and nose to the forehead. There is a smaller patch of red and orange on her left check just next to her nose. There is a still smaller patch of mauve/pink and blue at her left eye. Her right eye is not distinguished from the large band of green, however. And we can see that mauve/pink areas also run up the left side of her neck - so clearly we are very far from being able to identify features such as eyes within the *model*. Nonetheless, the gradual changes in hue over areas with boundaries that correspond to general outlines in the image suggest that the *model* is still grouping similar frames closely together in the *decomposition* at these more interesting locations. That is, the global *alignments* naturally occur in agreement with the convolution in the image, regardless of actual *likelihood*.
 
 Here is the over 12 position map for image 5 -
 
 ![contour005_082_scale3_minent_over12_show_image_position](images/contour005_082_scale3_minent_over12_show_image_position.png) 
 
-The *model* seems to be les interested in the eyes, nose or mouth, but more in the cheeks, forehead and sides of the face. This could be because the scales is too high for this size of face within the image. If we run again at the smaller scale of 0.125, 
+The *model* seems to be les interested in the eyes, nose or mouth, but more in the cheeks, forehead and sides of the face. This could be because the scale is too high for this size of face within the image. If we run again at the smaller scale of 0.125, 
 
 ![contour005_082_scale5_minent_over12_show_image_position](images/contour005_082_scale5_minent_over12_show_image_position.png) 
 
-the interest seems to move slightly closer to the eyes. Of course, features may appear off-centre in the frame, and the relationship between the pupil of the eye, for example, and the side of the nose or the edge of the face might mean an interest in the relationships between features. It is likely, however, that the *model* paths are still far too short to represent objects that interest us, and we must be careful to avoid reading too much into these qualitative results.
+the interest seems to move slightly closer to the eyes. Of course, features may appear off-centre in the frame, and the relationship between the pupil of the eye, for example, and the side of the nose or the edge of the face might mean that there are global *alingments* in the relationships between features. It is likely, however, that the *model* paths are still far too short to represent objects that interest humans - we must be careful to avoid reading too much into these qualitative results.
 
 Now let us consider a *2-level model* where the [*substrate* is computed](#computed_substrate). This is the configuration for *model* 87 which takes *model* 86 as its *1-level underlying* -
 ```
@@ -4154,6 +4156,58 @@ Similarly to *model* 82, the position map shows quite a lot of convolution, i.e.
 ![contour004_088_scale3_minent_position](images/contour004_088_scale3_minent_position.png) 
 
 Note that the contour map entropy limit is different in *model* 88 versus *model* 82 because of the *32-valency*, so there are fewer areas where the map is not calculated.
+
+We can check how representative *model* 88 is when *applied* to images 4 and 5 as we did [above](#model082_relative_entropy) for *model* 82 -
+
+name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|over-mode%|over-mean%|entropy|relative entropy
+---|---|---|---|---|---|---|---|---|---|---|---
+model088|10.37|2.46|18|0.03|-0.35|0.22|3.21|62.56|56.75|0.448669|0.000000
+model088 4 0.250|10.32|2.36|18|-0.07|-0.21|-0.60|4.33|63.93|57.27|0.446209|0.000104
+model088 4 0.177|10.19|2.42|18|-0.07|-0.17|-0.41|4.65|62.01|55.50|0.453298|0.000194
+model088 4 0.125|10.25|2.42|18|-0.09|-0.18|-0.80|4.73|62.78|55.84|0.451243|0.000178
+model088 5 0.250|10.69|2.28|18|-0.17|-0.15|-1.36|5.28|69.84|64.74|0.430661|0.000440
+model088 5 0.177|10.62|2.19|18|-0.22|-0.12|-1.69|6.21|70.03|64.19|0.429154|0.000646
+model088 5 0.125|10.56|2.18|18|-0.34|0.03|-2.75|8.28|69.89|64.60|0.429906|0.000887
+
+Computed random *model* 88 looks even more similar to the images than non-computed *model* 82. This suggests that the *alignments* available in the 32-*valent* computed *variables* better represent the images.
+
+The mode of *model* 88 is 10 and the mean is 10.37. Around 8% of the paths are at least 13 steps. As for *model* 82, we can show the position map for these longer paths shown overlaid on the image itself to see in which parts of the image the *model* is most interested. Note that, for the 32-*valent* *model*, we have increased the minimum entropy from 1.2 (for 10-*valent*) to 2.1, a figure that was found by trial and error to be approximately equivalent.
+
+For example, with `contour.json` -
+```
+{
+	"model" : "model088c",
+	"structure" : "struct005",
+	"level1_model" : "model086c",
+	"threads" : 8,
+	"valency" : 32,
+	"valency_balanced" : true,
+	"entropy_minimum" : 2.1,
+	"scale" : 0.177,
+	"scale_value" : 2,
+	"range_centreX" : 0.786,
+	"range_centreY" :0.425,
+	"over_length" : 13,
+	"show_image" : true,	
+	"input_file" : "contour004.png",
+	"position_file" : "contour004_088_scale3_minent_21_over13_show_image_position.png"
+}
+```
+this command
+```
+cd ~/WBOT02_ws
+./WBOT02 generate_contour010
+
+```
+yields this image at scale 0.177 -
+
+![contour004_088_scale3_minent_21_over13_show_image_position](images/contour004_088_scale3_minent_21_over13_show_image_position.png)
+
+Here is the over 13 position map for image 5 -
+
+![contour005_088_scale3_minent_21_over13_show_image_position](images/contour005_088_scale3_minent_21_over13_show_image_position.png) 
+
+As the length contour map indicates, the interest is more uniformly distributed than for *model* 82, with greater interest in darker areas and perhaps less clustering of attention. Perhaps also, there is less convolution with some adjacent hotspots from different parts of the *model*, although this might be simply an increased sensitivity to shading.
 
 <a name="Scanned_2_level_models"></a>
 
@@ -4446,30 +4500,6 @@ model066 5 0.177|7.01|1.63|11|-0.19|-0.44|-1.45|2.61|81.22|73.41|0.547634|0.0027
 model066 5 0.125|7.05|1.63|11|-0.18|-0.47|-1.43|2.50|81.70|73.86|0.544422|0.002750
 
 With random 1-level model 66 contour 4 is  closer than closer than contour 5 and the contour 4 smaller scales are better, whereas with contour 5 the longest scale was preferred. Perhaps the busier backgrounds in contour 4 are matching better.  
-
-name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|over-mode%|over-mean%|entropy|relative entropy
----|---|---|---|---|---|---|---|---|---|---|---
-model082|9.34|2.30|19|0.35|0.01|3.24|8.32|61.89|55.58|0.479095|0.000000
-model082 4 0.250|8.98|2.73|19|-0.31|0.47|-2.57|11.35|58.13|53.27|0.505516|0.001619
-model082 4 0.177|8.83|2.70|19|-0.28|0.40|-2.24|10.52|56.18|50.41|0.511521|0.001910
-model082 4 0.125|8.81|2.67|19|-0.25|0.38|-2.17|10.28|55.59|49.76|0.511634|0.001863
-model082 5 0.250|8.92|2.47|18|-0.30|0.58|-3.14|13.77|58.36|51.00|0.499125|0.001129
-model082 5 0.177|9.05|2.45|18|-0.28|0.62|-3.22|14.63|59.75|53.16|0.492930|0.001079
-model082 5 0.125|8.93|2.50|18|-0.22|0.62|-2.46|13.75|57.34|50.85|0.500045|0.001334
-
-Random 2-level model 82 looks very similar to 1-level model 66 wrt relative entropies, although contour 4 is slightly less matched to the model. There is little difference between the images or scales. The main interesting issue is that the images have negative skew whereas the model 82 has sigtnificant positive skew. That suggests that global alignments are slightly unrepresented in these images. This is confirmed in means which are slightly lower than the model mean. So 1-level models perhaps have an advantage in these images.
-
-name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|over-mode%|over-mean%|entropy|relative entropy
----|---|---|---|---|---|---|---|---|---|---|---
-model088|10.37|2.46|18|0.03|-0.35|0.22|3.21|62.56|56.75|0.448669|0.000000
-model088 4 0.250|10.32|2.36|18|-0.07|-0.21|-0.60|4.33|63.93|57.27|0.446209|0.000104
-model088 4 0.177|10.19|2.42|18|-0.07|-0.17|-0.41|4.65|62.01|55.50|0.453298|0.000194
-model088 4 0.125|10.25|2.42|18|-0.09|-0.18|-0.80|4.73|62.78|55.84|0.451243|0.000178
-model088 5 0.250|10.69|2.28|18|-0.17|-0.15|-1.36|5.28|69.84|64.74|0.430661|0.000440
-model088 5 0.177|10.62|2.19|18|-0.22|-0.12|-1.69|6.21|70.03|64.19|0.429154|0.000646
-model088 5 0.125|10.56|2.18|18|-0.34|0.03|-2.75|8.28|69.89|64.60|0.429906|0.000887
-
-Computed random model 88 looks even more similar to the images than non-computed model 89 or 1-level model 66. This suggests that the alignments available in the 32-valent computed variables better represent the images.
 
 name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|over-mode%|over-mean%|entropy|relative entropy
 ---|---|---|---|---|---|---|---|---|---|---|---
