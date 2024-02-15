@@ -4207,7 +4207,13 @@ Here is the over 13 position map for image 5 -
 
 ![contour005_088_scale3_minent_21_over13_show_image_position](images/contour005_088_scale3_minent_21_over13_show_image_position.png) 
 
-As the length contour map indicates, the interest is more uniformly distributed than for *model* 82, with greater interest in darker areas and perhaps less clustering of attention. Perhaps also, there is less convolution with some adjacent hotspots from different parts of the *model*, although this might be simply an increased sensitivity to shading.
+As the length contour map indicates, the interest is more uniformly distributed than for *model* 82, with greater interest in darker areas and perhaps less clustering of attention. Perhaps also, there is less convolution with some adjacent hotspots from different parts of the *model*, although this might be simply an increased sensitivity to shading. This increased *modelling* of shading is apparent when we compare the representations of the *underlying* computed 1-*level* *model* 86 to its non-computed equivalent *model* 81. It seems likely that these local *alignments* have carried up to the higher *level* global *aignments*.
+
+TODO -
+
+Let us now consider a computed *variable* random *model* with the same *valency* as for *model* 82, i.e. 10-*valent*, to see if the increased focus on area and shading we see in *model* 88, to the possible detriment of feature extraction, is due solely to the higher *valency* or whether it is partly due to the computed *variables* themselves. We will also drop the dependency on the scale and the retention of the underlying *substrate* to maximise performance and provide an initial *model* for a scanned *2-level model*.
+
+Note that computed 10-*valent* *variables* will no longer be symmetric.
 
 <a name="Scanned_2_level_models"></a>
 
@@ -4337,7 +4343,7 @@ This suggests that *2-level models* are picking up global *alignments* as we int
 
 ![actor002_model089_Film_Noir_004](images/actor002_model089_Film_Noir_004.png) 
 
-Now let us consider the euqivalent scanned *2-level model* where the [*substrate* is computed](#computed_substrate). This is the configuration for *model* 90 which takes *model* 86 as its *1-level underlying* -
+Now let us consider the equivalent scanned *2-level model* where the [*substrate* is computed](#computed_substrate). This is the configuration for *model* 90 which takes *model* 86 as its *1-level underlying* -
 ```
 {
 	"model" : "model090",
@@ -4449,9 +4455,7 @@ There are many hotspots in the background and fewer around the face - possibly p
 
 The detail around the face seems a little less compared to *model* 89. Some features have improved, however, especially the hair and the man's tie. Overall, the combination of higher *valency* and lower relative minimum entropy together with similar statistics suggests that *model* 90 is finding many smooth gradient alignments that are not available to *model* 89. Also the fact that the *variables* are computed may also increase this. 
 
-Let us investigate the effect of minimum entropy by comparing the path distributions in the contour maps with the distribution in the *model* itself.
-
-TODO -
+Now let us use the `compare_distributions` tool again to compare the path length distributions of the 2-*level* *models*. We also include random 1-*level* *model* 66 and scanned 1-*level* *model* 61. This is the table that compares relative to non-computed *model* 89 -
 
 name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|over-mode%|over-mean%|entropy|relative entropy
 ---|---|---|---|---|---|---|---|---|---|---|---
@@ -4462,9 +4466,7 @@ model088|10.37|2.46|18|0.03|-0.35|0.22|3.21|1.50|1.83|0.448669|0.023399
 model061|14.60|2.81|22|-0.49|0.31|-4.87|13.52|40.32|42.74|0.350329|0.001899
 model090|16.10|2.84|26|-0.43|0.44|-4.62|15.80|61.38|63.62|0.324604|0.000216
 
-The example table above shows various *models* that are compared to *model* 89 ([see below](#Scanned_2_level_models)). We can see that the distribution of *model* 90 has the lowest sum relative entropy, so it is most similar to *model* 89. *Model* 82 has the highest sum relative entropy, so it is least similar.
-
-Here is the same comparing to *model* 90 -
+Here is the same table, but comparing relative to computed *model* 90 -
 
 name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|over-mode%|over-mean%|entropy|relative entropy
 ---|---|---|---|---|---|---|---|---|---|---|---
@@ -4475,7 +4477,39 @@ model088|10.37|2.46|18|0.03|-0.35|0.22|3.21|0.43|1.06|0.448669|0.025487
 model061|14.60|2.81|22|-0.49|0.31|-4.87|13.52|26.11|37.73|0.350329|0.002440
 model089|15.83|3.10|27|-0.27|0.23|-2.92|11.54|42.61|54.20|0.335085|0.000216
 
-Interestingly, scanned non-computed *model* 89 is a little more similar to randomised computed *model* 88 than scanned computed *model* 90, probably because of the low hyper-kurtosis.
+We can see that scanned non-computed 2-*level* *model* 89 is very similar to scanned computed 2-*level* *model* 90. After that, the most similar *model* is the other scanned 1-*level* *model* 61. After that come the random *models*. So the scanning versus random is far more important than computed versus non-computed.
+
+Now let us see how similar the images distributions appear to scanned *model* 89 -
+
+name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|over-mode%|over-mean%|entropy|relative entropy
+---|---|---|---|---|---|---|---|---|---|---|---
+model089|15.83|3.10|27|-0.27|0.23|-2.92|11.54|55.88|58.06|0.335085|0.000000
+model089 4 0.250|5.83|4.18|24|0.88|0.43|7.60|16.18|2.72|2.90|0.748992|0.018520
+model089 4 0.177|5.83|4.21|23|0.86|0.28|6.95|13.39|2.88|3.07|0.750514|0.026547
+model089 4 0.125|5.94|4.23|24|0.82|0.17|6.52|12.07|2.74|2.93|0.743320|0.034359
+model089 5 0.250|6.27|4.12|23|0.78|0.16|6.15|11.12|2.88|3.10|0.716544|0.015869
+model089 5 0.177|6.05|4.24|23|0.80|0.09|6.08|10.32|3.23|3.45|0.734200|0.020491
+model089 5 0.125|5.90|4.31|22|0.79|-0.09|5.48|7.80|2.72|2.97|0.745115|0.026631
+
+The relative entropy is much higher than it was when we considered *model* 82. Only 2-3% of the image is over the mean path length of 15.8. The scanning mode throws away much of the *model* to focus on lengthening the hotspot paths, so the *model* distribution now only represents the image faithfully at these hotspots. We can compare to the images distributions for scanned *model* 61 -
+
+name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|over-mode%|over-mean%|entropy|relative entropy
+---|---|---|---|---|---|---|---|---|---|---|---
+model061|14.60|2.81|22|-0.49|0.31|-4.87|13.52|54.71|60.34|0.350329|-0.000000
+model061 4 0.250|3.44|3.14|20|1.66|2.62|17.62|53.97|0.83|1.05|0.951383|0.033500
+model061 4 0.177|3.55|3.29|20|1.61|2.39|16.80|51.79|0.90|1.12|0.938041|0.046825
+model061 4 0.125|3.54|3.31|21|1.67|2.66|18.24|58.75|1.08|1.29|0.939840|0.061603
+model061 5 0.250|3.70|3.45|20|1.61|2.07|14.50|38.42|1.27|1.62|0.926007|0.028727
+model061 5 0.177|4.12|3.81|20|1.39|1.20|10.76|23.90|1.95|2.45|0.883317|0.033376
+model061 5 0.125|4.61|3.92|21|1.13|0.57|8.41|16.49|2.56|3.10|0.842394|0.039319
+
+We can see that only 1-3% of the image is over the mean path length of 14.6. So the hotspot proportion is a property of scanning modes, rather than to do with *model level*.
+
+TODO -
+
+89 overmode 8.49% at 12, 90 overmode 7.54% at 12
+
+Let us investigate the effect of minimum entropy by comparing the path distributions in the contour maps with the distribution in the *model* itself.
 
 could regenerate for higher min entropy
 
@@ -4501,31 +4535,12 @@ model066 5 0.125|7.05|1.63|11|-0.18|-0.47|-1.43|2.50|81.70|73.86|0.544422|0.0027
 
 With random 1-level model 66 contour 4 is  closer than closer than contour 5 and the contour 4 smaller scales are better, whereas with contour 5 the longest scale was preferred. Perhaps the busier backgrounds in contour 4 are matching better.  
 
-name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|over-mode%|over-mean%|entropy|relative entropy
----|---|---|---|---|---|---|---|---|---|---|---
-model061|14.60|2.81|22|-0.49|0.31|-4.87|13.52|54.71|60.34|0.350329|-0.000000
-model061 4 0.250|3.44|3.14|20|1.66|2.62|17.62|53.97|0.83|1.05|0.951383|0.033500
-model061 4 0.177|3.55|3.29|20|1.61|2.39|16.80|51.79|0.90|1.12|0.938041|0.046825
-model061 4 0.125|3.54|3.31|21|1.67|2.66|18.24|58.75|1.08|1.29|0.939840|0.061603
-model061 5 0.250|3.70|3.45|20|1.61|2.07|14.50|38.42|1.27|1.62|0.926007|0.028727
-model061 5 0.177|4.12|3.81|20|1.39|1.20|10.76|23.90|1.95|2.45|0.883317|0.033376
-model061 5 0.125|4.61|3.92|21|1.13|0.57|8.41|16.49|2.56|3.10|0.842394|0.039319
-
 As expected the scanned 1-level model 61 has very different statistics from the images. The means are far lower than the model mean and even lower than the random models. The relative entropy differs by the same order of magnitude as randomised differs from scanned. If the model were random, contour 5 would be slightly preferred to contour 4 and the larger scales are better than the smaller. However, with a scanned model we would like to see more longer paths to highlight the model's strengths. Here we can see that the higher moments are greatest for contour 4 and the model is insensitive to scale.
 
 The low means suggest that we could combine random and scanned models when doing the contour map, choosing the longest path from either model. However, higher level models will be scanning and don't see the world as a contour map.
 
 Average over-mean% is 1.77 for model 61.
 
-name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|over-mode%|over-mean%|entropy|relative entropy
----|---|---|---|---|---|---|---|---|---|---|---
-model089|15.83|3.10|27|-0.27|0.23|-2.92|11.54|55.88|58.06|0.335085|0.000000
-model089 4 0.250|5.83|4.18|24|0.88|0.43|7.60|16.18|2.72|2.90|0.748992|0.018520
-model089 4 0.177|5.83|4.21|23|0.86|0.28|6.95|13.39|2.88|3.07|0.750514|0.026547
-model089 4 0.125|5.94|4.23|24|0.82|0.17|6.52|12.07|2.74|2.93|0.743320|0.034359
-model089 5 0.250|6.27|4.12|23|0.78|0.16|6.15|11.12|2.88|3.10|0.716544|0.015869
-model089 5 0.177|6.05|4.24|23|0.80|0.09|6.08|10.32|3.23|3.45|0.734200|0.020491
-model089 5 0.125|5.90|4.31|22|0.79|-0.09|5.48|7.80|2.72|2.97|0.745115|0.026631
 
 Average over-mean% is 3.07 for model 89 or 1.7 times model61.
 
