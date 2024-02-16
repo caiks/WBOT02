@@ -4455,7 +4455,7 @@ There are many hotspots in the background and fewer around the face - possibly p
 
 The detail around the face seems a little less compared to *model* 89. Some features have improved, however, especially the hair and the man's tie. Overall, the combination of higher *valency* and lower relative minimum entropy together with similar statistics suggests that *model* 90 is finding many smooth gradient alignments that are not available to *model* 89. Also the fact that the *variables* are computed may also increase this. 
 
-Now let us use the `compare_distributions` tool again to compare the path length distributions of the 2-*level* *models*. We also include random 1-*level* *model* 66 and scanned 1-*level* *model* 61. This is the table that compares relative to non-computed *model* 89 -
+Now let us use the `compare_distributions` tool again to compare the path length distributions of the 2-*level* *models*. We also include random 1-*level* *model* 66 and scanned 1-*level* *model* 61. This is the table that compares with respect to non-computed *model* 89 -
 
 name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|over-mode%|over-mean%|entropy|relative entropy
 ---|---|---|---|---|---|---|---|---|---|---|---
@@ -4477,9 +4477,9 @@ model088|10.37|2.46|18|0.03|-0.35|0.22|3.21|0.43|1.06|0.448669|0.025487
 model061|14.60|2.81|22|-0.49|0.31|-4.87|13.52|26.11|37.73|0.350329|0.002440
 model089|15.83|3.10|27|-0.27|0.23|-2.92|11.54|42.61|54.20|0.335085|0.000216
 
-We can see that scanned non-computed 2-*level* *model* 89 is very similar to scanned computed 2-*level* *model* 90. After that, the most similar *model* is the other scanned 1-*level* *model* 61. After that come the random *models*. So the scanning versus random is far more important than computed versus non-computed.
+We can see that scanned non-computed 2-*level* *model* 89 is very similar to scanned computed 2-*level* *model* 90. After that, the most similar *model* is the other scanned 1-*level* *model* 61. After that come the random *models*. So the scanning versus random mode is far more important than computed versus non-computed structure.
 
-Now let us see how similar the images distributions appear to scanned *model* 89 -
+Now let us see how the image distributions appear to scanned *model* 89 -
 
 name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|over-mode%|over-mean%|entropy|relative entropy
 ---|---|---|---|---|---|---|---|---|---|---|---
@@ -4491,7 +4491,7 @@ model089 5 0.250|6.27|4.12|23|0.78|0.16|6.15|11.12|2.88|3.10|0.716544|0.015869
 model089 5 0.177|6.05|4.24|23|0.80|0.09|6.08|10.32|3.23|3.45|0.734200|0.020491
 model089 5 0.125|5.90|4.31|22|0.79|-0.09|5.48|7.80|2.72|2.97|0.745115|0.026631
 
-The relative entropy is much higher than it was when we considered *model* 82. Only 2-3% of the image is over the mean path length of 15.8. The scanning mode throws away much of the *model* to focus on lengthening the hotspot paths, so the *model* distribution now only represents the image faithfully at these hotspots. We can compare to the images distributions for scanned *model* 61 -
+The relative entropy is much higher than it was when we considered random *model* 82. Instead of around 50% over the mean path length of 9.3, now only 2-3% of the image is over the mean path length of 15.8. The scanning mode throws away much of the *model* to focus on lengthening the path of certain hotspots, so the *model* distribution now only represents the image in detail at these hotspots. We can compare to the image distributions for scanned 1-*level* *model* 61 -
 
 name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|over-mode%|over-mean%|entropy|relative entropy
 ---|---|---|---|---|---|---|---|---|---|---|---
@@ -4503,7 +4503,23 @@ model061 5 0.250|3.70|3.45|20|1.61|2.07|14.50|38.42|1.27|1.62|0.926007|0.028727
 model061 5 0.177|4.12|3.81|20|1.39|1.20|10.76|23.90|1.95|2.45|0.883317|0.033376
 model061 5 0.125|4.61|3.92|21|1.13|0.57|8.41|16.49|2.56|3.10|0.842394|0.039319
 
-We can see that only 1-3% of the image is over the mean path length of 14.6. So the hotspot proportion is a property of scanning modes, rather than to do with *model level*.
+Now only 1-3% of the image is over the mean path length of 14.6. Also the hyper-skew and hyper-kurtosis are even higher than for 2-*level* *model* 89. So the small hotspot proportions are a property of scanning modes, rather than to do with *model level*.
+
+Let us examine the image distributions for scanned computed 2-*level* *model* 90, with a minimum entropy of 2.1 -
+
+name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|over-mode%|over-mean%|entropy|relative entropy
+---|---|---|---|---|---|---|---|---|---|---|---
+model090|16.10|2.84|26|-0.43|0.44|-4.62|15.80|47.24|60.17|0.324604|0.000000
+model090 4 0.250 min ent 2.1|5.14|4.09|24|1.10|0.61|8.41|17.22|1.31|2.01|0.795927|0.018904
+model090 4 0.177 min ent 2.1|5.32|4.09|23|1.08|0.60|8.29|16.81|1.54|2.24|0.782887|0.028621
+model090 4 0.125 min ent 2.1|5.58|4.15|24|1.03|0.47|7.84|15.71|1.62|2.41|0.764745|0.037633
+model090 5 0.250 min ent 2.1|6.18|4.35|22|0.81|-0.17|5.15|6.63|1.79|2.69|0.721760|0.014573
+model090 5 0.177 min ent 2.1|6.20|4.23|23|0.78|-0.14|5.17|6.93|1.74|2.66|0.719898|0.019598
+model090 5 0.125 min ent 2.1|6.22|4.26|22|0.80|-0.09|5.38|7.50|2.02|2.89|0.718341|0.025280
+
+Again we can see that around 2-3% of the image is over the *model* mean path length of 16.1, with the other statistics very similar to those of non-computed *model* 89.
+
+Now let us 
 
 TODO -
 
@@ -4555,16 +4571,6 @@ model090 4 0.125|5.80|4.21|24|0.88|0.11|6.35|10.77|1.50|2.35|0.746615|0.045041
 model090 5 0.250|6.95|4.34|22|0.48|-0.63|3.00|1.74|1.64|2.53|0.669138|0.021061
 model090 5 0.177|7.12|4.41|23|0.43|-0.70|2.66|0.90|1.98|3.19|0.658366|0.028623
 model090 5 0.125|7.39|4.42|22|0.35|-0.78|2.21|0.12|2.05|3.33|0.640327|0.035381
-
-name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|over-mode%|over-mean%|entropy|relative entropy
----|---|---|---|---|---|---|---|---|---|---|---
-model090|16.10|2.84|26|-0.43|0.44|-4.62|15.80|47.24|60.17|0.324604|0.000000
-model090 4 0.250 min ent 2.1|5.14|4.09|24|1.10|0.61|8.41|17.22|1.31|2.01|0.795927|0.018904
-model090 4 0.177 min ent 2.1|5.32|4.09|23|1.08|0.60|8.29|16.81|1.54|2.24|0.782887|0.028621
-model090 4 0.125 min ent 2.1|5.58|4.15|24|1.03|0.47|7.84|15.71|1.62|2.41|0.764745|0.037633
-model090 5 0.250 min ent 2.1|6.18|4.35|22|0.81|-0.17|5.15|6.63|1.79|2.69|0.721760|0.014573
-model090 5 0.177 min ent 2.1|6.20|4.23|23|0.78|-0.14|5.17|6.93|1.74|2.66|0.719898|0.019598
-model090 5 0.125 min ent 2.1|6.22|4.26|22|0.80|-0.09|5.38|7.50|2.02|2.89|0.718341|0.025280
 
 Average over-mean% is 2.66 for model 90 and 2.48 for min ent 2.1 or 1.4 times model 61.
 
