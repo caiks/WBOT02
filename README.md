@@ -4033,17 +4033,20 @@ cd ~/WBOT02_ws
 ./WBOT02 generate_contour010
 
 ```
+<a name="contour004_082_scale3_minent_over12"></a>
+
 yields this image at scale 0.177 -
 
 ![contour004_082_scale3_minent_over12_show_image_position](images/contour004_082_scale3_minent_over12_show_image_position.png) 
 
 If we consider the woman's head and neck we can see that there are broad areas of similar hue, i.e. areas that are closely related in the *decomposition* tree, even at these longer path lengths. For example, there is a band of green running up from the throat, through the lips and nose to the forehead. There is a smaller patch of red and orange on her left check just next to her nose. There is a still smaller patch of mauve/pink and blue at her left eye. Her right eye is not distinguished from the large band of green, however. And we can see that mauve/pink areas also run up the left side of her neck - so clearly we are very far from being able to identify features such as eyes within the *model*. Nonetheless, the gradual changes in hue over areas with boundaries that correspond to general outlines in the image suggest that the *model* is still grouping similar frames closely together in the *decomposition* at these more interesting locations. That is, the global *alignments* naturally occur in agreement with the convolution in the image, regardless of actual *likelihood*.
 
+<a name="contour005_082_scale3_minent_over12"></a>
 Here is the over 12 position map for image 5 -
 
 ![contour005_082_scale3_minent_over12_show_image_position](images/contour005_082_scale3_minent_over12_show_image_position.png) 
 
-The *model* seems to be les interested in the eyes, nose or mouth, but more in the cheeks, forehead and sides of the face. This could be because the scale is too high for this size of face within the image. If we run again at the smaller scale of 0.125, 
+The *model* seems to be less interested in the eyes, nose or mouth, but more in the cheeks, forehead and sides of the face. This could be because the scale is too high for this size of face within the image. If we run again at the smaller scale of 0.125, 
 
 ![contour005_082_scale5_minent_over12_show_image_position](images/contour005_082_scale5_minent_over12_show_image_position.png) 
 
@@ -4547,9 +4550,21 @@ yields this image at scale 0.177 -
 
 ![contour004_089_scale3_minent_over12_show_image_position](images/contour004_089_scale3_minent_over12_show_image_position.png)
 
+If we show only the image *slices* that are 16 steps or over we can see a subset of the more interesting locations -
+
+![contour004_089_scale3_minent_over16_show_image_position](images/contour004_089_scale3_minent_over16_show_image_position.png)
+
+We can see that the greatest interest is around the woman's left eye and where her hair meets her left cheek. In random *model* 82 [above](#contour004_082_scale3_minent_over12) there is also interest around the woman's left eye, but little interest in the hair and more around the nose. Both *models* are interested in the neck. We can see at the common hotspots around the left eye and the neck that there is more detail in the scanned *model* because many more of the *alignments* have been resolved.
+
 Here is the over 12 position map for image 5 -
 
 ![contour005_089_scale3_minent_over12_show_image_position](images/contour005_089_scale3_minent_over12_show_image_position.png) 
+
+and the over 16 -
+
+![contour005_089_scale3_minent_over16_show_image_position](images/contour005_089_scale3_minent_over16_show_image_position.png)
+
+Again there is not a great deal of commonality with random *model* 82 [above](#contour005_082_scale3_minent_over12). Where there is some overlap at the left side corner of the man's lip there seems to be more detail in the scanned *model*. 
 
 TODO -
 
@@ -4562,6 +4577,8 @@ Here is the over 12 position map for image 5 -
 ![contour005_090_scale3_minent_21_over12_show_image_position](images/contour005_090_scale3_minent_21_over12_show_image_position.png) 
 
 Note that the scanned *models* did not start out with a high threshold - there threshold is constant (at 200) for all path lengths.
+
+Lack of common areas with the random models suggests that we should use them as initial.
 
 Do they intersect with the random models? What extra detail of the hotspots do we have? Is it lots of shading, surface detail in the case of computed?
 
