@@ -4207,7 +4207,7 @@ Here is the over 13 position map for image 5 -
 
 ![contour005_088_scale3_minent_21_over13_show_image_position](images/contour005_088_scale3_minent_21_over13_show_image_position.png) 
 
-As the length contour map indicates, the interest is more uniformly distributed than for *model* 82, with greater interest in darker areas and perhaps less clustering of attention. Perhaps also, there is less convolution with some adjacent hotspots from different parts of the *model*, although this might be simply an increased sensitivity to shading. This increased *modelling* of shading is apparent when we compare the representations of the *underlying* computed 1-*level* *model* 86 to its non-computed equivalent *model* 81. It seems likely that these local *alignments* have carried up to the higher *level* global *aignments*.
+As the length contour map indicates, the interest is more uniformly distributed than for *model* 82, with greater interest in darker areas and perhaps less clustering of attention. Perhaps also, there is less convolution with some adjacent hotspots from different parts of the *model*, although this might be simply an increased sensitivity to shading. This increased *modelling* of shading is apparent when we compare the representations of the *underlying* computed 1-*level* *model* 86 to its non-computed equivalent *model* 81. It seems likely that these local *alignments* have carried up to the higher *level* global *alignment*.
 
 TODO -
 
@@ -4491,7 +4491,7 @@ model089 5 0.250|6.27|4.12|23|0.78|0.16|6.15|11.12|2.88|3.10|0.716544|0.015869
 model089 5 0.177|6.05|4.24|23|0.80|0.09|6.08|10.32|3.23|3.45|0.734200|0.020491
 model089 5 0.125|5.90|4.31|22|0.79|-0.09|5.48|7.80|2.72|2.97|0.745115|0.026631
 
-The relative entropy is much higher than it was when we considered random *model* 82. Instead of around 50% over the mean path length of 9.3, now only 2-3% of the image is over the mean path length of 15.8. The scanning mode throws away much of the *model* to focus on lengthening the path of certain hotspots, so the *model* distribution now only represents the image in detail at these hotspots. We can compare to the image distributions for scanned 1-*level* *model* 61 -
+The relative entropy is much higher than it was when we considered random *model* 82. Instead of around 50% over the mean path length of 9.3, now only 2-3% of the image is over the mean path length of 15.8. The scanning mode throws away much of the *model* to focus on lengthening the paths of certain hotspots, so the *model* distribution now only represents the image in detail at these hotspots. We can compare to the image distributions for scanned 1-*level* *model* 61 -
 
 name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|over-mode%|over-mean%|entropy|relative entropy
 ---|---|---|---|---|---|---|---|---|---|---|---
@@ -4519,9 +4519,53 @@ model090 5 0.125 min ent 2.1|6.22|4.26|22|0.80|-0.09|5.38|7.50|2.02|2.89|0.71834
 
 Again we can see that around 2-3% of the image is over the *model* mean path length of 16.1, with the other statistics very similar to those of non-computed *model* 89.
 
-Now let us 
+Now, as we did for the 2-*level* random *models*, let us show show the position map for longer paths shown overlaid on the image itself to see in which parts of the image the *model* is most interested. We found that for random *model* 82 that around 8% of the paths are at least 12 steps, and for *model* 88 around 8% of the paths are at least 13 steps. Both of these lengths were 3 steps longer than the mode. Now we find that again around 8% of the images is above 12 steps for scanned *models* 89 and 90, but this time the lengths are 4 steps shorter than the mode. That is, the bulk of the *model* (around 90%) is concentrated in these hotspot regions of the images. Let us first examine non-computed *model* 89,  with `contour.json` -
+```
+{
+	"model" : "model089c",
+	"level1_model" : "model081c",
+	"threads" : 8,
+	"valency_balanced" : true,
+	"entropy_minimum" : 1.2,
+	"scale" : 0.177,
+	"scale_value" : 2,
+	"range_centreX" : 0.786,
+	"range_centreY" :0.425,
+	"over_length" : 12,
+	"show_image" : true,	
+	"input_file" : "contour004.png",
+	"position_file" : "contour004_089_scale3_minent_over12_show_image_position.png"
+}
+```
+this command
+```
+cd ~/WBOT02_ws
+./WBOT02 generate_contour010
+
+```
+yields this image at scale 0.177 -
+
+![contour004_089_scale3_minent_over12_show_image_position](images/contour004_089_scale3_minent_over12_show_image_position.png)
+
+Here is the over 12 position map for image 5 -
+
+![contour005_089_scale3_minent_over12_show_image_position](images/contour005_089_scale3_minent_over12_show_image_position.png) 
 
 TODO -
+
+*Model* 90 with a minimum entropy of 2.1 -
+
+![contour004_090_scale3_minent_21_over12_show_image_position](images/contour004_090_scale3_minent_21_over12_show_image_position.png)
+
+Here is the over 12 position map for image 5 -
+
+![contour005_090_scale3_minent_21_over12_show_image_position](images/contour005_090_scale3_minent_21_over12_show_image_position.png) 
+
+Note that the scanned *models* did not start out with a high threshold - there threshold is constant (at 200) for all path lengths.
+
+Do they intersect with the random models? What extra detail of the hotspots do we have? Is it lots of shading, surface detail in the case of computed?
+
+Seeing that 90 is more interested in darker areas e.g. figurine, but is this becasue we did not do the min entropy while scanning?
 
 89 overmode 8.49% at 12, 90 overmode 7.54% at 12
 
