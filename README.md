@@ -4556,11 +4556,11 @@ If we show only the image *slices* that are 16 steps or over we can see a subset
 
 We can see that the greatest interest is around the woman's left eye and where her hair meets her left cheek. In random *model* 82 [above](#contour004_082_scale3_minent_over12) there is also interest around the woman's left eye, but little interest in the hair and more around the nose. Both *models* are interested in the neck. We can see at the common hotspots around the left eye and the neck that there is more detail in the scanned *model* because many more of the *alignments* have been resolved.
 
-Here is the over 12 position map for image 5 -
+Here is the 12 or over position map for image 5 -
 
 ![contour005_089_scale3_minent_over12_show_image_position](images/contour005_089_scale3_minent_over12_show_image_position.png) 
 
-and the over 16 -
+and the 16 or over -
 
 ![contour005_089_scale3_minent_over16_show_image_position](images/contour005_089_scale3_minent_over16_show_image_position.png)
 
@@ -4572,9 +4572,18 @@ TODO -
 
 ![contour004_090_scale3_minent_21_over12_show_image_position](images/contour004_090_scale3_minent_21_over12_show_image_position.png)
 
-Here is the over 12 position map for image 5 -
+and the 16 or over -
+
+![contour004_090_scale3_minent_21_over16_show_image_position](images/contour004_090_scale3_minent_21_over16_show_image_position.png) 
+
+Here is the 12 or over position map for image 5 -
 
 ![contour005_090_scale3_minent_21_over12_show_image_position](images/contour005_090_scale3_minent_21_over12_show_image_position.png) 
+
+and the 16 or over -
+
+![contour005_090_scale3_minent_21_over16_show_image_position](images/contour005_090_scale3_minent_21_over16_show_image_position.png) 
+
 
 Note that the scanned *models* did not start out with a high threshold - there threshold is constant (at 200) for all path lengths.
 
