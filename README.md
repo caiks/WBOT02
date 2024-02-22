@@ -4560,160 +4560,79 @@ Here is the 12 or over position map for image 5 -
 
 ![contour005_089_scale3_minent_over12_show_image_position](images/contour005_089_scale3_minent_over12_show_image_position.png) 
 
-and the 16 or over -
+and the position map for 16 or over -
 
 ![contour005_089_scale3_minent_over16_show_image_position](images/contour005_089_scale3_minent_over16_show_image_position.png)
 
-Again there is not a great deal of commonality with random *model* 82 [above](#contour005_082_scale3_minent_over12). Where there is some overlap at the left side corner of the man's lip there seems to be more detail in the scanned *model*. 
+Again there is not a great deal of commonality with random *model* 82 [above](#contour005_082_scale3_minent_over12). Where there is some overlap at the left side corner of the man's lip, there seems to be more detail in the scanned *model*. 
 
-TODO -
-
-*Model* 90 with a minimum entropy of 2.1 -
+Now let us consider the hotspot regions of the images for *model* 90. With `contour.json` -
+```
+{
+	"model" : "model090c",
+	"structure" : "struct005",
+	"level1_model" : "model086c",
+	"threads" : 8,
+	"valency" : 32,
+	"valency_balanced" : true,
+	"entropy_minimum" : 2.1,
+	"scale" : 0.177,
+	"scale_value" : 2,
+	"range_centreX" : 0.786,
+	"range_centreY" :0.425,
+	"over_length" : 12,
+	"show_image" : true,	
+	"input_file" : "contour004.png",
+	"position_file" : "contour004_090_scale3_minent_21_over12_show_image_position.png"
+}
+```
+`generate_contour010` produces this image at scale 0.177 for *model* 90 using a minimum entropy of 2.1 -
 
 ![contour004_090_scale3_minent_21_over12_show_image_position](images/contour004_090_scale3_minent_21_over12_show_image_position.png)
 
-and the 16 or over -
+and the position map for 16 or over -
 
 ![contour004_090_scale3_minent_21_over16_show_image_position](images/contour004_090_scale3_minent_21_over16_show_image_position.png) 
+
+The regions favoured appear to be slightly different to both random *model* 88 and non-computed scanned *model* 89. There does seem to be more differentiation within the hotspots, i.e. the clusters of similar hue are smaller at locations of comparable variation in the image, compared to random *model* 88, as we found when we compared scanned *model* 89 to the corresponding random *model* 82.
 
 Here is the 12 or over position map for image 5 -
 
 ![contour005_090_scale3_minent_21_over12_show_image_position](images/contour005_090_scale3_minent_21_over12_show_image_position.png) 
 
-and the 16 or over -
+and the position map for 16 or over -
 
 ![contour005_090_scale3_minent_21_over16_show_image_position](images/contour005_090_scale3_minent_21_over16_show_image_position.png) 
 
+Again, the regions favoured appear to be slightly different to those of the other *models*. Again, there seems to be more differentiation within the hotspots compared to the random *model*. 
+
+TODO -
+
+Now do the computed scanned from initial with valency 10 with more history (and overflow) to see how the hotspots develop and to improve the representation.
 
 Note that the scanned *models* did not start out with a high threshold - there threshold is constant (at 200) for all path lengths.
 
-Lack of common areas with the random models suggests that we should use them as initial.
-
-Do they intersect with the random models? What extra detail of the hotspots do we have? Is it lots of shading, surface detail in the case of computed?
-
-Seeing that 90 is more interested in darker areas e.g. figurine, but is this becasue we did not do the min entropy while scanning?
-
-89 overmode 8.49% at 12, 90 overmode 7.54% at 12
-
-Let us investigate the effect of minimum entropy by comparing the path distributions in the contour maps with the distribution in the *model* itself.
-
-could regenerate for higher min entropy
-
-could re-run with random model as initial into overflow
+Seeing that 90 is more interested in darker areas e.g. figurine, but is this because we did not do the min entropy while scanning?
 
 randomised models 82 and 88 have low multipliers but they are still too high to obtain long paths
 
-TODO - modify comments below in light of over-mode
-
 Mode 6 for model 61 has `4x4=16` tiles each of which is `20x20=400` scans and takes the topmost `"event_size" : 5` events of the 16 tiles. So the fraction of events is 1:1280. Mode 16 model 89 takes `"scan_size" : 20` records/tiles and does `20/"scan_step" : 4 = 5` scans in each dimension i.e. `5x5=25` scans for each and then selects the topmost `"event_size" : 4`, i.e. the fraction of events is 1:125. To make strictly comparable we should have to change as follows: `"scan_size" : 16`, `"scan_step" : 1` and `"event_size" : 5`. The scan compute would be 16 times longer. Might not get so much benefit if we can rely on convolution. Could go with `"scan_step" : 2`, i.e. 4 times compute and a ratio of 1:500. Given that we have over-mode% for model 61 of 0.8% to 2.6% (average 1.4%), but for model 89 it is 2.7% to 3.3% (average 2.9%), it seems clear that model 89 is quantitatively better - not only is it larger and with longer mean and mode, although not overflowing, but with 10 times less scanning it has twice as many features. Or could this be interpreted as being more normal? Model 89 is a little more normal than model 61, but it is much closer to model 61 than model 82. Don't confuse expected with normal - the difference is because scanned is much different from randomised.
-
-Model 90 has the same event fraction of 1:125, but its over-mode% ranges only 1.4% to 2.1% (average 1.7%) so seems less quantitatively better, but we need to adjust for min entropy.
-
-name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|over-mode%|over-mean%|entropy|relative entropy
----|---|---|---|---|---|---|---|---|---|---|---
-model066|6.38|1.67|11|0.10|-0.49|0.58|1.53|68.57|57.96|0.590519|0.000000
-model066 4 0.250|6.17|1.67|11|0.00|-0.51|-0.20|1.23|65.24|52.33|0.604193|0.000716
-model066 4 0.177|6.25|1.66|11|0.01|-0.47|-0.14|1.60|66.88|54.49|0.598294|0.000327
-model066 4 0.125|6.43|1.66|11|-0.01|-0.48|-0.32|1.65|70.37|58.71|0.585693|0.000229
-model066 5 0.250|6.83|1.60|11|-0.12|-0.46|-1.11|2.61|78.46|68.39|0.554622|0.001864
-model066 5 0.177|7.01|1.63|11|-0.19|-0.44|-1.45|2.61|81.22|73.41|0.547634|0.002727
-model066 5 0.125|7.05|1.63|11|-0.18|-0.47|-1.43|2.50|81.70|73.86|0.544422|0.002750
-
-With random 1-level model 66 contour 4 is  closer than closer than contour 5 and the contour 4 smaller scales are better, whereas with contour 5 the longest scale was preferred. Perhaps the busier backgrounds in contour 4 are matching better.  
-
-As expected the scanned 1-level model 61 has very different statistics from the images. The means are far lower than the model mean and even lower than the random models. The relative entropy differs by the same order of magnitude as randomised differs from scanned. If the model were random, contour 5 would be slightly preferred to contour 4 and the larger scales are better than the smaller. However, with a scanned model we would like to see more longer paths to highlight the model's strengths. Here we can see that the higher moments are greatest for contour 4 and the model is insensitive to scale.
-
-The low means suggest that we could combine random and scanned models when doing the contour map, choosing the longest path from either model. However, higher level models will be scanning and don't see the world as a contour map.
-
-Average over-mean% is 1.77 for model 61.
-
-
-Average over-mean% is 3.07 for model 89 or 1.7 times model61.
-
-Scanned 2-level model 89 is much more similar to the image than model 61 with around half the relative entropy and much smaller higher moments and higher means and variances. This suggests that the model does not have long enough paths to detect features and this agrees qualitatively when we compare the model representations - the 1-level model seems noticeably better at foreground features.
-
-name|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|over-mode%|over-mean%|entropy|relative entropy
----|---|---|---|---|---|---|---|---|---|---|---
-model090|16.10|2.84|26|-0.43|0.44|-4.62|15.80|47.24|60.17|0.324604|0.000000
-model090 4 0.250|5.77|4.24|24|0.83|-0.03|5.79|8.93|1.35|2.16|0.747933|0.022508
-model090 4 0.177|5.66|4.20|23|0.92|0.17|6.58|11.24|1.61|2.38|0.757402|0.033630
-model090 4 0.125|5.80|4.21|24|0.88|0.11|6.35|10.77|1.50|2.35|0.746615|0.045041
-model090 5 0.250|6.95|4.34|22|0.48|-0.63|3.00|1.74|1.64|2.53|0.669138|0.021061
-model090 5 0.177|7.12|4.41|23|0.43|-0.70|2.66|0.90|1.98|3.19|0.658366|0.028623
-model090 5 0.125|7.39|4.42|22|0.35|-0.78|2.21|0.12|2.05|3.33|0.640327|0.035381
-
-Average over-mean% is 2.66 for model 90 and 2.48 for min ent 2.1 or 1.4 times model 61.
-
-Computed scanned 2-level model 90 is very similar to model 89 but with even smaller kurtosis. So seems to be detecting features in the images even less well. Could this be because model 61 did not use randomised recordsets? Maybe we need much more filtering during the scan. Differences in hyper-kurtosis is very stark, especially for image 5 - much less than even random model 88, which suggests that the scanned model is actually worse than the random model, although qualitatively 90 looks better than 88.
-
-Min ent change make s very little difference.
-
-Reason why the over-mode between 90 and 89 is different might be because we should be interpolating from the mean rather than from the mode - which differs by 1. Can see this better if we look at total over 15 below, 89 has 1,508 and 90 has 1,375. So closer.
-
-Comparing distributions directly -
-
-length|model061|model061 4 0.177|model089|model089 4 0.177|model090|model090 4 0.177|model090 4 0.177 min ent 2.1
----|---|---|---|---|---|---|---
-1|4|14,121|7|6,780|4|10,416|7800
-2|18|5,965|14|3,219|8|2,550|1969
-3|48|3,229|28|3,426|21|7,936|6004
-4|104|3,286|74|3,095|68|6,172|4997
-5|190|2,662|165|3,235|93|4,293|2988
-6|413|1,466|327|2,720|207|3,435|2552
-7|831|1,373|616|3,026|408|2,578|1675
-8|1,539|1,330|1,223|2,711|858|3,566|1668
-9|2,552|745|2,066|1,894|1,555|2,046|1543
-10|4,247|816|3,651|1,527|2,827|2,378|1589
-11|6,562|485|5,817|1,092|4,663|2,146|1091
-12|9,256|478|8,923|1,065|7,520|1,339|920
-13|12,453|361|12,433|1,059|11,299|1,341|822
-14|16,216|275|17,163|568|16,107|1,138|639
-15|17,306|127|20,760|446|21,153|673|455
-16|17,081|71|22,022|379|24,451|550|342
-17|14,041|64|20,867|255|25,362|368|249
-18|9,570|33|17,647|171|22,374|267|180
-19|5,226|27|13,579|138|16,481|130|86
-20|1,904|11|9,304|49|9,866|65|41
-21|531||5,248|56|4,791|20|12
-22|107||2,533|13|1,911|6|6
-23|||1,068|1|703|5|4
-24|||391||137||
-25|||68||66||
-26|||28||7||
-27|||25||||
-totals|120,199|36,925|166,047|36,925|172,940|53,418|37,632
-at or above mode|65,766|333|92,780|1,062|81,698|861|578
-at or above 15|65,766|333|113,540|1,508|127,302|2,084|1,375
-
-
-Now model 61 does not look so good - the high hyper-skew comes from the mode being length 1. At the modal length of 15 there are only 127 locations, with 333 locations at or above the mode. For model 89 at the modal length of 16 there are 379 locations, with 1062 locations at or above the mode and 1508 at or above length 15. For model 90 at the modal length of 17 there are 368 locations, with 861 locations at or above the mode and 2084 at or above length 15. So on the face of it, the 2-level models, has more locations with many alignments. Of course, those alignments are not necessarily the most interesting to us and so qualitatively the representations might appear less impressive.
-
-Let's say that that hotspots are the over-mode slices - their frequencies are of the order of the actual likelihood (length) filtering during the scan i.e. a few percent. Although Model 61 scans 400 locations and models 89 and 90 scan only 25, convolution probably means that the growth is lower rather than the hotspots are not well defined.
-
-Looking at the over 16 slices for model 89 and 90. 89 appears to be more interested in the edges and 90 is perhaps more interested in shading.
 
 1-level model 61/73 representations are better than 2-level models 89 or 90 for contour005. Could the entropy threshold be causing the model to grow in dull places? Should the scan be every 2 cells instead of 4? (Need 4x scan compute.)
 
-model 90 has very good tie and generally is smoother than either 61 or 89. Does the backgrounds better. 61 does the face much better. Probably this is just the higher valency which gives many smooth gradient alignments that are not available to the other models. Could try re-running model 90 with a valency of 10 to see what effect it has on the smoothness and the weight given to backgrounds and surfaces. Let's do the contour distributions first.
+model 90 has very good tie and generally is smoother than either 61 or 89. Does the backgrounds better. 61 does the face much better. Probably this is just the higher valency which gives many smooth gradient alignments that are not available to the other models. Could try re-running model 90 with a valency of 10 to see what effect it has on the smoothness and the weight given to backgrounds and surfaces. 
 
-At scale 0.125 model 90 is very good, probably better than model 61 at the background figures. Looking at scale 0.125 positions overmode, the convolution of the 2-level looks greater, with less mixing of disparate regions of the model compared to 1-level 61. More string-like groupings as the 2-level models follow edges or the route vertically through the nose or around the collar in contour 4. Model 90 is more interested in body rather than edges.
+At scale 0.125 model 90 is good, probably better than model 61 at the background figures. Looking at scale 0.125 positions overmode, the convolution of the 2-level looks greater, with less mixing of disparate regions of the model compared to 1-level 61. More string-like groupings as the 2-level models follow edges or the route vertically through the nose or around the collar in contour 4. Model 90 is more interested in body rather than edges.
 
 Especially at the smaller scales, we see in models 89 and 90, for both images 4 and 5, convolution of the model around particular features such as hairline, edges of head, ties and collar and to a lesser extent  broach, eyes, eyebrows, nose, and mouth. Here is an semi-qualitative assessment - i.e. the particular regions of the image which are most interesting/likely to the model. Gives us an idea of where the model will go with more history. Probably want to go with model 90 i.e. 2-level computed.
 
-TODO Overmode 13 for 82 shows 4.47%. Overmode 14 for 88 shows 4.37%. 
-
-Looking at the length and overmode maps for image 4 and 5 for model 90, it appears that for image 4 the interest in the face is above the eybrows and around the cheek bones, with a circle of interest around the end of the nose and the mouth. For image 5 the facial interest is at the hairline, above the eybrows, the man's right eyebrow, at the corners of the lips and a little along the length of the nose. So perhaps we might guess that the representation of the face would improve. When we compare to model 61 using the overmode slices, there does not seem to be much advantage, if any, in the 1-level model.
-
-![contour004_090_scale3_minent_21_over14_show_image_position](images/contour004_090_scale3_minent_21_over14_show_image_position.png) 
-
-![contour005_090_scale3_minent_21_over14_show_image_position](images/contour005_090_scale3_minent_21_over14_show_image_position.png) 
+Looking at the length and overmode maps for image 4 and 5 for model 90, it appears that for image 4 the interest in the face is above the eyebrows and around the cheek bones, with a circle of interest around the end of the nose and the mouth. For image 5 the facial interest is at the hairline, above the eybrows, the man's right eyebrow, at the corners of the lips and a little along the length of the nose. So perhaps we might guess that the representation of the face would improve. When we compare to model 61 using the overmode slices, there does not seem to be much advantage, if any, in the 1-level model.
 
 To conclude, computed 2-level model 90 appears to be the most promising basis for further investigation. But how many steps that would be needed to obtain animal-like vision is hard to say. Given the many possible hints, substrates and parameter-sets, we should use knowledge from neuro-physiology to guide us.
 
-TODO - future developments - 
+<!-- TODO - future developments - 
 
 Also, offline record sets are unmanagably large, although randomising is an advantage at the substrate. We will handle the the additional load due to the higher scan multiple and the multi-scale by having asynchronous image capture from video in a actor004 which will be similar to actor003 and modeller001. Also, there is an advantage to centering when scanning to improve burstiness and ultimately we need it for the 3-level temporaral or saccade-sequence features of 3-level which will use slice topology. So we have random for 1-level, centered scanning search for 2-level, and topology search for 3-level. With scanning we are hoping to see long enough paths to see high-frequency features in the examples and similar features spread over only a few hotspots (we can test this by moving an image horizontally/vertically and by scaling), i.e. a sparsity of hotspots implying a degree of 'convolution' between hotspots.
-
 
 We will need to focus on hotspots driven by higher levels to pick up more alignments in facial features because these are relatively weak. We have already seen that we need entropy restrictions to avoid the dull areas of the image. Our challenge is to use hints from biology to enhance the alignments that are interesting to humans, eg entropy, hotspots, gradients spatial and dynamic, central area limits or valency variations.
  
@@ -4722,8 +4641,6 @@ Consider smaller underlying substrates, edge detection and fourier.
 The conclusion to this stage is that we are beginning to see features classified together with the compute resources so far, but we will need new substrates and structures to make further progress especially because proper classification requires dynamic gradients and ideally temporal agent manipulation to separate objects from background. For example ornaments sitting on shelves are not grouped together as bowls, vases, statuettes, etc regardless of the shelf. Multi-scale will be able to improve this for faces which appear frequently at different distances but objects infrequently seen in film noir would require embodied interactional experience - the sort of knowledge acquired by infants playing with toys.
 
 Offline modelling. Because we don't have a synchronous Qt layer over ffmpeg we will have to cache records. These files would be too large if we scan the whole screen so ultimately might be best to drill down into the video library and decode explicitly. That way we could scale the compute without the tyranny of timer callbacks. Very time consuming.
-
-
 
 Do random covered offset/scale plus local scan. Then add topology search. Then 2 level with central underlying local scan and 2 level scan local scan for reference.
 
@@ -4882,6 +4799,9 @@ It would be nice if we could wrap up the spatial reframing of underlying a singl
 Would like to move away from Film noir because sexist and racist, at least by omission, and is a poor representation of (especially) younger people today. Edge detection (both brightness and colour contrasts) and multi-scale will help to normalise images of heads in a neutral object-like way, but ideally would have access to the images that infants see. Still we might at least be able to make our own films of moving through crowds of people and ultimately the wotbot client can run on the phone and produce model if only slowly and perhaps explicitly restricted to certain parts of the model that contain interesting features. Very little intuitive physics will be learned from film noir or any Hollywood films probably. Need to watch infants and children's TV such as teletubbies. Or some sort of virtual or real arms and hands (manipulation) to enable experimentation. Ideally want films with even lighting, few shadows and lots of primary colours - which is what we see in children's TV presumably because these environments are easier to learn. Noticed that some of the Nintendo Wii games were confusing to my eye but not for the girls who were used to similar scenes.
 
 History size is our limiting factor. Use disk/memory mapping as well as memory. Overflow management.
+
+-->
+
 
 <a name = "Conclusion"></a>
 
