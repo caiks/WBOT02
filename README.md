@@ -4606,6 +4606,16 @@ and the position map for 16 or over -
 
 Again, the regions favoured appear to be slightly different to those of the other *models*. Again, there seems to be more differentiation within the hotspots compared to the random *model*. 
 
+Now let us compare to the scanned 1-*level* *model* 61. Around 8% of the paths are at least 9 steps. This shows the position map for image 4 - 
+
+![contour004_061_minent_over9_show_image_position](images/contour004_061_minent_over9_show_image_position.png) 
+
+Here is the 9 or over position map for image 5 -
+
+![contour005_061_minent_over9_show_image_position](images/contour005_061_minent_over9_show_image_position.png) 
+
+The 1-*level* *model* does appear to have less convolution than either of the scanned 2-*level* *models* due to having local rather than global *alignments*, although *model* 61 probably does have more detail and therefore a better representation.
+
 TODO -
 
 Now do the computed scanned from initial with valency 10 with more history (and overflow) to see how the hotspots develop and to improve the representation.
