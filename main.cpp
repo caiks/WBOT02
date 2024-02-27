@@ -3026,48 +3026,6 @@ int main(int argc, char *argv[])
 			EVAL(stage);
 			TRUTH(ok);	
 		}
-		Active activeA;
-		if (ok) 
-		{
-			activeA.continousIs = true;
-			activeA.historySliceCachingIs = true;
-			activeA.historySliceCumulativeIs = true;
-			ActiveIOParameters ppio;
-			ppio.filename = model +".ac";
-			ok = ok && activeA.load(ppio);
-			activeA.historySliceCachingIs = true;
-			stage++;
-			EVAL(stage);
-			TRUTH(ok);				
-		}		
-		std::unique_ptr<WBOT02::SliceRepresentationUMap> slicesRepresentation;
-		if (ok) 
-		{
-			if (!distributionOnly)
-			{
-				try
-				{
-					std::ifstream in(model + ".rep", std::ios::binary);
-					if (in.is_open())
-					{
-						slicesRepresentation = persistentsSliceRepresentationUMap(in);
-						in.close();
-					}
-					else
-					{
-						ok = false;
-					}
-					ok = ok && slicesRepresentation;
-				}
-				catch (const std::exception&)
-				{
-					ok = false;
-				}				
-			}
-			stage++;
-			EVAL(stage);
-			TRUTH(ok);				
-		}		
 		QImage image;
 		QImage likelihoodImage;
 		QImage lengthImage;
@@ -3099,8 +3057,32 @@ int main(int argc, char *argv[])
 			EVAL(stage);
 			TRUTH(ok);	
 		}
+		double interval = scale/size;
+		auto scaleX = centreRangeX * 2.0 + scale;
+		auto scaleY = centreRangeY * 2.0 + scale;
+		auto sizeX = (std::size_t)(scaleX * size / scale);
+		if (sizeX % 2 != size % 2) sizeX++;
+		auto sizeY = (std::size_t)(scaleY * size / scale);
+		if (sizeY % 2 != size % 2) sizeY++;
+		scaleX = sizeX * interval;
+		scaleY = sizeY * interval;
+		std::vector<std::tuple<std::size_t,double,std::size_t,std::size_t,std::size_t,std::size_t>> actsPotsCoord(sizeY*sizeX);
 		if (ok)
 		{
+			Active activeA;
+			if (ok) 
+			{
+				activeA.continousIs = true;
+				activeA.historySliceCachingIs = true;
+				activeA.historySliceCumulativeIs = true;
+				ActiveIOParameters ppio;
+				ppio.filename = model +".ac";
+				ok = ok && activeA.load(ppio);
+				activeA.historySliceCachingIs = true;
+				stage++;
+				EVAL(stage);
+				TRUTH(ok);				
+			}		
 			auto mark = Clock::now();
 			double recordTime = 0.0;
 			double recordValentTime = 0.0;
@@ -3111,7 +3093,6 @@ int main(int argc, char *argv[])
 			QPainter lengthPainter(&lengthImage);
 			QPainter positionPainter(&positionImage);
 			QPainter lengthPositionPainter(&lengthPositionImage);
-			QPainter representationPainter(&representationImage);
 			QBrush brush;
             brush.setStyle(Qt::SolidPattern);
 			// brush.setStyle(Qt::Dense3Pattern);
@@ -3123,21 +3104,12 @@ int main(int argc, char *argv[])
 			auto& sizes = activeA.historySlicesSize;
             auto& lengths = activeA.historySlicesLength;
 			double lnwmax = std::log(induceParameters_wmax);
-			double interval = scale/size;
 			std::size_t lengthMax = 1;
 			if (!isLengthNormalise)
 			{
 				for (auto& pp : lengths)
 					lengthMax = std::max(lengthMax,pp.second);
 			}	
-			auto scaleX = centreRangeX * 2.0 + scale;
-			auto scaleY = centreRangeY * 2.0 + scale;
-			auto sizeX = (std::size_t)(scaleX * size / scale);
-			if (sizeX % 2 != size % 2) sizeX++;
-			auto sizeY = (std::size_t)(scaleY * size / scale);
-			if (sizeY % 2 != size % 2) sizeY++;
-			scaleX = sizeX * interval;
-			scaleY = sizeY * interval;
 			auto offsetX = (scaleX - scale) / 2.0;
 			auto offsetY = (scaleY - scale) / 2.0;
 			auto heightWidth = (double)captureHeight / (double)captureWidth;
@@ -3155,7 +3127,6 @@ int main(int argc, char *argv[])
 			rr[n-1] = 0;
 			std::vector<std::size_t> lengthResults(sizeY*sizeX);
 			std::vector<double> likelihoodResults(sizeY*sizeX);
-			std::vector<std::tuple<std::size_t,double,std::size_t,std::size_t,std::size_t,std::size_t>> actsPotsCoord(sizeY*sizeX);
 			std::vector<std::thread> threads;
 			threads.reserve(threadCount);
 			mark = Clock::now();
@@ -3393,7 +3364,48 @@ int main(int argc, char *argv[])
 								lengthPositionPainter.fillRect(rectangle,brush);
 						}
 					}	
-				std::sort(actsPotsCoord.begin(), actsPotsCoord.end());			
+				std::sort(actsPotsCoord.begin(), actsPotsCoord.end());	
+			}
+			EVAL(recordTime);
+			EVAL(applyTime);		
+			EVAL(sizeY*sizeX);
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);	
+		}
+		if (ok)
+		{	
+			if (!distributionOnly)
+			{
+				QPainter representationPainter(&representationImage);
+				std::unique_ptr<WBOT02::SliceRepresentationUMap> slicesRepresentation;	
+				if (ok)
+				{
+					if (!distributionOnly)
+					{
+						try
+						{
+							std::ifstream in(model + ".rep", std::ios::binary);
+							if (in.is_open())
+							{
+								slicesRepresentation = persistentsSliceRepresentationUMap(in);
+								in.close();
+							}
+							else
+							{
+								ok = false;
+							}
+							ok = ok && slicesRepresentation;
+						}
+						catch (const std::exception&)
+						{
+							ok = false;
+						}				
+					}
+					stage++;
+					EVAL(stage);
+					TRUTH(ok);
+				}
 				auto& reps = *slicesRepresentation;
 				for (auto t : actsPotsCoord)	
 				{
@@ -3411,9 +3423,15 @@ int main(int argc, char *argv[])
 						representationPainter.drawImage(point,rep);
 					}
 				}
-				EVAL(recordTime);
-				EVAL(applyTime);		
-				EVAL(sizeY*sizeX);
+			}
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);	
+		}
+		if (ok)
+		{
+			if (!distributionOnly)
+			{				
 				if (likelihoodFilename.size())
 					ok = ok && likelihoodImage.save(QString(likelihoodFilename.c_str()));
 				if (lengthFilename.size())
@@ -3427,7 +3445,7 @@ int main(int argc, char *argv[])
 			}
 			stage++;
 			EVAL(stage);
-			TRUTH(ok);	
+			TRUTH(ok);
 		}
 	}
 	
