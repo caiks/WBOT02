@@ -3575,8 +3575,82 @@ This may be compared to the very different position map for *model* 61 -
 
 ![contour005_061_minent_position](images/contour005_061_minent_position.png) 
 
-That is, *model* 81 appears to be showing a degree of convolution that might mean that the upper *level* will be tolerant to small changes in centre.
+That is, *model* 81 appears to be showing a degree of convolution that might mean that the upper *level* will be tolerant to small changes in centre. Before considering this further, let us show that the images we have chosen for the contour maps are typical. We can do this by showing that the distributions of the path lengths of the images are very close to the distribution of the of the path lengths of the *model* itself. We can do this for images by obtaining the path length distributions from the `generate_contour` tool, and then use the `compare_distributions` tool to compare the relative entropies of the path length distributions. For example, with `distributions.json` -
+```
+{
+	"distributions" : [
+		{
+			"name" : "model081",
+			"distribution" : [0,31,1641,11490,36031,78347,136655,196919,241830,268785,258112,213083,159666,118133,72273,31591,9253,1923,233,15]
+		},
+		{
+			"name" : "model081 4",
+			"distribution" : [0,10,76,5616,1213,2130,3147,4229,4318,3856,3277,2427,1589,1151,799,356,69,9]
+		},
+		{
+			"name" : "model081 5",
+			"distribution" : [0,4,16,305,441,893,1799,3006,4573,5708,5461,4491,3148,2247,1264,646,177,80,2,11]
+		}
+	]
+}
+```
+The following command
+```
+cd ~/WBOT02_ws
+./WBOT02 compare_distributions | grep "|"
 
+``` 
+produces the following table -
+
+<a name="model081_relative_entropy"></a>
+
+name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|over-mode%|over-mean%|entropy|relative entropy
+---|---|---|---|---|---|---|---|---|---|---|---
+model081|10.35|2.63|20|0.07|-0.39|0.48|2.50|61.71|56.35|0.455434|0.000000
+model081 4|8.63|3.14|18|0.16|-0.68|1.42|-0.09|39.49|34.96|0.528438|0.000752
+model081 5|10.62|2.50|20|0.02|0.01|0.08|6.76|67.80|61.67|0.441893|0.000029
+
+The `over-mode%`, `over-mean%` and `relative entropy` columns are all with respect to the first distribution. In this example, the first distribution is that of *model* 81 itself. The following distributions are of the *application* of the *model* to the cells of contour images 4 and 5.
+
+The statistics for the image *applications* are very similar to those of the *model* itself. The relative entropies are very small, so we can be confident that these two images are fairly representative of the *model*, and therefore of the training set itself. There seems to be little difference between the images, but of the two image 5 is more typical.
+
+The mode of *model* 81 is 10 and the mean is 10.35. Around 3-4% of the paths are at least 14 steps. We can show the position map for these longer paths shown overlaid on the image itself to see in which parts of the image the *model* is most interested. The arrangement of these hotspots within the *model* will give us an idea of the degree of convolution. For example, with `contour.json` -
+```
+{
+	"model" : "model081c",
+	"threads" : 8,
+	"valency_balanced" : true,
+	"scale" : 0.05,
+	"size" : 8,
+	"range_centreX" : 0.786,
+	"range_centreY" :0.425,
+	"over_length" : 14,
+	"show_image" : true,
+	"input_file" : "contour004.png",
+	"position_file" : "contour004_081_minent_over14_show_image_position.png"
+}
+```
+this command
+```
+cd ~/WBOT02_ws
+./WBOT02 generate_contour009
+
+```
+<a name="contour004_081_minent_over14_show_image_position"></a>
+
+yields this image -
+
+![contour004_081_minent_over14_show_image_position](images/contour004_081_minent_over14_show_image_position.png) 
+
+
+<a name="contour005_081_minent_over14_show_image_position"></a>
+
+Here is the over 14 position map for image 5 -
+
+![contour005_081_minent_over14_show_image_position](images/contour005_081_minent_over14_show_image_position.png) 
+
+We can see that there are broad areas of similar hue, i.e. areas that are closely related in the *decomposition* tree, even at these longer path lengths. Where the image gradually changes, e.g. around the hairline, the hues gradually change, thus suggesting a degree of convolution.
+ 
 <a name="computed_substrate"></a>
 
 ###### Underlying models with computed substrate
@@ -3798,7 +3872,53 @@ Looking at the *model* position map, we can see that, like *model* 81, *model* 8
 
 ![contour005_086_minent_position](images/contour005_086_minent_position.png)
 
-Overall, the computed *substrate* *model* 86 does not seem to be much better qualitatively than the non-computed *substrate* *model* 81, at least with respect to foreground objects, although it is certainly better quantitatively. The main advantage is that it allows us to have *substrates* with ordered *variables* and high *valencies*. Let us go on now to consider whether it might also produce  higher *alignments* in a *2-level model*.
+We can check how representative *model* 86 is when *applied* to images 4 and 5 as we did [above](#model081_relative_entropy) for *model* 81 -
+
+name|mean length|std dev length|max length|skew|kurtosis|hyperskew|hyperkurtosis|over-mode%|over-mean%|entropy|relative entropy
+---|---|---|---|---|---|---|---|---|---|---|---
+model086|13.94|2.45|23|-0.45|0.18|-3.90|10.49|44.43|61.72|0.353786|0.000000
+model086 4|11.49|2.92|23|0.07|-0.81|0.72|0.18|16.68|28.68|0.419065|0.000547
+model086 5|12.85|2.26|21|-0.59|0.81|-6.18|19.54|21.95|42.64|0.369530|0.000143
+
+Again the statistics of the image distributions are very similar to the *model* distribution. Image 4 is slightly more typical of *model* 86 than *model* 81, and slightly less typical for image 5.
+
+The mode of *model* 86 is 15 and the mean is 13.94. Around 3% of the paths are at least 16 steps. As for *model* 81, we can show the position map for these longer paths shown overlaid on the image itself to see in which parts of the image the *model* is most interested. 
+
+For example, with `contour.json` -
+```
+{
+	"model" : "model086c",
+	"structure" : "struct004",
+	"threads" : 8,
+	"valency" : 32,
+	"valency_balanced" : true,
+	"scale" : 0.05,
+	"size" : 8,
+	"range_centreX" : 0.786,
+	"range_centreY" :0.425,
+	"over_length" : 16,
+	"show_image" : true,
+	"input_file" : "contour004.png",
+	"position_file" : "contour004_086_minent_over16_show_image_position.png"
+}
+```
+this command
+```
+cd ~/WBOT02_ws
+./WBOT02 generate_contour009
+
+```
+yields this image -
+
+![contour004_086_minent_over16_show_image_position](images/contour004_086_minent_over16_show_image_position.png)
+
+Here is the over 16 position map for image 5 -
+
+![contour005_086_minent_over16_show_image_position](images/contour005_086_minent_over16_show_image_position.png)
+
+If we compare them to the *model* 81 [position maps](#contour004_081_minent_over14_show_image_position), we can see that the extra two steps and larger *model* have made a noticable qualitative change. Now there is much more interest in edges and in foreground objects rather than background or low entropy areas. Again the hues change gradually suggesting convolution.
+
+Overall, the computed *substrate* *model* 86 does seem to be better qualitatively than the non-computed *substrate* *model* 81, at least with respect to foreground objects, and it is certainly better quantitatively. Another advantage is that it allows us to have *substrates* with ordered *variables* and high *valencies*. Let us go on now to consider whether it might also produce higher *alignments* in a *2-level model*.
 
 ###### Random centre 2-level models
 
@@ -4618,7 +4738,7 @@ The 1-*level* *model* does appear to have less convolution than either of the sc
 
 TODO -
 
-Now do the computed scanned from initial with valency 10 with more history (and overflow) to see how the hotspots develop and to improve the representation.
+Now do the computed scanned from initial with valency 10 with more history (and overflow) to see how the hotspots develop and to improve the representation. The interesting regions of the random models are not the same as for the scanned, so use initial.
 
 Note that the scanned *models* did not start out with a high threshold - there threshold is constant (at 200) for all path lengths.
 
@@ -4842,5 +4962,7 @@ client-server architecture
 We can calculate how interested wotbot is first by determining if the current slice is a fail and then by looking at the slice likelihood for interesting or unusual. Show by using emoticons, visible or audible. This will encourage the user to "point it in the general direction of something interesting."
 
 A vision only version of the wotbot app could select archetypal or special tagged events from the slice and overlay them on the scene. If the special events are cartoon-like the wotbot could entertain by stylising the real world.
+
+Would be nice to keep the high valency because then we don't need to experiment so much with gradient substrates in WBOT03, but all depends on NEURO hints.
 
 -->
