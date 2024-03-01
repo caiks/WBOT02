@@ -4332,11 +4332,13 @@ Here is the over 13 position map for image 5 -
 
 As the length contour map indicates, the interest is more uniformly distributed than for *model* 82, with greater interest in darker areas and perhaps less clustering of attention. Perhaps also, there is less convolution with some adjacent hotspots from different parts of the *model*, although this might be simply an increased sensitivity to shading. This increased *modelling* of shading is apparent when we compare the representations of the *underlying* computed 1-*level* *model* 86 to its non-computed equivalent *model* 81. It seems likely that these local *alignments* have carried up to the higher *level* global *alignment*.
 
-TODO -
+<!-- TODO -
 
 Let us now consider a computed *variable* random *model* with the same *valency* as for *model* 82, i.e. 10-*valent*, to see if the increased focus on area and shading we see in *model* 88, to the possible detriment of feature extraction, is due solely to the higher *valency* or whether it is partly due to the computed *variables* themselves. We will also drop the dependency on the scale and the retention of the underlying *substrate* to maximise performance and provide an initial *model* for a scanned *2-level model*.
 
 Note that computed 10-*valent* *variables* will no longer be symmetric.
+
+-->
 
 <a name="Scanned_2_level_models"></a>
 
