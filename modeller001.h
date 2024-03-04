@@ -26,6 +26,7 @@ namespace WBOT02
 		bool _eventLogging;	
 		std::size_t _eventLoggingFactor;
 		std::string _mode;
+		bool _representations;
 		bool _modeLogging;
 		std::size_t _modeLoggingFactor;
 		bool _modeTracing;
@@ -98,6 +99,7 @@ namespace WBOT02
 		
 		std::vector<std::string> _recordsFileNames;
 		std::size_t _recordsIndex;
+		std::size_t _recordsStart;
 		std::ifstream _recordsFile;
 		std::string _recordsMode;
 	};

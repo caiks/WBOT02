@@ -76,6 +76,7 @@ Modeller001::Modeller001(const std::string& configA)
 		_checkpointInterval = ARGS_INT_DEF(checkpoint_interval,100000);
 		_checkpointEvent = 0;
 		_mode = ARGS_STRING(mode);
+		_representations = ARGS_BOOL_DEF(representations,true);
 		_modeLogging = ARGS_BOOL(logging_mode);
 		_modeLoggingFactor = ARGS_INT(logging_mode_factor); 
 		_modeTracing = ARGS_BOOL(tracing_mode);
@@ -92,6 +93,7 @@ Modeller001::Modeller001(const std::string& configA)
 				_recordsFileNames.push_back(arr[k].GetString());	
 		}
 		_recordsIndex = ARGS_INT(records_index);
+		_recordsStart = ARGS_INT(records_start);
 		_recordsMode = ARGS_STRING_DEF(records_mode,_mode);
 		_updateDisable = ARGS_BOOL(disable_update);
 		_activeLogging = ARGS_BOOL(logging_active);
@@ -193,7 +195,7 @@ Modeller001::Modeller001(const std::string& configA)
 		}		
 	}
 	// load slice representations if modelInitial 
-	if (_modelInitial.size())
+	if (_representations && _modelInitial.size())
 	{
 		try
 		{
@@ -230,7 +232,7 @@ Modeller001::Modeller001(const std::string& configA)
 		_events = std::make_shared<ActiveEventsRepa>(1);
 		_active = std::make_shared<Active>();
 		{
-			if (_struct=="struct002" || _struct=="struct005")
+			if (_struct=="struct002" || _struct=="struct005" || _struct=="struct006")
 			{
 				Active activeB;
 				{
@@ -327,7 +329,7 @@ Modeller001::Modeller001(const std::string& configA)
                     auto hr = sizesHistoryRepa(_scaleValency, _valency, _size*_size, activeA.historySize);
 					activeA.underlyingHistoryRepa.push_back(std::move(hr));
 				}	
-				if (_struct=="struct002" || _struct=="struct005")
+				if (_struct=="struct002" || _struct=="struct005" || _struct=="struct006")
 				{
 					for (std::size_t m = 0; m < _level1.size(); m++)
 					{
@@ -364,8 +366,9 @@ Modeller001::Modeller001(const std::string& configA)
 			activeA.name = (_model!="" ? _model : "model");			
 			activeA.logging = _activeLogging;
 			activeA.summary = _activeSummary;
-			activeA.underlyingEventsRepa.push_back(_events);
-			if (_struct=="struct002" || _struct=="struct005")
+			if (_struct!="struct006")
+				activeA.underlyingEventsRepa.push_back(_events);
+			if (_struct=="struct002" || _struct=="struct005" || _struct=="struct006")
 			{
 				if (!_substrateInclude)
 				{
@@ -459,7 +462,7 @@ void Modeller001::dump()
 		activeA.logging = true;
 		ok = ok && activeA.dump(ppio);		
 		activeA.logging = logging;
-		if (ok)
+		if (ok && _representations)
 		{
 			// dump slice representations
 			try
@@ -935,7 +938,7 @@ void Modeller001::model()
 					eventCount++;	
 				}	
 		}
-		else if (_mode == "mode016" && (_struct=="struct002"  || _struct=="struct005") && _scales.size() && _recordsFile.is_open())
+		else if (_mode == "mode016" && (_struct=="struct002" || _struct=="struct005" || _struct=="struct006") && _scales.size() && _recordsFile.is_open())
 		{
 			std::vector<Record> records;
 			for (std::size_t k = 0; k < _scanSize; k++)	
@@ -1185,10 +1188,13 @@ void Modeller001::model()
 							auto hr = recordsHistoryRepa(_scaleValency,scaleValue,_valency,recordTile);
 							_level1Events[m]->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_level1Events[m]->references);	
 						}	
-					auto hr = recordsHistoryRepa(_scaleValency, scaleValue, _valency, recordSub);
-					_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);					
+					if (_struct!="struct006")
+					{
+						auto hr = recordsHistoryRepa(_scaleValency, scaleValue, _valency, recordSub);
+						_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
+					}
 				}
-				this->eventId++;		
+				this->eventId++;
 				eventCount++;	
 			}				
 		}
@@ -1221,6 +1227,7 @@ void Modeller001::model()
 			}				
 		}
 		// representations
+		if (_representations)
 		{		
 			auto& activeA = *_active;
 			std::lock_guard<std::mutex> guard(activeA.mutex);
