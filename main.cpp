@@ -716,7 +716,7 @@ int main(int argc, char *argv[])
 		}		
 	}
 	
-	if (argc >= 4 && (string(argv[1]) == "resize" || string(argv[1]) == "resize_tidy"))
+	if (argc >= 4 && (string(argv[1]) == "resize" || string(argv[1]) == "resize_tidy" || string(argv[1]) == "restructure"))
 	{
 		bool ok = true;
 		int stage = 0;
@@ -724,7 +724,8 @@ int main(int argc, char *argv[])
 		string model = string(argv[2]);
 		string model_new = string(argv[3]);
 		std::size_t size = argc >= 5 ? atoi(argv[4]) : 1000000;
-		
+		string struct_new = argc >= 6 ? string(argv[5]) : string("");
+	
 		EVAL(model);
 		EVAL(model_new);
 		TRUTH(tidy);
@@ -744,50 +745,62 @@ int main(int argc, char *argv[])
 		}
 		if (ok)
 		{
-			ok = ok && size < activeA.historySize;
+			ok = ok && size && activeA.historySize;
 			ok = ok && activeA.historySparse;
 			stage++;
 			EVAL(stage);
 			TRUTH(ok);	
 		}	
+		if (ok && struct_new=="struct006")
+		{
+			activeA.underlyingHistoryRepa.clear();
+			activeA.induceVarExclusions.clear();
+			stage++;
+			EVAL(stage);
+			TRUTH(ok);	
+		}
 		if (ok)
 		{
 			activeA.name = model_new;	
 			if (tidy) activeA.continousHistoryEventsEvent.clear();
 			if (tidy) activeA.historySlicesSlicesSizeNext.clear();
 			if (tidy) activeA.historySlicesSliceSetPrev.clear();
-			auto over = activeA.historyOverflow || size < activeA.historyEvent;
-			for (auto& hr : activeA.underlyingHistoryRepa)
+			if (size != activeA.historySize)
 			{
-				auto n = hr->dimension;
-				auto arr = new unsigned char[size*n];
-				std::memcpy(arr,hr->arr,size*n);
-				delete[] hr->arr;
-				hr->arr = arr;
-				hr->size = size;
+				auto sizeMin = std::min(size, activeA.historySize);
+				auto over = activeA.historyOverflow || size < activeA.historyEvent;
+				for (auto& hr : activeA.underlyingHistoryRepa)
+				{
+					auto n = hr->dimension;
+					auto arr = new unsigned char[size*n];
+					std::memcpy(arr,hr->arr,sizeMin*n);
+					delete[] hr->arr;
+					hr->arr = arr;
+					hr->size = size;
+				}
+				for (auto& hr : activeA.underlyingHistorySparse)
+				{
+					auto n = hr->capacity;
+					auto arr = new std::size_t[size*n];
+					std::memcpy(arr,hr->arr,sizeMin*n*sizeof(std::size_t));
+					delete[] hr->arr;
+					hr->arr = arr;
+					hr->size = size;
+				}
+				{
+					auto& hr = activeA.historySparse;
+					auto n = hr->capacity;
+					auto arr = new std::size_t[size*n];
+					std::memcpy(arr,hr->arr,sizeMin*n*sizeof(std::size_t));
+					delete[] hr->arr;
+					hr->arr = arr;
+					hr->size = size;
+				}
+				activeA.historySize = size;
+				activeA.historyOverflow = over;
+				if (over)
+					activeA.historyEvent = 0;
 			}
-			for (auto& hr : activeA.underlyingHistorySparse)
-			{
-				auto n = hr->capacity;
-				auto arr = new std::size_t[size*n];
-				std::memcpy(arr,hr->arr,size*n*sizeof(std::size_t));
-				delete[] hr->arr;
-				hr->arr = arr;
-				hr->size = size;
-			}
-			{
-				auto& hr = activeA.historySparse;
-				auto n = hr->capacity;
-				auto arr = new std::size_t[size*n];
-				std::memcpy(arr,hr->arr,size*n*sizeof(std::size_t));
-				delete[] hr->arr;
-				hr->arr = arr;
-				hr->size = size;
-			}
-			activeA.historySize = size;				
-			activeA.historyOverflow = over;		
-			if (over)
-				activeA.historyEvent = 0;				
 			stage++;
 			EVAL(stage);
 			TRUTH(ok);	

@@ -76,7 +76,7 @@ Modeller001::Modeller001(const std::string& configA)
 		_checkpointInterval = ARGS_INT_DEF(checkpoint_interval,100000);
 		_checkpointEvent = 0;
 		_mode = ARGS_STRING(mode);
-		_representations = ARGS_BOOL_DEF(representations,true);
+		_representationsDisable = ARGS_BOOL(disable_representations);
 		_modeLogging = ARGS_BOOL(logging_mode);
 		_modeLoggingFactor = ARGS_INT(logging_mode_factor); 
 		_modeTracing = ARGS_BOOL(tracing_mode);
@@ -186,7 +186,16 @@ Modeller001::Modeller001(const std::string& configA)
 			else
 			{
                 LOG "modeller\tinit: opened records file" << _recordsFileNames[_recordsIndex] + ".rec" UNLOG
-			}				
+			}
+			if (_recordsStart)
+			{
+				_recordsFile.seekg((sizeof(double)*4 + sizeof(std::size_t)*2 + (_size+_sizeTile)*(_size+_sizeTile))*_recordsStart);
+				if (_recordsFile.fail() || _recordsFile.eof())
+				{
+					LOG "modeller\terror: failed to seek in records file" << _recordsFileNames[_recordsIndex] + ".rec" UNLOG
+					return;
+				}
+			}
 		}
 		catch (const std::exception&)
 		{
@@ -195,7 +204,7 @@ Modeller001::Modeller001(const std::string& configA)
 		}		
 	}
 	// load slice representations if modelInitial 
-	if (_representations && _modelInitial.size())
+	if (!_representationsDisable && _modelInitial.size())
 	{
 		try
 		{
@@ -318,13 +327,14 @@ Modeller001::Modeller001(const std::string& configA)
 			{
 				if (_struct=="struct003" || _struct=="struct004")
 				{
-					_system->block = (_size * _size << 12 >> activeA.bits) + 1;				
+					_system->block = (_size * _size << 12 >> activeA.bits) + 1;	
 				}
 				activeA.var = activeA.system->next(activeA.bits);
 				activeA.varSlice = activeA.system->next(activeA.bits);
 				activeA.historySize = _activeSize;
 				activeA.induceThreshold = _induceThreshold;
-				activeA.decomp = std::make_unique<DecompFudSlicedRepa>();	
+				activeA.decomp = std::make_unique<DecompFudSlicedRepa>();
+				if (_struct!="struct006")
 				{
                     auto hr = sizesHistoryRepa(_scaleValency, _valency, _size*_size, activeA.historySize);
 					activeA.underlyingHistoryRepa.push_back(std::move(hr));
@@ -350,27 +360,26 @@ Modeller001::Modeller001(const std::string& configA)
 						activeA.induceVarComputeds.insert(m);
 					}
 				}
-
 				{
 					auto hr = std::make_unique<HistorySparseArray>();
 					{
 						auto z = activeA.historySize;
 						hr->size = z;
 						hr->capacity = 1;
-						hr->arr = new std::size_t[z];		
+						hr->arr = new std::size_t[z];
 					}		
-					activeA.historySparse = std::move(hr);			
+					activeA.historySparse = std::move(hr);
 				}
 			}
 			activeA.historySliceCachingIs = true;
-			activeA.name = (_model!="" ? _model : "model");			
+			activeA.name = (_model!="" ? _model : "model");
 			activeA.logging = _activeLogging;
 			activeA.summary = _activeSummary;
 			if (_struct!="struct006")
 				activeA.underlyingEventsRepa.push_back(_events);
 			if (_struct=="struct002" || _struct=="struct005" || _struct=="struct006")
 			{
-				if (!_substrateInclude)
+				if (!_substrateInclude && _struct!="struct006")
 				{
 					std::shared_ptr<HistoryRepa> hr = activeA.underlyingHistoryRepa.front();
 					auto n = hr->dimension - 1;
@@ -416,7 +425,7 @@ Modeller001::Modeller001(const std::string& configA)
 			}
 		}
 	}
-	if (_system)
+	if (_system && !_updateDisable)
 	{
 		if (_induceParameters.asyncThreadMax)
 			_threads.push_back(std::thread(run_induce, std::ref(*_active), std::ref(_induceParameters), std::ref(_updateParameters)));
@@ -455,16 +464,18 @@ void Modeller001::dump()
 	if (_system && _model!="")
 	{
 		bool ok = true;
-		auto& activeA = *_active;
-		ActiveIOParameters ppio;
-		ppio.filename = activeA.name+".ac";
-		auto logging = activeA.logging;
-		activeA.logging = true;
-		ok = ok && activeA.dump(ppio);		
-		activeA.logging = logging;
-		if (ok && _representations)
+		if (ok && _updateDisable)
 		{
-			// dump slice representations
+			auto& activeA = *_active;
+			ActiveIOParameters ppio;
+			ppio.filename = activeA.name+".ac";
+			auto logging = activeA.logging;
+			activeA.logging = true;
+			ok = ok && activeA.dump(ppio);		
+			activeA.logging = logging;
+		}
+		if (ok && !_representationsDisable)
+		{
 			try
 			{
 				auto mark = Clock::now(); 
@@ -990,7 +1001,7 @@ void Modeller001::model()
 				}
 				records.push_back(record.valentFixed(_valency,_valencyBalanced));
 			}
-			std::vector<std::tuple<std::size_t,std::size_t,std::size_t,std::size_t,std::size_t,std::size_t>> actsPotsCoordTop(records.size());
+			std::vector<std::tuple<std::size_t,std::size_t,std::size_t,std::size_t,std::size_t,std::size_t,std::size_t>> actsPotsCoordTop(records.size());
 			{
 				auto& activeA = *_active;
 				auto& actor = *this;
@@ -1110,7 +1121,7 @@ void Modeller001::model()
 									}	
 									auto countX2 = (sizeX - size)/sizeScanStep;
 									auto countY2 = (sizeY - size)/sizeScanStep;
-									std::vector<std::tuple<std::size_t,std::size_t,std::size_t,std::size_t,std::size_t>> actsPotsCoord(countX2*countY2);
+									std::vector<std::tuple<std::size_t,std::size_t,std::size_t,std::size_t,std::size_t,std::size_t>> actsPotsCoord(countX2*countY2);
 									for (std::size_t y = 0, z = 0; y < countY2; y++)	
 									{
 										for (std::size_t x = 0; x < countX2; x++, z++)
@@ -1146,10 +1157,10 @@ void Modeller001::model()
 											if (ll && ll->size()) slice = ll->back();	
 											if (slice && !fails.count(slice))
 											{
-												actsPotsCoord[z] = std::make_tuple(lengths[slice],sizes[slice],x*sizeScanStep,y*sizeScanStep,r);
+												actsPotsCoord[z] = std::make_tuple(lengths[slice],sizes[slice],x*sizeScanStep,y*sizeScanStep,r,slice);
 											}
 											else
-												actsPotsCoord[z] = std::make_tuple(0,0,x*sizeScanStep,y*sizeScanStep,r);
+												actsPotsCoord[z] = std::make_tuple(0,0,x*sizeScanStep,y*sizeScanStep,r,slice);
 										}
 									}
 									{
@@ -1160,8 +1171,9 @@ void Modeller001::model()
 										auto x = std::get<2>(pos);
 										auto y = std::get<3>(pos);
 										auto r = std::get<4>(pos);
-										actsPotsCoordTop[r] = std::make_tuple(likelihood,length,x,y,r,scaleValue);
-									}										
+										auto slice = std::get<5>(pos);
+										actsPotsCoordTop[r] = std::make_tuple(likelihood,length,x,y,r,scaleValue,slice);
+									}
 								}
 						}, t));
 				for (auto& t : threads)
@@ -1176,6 +1188,7 @@ void Modeller001::model()
 				auto& record = records[std::get<4>(pos)];
 				auto scaleValue = std::get<5>(pos);
 				auto scale = _scales[scaleValue];
+				auto slice = std::get<6>(pos);
 				Record recordSub(record,_size,_size,x0,y0);
 				if (_entropyMinimum > 0.0 && recordSub.entropy() < _entropyMinimum)
 					continue;	
@@ -1194,9 +1207,33 @@ void Modeller001::model()
 						_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
 					}
 				}
+				else if (!_representationsDisable)
+				{
+					auto& activeA = *_active;
+					std::lock_guard<std::mutex> guard(activeA.mutex);
+					auto& dr = *activeA.decomp;	
+					auto& cv = dr.mapVarParent();
+					auto& reps = *_slicesRepresentation;
+					auto hr = recordsHistoryRepa(_scaleValency, scaleValue, _valency, recordSub);
+					auto n = hr->dimension;
+					auto rr = hr->arr;	
+					while (true)
+					{
+						if (!reps.count(slice))
+							reps.insert_or_assign(slice, Representation(1.0,1.0,_size,_size));
+						auto& rep = reps[slice];
+						auto& arr1 = *rep.arr;
+						for (size_t i = 0; i < n-1; i++)
+							arr1[i] += rr[i];
+						rep.count++;
+						if (!slice)
+							break;
+						slice = cv[slice];
+					}
+				}
 				this->eventId++;
-				eventCount++;	
-			}				
+				eventCount++;
+			}
 		}
 		if (!_updateDisable)
 		{
@@ -1227,7 +1264,7 @@ void Modeller001::model()
 			}				
 		}
 		// representations
-		if (_representations)
+		if (!_representationsDisable)
 		{		
 			auto& activeA = *_active;
 			std::lock_guard<std::mutex> guard(activeA.mutex);
