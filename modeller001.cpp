@@ -76,7 +76,6 @@ Modeller001::Modeller001(const std::string& configA)
 		_checkpointInterval = ARGS_INT_DEF(checkpoint_interval,100000);
 		_checkpointEvent = 0;
 		_mode = ARGS_STRING(mode);
-		_representationsDisable = ARGS_BOOL(disable_representations);
 		_modeLogging = ARGS_BOOL(logging_mode);
 		_modeLoggingFactor = ARGS_INT(logging_mode_factor); 
 		_modeTracing = ARGS_BOOL(tracing_mode);
@@ -204,7 +203,7 @@ Modeller001::Modeller001(const std::string& configA)
 		}		
 	}
 	// load slice representations if modelInitial 
-	if (!_representationsDisable && _modelInitial.size())
+	if (_modelInitial.size())
 	{
 		try
 		{
@@ -425,7 +424,7 @@ Modeller001::Modeller001(const std::string& configA)
 			}
 		}
 	}
-	if (_system && !_updateDisable)
+	if (_system)
 	{
 		if (_induceParameters.asyncThreadMax)
 			_threads.push_back(std::thread(run_induce, std::ref(*_active), std::ref(_induceParameters), std::ref(_updateParameters)));
@@ -464,7 +463,7 @@ void Modeller001::dump()
 	if (_system && _model!="")
 	{
 		bool ok = true;
-		if (ok && _updateDisable)
+		if (ok)
 		{
 			auto& activeA = *_active;
 			ActiveIOParameters ppio;
@@ -474,7 +473,7 @@ void Modeller001::dump()
 			ok = ok && activeA.dump(ppio);		
 			activeA.logging = logging;
 		}
-		if (ok && !_representationsDisable)
+		if (ok)
 		{
 			try
 			{
@@ -1188,7 +1187,6 @@ void Modeller001::model()
 				auto& record = records[std::get<4>(pos)];
 				auto scaleValue = std::get<5>(pos);
 				auto scale = _scales[scaleValue];
-				auto slice = std::get<6>(pos);
 				Record recordSub(record,_size,_size,x0,y0);
 				if (_entropyMinimum > 0.0 && recordSub.entropy() < _entropyMinimum)
 					continue;	
@@ -1206,29 +1204,30 @@ void Modeller001::model()
 						auto hr = recordsHistoryRepa(_scaleValency, scaleValue, _valency, recordSub);
 						_events->mapIdEvent[this->eventId] = HistoryRepaPtrSizePair(std::move(hr),_events->references);	
 					}
-				}
-				else if (!_representationsDisable)
-				{
-					auto& activeA = *_active;
-					std::lock_guard<std::mutex> guard(activeA.mutex);
-					auto& dr = *activeA.decomp;	
-					auto& cv = dr.mapVarParent();
-					auto& reps = *_slicesRepresentation;
-					auto hr = recordsHistoryRepa(_scaleValency, scaleValue, _valency, recordSub);
-					auto n = hr->dimension;
-					auto rr = hr->arr;	
-					while (true)
+					else
 					{
-						if (!reps.count(slice))
-							reps.insert_or_assign(slice, Representation(1.0,1.0,_size,_size));
-						auto& rep = reps[slice];
-						auto& arr1 = *rep.arr;
-						for (size_t i = 0; i < n-1; i++)
-							arr1[i] += rr[i];
-						rep.count++;
-						if (!slice)
-							break;
-						slice = cv[slice];
+						auto slice = std::get<6>(pos);
+						auto& activeA = *_active;
+						std::lock_guard<std::mutex> guard(activeA.mutex);
+						auto& dr = *activeA.decomp;	
+						auto& cv = dr.mapVarParent();
+						auto& reps = *_slicesRepresentation;
+						auto hr = recordsHistoryRepa(_scaleValency, scaleValue, _valency, recordSub);
+						auto n = hr->dimension;
+						auto rr = hr->arr;	
+						while (true)
+						{
+							if (!reps.count(slice))
+								reps.insert_or_assign(slice, Representation(1.0,1.0,_size,_size));
+							auto& rep = reps[slice];
+							auto& arr1 = *rep.arr;
+							for (size_t i = 0; i < n-1; i++)
+								arr1[i] += rr[i];
+							rep.count++;
+							if (!slice)
+								break;
+							slice = cv[slice];
+						}
 					}
 				}
 				this->eventId++;
@@ -1264,7 +1263,7 @@ void Modeller001::model()
 			}				
 		}
 		// representations
-		if (!_representationsDisable)
+		if (_struct!="struct006")
 		{		
 			auto& activeA = *_active;
 			std::lock_guard<std::mutex> guard(activeA.mutex);

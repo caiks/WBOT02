@@ -26,7 +26,6 @@ namespace WBOT02
 		bool _eventLogging;	
 		std::size_t _eventLoggingFactor;
 		std::string _mode;
-		bool _representationsDisable;
 		bool _modeLogging;
 		std::size_t _modeLoggingFactor;
 		bool _modeTracing;

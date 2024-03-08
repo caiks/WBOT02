@@ -3977,6 +3977,8 @@ It is not much worse than scanned *model* 61, however, given that *model* 61 has
 
 ![contour004_061_minent_representation](images/contour004_061_minent_representation.png) 
 
+Note that the *2-level model* contour maps are generated with `generate_contour010` which has a new parameter, `minimum_representations`. This is set to `10` so that small *slices* are ignored in favour of their parent *slices* resulting in smoother representations.
+
 The median *diagonal* at 17.6 is much less than that for *model* 66 at 26.0, which also suggests that a larger threshold might be considered. However, we can expect higher *level* *alignments* to be somewhat lower than for lower *level models* because the *alignments* are global rather than local.
 
 The average number of *underlying variables* per *fud* is much higher at 14.47 than for *model* 61 at 6.16 because *slices* are *bivalent*. There are only 25 *underlying* actives so the coverage is very high at up to 58% per *fud*, although there may be more than one *variable* from an *underlying model*.
