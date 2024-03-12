@@ -728,6 +728,7 @@ int main(int argc, char *argv[])
 	
 		EVAL(model);
 		EVAL(model_new);
+		EVAL(struct_new);
 		TRUTH(tidy);
 		EVAL(size);
 		
@@ -768,7 +769,7 @@ int main(int argc, char *argv[])
 			if (size != activeA.historySize)
 			{
 				auto sizeMin = std::min(size, activeA.historySize);
-				auto over = activeA.historyOverflow || size < activeA.historyEvent;
+				auto over = size < activeA.historySize && (activeA.historyOverflow || size < activeA.historyEvent);
 				for (auto& hr : activeA.underlyingHistoryRepa)
 				{
 					auto n = hr->dimension;
@@ -798,7 +799,9 @@ int main(int argc, char *argv[])
 				}
 				activeA.historySize = size;
 				activeA.historyOverflow = over;
-				if (over)
+				if (size > activeA.historySize && activeA.historyOverflow)
+					activeA.historyEvent = activeA.historySize;
+				else if (over)
 					activeA.historyEvent = 0;
 			}
 			stage++;
@@ -3634,7 +3637,7 @@ int main(int argc, char *argv[])
 			auto& dr = *activeA.decomp;	
 			auto& dr1 = *level1Decomp;	
 			auto& cv = dr.mapVarParent();
-			if (representationsMin) cvc = cv; // make a copy if necessary
+			if (representationFilename.size()) cvc = cv; // make a copy if necessary
 			auto& vi = dr.mapVarInt();
 			auto& cv1 = dr1.mapVarParent();
 			auto& vi1 = dr1.mapVarInt();
@@ -3948,7 +3951,7 @@ int main(int argc, char *argv[])
 			EVAL(stage);
 			TRUTH(ok);	
 		}
-		if (ok)
+		if (ok && representationFilename.size())
 		{
 			if (!distributionOnly)
 			{

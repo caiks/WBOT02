@@ -188,7 +188,7 @@ Modeller001::Modeller001(const std::string& configA)
 			}
 			if (_recordsStart)
 			{
-				_recordsFile.seekg((sizeof(double)*4 + sizeof(std::size_t)*2 + (_size+_sizeTile)*(_size+_sizeTile))*_recordsStart);
+				_recordsFile.seekg((sizeof(double)*4 + sizeof(std::size_t)*2 + (_size+_sizeTile)*(_size+_sizeTile))*_recordsStart, std::ios_base::beg);
 				if (_recordsFile.fail() || _recordsFile.eof())
 				{
 					LOG "modeller\terror: failed to seek in records file" << _recordsFileNames[_recordsIndex] + ".rec" UNLOG
@@ -463,7 +463,7 @@ void Modeller001::dump()
 	if (_system && _model!="")
 	{
 		bool ok = true;
-		if (ok)
+		if (ok && !_updateDisable)
 		{
 			auto& activeA = *_active;
 			ActiveIOParameters ppio;
