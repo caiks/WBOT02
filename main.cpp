@@ -797,12 +797,12 @@ int main(int argc, char *argv[])
 					hr->arr = arr;
 					hr->size = size;
 				}
-				activeA.historySize = size;
-				activeA.historyOverflow = over;
 				if (size > activeA.historySize && activeA.historyOverflow)
 					activeA.historyEvent = activeA.historySize;
 				else if (over)
 					activeA.historyEvent = 0;
+				activeA.historySize = size;
+				activeA.historyOverflow = over;
 			}
 			stage++;
 			EVAL(stage);
