@@ -105,6 +105,7 @@ Modeller001::Modeller001(const std::string& configA)
 		_level1ActiveSize = ARGS_INT_DEF(level1_activeSize,10);
 		_updateParameters.mapCapacity = ARGS_INT_DEF(updateParameters.mapCapacity,3); 
 		_induceThreshold = ARGS_INT_DEF(induceThreshold,200);
+		_induceThresholdOnLoad = ARGS_INT(on_load_induceThreshold);
 		_induceThreadCount = ARGS_INT_DEF(induceThreadCount,4);
 		_induceParameters.tint = _induceThreadCount;		
 		_induceParameters.wmax = ARGS_INT_DEF(induceParameters.wmax,18);
@@ -310,7 +311,17 @@ Modeller001::Modeller001(const std::string& configA)
 					_system.reset();
 					return;
 				}
-				activeA.historySliceCumulativeIs = _activeCumulative;			
+				if (_induceThresholdOnLoad)
+				{
+					auto& slev = activeA.historySlicesSetEvent;		
+					for (auto pp : slev)
+						if (pp.second.size() >= _induceThresholdOnLoad)
+						{
+							activeA.induceSlices.erase(pp.first);
+							activeA.induceSliceFailsSize[pp.first] = pp.second.size();
+						}
+				}
+				activeA.historySliceCumulativeIs = _activeCumulative;
 				_system->block = std::max(_system->block, activeA.varMax() >> activeA.bits);
 				if (activeA.underlyingEventUpdateds.size())
 					this->eventId = std::max(this->eventId,*(activeA.underlyingEventUpdateds.rbegin()));

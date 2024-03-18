@@ -65,6 +65,7 @@ namespace WBOT02
 		Alignment::ActiveUpdateParameters _updateParameters;
 		Alignment::ActiveInduceParameters _induceParameters;
 		std::size_t _induceThreshold;
+		std::size_t _induceThresholdOnLoad;
 		std::size_t _induceThreadCount;
 		std::size_t _fudsSize;	
 		std::size_t _failCount;
