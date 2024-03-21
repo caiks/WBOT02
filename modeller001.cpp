@@ -1247,7 +1247,7 @@ void Modeller001::model()
 		}
 		if (!_updateDisable)
 		{
-			if (_struct=="struct002" || _struct=="struct005")
+			if (_struct=="struct002" || _struct=="struct005" || _struct=="struct006")
 			{
 				for (auto& activeA : _level1)
 				{
