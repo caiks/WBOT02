@@ -1643,6 +1643,8 @@ model087|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised level 2|14|balanced c
 model088|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 87 level 2|14|balanced computed 32-valent|48 B&W videos|3,000,000|12,976|0.865|10.4|2.5|18|0.0|-0.4|0.2|3.2|2.49|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60
 model089|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential level 2|16|balanced|48 B&W videos|3,000,001|24,731|1.649|15.8|3.1|27|-0.3|0.2|-2.9|11.5|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60
 model090|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential level 2|16|balanced computed 32-valent|48 B&W videos|2,999,999|25,488|1.699|16.1|2.8|26|-0.4|0.4|-4.6|15.8|1.88|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60
+model091|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised size-potential scanned actual-potential level 2|16|balanced computed 32-valent|48 B&W videos|15,000,012|61,247|0.817|11.9|2.7|22|0.1|-0.2|0.7|4.1|2.53|initial random model 88, structure 6, 30s unique, 12.0 min diagonal, 2.1 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60
+
 
 The table above does not show the median and maximum *diagonals*. The median *diagonals* for the actor 2 and actor 3 *models* were consistently around 23-27, and the maximum *diagonals* were consistently around 37-39.
 
