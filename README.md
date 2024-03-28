@@ -1645,7 +1645,6 @@ model089|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scan
 model090|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential level 2|16|balanced computed 32-valent|48 B&W videos|2,999,999|25,488|1.699|16.1|2.8|26|-0.4|0.4|-4.6|15.8|1.88|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60
 model091|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised size-potential scanned actual-potential level 2|16|balanced computed 32-valent|48 B&W videos|15,000,012|61,247|0.817|11.9|2.7|22|0.1|-0.2|0.7|4.1|2.53|initial random model 88, structure 6, 30s unique, 12.0 min diagonal, 2.1 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60
 
-
 The table above does not show the median and maximum *diagonals*. The median *diagonals* for the actor 2 and actor 3 *models* were consistently around 23-27, and the maximum *diagonals* were consistently around 37-39.
 
 In general, the *model* growth rate (*fuds* per *event* per threshold) is the quantitative guide for development, but other *model* statistics - path length mean, standard deviation and higher moments, and path length maximum - help us to judge whether the *model* is well balanced or distorted. See the *model* tool [view_active_concise](#view_active_concise) above. 
@@ -4741,6 +4740,76 @@ Here is the 9 or over position map for image 5 -
 ![contour005_061_minent_over9_show_image_position](images/contour005_061_minent_over9_show_image_position.png) 
 
 The 1-*level* *model* does appear to have less convolution than either of the scanned 2-*level* *models* due to having local rather than global *alignments*, although *model* 61 probably does have more detail and therefore a better representation.
+
+<a name="Scanned_2_level_model_initialised_by_random_model"></a>
+
+###### Scanned 2-level model initialised by 2-level random model
+
+Now let us conclude our discussion of the *models* by considering *model* 91. It is constructed from initial *model* 88, which in turn has *model* 86 as its *1-level underlying*, which in turn has a computed *substrate*. Here we wish to see if a random initial *model* followed by a scanned *model* can combine the benefits of both. That is, we hope for high growth and low multiplier and hence better representations and focus on interesting features. The idea is that initialising with a random *model* will find high actual *likelihood* features to form a base from where the scanning mode can build some arbitrary subset of the paths in order to avoid the duplication of small translations, and so obtain very long paths and detailed features.
+
+However, we also wish to restrict ourselves to the existing record sets which contain around 15m records. In both random mode (14) and scanning mode (16) we select the top 4 of 20 records by actual *likelihood* to maintain high growth. That means that we have processed 15m records for the 3m *events* used in *modelling*. Now we will have to take one *event* per record. To compenstate we increase the number of scans per record from 25 (i.e. interval of 4) to 100 (i.e. interval of 2). We also have to drop the *substrate* altogether to reduce the memory required for a 15m *history size*, which means that the children *slice* representations cannot be calculated when a new *fud* is added. So the representations may not be as advanced as the *model* itself.
+
+This is the configuration for *model* 91 -
+```
+{
+	"model" : "model091",
+	"structure" : "struct006",
+	"model_initial" : "model088r",
+	"level1_model" : "model086c",
+	"records_sources" : ["records006","records002","records003"],
+	"records_start" : 3000000,
+	"checkpointing" : true,
+	"checkpoint_interval" : 5000000,
+	"mode" : "mode016",
+	"valency" : 32,
+	"valency_balanced" : true,
+	"entropy_minimum" : 2.1,
+	"size" : 40,
+	"level1_size" : 8,
+	"level2_size" : 5,
+	"scan_step" : 2,
+	"event_size" : 32,
+	"scan_size" : 32,
+	"threads" : 32,
+	"cumulative_active" : false,
+	"activeSize" : 15000000,
+	"level1_activeSize" : 10,
+	"induceThreadCount" : 1,
+	"induceParameters.asyncThreadMax" : 32,
+	"induceThreshold" : 200,
+	"on_load_induceThreshold" : 400,
+	"induceParameters.asyncUpdateLimit" : 400,
+	"induceParameters.diagonalMin" : 12.0,
+	"induceParameters.xmax" : 256,
+	"induceParameters.omax" : 20,
+	"induceParameters.bmax" : 60,
+	"induceParameters.znnmax" : 1310720000.0,
+	"scales" : [0.250, 0.210, 0.177, 0.149, 0.125, 0.105],
+	"event_maximum" : 15000000,
+	"logging_event" : true,
+	"logging_event_factor" : 10000,
+	"summary_active" : true
+}
+```
+Note that the *model* has a new structure 6 which does not include the *substrate*. We also must restructure and *resize* the initial random *model* -
+```
+cd ~/WBOT02_ws
+./WBOT02 restructure model088c model088r 15000000 struct006
+
+```
+Note also that we have started the run 3m records from the beginning of the first record set, `"records_start" : 3000000`. The minimum entropy is also increased to 2.1 because of the *valency* of 32.
+
+Here are the statistics for random then scanned *2-level model* 91 compared to scanned non-computed *2-level model* 89, randomised *1-level model* 66, randomised *2-level model* 88, scanned *1-level model* 61 and scanned *2-level model* 90 -
+
+model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
+---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
+model066|0.5, 0.354, 0.25, 0.177, 0.125, 0.088|4 randomised|9|balanced|48 B&W videos|500,000|1,822|0.7288|6.4|1.7|11|0.1|-0.5|0.6|1.5|3.24|30s unique, 12.0 min diagonal, 1.2 min entropy
+model088|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|rethreshold model 87 level 2|14|balanced computed 32-valent|48 B&W videos|3,000,000|12,976|0.865|10.4|2.5|18|0.0|-0.4|0.2|3.2|2.49|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60
+model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W videos|3,000,000|14,246|0.950 (1.457)|14.6|2.8|22|-0.5|0.3|-4.9|13.5|1.93|30s unique, 12.0 min diagonal, 1.2 min entropy
+model089|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential level 2|16|balanced|48 B&W videos|3,000,001|24,731|1.649|15.8|3.1|27|-0.3|0.2|-2.9|11.5|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60
+model090|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential level 2|16|balanced computed 32-valent|48 B&W videos|2,999,999|25,488|1.699|16.1|2.8|26|-0.4|0.4|-4.6|15.8|1.88|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60
+model091|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised size-potential scanned actual-potential level 2|16|balanced computed 32-valent|48 B&W videos|15,000,012|61,247|0.817|11.9|2.7|22|0.1|-0.2|0.7|4.1|2.53|initial random model 88, structure 6, 30s unique, 12.0 min diagonal, 2.1 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60
+
 
 TODO -
 
