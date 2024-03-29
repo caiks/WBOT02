@@ -4267,6 +4267,8 @@ These are the *model* 88 *underlying* length means -
 
 The mode is lower at 2 than the mode of 3 for *model* 82, but the mean *underlying* lengths are generally higher so the variance of the *underlying lengths* in *model* 88 is higher than in *model* 82. For example, at an *overlying* path length of 10, there are more than twice as many *underlying* paths of length 7 - 1303 versus 532). That is, there seems to be more specialisation of the *underlying level models* in *model* 88 than in *model* 82. These larger actual *underlying likelihoods* are therefore more important. Presumably this is due to the computed *substrate*. The representations for *model* 88, 
 
+<a name="contour004_088_scale3_minent_representation"></a>
+
 ![contour004_088_scale3_minent_representation](images/contour004_088_scale3_minent_representation.png) 
 
 when compared to those of [*model* 82](#contour004_082_scale3_minent_representation) do not seem much improved in spite of the longer *overlying* and *underlying* path lengths. Here is another representation showing *model* 88 and then *model* 82 -
@@ -4743,9 +4745,9 @@ The 1-*level* *model* does appear to have less convolution than either of the sc
 
 <a name="Scanned_2_level_model_initialised_by_random_model"></a>
 
-###### Scanned 2-level model initialised by 2-level random model
+###### Scanned 2-level model initialised by random model
 
-Now let us conclude our discussion of the *models* by considering *model* 91. It is constructed from initial *model* 88, which in turn has *model* 86 as its *1-level underlying*, which in turn has a computed *substrate*. Here we wish to see if a random initial *model* followed by a scanned *model* can combine the benefits of both. That is, we hope for high growth and low multiplier and hence better representations and focus on interesting features. The idea is that initialising with a random *model* will find high actual *likelihood* features to form a base from where the scanning mode can build some arbitrary subset of the paths in order to avoid the duplication of small translations, and so obtain very long paths and detailed features.
+Now let us conclude our discussion of the *models* by considering *model* 91. It is constructed from initial * 2-level model* 88, which in turn has *model* 86 as its *1-level underlying*, which in turn has a computed *substrate*. Here we wish to see if a random initial *model* followed by a scanned *model* can combine the benefits of both. That is, we hope for high growth and low multiplier and hence better representations and focus on interesting features. The idea is that initialising with a random *model* will find high actual *likelihood* features to form a base from where the scanning mode can build some arbitrary subset of the paths in order to avoid the duplication of small translations, and so obtain very long paths and detailed features.
 
 However, we also wish to restrict ourselves to the existing record sets which contain around 15m records. In both random mode (14) and scanning mode (16) we select the top 4 of 20 records by actual *likelihood* to maintain high growth. That means that we have processed 15m records for the 3m *events* used in *modelling*. Now we will have to take one *event* per record. To compenstate we increase the number of scans per record from 25 (i.e. interval of 4) to 100 (i.e. interval of 2). We also have to drop the *substrate* altogether to reduce the memory required for a 15m *history size*, which means that the children *slice* representations cannot be calculated when a new *fud* is added. So the representations may not be as advanced as the *model* itself.
 
@@ -4793,11 +4795,11 @@ This is the configuration for *model* 91 -
 ```
 Note that the *model* has a new structure 6 which does not include the *substrate*. We also must restructure and *resize* the initial random *model* -
 ```
-cd ~/WBOT02_ws
-./WBOT02 restructure model088c model088r 15000000 struct006
+cd /mnt/vol01/WBOT02_ws
+./WBOT02 restructure model088 model088r 15000000 struct006
 
 ```
-Note also that we have started the run 3m records from the beginning of the first record set, `"records_start" : 3000000`. The minimum entropy is also increased to 2.1 because of the *valency* of 32.
+Note also that we start the run 3m records from the beginning of the first record set, `"records_start" : 3000000`. The minimum entropy is also increased to 2.1 because of the *valency* of 32.
 
 Here are the statistics for random then scanned *2-level model* 91 compared to scanned non-computed *2-level model* 89, randomised *1-level model* 66, randomised *2-level model* 88, scanned *1-level model* 61 and scanned *2-level model* 90 -
 
@@ -4810,6 +4812,19 @@ model089|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scan
 model090|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential level 2|16|balanced computed 32-valent|48 B&W videos|2,999,999|25,488|1.699|16.1|2.8|26|-0.4|0.4|-4.6|15.8|1.88|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60
 model091|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|randomised size-potential scanned actual-potential level 2|16|balanced computed 32-valent|48 B&W videos|15,000,012|61,247|0.817|11.9|2.7|22|0.1|-0.2|0.7|4.1|2.53|initial random model 88, structure 6, 30s unique, 12.0 min diagonal, 2.1 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60
 
+Quantitatively, the statistics of *model* 91 are much more similar similar to random *model* 88 then scanned *model* 90. The growth is slightly lower than the random *model* and the multiplier is slightly higher. The mean path length has increased by 1.5 steps to 11.9, but the maximum path length has increased by 4 to 22, although it is still less than the maximum path length of 26 of the scanned *model* 90. The skew and kurtosis are slightly higher. The median *diagonal* at 20.7 is a little larger than in both random *model* 88 and scanned *model* 90. Altogether, *model* 91 looks like a fairly thin scanned veneer on a random *model*. 
+
+These are two representations for *model* 91 -
+
+![contour004_091_scale3_minent_representation](images/contour004_091_scale3_minent_representation.png) 
+
+![contour005_091_scale3_minent_representation](images/contour005_091_scale3_minent_representation.png) 
+
+They are very similar to the *model* 88 [representations](#contour004_088_scale3_minent_representation), although they have a slight disadvantage due to the removal of the *substrate* in structure 6.
+
+TODO do the over_length position and compare to model 88.
+
+Clearly *model* 91 has not achieved the hoped for gains over either the random or pure scanned cases. This is probably due to the low growth caused by lack of filtering that was not really compensated for by the extra scanning. The high convolution of the *2-level model* meant that a more detailed scan made little difference to the growth or multiplier. Larger scan areas and *substrates* with higher contrast to boost higher *level* *diagonals* may improve the search for features. We perhpa also have the option of lower induce thresholds at higher *levels* too. The brute force of larger *histories* and more detailed scanning is probably less effective, than wider scanning perhaps with *slice* transition search and neurologically based hints. We will examine these in WBOT03.
 
 TODO -
 

@@ -3465,7 +3465,7 @@ int main(int argc, char *argv[])
 		}
 	}
 	
-	// equals generate_contour009 for 2-level struct002 and struct005 (computed)
+	// equals generate_contour009 for 2-level struct002 and struct005/struct006 (computed)
 	if (argc >= 2 && string(argv[1]) == "generate_contour010")
 	{
 		bool ok = true;
@@ -3505,7 +3505,7 @@ int main(int argc, char *argv[])
 		}
 		bool isLengthNormalise = true;
 		string structure = ARGS_STRING(structure);
-		bool isComputed = structure == "struct005";
+		bool isComputed = structure == "struct005" || "struct006";
 		string model = ARGS_STRING(model);
 		string level1Model = ARGS_STRING(level1_model);
 		string inputFilename = ARGS_STRING(input_file);
