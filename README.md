@@ -4822,11 +4822,17 @@ These are two representations for *model* 91 -
 
 They are very similar to the *model* 88 [representations](#contour004_088_scale3_minent_representation), although they have a slight disadvantage due to the removal of the *substrate* in structure 6.
 
-TODO do the over_length position and compare to model 88.
+The maximum path length of *model* 88 is 18. Here are the 18 or over position maps for *model* 91 -
 
-Clearly *model* 91 has not achieved the hoped for gains over either the random or pure scanned cases. This is probably due to the low growth caused by lack of filtering that was not really compensated for by the extra scanning. The high convolution of the *2-level model* meant that a more detailed scan made little difference to the growth or multiplier. Larger scan areas and *substrates* with higher contrast to boost higher *level* *diagonals* may improve the search for features. We perhpa also have the option of lower induce thresholds at higher *levels* too. The brute force of larger *histories* and more detailed scanning is probably less effective, than wider scanning perhaps with *slice* transition search and neurologically based hints. We will examine these in WBOT03.
+![contour004_091_scale3_minent_21_over18_show_image_position](images/contour004_091_scale3_minent_21_over18_show_image_position.png) 
 
-TODO -
+![contour005_091_scale3_minent_21_over18_show_image_position](images/contour005_091_scale3_minent_21_over18_show_image_position.png) 
+
+As we can see, only a little detail has been added to the *model* at the locations with the highest actual *likelihoods* (i.e. the locations with the longest paths and the most *alignments*). 
+
+Clearly *model* 91 has not achieved the hoped for gains over either the random or pure scanned cases. This is probably due to the low growth caused by lack of filtering that was not really compensated for by the extra scanning. The high convolution of the *2-level model* meant that a more detailed scan made little difference to the growth or multiplier. A possible solution is to initialise the *model* with a much smaller random *model* and to filter *events* in the scanning phase. Also, larger scan areas and *substrates* with higher contrast to boost higher *level* *diagonals* may improve the search for features. We perhaps also have the option of lower induce thresholds at higher *levels* too because of the *bi-valency* of *underlying slices*. The brute force of larger *histories* and more detailed scanning is probably less effective than wider scanning perhaps with *slice* transition search and neurologically based hints. We will examine these in WBOT03.
+
+<!-- TODO -
 
 Now do the computed scanned from initial with valency 10 with more history (and overflow) to see how the hotspots develop and to improve the representation. The interesting regions of the random models are not the same as for the scanned, so use initial.
 
@@ -4849,6 +4855,8 @@ Especially at the smaller scales, we see in models 89 and 90, for both images 4 
 Looking at the length and overmode maps for image 4 and 5 for model 90, it appears that for image 4 the interest in the face is above the eyebrows and around the cheek bones, with a circle of interest around the end of the nose and the mouth. For image 5 the facial interest is at the hairline, above the eybrows, the man's right eyebrow, at the corners of the lips and a little along the length of the nose. So perhaps we might guess that the representation of the face would improve. When we compare to model 61 using the overmode slices, there does not seem to be much advantage, if any, in the 1-level model.
 
 To conclude, computed 2-level model 90 appears to be the most promising basis for further investigation. But how many steps that would be needed to obtain animal-like vision is hard to say. Given the many possible hints, substrates and parameter-sets, we should use knowledge from neuro-physiology to guide us.
+
+-->
 
 <!-- TODO - future developments - 
 
