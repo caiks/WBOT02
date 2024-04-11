@@ -4529,6 +4529,8 @@ model061|0.177|5 scanned size-potential tiled actual-potential|6|balanced|48 B&W
 model089|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential level 2|16|balanced|48 B&W videos|3,000,001|24,731|1.649|15.8|3.1|27|-0.3|0.2|-2.9|11.5|1.89|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60
 model090|0.25, 0.21, 0.177, 0.149, 0.125, 0.105|4 randomised size-potential scanned actual-potential level 2|16|balanced computed 32-valent|48 B&W videos|2,999,999|25,488|1.699|16.1|2.8|26|-0.4|0.4|-4.6|15.8|1.88|30s unique, 12.0 min diagonal, 1.2 min entropy, no overflow, underlying tile size 8x8, xmax 256, omax 20, bmax 60
 
+Note that random *model* 88 is, in fact, rethresholded from *model* 87, which had an intial threshold of 500. This probably increased the *alignments* of the *model* near the root. Scanned *model* 90 was generated entirely with the usual threshold of 200.
+ 
 Quantitatively, computed *model* 90 is very similar to non-computed *model* 89. The growth rate and multipliers are only slightly better, so the mean path length increases slightly to 16.1, although the variance and maximum are slightly lower. The higher order statistics are very similar to *model* 61.
 
 The median *diagonal* at 20.4 is slightly higher than the 20.0 of *model* 89, suggesting that either the higher *valency* or computed *substrate* has increased the number of *alignments* available. The average number of *underlying variables* per *fud* has decreased to 17.55 compared to 18.52 for *model* 89.
@@ -4834,17 +4836,7 @@ Clearly *model* 91 has not achieved the hoped for gains over either the random o
 
 <!-- TODO -
 
-Now do the computed scanned from initial with valency 10 with more history (and overflow) to see how the hotspots develop and to improve the representation. The interesting regions of the random models are not the same as for the scanned, so use initial.
-
-Note that the scanned *models* did not start out with a high threshold - there threshold is constant (at 200) for all path lengths.
-
 Seeing that 90 is more interested in darker areas e.g. figurine, but is this because we did not do the min entropy while scanning?
-
-randomised models 82 and 88 have low multipliers but they are still too high to obtain long paths
-
-Mode 6 for model 61 has `4x4=16` tiles each of which is `20x20=400` scans and takes the topmost `"event_size" : 5` events of the 16 tiles. So the fraction of events is 1:1280. Mode 16 model 89 takes `"scan_size" : 20` records/tiles and does `20/"scan_step" : 4 = 5` scans in each dimension i.e. `5x5=25` scans for each and then selects the topmost `"event_size" : 4`, i.e. the fraction of events is 1:125. To make strictly comparable we should have to change as follows: `"scan_size" : 16`, `"scan_step" : 1` and `"event_size" : 5`. The scan compute would be 16 times longer. Might not get so much benefit if we can rely on convolution. Could go with `"scan_step" : 2`, i.e. 4 times compute and a ratio of 1:500. Given that we have over-mode% for model 61 of 0.8% to 2.6% (average 1.4%), but for model 89 it is 2.7% to 3.3% (average 2.9%), it seems clear that model 89 is quantitatively better - not only is it larger and with longer mean and mode, although not overflowing, but with 10 times less scanning it has twice as many features. Or could this be interpreted as being more normal? Model 89 is a little more normal than model 61, but it is much closer to model 61 than model 82. Don't confuse expected with normal - the difference is because scanned is much different from randomised.
-
-1-level model 61/73 representations are better than 2-level models 89 or 90 for contour005. Could the entropy threshold be causing the model to grow in dull places? Should the scan be every 2 cells instead of 4? (Need 4x scan compute.)
 
 model 90 has very good tie and generally is smoother than either 61 or 89. Does the backgrounds better. 61 does the face much better. Probably this is just the higher valency which gives many smooth gradient alignments that are not available to the other models. Could try re-running model 90 with a valency of 10 to see what effect it has on the smoothness and the weight given to backgrounds and surfaces. 
 
@@ -4854,11 +4846,54 @@ Especially at the smaller scales, we see in models 89 and 90, for both images 4 
 
 Looking at the length and overmode maps for image 4 and 5 for model 90, it appears that for image 4 the interest in the face is above the eyebrows and around the cheek bones, with a circle of interest around the end of the nose and the mouth. For image 5 the facial interest is at the hairline, above the eybrows, the man's right eyebrow, at the corners of the lips and a little along the length of the nose. So perhaps we might guess that the representation of the face would improve. When we compare to model 61 using the overmode slices, there does not seem to be much advantage, if any, in the 1-level model.
 
+-->
+
+<a name = "Conclusion"></a>
+
+### Conclusion
+
+TODO -
+
+balanced valency
+
+multiple scales
+
+computed values
+
+convolution - shown that by using 2-level we can have convolution i.e. nearby points in the image are nearby in the model. The reason is that the whole frame is modelled locally then globally so that the set of underlying covers a large part of the substrate.
+
+scanning and filtering for potential and actual-potential likelihood - the potential and actual-potential models demonstrate that the search for model growth can be achieved even without restricting the history size, which we were forced to do in TBOT03. "We were able to demonstrate that deliberately searching for interesting or unusual slices, ... can accelerate model growth, at least in the case of limited active history size." Now with WBOT02 we have proved it without constraining size, although the search is a scan and then selection of likely centres, not a topological slice transisition search.
+
 To conclude, computed 2-level model 90 appears to be the most promising basis for further investigation. But how many steps that would be needed to obtain animal-like vision is hard to say. Given the many possible hints, substrates and parameter-sets, we should use knowledge from neuro-physiology to guide us.
+
+<!-- TODO 
+
+a very jagged landscape - which poses a question mark over the golf ball approach to scanning. Is a gentle pressure enough to demonstrate intelligence - an ineffable quality which is considerably harder to show than faster model growth? Non likely versus likely modes. Golf ball approach does not work because there is no smooth gradient. Must scan.
+
+Expect that even with multi-scale and edge detection we will probably still need a temporal higher level slice topology search to make the wotbot behaviour resemble a human. Possibly we will also need audio. The reason is that the features that are interesting to us - moving lips, for example - are often buried on shorter paths along with unrelated events deep in the model.
+
+The things that are interesting to humans and other animals are those that natural selection has chosen - other agents, ripe fruit, water, heights, insects, teeth, eyes, etc. The lowest levels are those which depend most on hardwiring eg edge detection for other animals, and stereoscopic vision for distance calculation. At higher levels emotions seem to control the goal choices as agents navigate through the active slice topologies. For wotbot to be interesting to users it must be interested in the same things users are, so let biology be our guide while remembering that the larger context is the inanimate such as is seen in autistic interest in backgrounds and arrangements rather than agents.
+
+This behaviour is excellent in the sense that likelihood is a good indicator for future potential, but shows that we need less cluttered frames - the model is quite poor for new scenes. Wotbot needs to be able to be able to identify the different objects independently at smaller scales, while having the overall scene at larger scales too. Should we extend the substrate to allow one full scale frame plus a dynamic variable scale frame? Or should that be arranged in levels, i.e. the higher level has temporal and two underlyings - the full scale scene and the scanned variable scale frame.
+
+Note on how the contour maps enables us to tell where the model is most concentrated for a given scene. Then we can know if our modelling mode and parameters are tending to produce models that are interested in areas that are also interesting to humans, i.e. socially significant areas such as faces.
+
+Perhaps before going on to client-server in WBOT03 we should consider audio substrates and scanning.
+
+client-server architecture
+
+We can calculate how interested wotbot is first by determining if the current slice is a fail and then by looking at the slice likelihood for interesting or unusual. Show by using emoticons, visible or audible. This will encourage the user to "point it in the general direction of something interesting."
+
+A vision only version of the wotbot app could select archetypal or special tagged events from the slice and overlay them on the scene. If the special events are cartoon-like the wotbot could entertain by stylising the real world.
+
+Would be nice to keep the high valency because then we don't need to experiment so much with gradient substrates in WBOT03, but all depends on NEURO hints.
 
 -->
 
+
 <!-- TODO - future developments - 
+
+Could do an RGB capture instead of HSV. After all, this is how HB do it. Have to balance resolution, valency and type and bucketing to maximise contrast
 
 Also, offline record sets are unmanagably large, although randomising is an advantage at the substrate. We will handle the the additional load due to the higher scan multiple and the multi-scale by having asynchronous image capture from video in a actor004 which will be similar to actor003 and modeller001. Also, there is an advantage to centering when scanning to improve burstiness and ultimately we need it for the 3-level temporaral or saccade-sequence features of 3-level which will use slice topology. So we have random for 1-level, centered scanning search for 2-level, and topology search for 3-level. With scanning we are hoping to see long enough paths to see high-frequency features in the examples and similar features spread over only a few hotspots (we can test this by moving an image horizontally/vertically and by scaling), i.e. a sparsity of hotspots implying a degree of 'convolution' between hotspots.
 
@@ -5030,37 +5065,3 @@ History size is our limiting factor. Use disk/memory mapping as well as memory. 
 
 -->
 
-
-<a name = "Conclusion"></a>
-
-### Conclusion
-
-<!-- TODO 
-
-a very jagged landscape - which poses a question mark over the golf ball approach to scanning. Is a gentle pressure enough to demonstrate intelligence - an ineffable quality which is considerably harder to show than faster model growth? Non likely versus likely modes. Golf ball approach does not work because there is no smooth gradient. Must scan.
-
-the potential and actual-potential models demonstrate that the search for model growth can be achieved even without restricting the history size, which we were forced to do in TBOT03.
-
-"We were able to demonstrate that deliberately searching for interesting or unusual slices, ... can accelerate model growth, at least in the case of limited active history size." Now with WBOT02 we have proved it without constraining size, although the search is a scan and then selection of likely centres.
-
-Could do an RGB capture instead of HSV. After all, this is how HB do it. Have to balance resolution, valency and type and bucketing to maximise contrast
-
-Expect that even with multi-scale and edge detection we will probably still need a temporal higher level slice topology search to make the wotbot behaviour resemble a human. Possibly we will also need audio. The reason is that the features that are interesting to us - moving lips, for example - are often buried on shorter paths along with unrelated events deep in the model.
-
-The things that are interesting to humans and other animals are those that natural selection has chosen - other agents, ripe fruit, water, heights, insects, teeth, eyes, etc. The lowest levels are those which depend most on hardwiring eg edge detection for other animals, and stereoscopic vision for distance calculation. At higher levels emotions seem to control the goal choices as agents navigate through the active slice topologies. For wotbot to be interesting to users it must be interested in the same things users are, so let biology be our guide while remembering that the larger context is the inanimate such as is seen in autistic interest in backgrounds and arrangements rather than agents.
-
-This behaviour is excellent in the sense that likelihood is a good indicator for future potential, but shows that we need less cluttered frames - the model is quite poor for new scenes. Wotbot needs to be able to be able to identify the different objects independently at smaller scales, while having the overall scene at larger scales too. Should we extend the substrate to allow one full scale frame plus a dynamic variable scale frame? Or should that be arranged in levels, i.e. the higher level has temporal and two underlyings - the full scale scene and the scanned variable scale frame.
-
-Note on how the contour maps enables us to tell where the model is most concentrated for a given scene. Then we can know if our modelling mode and parameters are tending to produce models that are interested in areas that are also interesting to humans, i.e. socially significant areas such as faces.
-
-Perhaps before going on to client-server in WBOT03 we should consider audio substrates and scanning.
-
-client-server architecture
-
-We can calculate how interested wotbot is first by determining if the current slice is a fail and then by looking at the slice likelihood for interesting or unusual. Show by using emoticons, visible or audible. This will encourage the user to "point it in the general direction of something interesting."
-
-A vision only version of the wotbot app could select archetypal or special tagged events from the slice and overlay them on the scene. If the special events are cartoon-like the wotbot could entertain by stylising the real world.
-
-Would be nice to keep the high valency because then we don't need to experiment so much with gradient substrates in WBOT03, but all depends on NEURO hints.
-
--->
