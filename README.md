@@ -4854,44 +4854,41 @@ Looking at the length and overmode maps for image 4 and 5 for model 90, it appea
 
 TODO -
 
+summarise what we have done -
+
+Note on how the contour maps enables us to tell where the model is most concentrated for a given scene. Then we can know if our modelling mode and parameters are tending to produce models that are interested in areas that are also interesting to humans, i.e. socially significant areas such as faces.
+
+summarise what we have found -
+
 balanced valency
 
 multiple scales
 
-computed values
+computed values - Would be nice to keep the high valency because then we don't need to experiment so much with gradient substrates in WBOT03, but all depends on NEURO hints.
 
-convolution - shown that by using 2-level we can have convolution i.e. nearby points in the image are nearby in the model. The reason is that the whole frame is modelled locally then globally so that the set of underlying covers a large part of the substrate.
+convolution - shown that by using 2-level we can have convolution i.e. nearby points in the image are nearby in the model. The reason is that the whole frame is modelled locally then globally so that the set of underlying covers a large part of the substrate. a very jagged landscape - which poses a question mark over the golf ball approach to scanning. Is a gentle pressure enough to demonstrate intelligence - an ineffable quality which is considerably harder to show than faster model growth? Non likely versus likely modes. Golf ball approach does not work because there is no smooth gradient. Must scan.
 
 scanning and filtering for potential and actual-potential likelihood - the potential and actual-potential models demonstrate that the search for model growth can be achieved even without restricting the history size, which we were forced to do in TBOT03. "We were able to demonstrate that deliberately searching for interesting or unusual slices, ... can accelerate model growth, at least in the case of limited active history size." Now with WBOT02 we have proved it without constraining size, although the search is a scan and then selection of likely centres, not a topological slice transisition search.
 
 To conclude, computed 2-level model 90 appears to be the most promising basis for further investigation. But how many steps that would be needed to obtain animal-like vision is hard to say. Given the many possible hints, substrates and parameter-sets, we should use knowledge from neuro-physiology to guide us.
 
-<!-- TODO 
+what is next -
 
-a very jagged landscape - which poses a question mark over the golf ball approach to scanning. Is a gentle pressure enough to demonstrate intelligence - an ineffable quality which is considerably harder to show than faster model growth? Non likely versus likely modes. Golf ball approach does not work because there is no smooth gradient. Must scan.
+implementation of WBOT03 - discard Qt for the moment and focus on video possibly generating videos with overlaid model info
 
-Expect that even with multi-scale and edge detection we will probably still need a temporal higher level slice topology search to make the wotbot behaviour resemble a human. Possibly we will also need audio. The reason is that the features that are interesting to us - moving lips, for example - are often buried on shorter paths along with unrelated events deep in the model.
+academic input, neurophysiological hints for substrates
 
-The things that are interesting to humans and other animals are those that natural selection has chosen - other agents, ripe fruit, water, heights, insects, teeth, eyes, etc. The lowest levels are those which depend most on hardwiring eg edge detection for other animals, and stereoscopic vision for distance calculation. At higher levels emotions seem to control the goal choices as agents navigate through the active slice topologies. For wotbot to be interesting to users it must be interested in the same things users are, so let biology be our guide while remembering that the larger context is the inanimate such as is seen in autistic interest in backgrounds and arrangements rather than agents.
+temporal and spatial gradients, edge detection
 
-This behaviour is excellent in the sense that likelihood is a good indicator for future potential, but shows that we need less cluttered frames - the model is quite poor for new scenes. Wotbot needs to be able to be able to identify the different objects independently at smaller scales, while having the overall scene at larger scales too. Should we extend the substrate to allow one full scale frame plus a dynamic variable scale frame? Or should that be arranged in levels, i.e. the higher level has temporal and two underlyings - the full scale scene and the scanned variable scale frame.
+scan versus topological search
 
-Note on how the contour maps enables us to tell where the model is most concentrated for a given scene. Then we can know if our modelling mode and parameters are tending to produce models that are interested in areas that are also interesting to humans, i.e. socially significant areas such as faces.
+higher level termporal models
 
-Perhaps before going on to client-server in WBOT03 we should consider audio substrates and scanning.
+<!-- TODO - future developments - 
 
-client-server architecture
 
 We can calculate how interested wotbot is first by determining if the current slice is a fail and then by looking at the slice likelihood for interesting or unusual. Show by using emoticons, visible or audible. This will encourage the user to "point it in the general direction of something interesting."
 
-A vision only version of the wotbot app could select archetypal or special tagged events from the slice and overlay them on the scene. If the special events are cartoon-like the wotbot could entertain by stylising the real world.
-
-Would be nice to keep the high valency because then we don't need to experiment so much with gradient substrates in WBOT03, but all depends on NEURO hints.
-
--->
-
-
-<!-- TODO - future developments - 
 
 Could do an RGB capture instead of HSV. After all, this is how HB do it. Have to balance resolution, valency and type and bucketing to maximise contrast
 
