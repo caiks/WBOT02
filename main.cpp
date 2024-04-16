@@ -274,6 +274,21 @@ int main(int argc, char *argv[])
 				TRUTH(activeA.decomp);	
 				{
 					auto& dr = *activeA.decomp;		
+					std::map<std::map<std::size_t, std::size_t>, std::size_t> derDist;
+					for (auto& fs : dr.fuds)
+					{
+						auto& tr = fs.fud.back();
+						auto n = tr->dimension;
+						auto sh = tr->shape;
+						std::map<std::size_t, std::size_t> mm;
+						for (std::size_t i = (fs.parent?1:0); i < n; i++)
+							mm[sh[i]]++;
+						derDist[mm]++;
+					}
+					EVAL(derDist);
+				}
+				{
+					auto& dr = *activeA.decomp;		
 					std::map<std::size_t, std::size_t> undsDist;
 					std::vector<std::size_t> unds;
 					double undsTotal = 0;
