@@ -4848,6 +4848,44 @@ Looking at the length and overmode maps for image 4 and 5 for model 90, it appea
 
 -->
 
+#### Diagonals
+
+For some of the *models* above we have noted the median *diagonal* implied by the *derived alignments* of the *induced fuds*. The *diagonals* are implied by the ratio of the *alignment* to the maximum *alignment*, `z(n-1)ln(d)`. That is, the implied *diagonal* as a percent of decremented *valency* is `100(exp(a/z/(n-1))-1)` where `a` is the *alignment*, `z` is the *size*, `n` is the *dimension* and `d` is the *regular valency*.  The median *diagonals* are usually in the range of 20% to 30%. The maximum *diagonal* of the *models* above is always less than 44%, but intuitively we would expect the maximum to be around 100% or even more (for example, if the *derived variables* were *tri-valent*). 
+
+To investigate why the maximum *diagonal* is less than would be expected, we amended `view_active_concise` to include the distribution of the distribution of *variables* over *valencies* over the *decompostion fuds*. The results are as follows -
+
+
+```
+cd ~/WBOT02_ws
+./WBOT02 view_active_concise model081c
+
+derDist: {({(2,1),(3,2)},12601),({(2,2)},12),({(2,2),(3,1)},369),({(2,2),(4,1)},9),({(2,3)},536),({(2,4)},174309),({(3,2)},220)}
+
+./WBOT02 view_active_concise model089c
+
+derDist: {({(2,1),(3,2)},983),({(2,2),(3,1)},9),({(2,3)},1),({(2,4)},23738)}
+
+./WBOT02 view_active_concise model086c
+
+derDist: {({(2,1),(3,2)},48207),({(2,2)},1),({(2,2),(3,1)},3227),({(2,2),(4,1)},72),({(2,3)},174),({(2,4)},284451),({(3,1),(4,1)},135),({(3,2)},4911),({(4,2)},57)}
+
+./WBOT02 view_active_concise model088c
+
+derDist: {({(2,1),(3,2)},1100),({(2,2),(3,1)},19),({(2,3)},2),({(2,4)},11847),({(3,1),(4,1)},1),({(3,2)},7)}
+
+./WBOT02 view_active_concise model090c
+
+derDist: {({(2,1),(3,2)},1058),({(2,2),(3,1)},9),({(2,4)},24421)}
+
+./WBOT02 view_active_concise model091c
+
+derDist: {({(2,1),(3,2)},3227),({(2,2),(3,1)},46),({(2,3)},3),({(2,4)},57961),({(3,1),(4,1)},2),({(3,2)},8)}
+```
+
+We can see that `{(2,4)}` (four *bi-valent variables*), is by far the most common, followed by `{(2,1),(3,2)}` (two *tri-valent variables* and one *bi-valent variable*) which forms at most 16% of the *fuds*. There are very few *bi-variate* *fuds*. Why do we not see highly *diagonalised* *bi-variate* *fuds*? The reason is probably because there is nearly always at least one weakly *aligned* *variable* that can be added to any strongly *aligned* pair, increasing the *derived alignment* but shortening the *diagonal* because of the increased *dimension*. The *alignment* per additional *variable* would not be much changed, however, so one solution would be for the inducer's deriveder to optimise the *derived variables* by *alignment decremented-dimension-density*. Additional weakly *aligned* *variables* would not then be added. Note that simply changing `WMAX` to 4 would exclude the *tri-valent variables* of the `{(2,1),(3,2)}` case above.
+
+Scanning partly solves the issue - the small *slices* are ignored anyway - and the multiplier is low. The *events* pushed off the *diagonal* by the weakly *alignned* *variables* might be wasted, however, and reduce the *model* growth especially if the *fuds* were near the root. Modifying the deriveder could improve performance also, so we should consider this substantial change to the deriveder in later projects. A post-induction *reduction* would also be an option. Note, however, that experiments indicate that *alignment decremented-dimension-density* might be too strong and only *bi-variate* *fuds* would be selected, throwing away some surprisal. 
+
 <a name = "Conclusion"></a>
 
 ### Conclusion
