@@ -4938,50 +4938,6 @@ We will need to focus on hotspots driven by higher levels to pick up more alignm
 
 <!-- TODO - future developments - 
  
-Of course, if we train the model with images of heads and shoulders at various angles then scanning for actual-potential would be sure to get the features we are interested in. When applied to the film noir the longest paths would be for frames of heads or similar objects. Still, other objects with similar light and dark distributions would also attract wotbot's attention, but we would probably find that interesting nonetheless. Remember that newborns will see a lot of faces.
-
-Remember that the eventual mobile app will see an environment that might not look very much like Film noir so perhaps we should concentrate less on the substrate and more on the active structure and compute scale, ie we need not have conclusive evidence of face pattern matching before moving on so long as it appears to be doing something interesting.
-
-Also the selection of films might make a difference too - too many dark backgrounds in film noir might make the films unrepresentative of what the mobile app will eventually see. On the other hand films do concentrate the emotional experience which is so important to us. We cannot wait for the years of infant experience even if we could capture it without strapping a camera to an actual child's head.
-
-Another issue that affects model quality is of course that films do not much look like the visual perceptions of infants. That we are interested in objects as much as people when young as is evident when we observe them playing with toys. Later they cooperate in games but, when youngest, objects and how they move and behave (if agents) is very important. In the small restricted substrate models of wotbot we will be lucky to get concrete evidence of interest in the actors' heads and bodies and, to a lesser extent, the objects typical in the sets and backgrounds, but if we do, this should be convincing evidence of the potential of this approach.
-
-Sports might be a good source of video of the human body in motion as well as inanimate objects. Of course this is very similar to the kinetics videos that Google did.
-
-Before going on to websockets perhaps we could try to aim for signs that faces are being modelled. Let's do what we can with parameterisation and film noir. However we cannot have high expectations - we could well need dynamic, audio, temporal, emotional cues and other higher level models and modes 
-
-model growth in overflow - If the modelling rate is declining we could perhaps swap the positions of old events of recently experienced slices with old events of neglected slices before rolling them off. Or roll off the smaller slice of the oldest and next oldest events. Or the slice with the least likelihood. Or shorter path. Note that the sequence will be wrong if continuous 
-
-Perhaps decreasing resolution towards the edge of the frame.
-
-Initial random model - cf 202302170645 view_fractions for 52 versus 61.
-
-Experiment with sizes, scales, valencies and thresholds. 
-
-Do concentric multi-scale within a single substrate.
-
-Could experiment with higher valency, eg 20-valent. But would need threshold and xmax > 400. Probably would require a threshold of 800 or 1600. 
-
-Balanced valency. Perhaps we should also consider deviation and normalise such that the extreme values have a reasonable quantile. The problem is that many images are going to be multi-modal, so the normal distribution would be unrepresentative. Would we use balanced in the underlying of a two level model? Might also wish to standardise the deviation. 
-
-decreasing thresholds, random initial models (Probably fixed valency is not going to be evenly distributed, so start the model with a random before mode 4 to avoid the small absolute variations of texture and background, although view_decomp and limited length browsing suggests that the models are still balanced near the root), tiled driver models
-
-Can have low valency and high valency (computed) variables for the same pixel if the variables are shuffle-linked to prevent tautological alignments.
-
-Experiment with gradually declining thresholds to avoid a lot of useless non-alignments at the start of the path.
-
-Balanced valency compared to edge detection. Easier to implement than edge detection which is also absolute brightness independent. Perhaps we should do the bucketing based on the larger tiled area. Or perhaps we should detect the overall lighting and simply translate the fixed, with the bottom and top values larger or smaller as needed. Of course, films are set at the lighting levels desired by the director, and the light or dark is meaningful. Edge detection, being relative, in addition to surface might well be better.
-
-Local tiling. Could do hot scale when local tiling. Only scan if not off the edge. When doing random offset, instead of random centre, the offset is different for each scale except for no offset. Then have, say, 9 or 13 or 17 actions scale invariant actions depending on the number of tiles offset in each direction. Will require local tiling at 2 level too to make comparable. Alternative is to tiling in current scale and have scale change actions, ie 15 actions. This is simpler, and possibly better if the scale of the foreground objects changes slowly. Another alternative is combined scale and offset change, but this requires 54 actions, although perhaps we would require only 15 random before going topological in each slice.  Note that we have up to 400 transitions since bidirectional, so 54 actions is probably ok since we are always on diagonal. Some actions will be disallowed anyway if they go off slice. Let's leave hot scale tiling for the moment, separating scale and offset actions has the benefit of less compute and is partly compensated for by topological search. Random local hotspot will probably grow less than hotspot plus hotscale.
-
-Topology Use unique slice and non reverse actions to prevent small loops, but probably doesn't matter if we are just interested in expected size including no change, especially if we use bidirectional.
-
-Remodelling. Driver models. If we remodel by inducing a new model from the history, remember that the sample is only representative for the hotspots of the old model. I suppose, however, the new model will only be a tidying up of weakened alignments and lopsidedness, so the new hotspots will proabably be fine and new samples will still be likely and representative.
-
-Do a border check to make sure the x and y coordinate diffs are both not less than say 4, to avoid expanding hotspots.
-
-actor 4 - performance challenge, image queues, tile checksums and slice caching
-
 multi-scale - Hot spots and hot scales. Foreground objects are seen at different distances more than background. So multi-scale should increase the frequency. the multi-scale model might to better so long as the scales incorporate the range of shots typically used in the B&W films that we have. Measure some heads from the videos for various shots and determine the set of scales necessary.
 
 smaller frame or two level - note that the underlying seems quite localised in the [extract](#actor002_model036_Film_Noir_001_extract) and not necessarily all that centralised. Could also blank out periphery initially to focus in the centre of the frame, but probably best to have small underlying frames in two level. Possibly driven by single level tiled to identify the hot spots and scales. The choice of the substrate size for the underlying can be suggested by the hotspot scale. If we cannot scan the underlyings because of compute resources we want the underlying model to be fairly insensitive to small translations.
