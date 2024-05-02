@@ -4910,6 +4910,10 @@ Offline record sets
 
 model and induce paramaters such as min diagonal
 
+Still a bit of a puzzle why the diagonal never goes above 44%. I suppose we could look at the derived histogram, but would need to do this for the shuffle as well. Probably if the diagonal were higher than 44% for a bivariate derived, it would always add another variable. So the existing bivariate, which form only a few percent, had no other variables that could be added given the shuffle.
+
+Decremented dimension density. We must test the alignment decremented dimension density. No point in starting WBOT03 without checking. But should the deriveder do it only at the top layer? Yes, but increase breadth BMAX. However, first have a look at the slice sizes of model 90 underlying and examine the diagonals to guess how much if at all there is dilution. Also we might simply push the alignments along a few steps where they may in fact increase the multiplier and so the diminution of interesting events would be the same. We ultimately need motor control to increase burstiness. Could add a new parameter NMAX to deriveder. Post induction reduction is rather cumbersome unless we return the derived and shuffle derived histograms.
+
 
 Model architecture.
 

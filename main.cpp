@@ -446,6 +446,12 @@ int main(int argc, char *argv[])
 				auto& fs = dr.fuds[fud];
 				auto parent = fs.parent;
 				double lnwmax = std::log(wmax ? wmax : fs.children.size());
+				auto& tr = fs.fud.back();
+				auto n = tr->dimension;
+				auto sh = tr->shape;
+				std::map<std::size_t, std::size_t> derDist;
+				for (std::size_t i = (fs.parent?1:0); i < n; i++)
+					derDist[sh[i]]++;
 				std::vector<std::pair<double,std::size_t>> slices;
 				for (auto slice : fs.children)		
 				{
@@ -455,7 +461,7 @@ int main(int argc, char *argv[])
 				std::sort(slices.rbegin(), slices.rend());
 				if (flip)
 					std::cout << std::setprecision(3) << slices.front().first << "; ";
-				std::cout << fud << ", " << activeA.historySlicesLength[parent] << ", " << parent << ", " << fs.children.size();
+				std::cout << fud << ", " << activeA.historySlicesLength[parent] << ", " << std::hex << parent << std::dec << ", " << fs.children.size() << ", " << (n-(fs.parent?1:0)) << ", " << derDist;
 				for (auto& pp : slices)
 				{
 					std::cout << "\t(" << std::setprecision(3) << pp.first << ", " << std::hex << pp.second << std::dec << ")\t";
