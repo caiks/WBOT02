@@ -3054,6 +3054,7 @@ int main(int argc, char *argv[])
 		bool distributionOnly = ARGS_BOOL(distribution_only);	
 		int lengthOver = ARGS_INT(over_length);
 		bool imageShowIs = ARGS_BOOL(show_image);	
+		int representationsMin = ARGS_INT(minimum_representations);
 		if (ok)
 		{
 			ok = ok && model.size();
@@ -3104,6 +3105,7 @@ int main(int argc, char *argv[])
 		scaleX = sizeX * interval;
 		scaleY = sizeY * interval;
 		std::vector<std::tuple<std::size_t,double,std::size_t,std::size_t,std::size_t,std::size_t>> actsPotsCoord(sizeY*sizeX);
+		SizeSizeUMap cvc;
 		if (ok)
 		{
 			Active activeA;
@@ -3137,6 +3139,7 @@ int main(int argc, char *argv[])
 			auto cap = (unsigned char)(ActiveUpdateParameters().mapCapacity);
 			auto& dr = *activeA.decomp;	
 			auto& cv = dr.mapVarParent();
+			if (representationFilename.size()) cvc = cv; // make a copy if necessary			
 			auto& vi = dr.mapVarInt();
 			auto& sizes = activeA.historySlicesSize;
             auto& lengths = activeA.historySlicesLength;
@@ -3410,7 +3413,7 @@ int main(int argc, char *argv[])
 			EVAL(stage);
 			TRUTH(ok);	
 		}
-		if (ok)
+		if (ok && representationFilename.size())
 		{	
 			if (!distributionOnly)
 			{
@@ -3450,14 +3453,19 @@ int main(int argc, char *argv[])
 					auto slice = std::get<4>(t);
 					if (slice && reps.count(slice) && (!lengthOver || lengthOver < length))
 					{
-						auto x = std::get<2>(t);
-						auto y = std::get<3>(t);
-						auto average = std::get<5>(t);
-						auto posX = centreX + (interval * x - scaleX / 2.0) * captureHeight / captureWidth;
-						auto posY = centreY + interval * y - scaleY / 2.0;
-						QPointF point(posX*captureWidth,posY*captureHeight);
-						auto rep = reps[slice].image(1,valency,average).scaledToHeight(scale*captureHeight);
-						representationPainter.drawImage(point,rep);
+						while (slice && (!reps.count(slice) || !reps[slice].count || reps[slice].count < representationsMin))
+							slice = cvc[slice];	
+						if (reps.count(slice))
+						{						
+							auto x = std::get<2>(t);
+							auto y = std::get<3>(t);
+							auto average = std::get<5>(t);
+							auto posX = centreX + (interval * x - scaleX / 2.0) * captureHeight / captureWidth;
+							auto posY = centreY + interval * y - scaleY / 2.0;
+							QPointF point(posX*captureWidth,posY*captureHeight);
+							auto rep = reps[slice].image(1,valency,average).scaledToHeight(scale*captureHeight);
+							representationPainter.drawImage(point,rep);
+						}
 					}
 				}
 			}
@@ -4010,7 +4018,7 @@ int main(int argc, char *argv[])
 				{
 					auto length = std::get<0>(t);
 					auto slice = std::get<4>(t);
-					if (slice && (!lengthOver || lengthOver < length))
+					if (slice && reps.count(slice) && (!lengthOver || lengthOver < length))
 					{
 						while (slice && (!reps.count(slice) || !reps[slice].count || reps[slice].count < representationsMin))
 							slice = cvc[slice];	
