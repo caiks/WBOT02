@@ -4890,13 +4890,42 @@ Scanning and filtering of *events* partly solves the issue - the small *slices* 
 
 ### Conclusion
 
+`WBOT02` did not require any new functionality to be made to the base libaries, [AlignmentC](https://github.com/caiks/AlignmentC) and [AlignmentRepaC](https://github.com/caiks/AlignmentRepaC), but we have added spatial *underlying* (i.e. a shared *underlying model*), computed *variables*, and asynchronous processing to [AlignmentActive](https://github.com/caiks/AlignmentActive). The most promising *model* 90 has computed *variables* in its *substrate*. Computed *variables* will be important in later projects because they allow high effective *valency* but remove the requirement to have large induce thresholds. Also, we will not have to choose the bucketing of sensor *variables* that have no obvious metric, such as brightness gradients, but are merely centrally or symmetrically distributed.
+
 In order to move from the one dimensional lidar of Turtlebot to the two dimensional camera of Wotbot, we have actively *modelled* images grabbed from screen and extracted from video. The sources included children's television and Film Noir; there has been enough of these sources to initialise the *models* for vision before advancing to live streaming via a camera. In the future we should try to find video that is more like life e.g. from child psychology and behavioural studies or 'reality' television. For example, we do not wish to have sound *modelled* only from talking heads. 
 
-Although we have used video as a data source, we have not yet been focussed on *modelling* temporal or dynamical *alignments*. In fact, to obtain high *alignments* near the root of the *decompositions* (and also to maintain reproducibility) we have deliberately removed continuity by randomising some of the record sets in later *models*. In so far as we have used sequence, we have selected the centre that we hope will continue to have high *model likelihood* in subsequent frames. In `WBOT03` we will move on to *model* both spatial and temporal gradients such as edges and small movements. After that we will *model* higher *level* temporal *slice* sequences to group together saccade-like *alignments* which might represent objects in a scene. We will also consider audit which is intrinsically temporal.
+Although we have used video as a data source, we have not yet been focussed on *modelling* temporal or dynamical *alignments*. In fact, to obtain high *alignments* near the root of the *decompositions* (and also to maintain reproducibility) we have deliberately removed continuity by randomising some of the record sets in later *models*. In so far as we have used sequence, we have selected the centre that we hope will continue to have high *model likelihood* in subsequent frames. In `WBOT03` we will move on to *model* both spatial and temporal gradients such as edges and small movements. After that we will *model* higher *level* temporal *slice* sequences to group together saccade-like *alignments* which might represent objects in a scene. We will also consider audio which is intrinsically temporal.
 
-Our analysis of progress has been both quantitative and qualitative. For the former we have produced tables of various configurations, parameters and statistics of the *models*. *Model* growth and multiplier were especially important statistics. By comparing the results of incremental changes in the configurations of the *models* using common datasets, we have been able to roughly quantify the contributions of each parameter and mode. On the qualitative side we have taken screenshots of the interactive actor applications, and generated image representations and contour maps. The  actors let us visualise representations of particular *slices* as we navigated around an image showing the *slice* ancestor and siblings, and examples of other *events* in the same *slice*. The *model* position and length contour maps and over-length maps have shown us where attention is distributed and how it varies as we move form place to place at different scales.  By using colour to show where any particular *slice* is in the sequence of leaf *slices* of the ordered paths of the *decomposition* tree, we have been able to indicate how closely related different locations in the image are within the *model*. These image analysis methods have enabled us to gain an idea of what the *model* 'sees' - where the hotspots are most concentrated and where the *likelihood* is highest for a given scene. We have also been able to show how the *underlying substrate variables* are grouped and what their the degree of coverage of the frame is. Together these methods have helped us decide if the various modes and parameters produced *models* that pay attention to areas that are also interesting to humans, e.g. socially significant areas such as faces. We have also gained some idea of the completeness of the *models* by comparing the representations to the original images.
+Our analysis of progress has been both quantitative and qualitative. For the former we have produced tables of various configurations, parameters and statistics of the *models*. *Model* growth and multiplier were especially important statistics. By comparing the results of incremental changes in the configurations of the *models* using common datasets, we have been able to roughly guage the contributions of each parameter and mode. On the qualitative side we have taken screenshots of the interactive actor applications, and generated image representations and contour maps. The  actors let us visualise representations of particular *slices* as we navigated around an image showing the *slice* ancestor and siblings, and examples of other *events* in the same *slice*. The *model* position and length contour maps and over-length maps have shown us where attention is distributed and how it varies as we move form place to place at different scales.  By using colour to show where any particular *slice* is in the sequence of leaf *slices* of the ordered paths of the *decomposition* tree, we have been able to indicate how closely related different locations in the image are within the *model*. These image analysis methods have enabled us to gain an idea of what the *model* 'sees' - where the hotspots are most concentrated and where the *likelihood* is highest for a given scene. We have also been able to show how the *underlying substrate variables* are grouped and the degree to which they cover the frame. Together these methods have helped us decide if the various modes and parameters produced *models* that pay attention to areas that are also interesting to humans, e.g. socially significant areas such as faces. We have also gained some idea of the completeness of the *models* by comparing the representations to the original images.
 
-`WBOT02` did not require any new functionality to be made to the base libaries, [AlignmentC](https://github.com/caiks/AlignmentC) and [AlignmentRepaC](https://github.com/caiks/AlignmentRepaC), but we have added spatial *underlying* (i.e. a shared *underlying model*), computed *variables*, and asynchronous processing to [AlignmentActive](https://github.com/caiks/AlignmentActive). Computed *variables* will be important in later projects because high *valency* avoids the artificial *value* bucketing necessary to keep induce thresholds reasonable. Also, we will not require constraints on sensor *variables* that have no obvious metric, such as brightness gradients, but are merely centrally or symmetrically distributed.
+The conclusion of our analysis is that *2-level model* 90 is the most promising basis for further investigation. Single *level models* have little connectivity between regions. We can see many examples of unrelated foreground objects or backgrounds classified together simply because of the chance distribution of brightness. Nevertheless the single *level models*, especially those with *events* subject to a minimum entropy, often do have hotspots in the places that we find interesting, and so the representations are sometimes better than for the 2-*level*. For example, here is a representation for 1-*level* *model* 61 (showing only *slices* with at least 10 *events*) -
+
+![contour005_061_minent_representation_minrep](images/contour005_061_minent_representation_minrep.png) 
+
+Compare this to 2-*level* *model* 90 -
+
+![contour005_090_scale3_minent_representation](images/contour005_090_scale3_minent_representation.png) 
+
+However, we have shown that *2-level models* have more convolved than *1-level models*, i.e. nearby points in the image are nearby in the *model*. The reason is that the whole frame is *modelled* locally then globally so that the set of *underlying variables* covers a large part of the *substrate*. For example, this is the position map for paths of length 9 or more for 1-*level* *model* 61 -
+
+![contour005_061_minent_over9_show_image_position](images/contour005_061_minent_over9_show_image_position.png) 
+
+We can see that the *slices* that are near each other in the image are sometimes far apart in the *model*. Compare much greater degreee of convolution in 2-*level* *model* 90 (showing paths of length 12 or more) -
+
+![contour005_090_scale3_minent_21_over12_show_image_position](images/contour005_090_scale3_minent_21_over12_show_image_position.png) 
+
+Although the convolution is greater for *2-level models*, we can still see boundaries where there are large jumps within the *model* for small changes in position in the image. So searching a *slice* topology, golf style, for the best guess for the next high *likelihood* *event* might easily miss important *slices*. We have instead used scanning and filtering for the top *likelihoods*. These methods have increased growth and lowered multipliers to create larger *models* with long mean *slice* lengths. 
+Scanning also seems to allow us to track slow moving objects in real time.
+
+Higher *level models* also require less memory to encode *events* (of the order of the square root of the *substrate* *dimension*) and so we can have more *history* for the given computation limits.
+
+It is hard to say how how much larger *model* 90 would need to be to attain animal-like or human-like vision. For example, *alignments* in facial features seem to be relatively weak and may require hints other than minimum entropy to enchance them. There is a huge number of possible configurations of hints, *substrates* and parameter-sets that we could select for further experiments. We will aim to use knowledge from neuro-physiology and computer vision to guide us in `WBOT03`. 
+
+Static record sets are becoming unmanagably large, although randomising has been an advantage when we are beginning the *decomposition* to make the root *alignments* are as high as possible. We will deal with this by have dynamically decreasing thresholds and eventually by dynamic remodelling of root *fuds*. There is also an advantage to centering when scanning to improve burstiness, and ultimately we need it for the temporal and saccade-sequence features at higher *levels* which will use *slice* topologies. That is, random sets of *events* are fine at the first *level*, but we will need centered scanning search for the second *level*, and temporal topology search at higher *levels*.
+
+We will return to processing videos and *modelling* synchronously. [Qt](https://www.qt.io) has been a good framework for interactive applications, but the integration of the video processing into the event loop has posed difficulties. We will process videos frame by frame on demand instead of at some multiple of realtime. 
+
+After integration of both sound and vision modes, where the motor actions are restricted to directing attention, we will consider embodied agents in order to avoid the problem of the combinatorial explosion inherent in *specialising models*. That is, by experimenting on the environment to control unwanted noise - *events* in low *likelihood* parts of the *model* - the actor can grow the *model* with bursts of *events* in a small set of high *likelihood* *slices*. These concentrations of interesting *events* would be rare if left to chance and so have to be actively produced. Embodiment, real or virtual, will be challenging so we should aim to as close to our computational limits as we can before moving to this stage, necessary though it is.
 
 
 model and induce parameters -
@@ -4913,64 +4942,14 @@ balanced valency
 multiple scales
 
 
-Model architecture -
-
-The volume of the single level structure substrate is so huge that 100k leaf slices or some small multiple is still going to contain a lot of alignments and so the classification is far from a map to animal resolutions. Move on to new substrates and levels. Using both will throw away a lot of uninteresting alignments as we have already done by scanning for hotspots.
-
-Higher level. Single level does not have any localisation or connectivity between regions. We can see many examples of unrelated foreground objects or backgrounds classified together simply because of the distribution of brightness. What we want is global scale information that distinguishes between ovals and the letter X offset to one side. The focus seems to follow interesting objects around as the objects move.
-
-Nevertheless the single *level models*, especially those with a minimum entropy, often do have hotspots in the same places that we find interesting, and so the representations are sometimes better than for the 2-*level*. For example, here is a representation for 1-*level* *model* 61 (showing only *slices* with at least 10 *events*) -
-
-![contour005_061_minent_representation_minrep](images/contour005_061_minent_representation_minrep.png) 
-
-Compare this to 2-*level* *model* 90 -
-
-![contour005_090_scale3_minent_representation](images/contour005_090_scale3_minent_representation.png) 
-
-
-convolution - shown that by using 2-level we can have convolution i.e. nearby points in the image are nearby in the model. The reason is that the whole frame is modelled locally then globally so that the set of underlying covers a large part of the substrate. a very jagged landscape - which poses a question mark over the golf ball approach to scanning. Is a gentle pressure enough to demonstrate intelligence - an ineffable quality which is considerably harder to show than faster model growth? Non likely versus likely modes. Golf ball approach does not work because there is no smooth gradient. Must scan.
-
-For example, this is the position map for paths of length 9 or more for 1-*level* *model* 61 -
-
-![contour005_061_minent_over9_show_image_position](images/contour005_061_minent_over9_show_image_position.png) 
-
-We can see that the *slices* that are near each other in the image are sometimes far apart in the *model*. Compare much greater degreee of convolution in 2-*level* *model* 90 (showing paths of length 12 or more) -
-
-![contour005_090_scale3_minent_21_over12_show_image_position](images/contour005_090_scale3_minent_21_over12_show_image_position.png) 
-
-
-We will need to focus on hotspots driven by higher levels to pick up more alignments in facial features because these are relatively weak. We have already seen that we need entropy restrictions to avoid the dull areas of the image. Our challenge is to use hints from biology to enhance the alignments that are interesting to humans, eg entropy, hotspots, gradients spatial and dynamic, central area limits or valency variations.
-
-
-mode techniques -
-
-Scanning works well so continue to leave topologies to one side for the moment. 
-
-scanning and filtering for potential and actual-potential likelihood - the potential and actual-potential models demonstrate that the search for model growth can be achieved even without restricting the history size, which we were forced to do in TBOT03. "We were able to demonstrate that deliberately searching for interesting or unusual slices, ... can accelerate model growth, at least in the case of limited active history size." Now with WBOT02 we have proved it without constraining size, although the search is a scan and then selection of likely centres, not a topological slice transition search. 
-
 
 engine technqiues -
 
 Mention asynchronous and throttling of events. 
 
-Offline record sets
 
-
-
-
-What's next.
-
-To conclude, computed 2-level model 90 appears to be the most promising basis for further investigation. But how many steps that would be needed to obtain animal-like vision is hard to say. Given the many possible hints, substrates and parameter-sets, we should use knowledge from neuro-physiology to guide us. link to model 90 and mention the over-length image rather than the representation as proof of progress.
-
-Offline record sets are unmanagably large, although randomising is an advantage at the substrate and at level-1 models. We can deal with this by have dynamically decreasing thresholds and eventually by dynamic remodelling of root fuds.
-
-There is an advantage to centering when scanning to improve burstiness and ultimately we need it for the 3-level temporal or saccade-sequence features of 3-level which will use slice topology. So we have random for 1-level, centered scanning search for 2-level, and topology search for 3-level. With scanning we are hoping to see long enough paths to see high-frequency features in the examples and similar features spread over only a few hotspots (we can test this by moving an image horizontally/vertically and by scaling), i.e. a sparsity of hotspots implying a degree of 'convolution' between hotspots.
 
 Future implementation -
-
-Qt is good for interactive applications, but we can do static compute and analysis so remove added complexity for the moment and go with OpenCV or similar. 
-
-Problem is that we are running out of memory so we must experiment with substrate and scanning to gauge the practical limits before going on to topologies and burstiness which might require embodiment.
 
 The conclusion to this stage is that we are beginning to see features classified together with the compute resources so far, but we will need new substrates and structures to make further progress especially because proper classification requires dynamic gradients and ideally temporal agent manipulation to separate objects from background. For example ornaments sitting on shelves are not grouped together as bowls, vases, statuettes, etc regardless of the shelf. Multi-scale will be able to improve this for faces which appear frequently at different distances but objects infrequently seen in film noir would require embodied interactional experience - the sort of knowledge acquired by infants playing with toys.
 
@@ -4983,5 +4962,3 @@ We will need to focus on hotspots driven by higher levels to pick up more alignm
 temporal and spatial gradients, edge detection and fourier
 
 higher level temporal models. To enable locomotion and manipulation we need the topology working for vision and sound. Probably also need temporal, certainly for conversation and simulation.
-
-After integration of both sound and vision modes, where the motor actions are restricted to directing attention, we will consider embodied agents in order to avoid the problem of the combinatorial explosion inherent in *specialising models*. That is, by experimenting on the environment to control unwanted noise - *events* in low *likelihood* parts of the *model* - the actor can grow the *model* with bursts of *events* in a small set of high *likelihood* *slices*. These concentrations of interesting *events* would be rare if left to chance and so have to be actively produced. Embodiment, real or virtual, will be challenging so we should aim to as close to our computational limits as we can before moving to this stage, necessary though it is.
