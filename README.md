@@ -33,7 +33,10 @@ The wotbot [WBOT01 repository](https://github.com/caiks/WBOT01) was essentially 
 
 [Download, build and run in Ubuntu](#main_Ubuntu)
 
-[Discussion](#Discussion)
+[Actor node](#Actor)
+
+[Conclusion](#Conclusion)
+
 
 <a name="main_Windows"></a>
 
@@ -169,24 +172,37 @@ which should produce something like
 [Merger] Merging formats into "Amazing Physics Toys_Gadgets 1 [Y5dylh2aOiw].webm"
 ```
 
-<a name = "Discussion"></a>
-
-## Discussion
-
-Now let us investigate various wotbot modes and active structures. 
-
-[Actor node](#Actor)
-
-[Conclusion](#Conclusion)
-
-
 <a name = "Actor"></a>
 
-### Actor node
+## Actor node
 
 `WBOT02` has a `main` routine that examines the first command line argument and chooses its procedure accordingly. We discuss each of the procedures in the sections below -
 
-#### screen001 and screen002
+[screen001 and screen002](#screen001_and_screen002)
+
+[camera001](#camera001)
+
+[video001 and video002](#video001_and_video002)
+
+[Records and representations](#Records_and_representations)
+
+[screen003 and screen004](#screen003_and_screen004)
+
+[actor001 description](#actor001)
+
+[actor001 models](#actor001_models)
+
+[actor002 and actor003 description](#actor002_and_actor003_description)
+
+[Model analysis tools](#Model_analysis_tools)
+
+[actor002 and actor003 models](#actor003_models)
+
+[Diagonals](#Diagonals)
+
+<a name = "screen001_and_screen002"></a>
+
+### screen001 and screen002
 
 In `screen001` we test the screen grab functionality. We check to see how long it takes to (i) grab the pixmap, (ii) convert it to an image and (iii) read every pixel of the image. This is the typical output -
 ```
@@ -256,7 +272,9 @@ imaged	0.0024594s
 ```
 Capturing the smaller image of around a quarter of the area takes around half of the time, around 20 -25 ms.
 
-#### camera001
+<a name = "camera001"></a>
+
+### camera001
 
 `camera001` is similar to `screen002`, except that a camera image is captured instead of a rectangle of the screen. Also the process is asynchronous - the `capture` method of a `QImageCapture` is called and when the image is available the `imageCaptured` callback processes the image -
 
@@ -309,13 +327,15 @@ imaged	0.000911s
 ```
 In this case the capture takes around 10 -30 ms.
 
-#### video001 and video002
+<a name = "video001_and_video002"></a>
+
+### video001 and video002
 
 We made a couple of experiments with capturing frames from videos, `video001` and `video002`. The intention was to use the playlist of youtube videos from the [Kinetics dataset](https://www.deepmind.com/open-source/kinetics), which are a set of categorised videos of activities. Many of the videos, however, were filmed with quite a low resolution and so it is difficult to ensure that low scale frames are such that the cells are not all highly interpolated in any particular video. That is, many of the videos are very blurry at smaller scales. The capture process itself and automating a playlist were both difficult tasks too. For `actor001` and `actor002` we concentrated on grabbing videos from the screen and obtaining the videos from high resolution sources. Later on, in `actor003`, we successfully automated learning from a playlist of videos to allow headless *modelling* in the cloud.
 
 <a name="Records_and_representations"></a>
 
-#### Records and representations
+### Records and representations
 
 Now let us consider scaled and centered average brightness records and their representations. The `Record` class is defined in `dev.h`. It represents a rectangular frame of a part or the whole of an image. It is defined by horizontal and vertical lengths or scales (real numbers between zero and one) and a centre coordinate (a pair of real numbers between zero and one). It consists of a two dimensional array of cells of integral brightness value between 0 (dark) and 255 (light). It has persistence methods and a method to convert it to an *event*, i.e. a `HistoryRepa` of *size* 1 of a *substrate* consisting of (i) *variables* for each cell of a given cell *valency*, plus (ii) a scale *variable* of a given scale *valency*. 
 
@@ -364,7 +384,9 @@ rr2
 15:46:25: C:\caiks\build-WBOT02-Desktop_Qt_6_2_4_MSVC2019_64bit-Release\WBOT02.exe exited with code 0
 ```
 
-#### screen003 and screen004
+<a name="screen003_and_screen004"></a>
+
+### screen003 and screen004
 
 `screen003` is similar to `screen002` but adds records. The `screen003` capture procedure grabs the screen rectangle in the same way as `screen002`, but then creates records from the image. There is a record for each of 5 scales, which default to `[1.0, 0.5, 0.25, 0.125, 0.0625]`, all sharing the same centre. Each of these records has a *valency* of 256. For each of these greyscale records we create another bucketed record using the `valent` method, defaulting to a *valency* of 10. These two sets of records are converted to images with a `multiplier` of 3 and then arranged in two rows of descending scales below the grabbed image. The bottom row has the lower *valency* and these are what the wotbot will eventually see. Here is an example -
 
@@ -400,7 +422,7 @@ where actor.json is, for example,
 
 <a name = "actor001"></a>
 
-#### actor001 description
+### actor001 description
 
 `actor001` is the first version of the wotbot that uses the [active framework](https://github.com/caiks/AlignmentActive) to do dynamic *modelling*. Initially the focus is at fixed positions within the image; later we add a certain amount of randomisation. These experiments are similar to those of the random modes of [`TBOT03`](https://github.com/caiks/TBOT03#Random_modes_10_12).
 
@@ -457,7 +479,9 @@ If the `no_induce` flag is not set, the representations of the *slices* of the n
 
 The remainder of `Win006::act` is as for `Win005::act` - the labels are updated with their latest images and statistics, and the `QTimer` set for the next act.
 
-#### actor001 models
+<a name = "actor001_models"></a>
+
+### actor001 models
 
 Now let us consider some of the *models* obtained by `actor001`. In order to make them comparable, we have trained them on the first few hours of the [Fireman Sam videos](https://www.bbc.co.uk/iplayer/episode/p08phyzv/fireman-sam-series-1-1-kite?seriesId=b00kr5w3). Fireman Sam is an animated character for children's television from the BBC. The programmes consists of around 51 episodes of about 10 minutes. In the early series the characters are animated plasticine; in later series CGI is used. The indoor scenes are generally fairly simple, in the early series at least, but outdoor scenes and later indoor scenes are more complex. The lighting is fairly even and primary colours are used a great deal - again, especially in the early series.
 
@@ -731,7 +755,9 @@ None of the *models* with only one frame (5, 6 and 7) have induce lags. There is
 
 Note that the `actor001` *models* were all subject to a bug in the record `valent` bucketing which meant that the first *value* was too infrequent and the last *value* was too frequent. Thus the *valency* was more like 9 than 10.  Qualitatively, however, the *models* still seem to work quite well. The `actor002` *models* were all corrected nonetheless.
 
-#### actor002 and actor003 description
+<a name = "actor002_and_actor003_description"></a>
+
+### actor002 and actor003 description
 
 In `actor001` the fixed position *models* had many identical *events* in a *slice* from the repetition of the opening introduction sequence and the closing credit sequence, and from pauses in the action. Some *slices* might even be identical to a single *event*. We would like to compare these *models* to those created in random or other modes. To see what is going on in a *model*, the `actor002` GUI displays the representations and *likelihoods* of the ancestors and siblings of the current centre's *slice*. It can also optionally display some example *events* from the *slice*.
 
@@ -1088,11 +1114,13 @@ actor	dump	file name: model059.rep	time 81.7794s
 actor	event id: 2900046
 ```
 
-#### Model analysis tools
+<a name = "Model_analysis_tools"></a>
+
+### Model analysis tools
 
 <a name="view_active_concise"></a>
 
-##### view_active_concise
+#### view_active_concise
 
 We can dump some of the statistics of an active given a *model*, for example 
 
@@ -1185,7 +1213,7 @@ These vary very little between *models* because the *induction* parameters do no
 
 <a name="view_event_lengths_by_scale"></a>
 
-##### view_event_lengths_by_scale
+#### view_event_lengths_by_scale
 
 We can also view the distribution of *slice* path lengths over *events* grouped by scale given a *model*, for example 
 
@@ -1223,7 +1251,7 @@ mean: 6.77868
 ```
 In the example above for *model* 66 the scales were defined as `"scales" : [0.5, 0.354, 0.25, 0.177, 0.125, 0.088]`. The scale index is zero-based, so '0' corresponds to 0.5 in this case. We can see that, in this example, the mean path length increases with decreasing scale.
 
-##### compare_distributions 
+#### compare_distributions 
 
 We can show the statistics for any list of distributions using `compare_distributions`. For example, if we have a file `distributions.json`, which contains path length distributions for several *models*,
 ```json
@@ -1283,7 +1311,7 @@ The example table above shows various *models* that are compared to *model* 89 (
 
 <a name="view_decomp"></a>
 
-##### Decomposition tools
+#### Decomposition tools
 
 We desire that *model decompositions* are well balanced so that they are good *classifications* with the maximium degree of abstraction along the *slice* paths, i.e. such that each *fud* is highly *diagonalised*. We also wish to be sure that *alignments* do not simply disappear with additional *history*, i.e. they are not temporary. We can check both by looking at the *likelihoods* or, equivalently in this case, *sizes* of sibling *slices* in descending order. If the children are unbalanced there will be a single large *slice* followed by small *slices*. If the *alignment* has disappeared, all of the children *slices* will have similar *sizes* and *likelihoods* around zero. We can get the information we need using `view_decomp`, for example -
 
@@ -1369,7 +1397,7 @@ The aim of `view_fractions` is to distinguish between *on-diagonal* and *off-dia
 
 Note that if the active is overflowing, a parent *slice* sometimes has rolled off *events* before it reaches the induce threshold. In this case the sum of the children *slice sizes* will be less than the parent's accumulated *size*. This is indicated by `ok` or `fail` in the output. `view_fractions` uses the sum of the children *slice sizes* as the denominator to avoid this.
 
-##### Model logs
+#### Model logs
 
 The logs of the *models* of the `actor003` runs can be analysed too. For example, *model* 55 -
 
@@ -1434,7 +1462,7 @@ million-events|actual fuds|1+ln(million-events)|expected fuds|difference|differe
 
 <a name="generate_contour"></a>
 
-##### generate_contour
+#### generate_contour
 
 Useful though it is to compare the statistics of different *models* it is also desirable to have qualitative comparisons. One way to do this is to *apply* a *model* to test images. The `generate_contour009` tool scans an image to obtain the *slice* at each pixel step. From this we can generate further images to obtain information about how the *model* is behaving at each location of the given image.
 
@@ -1542,13 +1570,31 @@ lengthsHyperKurtosisExcess: 1.6019
 
 <a name="actor003_models"></a>
 
-#### actor002 and actor003 models
+### actor002 and actor003 models
 
 Now let us consider some of the *models* obtained by `actor002` and `actor003`. Unlike the `actor001` *models* we have varied both the training data and the *modelling* modes and configurations. Later on we will be experimenting with different *substrates* and active structures. There is a gradual accumulation of understanding with each new experiment. So the order of the *models*, which is roughly given by the *model* number, is not necessarily the order in which the issues are presented below. Later information raised questions about earlier experiments and suggested refinements thereof. This also means that it is sometimes difficult to make hard and fast conclusions, even if there is a definite sense of progress.
 
 Note that a selection of screenshots and contour maps are included in the discussion below, but this is only a subset of the images available in the [WBOT02 repository images subdirectory](images) and the [WBOT02 workspace repository](https://github.com/caiks/WBOT02_ws).
 
-##### Scales
+[Scales](#Scales)
+
+[Model table](#Model_table)
+
+[Random models](#Random_models)
+
+[Potential filtered random models](#Potential_filtered_random_models)
+
+[Actual-potential filtered random models](#Actual-potential_filtered_random_models)
+
+[Scanned models](#Scanned_models)
+
+[Tiled scanned models](#Tiled_scanned_models)
+
+[Multi-level models](#Multi_level_models)
+
+<a name="Scales"></a>
+
+#### Scales
 
 The scales in `actor001` were integral powers of a half, `(1/2)^x`, i.e. 1.0, 0.5, 0.25 and 0.125. In the following we expand the set of scales to half-integral powers of a half, i.e. 1.0, 0.707, 0.5, 0.354, 0.25, 0.177, 0.125, 0.088 and 0.0625 (= 1/16). At the smallest scale of 1/16th, a 30 pixel frame size corresponds to a 480 pixel image height. 
 
@@ -1567,7 +1613,7 @@ scale|2^(-x/2)|1/tan(2^(-x/2))
 
 <a name="Model_table"></a>
 
-##### Model table
+#### Model table
 
 This summarises the *model* results for both `actor002` and `actor003` -
 
@@ -1659,7 +1705,7 @@ Intermediate between the quantitative and qualitative are the contour images. Se
 
 <a name="Random_models"></a>
 
-##### Random models
+#### Random models
 
 *Models* 10-14 run in `mode001` which is equivalent to the pure random mode of [`actor001`](#actor001). `event_size` *events* are taken from each image with the frame centres randomly chosen in a area +/- `random_centreX` and  +/- `random_centreY` about the centre of the image `(0.5,0.5)`. The frame's scale is fixed by the `scale` parameter, which defaults to 0.5. The *model* scales used are successive half-integral powers of half from *model* 10 with a scale of 0.5 to *model* 13 with a scale of 0.177. A record is constructed and bucketed by decile for the frame. See [Records and representations](#Records_and_representations) above for details. 
 
@@ -2076,7 +2122,7 @@ A binomial distribution of path lengths implies that the *models* will become mo
 
 <a name="Potential_filtered_random_models"></a>
 
-##### Potential filtered random models
+#### Potential filtered random models
 
 In order to focus the growth in hotspots, one option is to take a large set of frames from random locations and filter them for high *likelihood* before adding them as *events*. In `mode002`, for each record of a `scan_size` set of random frames we *apply* the current *model* to determine the *slice*. Then we calculate the potential *likelihood* from the *slice size* and the parent *slice size* according to this measure: `(ln(slice_size) - ln(parent_size) + ln(WMAX)) / ln(WMAX)`. The top `event_size` records then become *events*. 
 
@@ -2217,7 +2263,7 @@ This does seem to be the case. The smaller range of hues suggests that the conce
 
 <a name="Actual-potential_filtered_random_models"></a>
 
-##### Actual-potential filtered random models
+#### Actual-potential filtered random models
 
 `mode003` is very similar to `mode002`. Instead of sorting the randomly chosen records by *likelihood* alone, they are sorted first by *slice* path length and then by *likelihood*. This is called actual-potential *likelihood*. We expect that the *model* will be smaller, but that the average path lengths will be longer and possibly the contour map will have more contrast and better resolved hotspots.
 
@@ -2349,7 +2395,7 @@ As in the case of potential *likelihood* *model* 38 [above](#Actual-contour004_0
 
 <a name="Scanned_models"></a>
 
-##### Scanned models
+#### Scanned models
 
 The very high filter ratio of the actual-potential *likelihood* mode (3) *model* 60 of 1 to 400 reduces the *decomposition* path step multiplier to the smallest seen so far (1.69). This suggests that in the limit a complete scan of the all of the frames within the random range would yield us the smallest possible multiplier but still have high *model* growth. In other words, we will systematically search for the best locations for wotbot's attention.
 
@@ -2440,7 +2486,7 @@ From *model* 25 onwards the source images came from Film Noir videos instead of 
 
 <a name="Tiled_scanned_models"></a>
 
-##### Tiled scanned models
+#### Tiled scanned models
 
 The goal of WBOT02 is to specialise in frequently seen objects at varying distances and with varying backgrounds. The specialisation should be in proportion to the frequency; this will be the case if we use some variation of potential *likelihood* to accelerate *model* growth. In addition, we should leave it to the objects themselves to determine how interesting they are - so long as there is no *model* duplication due to simple translation around the hotspots. 
 
@@ -2515,7 +2561,7 @@ We can also demonstrate the behaviour of the tiled mode itself by choosing to sc
 ```
 We can often observe stable arrangements of hotspots form during a camera shot, especially if the `unique_records` parameter is removed.
 
-###### Model 29 versus model 27 
+##### Model 29 versus model 27 
 
 model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyper-skew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2524,7 +2570,7 @@ model029|0.177|5 scanned potential tiled actual-potential|5|bucketed|Film Noir|5
 
 *Model* 29 is the first of the 'scanned potential tiled actual-potential' mode (5) experiments. It differs from *model* 27 in the mode ('scanned actual-potential' mode 4). Both *models* are bucketed *valency* Film Noir. *Model* 29 has highest growth rate so far at 1.287, but the multiplier at 1.83 is similar to the mode 4 *models*. It is less normal than *model* 27. The high growth rate suggests that the balance between global potential and local actual-potential gives an advantage.
 
-###### Model 30 versus model 29
+##### Model 30 versus model 29
 
 model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyper-skew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2535,7 +2581,7 @@ The difference here is that we have moved from bucketed *valency* to fixed *vale
 
 ![actor002_model030_Film_Noir_008](images/actor002_model030_Film_Noir_008.png) 
 
-###### Model 30 versus model 25
+##### Model 30 versus model 25
 
 model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyper-skew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2552,7 +2598,7 @@ to *model* 30 -
 
 This suggests that the tiling is more uniformly interested in features. The very high maximum path length and positive skew of *model* 25 suggests that the *model* 30 interest in low entropy frames has been reduced by the tiling.
 
-###### Model 31 versus model 30
+##### Model 31 versus model 30
 
 model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyper-skew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2561,7 +2607,7 @@ model031|0.177|5 scanned potential tiled actual-potential|5|fixed|Film Noir|452,
 
 The only difference is that the *diagonal* is constrained to be at least 12.0. This reduces growth a little to 1.414 and increases the number of failed *slices* from 28 to 32 as would be expected, but otherwise has little effect on the statistics.
 
-###### Model 34 versus model 30
+##### Model 34 versus model 30
 
 model|scales|mode|id|valency|domain|events|fuds|fuds/ev/thrs|mean|dev|max|skew|kurtosis|hyper-skew|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2570,7 +2616,7 @@ model034|0.177|5 scanned potential tiled actual-potential|5|fixed|10 B&W videos|
 
 *Model* 34 is the first `actor003` *model*, otherwise it has the same configuration as *model* 30. It has similar statistics apart from a longer maximum path length and an increase in higher moments. This could be because of a change in the set of videos.
 
-###### Model 35 versus model 34
+##### Model 35 versus model 34
 
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2580,7 +2626,7 @@ model035|0.177|5 scanned potential tiled actual-potential|5|fixed|14 B&W videos|
 
 *Model* 35 is also an `actor003` *model*, but with a larger *history* and an expanded set of videos. It has slightly reduced growth, but similar multiplier. The higher moments are much more like those of *model* 30. 
 
-###### Model 37 versus model 35
+##### Model 37 versus model 35
 
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2590,7 +2636,7 @@ model037|0.177|5 scanned potential tiled actual-potential|1,5|fixed|12 B&W video
 
 *Model* 37 has a random mode beginning for the first 500,000 *events*, and so has two modal lengths (at 7 and 15). It has a lower mean, and intermediate growth and multiplier. Although it added 4102 *fuds* in the last 500,000 *events*, and so had a better rate (1.641) than *model* 35 in the second half, randomising the beginning merely appears to interpolate between the two modes.
 
-###### Model 39 versus model 35
+##### Model 39 versus model 35
 
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2599,7 +2645,7 @@ model039|0.177|5 scanned potential tiled actual-potential|5|fixed|12 B&W videos|
 
 In *model* 39 we added `"unique_records" : 333` to the configuration compared to *model* 35. This prevents identical records within the previous 20 seconds approximately from being added to the *history*. The list of videos was slightly changed too. The growth and multiplier are around the same. Although we would expect the *model* to be a little more normal, the maximum length, skew and kurtosis have increased greatly. Possibly this is simply because of path dependence and the consequence variation between otherwise identical runs, but we do find that subsequent *models* with the same uniqueness constraint also have very high positive skew, very high kurtosis and long paths. So the effect appears to be to increase interest in low entropy frames, possibly because without uniqueness there would be very little *alignment* if many of the *events* were identical.
 
-###### Models 40 and 41 versus model 39
+##### Models 40 and 41 versus model 39
 
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2641,7 +2687,7 @@ The deviation is very large and there are modes at 17, 33, 40, 42, 50, 53, 60 an
 
 The lighting of the image is important too - sibling and examples all have the similar brightness. See *model* 61 below for a discussion of balanced *valency*.
 
-###### Models 42 to 45 versus model 41
+##### Models 42 to 45 versus model 41
 
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2674,7 +2720,7 @@ and this is the representation for *model* 45 -
 
 Note that at this point we developed checkpointing to handle recovery in case of the occasional crashes that bedevil the video libraries.
 
-###### Model 46 versus models 45 and 41
+##### Model 46 versus models 45 and 41
 
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2702,7 +2748,7 @@ This is the representation for *model* 46 -
 
 ![contour004_046_representation](images/contour004_046_representation.png) 
 
-###### Model 47 versus model 46
+##### Model 47 versus model 46
 
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2747,7 +2793,7 @@ The *model* appears to be better for this image too -
 
 There is a lot of detail around the head, neck and collar and a hint of a mouth. Again, however, the single *level model* is quite good at capturing all the modes of the distributions of light and dark, but not as good at capturing edges or features.
 
-###### Model 50 versus model 47
+##### Model 50 versus model 47
 
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2766,7 +2812,7 @@ Qualitatively, *model* 50 is picking up features, for example -
 
 ![actor002_model050_Film_Noir_006](images/actor002_model050_Film_Noir_006.png) 
 
-###### Models 49 and 51 versus model 50
+##### Models 49 and 51 versus model 50
 
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2784,7 +2830,7 @@ and this is *model* 49 -
 
 ![contour004_049_representation](images/contour004_049_representation.png) 
 
-###### Model 48 versus model 49
+##### Model 48 versus model 49
 
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2799,7 +2845,7 @@ The representation for *model* 48 is perhaps better than that of *model* 49 -
 
 So the larger threshold of 200 is probably better for the higher *valency*.
 
-###### Model 54 versus models 47 and 50
+##### Model 54 versus models 47 and 50
 
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2809,7 +2855,7 @@ model054|0.177|5 scanned potential tiled actual-potential|5|fixed|48 B&W videos|
 
 With *model* 54 we went back to the smaller *history* so it is essentially identical to *model* 47 except that it terminates a little later. *Model* 54 is intermediate between the two earlier *models*, which suggests that the differences between all three are simply due to the variations between runs.
 
-###### Model 55 versus model 54
+##### Model 55 versus model 54
 
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2912,7 +2958,7 @@ with this `actor.json` configuration -
 ```
 This [video](images/actor003_model055_Film_Noir_002.mp4?raw=true) from around 1:45 and this [video](images/actor003_model055_Film_Noir_003.mp4?raw=true) from around 0:17 and 1:28, usually have some frames centered on heads. Of course, this could be simply because of minimum entropy where the backgrounds are dull.
 
-###### Model 56 versus model 55
+##### Model 56 versus model 55
 
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2945,7 +2991,7 @@ The representation of *model* 56 seems to be a little worse -
 
 This [video](images/actor003_model056_Film_Noir_003.mp4?raw=true) from around 1:22 shows that *model* 56 usually has some frames centered on heads, but again this could be because of minimum entropy restricting the attention to heads and bodies where the backgrounds are dull.
 
-###### Models 57 and 58 versus model 55
+##### Models 57 and 58 versus model 55
 
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -2965,7 +3011,7 @@ Let us compare the representations side by side in descending order of scale -
  
 Clearly the whole image improves with decreasing scale, but this is probably not because of better *modelling* of features.
 
-###### Model 59 versus model 55
+##### Model 59 versus model 55
 
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -3004,7 +3050,7 @@ to the map for *model* 59 -
 
 it suggests that perhaps mode 8 produces a less diverse *model* with more prematurely pruned paths, but possibly with more hotspots and some longer paths. This is the effect that we would expect if the mode is biasing attention towards parts of the *model* that happen to be most recent. Whether this increases or decreases feature capture is probably randomly path-dependent.
 
-###### Model 61 versus model 55
+##### Model 61 versus model 55
 
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -3039,7 +3085,7 @@ However, we must bear in mind that it has no sense of global *alignments* - it i
 
 ![actor002_model061_Film_Noir_003](images/actor002_model061_Film_Noir_003.png) 
 
-###### Model 62 versus model 56
+##### Model 62 versus model 56
 
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -3054,7 +3100,7 @@ Of course, we would expect that with a lower granularity the benefit of balanced
 
 From the evidence of this and the previous comparison we can also guess that balanced *valency* is probably better than fixed *valency*.
 
-###### Model 63 versus model 61
+##### Model 63 versus model 61
 
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -3071,7 +3117,7 @@ it appears that attention moves away slightly from the face and towards backgrou
 
 Although the low entropy hole is smaller, we can see that the *model* is less detailed around the face and there are fewer hotspots. The conclusion is that if we wish to concentrate on foreground features we should retain the higher mimimum entropy.
 
-###### Model 69 versus model 61
+##### Model 69 versus model 61
 
 model|scales|mode|mode id|valency|domain|events|fuds|fuds per event per thrshld (at 1m)|mean length|std dev length|max length|skew|kurtosis|hyper-skew|hyper-kurtosis|multiplier|notes
 ---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---
@@ -3101,7 +3147,7 @@ to that of *model* 69 -
 we can see that the hotspots have disappeared, almost to that of a random mode *model*.
 
 
-###### Tiled scanned model conclusion
+##### Tiled scanned model conclusion
 
 Having considered the tiled scanning *models*, let us make some concluding remarks. So far, it appears that with the `actor003` configuration of *model* 61 - 'scanned size-potential tiled actual-potential' mode (6) with balanced *valency*, unique frames, minimum *diagonal*, minimum frame entropy, and a large set of Film Noir videos - we are beginning to see interesting features *classified* together. Although we have perhaps made some progress there are some points to consider.
 
@@ -3117,9 +3163,23 @@ So, while scanning single *level models* has brought us almost to qualitative fe
 
 <a name="Multi_level_models"></a>
 
-##### Multi-level models
+#### Multi-level models
 
-###### Random centre models
+[Random centre models](#Random_centre_models)
+
+[Underlying models](#Underlying_models)
+
+[Underlying models with computed substrate](#computed_substrate)
+
+[Random centre 2-level models](#Random_centre_2-level_models)
+
+[Scanned 2-level models](#Scanned_2_level_models)
+
+[Scanned 2-level model initialised by random model](#Scanned_2_level_model_initialised_by_random_model)
+
+<a name="Random_centre_models"></a>
+
+##### Random centre models
 
 Before going on to consider random centre *multi-level models*, let us first develop a mode that does not require a centre to be chosen in order to allow offline processing. We can do this by selecting random locations, as in modes 1 to 3 and 9. In *model* 66, [above](#model066), we tested the effect of multiple scales in mode 9 where the frames are selected at random but subject to minimum entropy and uniqueness. We found that the *alignments* have been diluted slightly by the multi-scale, but otherwise the *model* looked very much like *models* 52, 53 and 64. That is, the growth is low compared to scanning modes and the multiplier is very high.
 
@@ -3394,7 +3454,9 @@ The representations, however, seem to be nearly as good as *model* 61. Compare t
 
 ![contour005_061_minent_representation](images/contour005_061_minent_representation.png) ![contour005_073_minent_representation](images/contour005_073_minent_representation.png)
 
-###### Underlying models
+<a name="Underlying_models"></a>
+
+##### Underlying models
 
 Now that we have established that there is not much cost to processing offline, let us continue on to develop the *underlying level* for a *2-level model*. We will start with a *substrate* of `8x8 = 64` *variables*. The upper *level* will comprise `5x5 = 25` of these *underlying models* - equivalent to the *substrate* of `40x40 = 1600` which we have been using in the single *level models* so far. We are hoping now, however, to capture global *alignments* at the higher *level*, in order to classify features more reliably. Perhaps we will also be able to increase the degree of convolution to reduce the amount of scanning.
 
@@ -3654,7 +3716,7 @@ We can see that there are broad areas of similar hue, i.e. areas that are closel
  
 <a name="computed_substrate"></a>
 
-###### Underlying models with computed substrate
+##### Underlying models with computed substrate
 
 Before going on to investigate *2-level* *models*, let us consider a *substrate* that consists of  computed *variables* instead of straightforward *multi-valent variables*. By a computed *variable* we mean a small *decomposition* per *variable* which consists of a binary tree of *slices*, each *slice* representing a range of *values*. Each of the paths of the *decomposition* resolves to a single *value*. All of the paths have the same length. At each step along the *decomposition* the *slices* partition the *valency* into smaller and smaller contiguous components. So at the first step along the *slice* path a *256-valent* *variable* will have two *slices* - one of the *values* less than or equal to 127, and the other of the *values* greater than 127. At the second there will be four *slices* with *value* ranges 0-63, 64-127, 128-191 and 192-255. At the last step the leaf *slices* represent a single *value*, so in this case there are 256 leaf *slices*. In total 511 *slice variables* are needed to represent one *256-valent* *variable* using this method. Although replacing a single *multi-valent variable* with many *bi-valent slices* is costly in terms of computation, it allows us to have larger *valencies* and therefore a much more fine-grained approach without needing very large induce thresholds. For example, to *model* two *substrate 32-valent variables* we would need at least a *slice* of `32^2 = 1,024` *events*. Even a *slice* of that *size* is likely to exclude many possible combinations of the two *values*. Furthermore, we would like large tuples in order to increase the coverage of the *substrate*, so in practice we are limited to a *valency* of around 10. Also, the *induction* does not necessarily *roll* contiguous *empty values* contiguously because *multi-valent variables* are not ordered. Computed *variables* both order and uniformly *classify* the *values*, making *alignments* accessible at the optimal level of granularity. Thus computed *variables* give us a much greater flexibility with respect to the definition of the *substrate*.
 
@@ -3921,7 +3983,9 @@ If we compare them to the *model* 81 [position maps](#contour004_081_minent_over
 
 Overall, the computed *substrate* *model* 86 does seem to be better qualitatively than the non-computed *substrate* *model* 81, at least with respect to foreground objects, and it is certainly better quantitatively. Another advantage is that it allows us to have *substrates* with ordered *variables* and high *valencies*. Let us go on now to consider whether it might also produce higher *alignments* in a *2-level model*.
 
-###### Random centre 2-level models
+<a name="Random_centre_2-level_models"></a>
+
+##### Random centre 2-level models
 
 For the first *2-level model* we continued with the offline process `modeller001`, which we used for random centre *1-level model* 73 (mode 12) and random centre *underlying level models* 76-81 (mode 13). Now we add mode 14 for the *2-level models* 82 and 87. For each *event*, mode 14 takes the central `40x40` frame from each `60x60` record in the record set (which is guaranteed to be higher than the minimum entropy requirement for *10-valent*) and then divides it into `5x5` tiles of `8x8`. It then *applies* the *underlying model* to each tile. These *underlying slices* and their ancestor *slices* are reframed by the higher *level* active according to their positions. The *2-level model* is then *applied* to the resultant intermediate *substrate* for active update and induce.
 
@@ -4347,7 +4411,7 @@ Note that computed 10-*valent* *variables* will no longer be symmetric.
 
 <a name="Scanned_2_level_models"></a>
 
-###### Scanned 2-level models
+##### Scanned 2-level models
 
 Now we wish to move to scanning modes for *2-level models*. Contrary to earlier ideas about *2-level* processsing, we can scan without having to have make 25+1 model applications at each cell by tiling the *underlying*, optionally with a cell offset, to make one or more tile sets over the whole scan area, and then do the higher *level* sharing the tile sets. Now the scan will require only 1-2 *model applications* per cell. That is, the compute will be of the same order of magnitude as for *1-level models*. Note that we may be below maximal path lengths if we do not take tile sets for every cell, i.e. 8 tile sets for a tile of size 8, but this should be less of a problem with the evident convolution (which implies a lot of duplicated *model* at small translations), although there are still discontinuities in the map. 
 
@@ -4747,7 +4811,7 @@ The 1-*level* *model* does appear to have less convolution than either of the sc
 
 <a name="Scanned_2_level_model_initialised_by_random_model"></a>
 
-###### Scanned 2-level model initialised by random model
+##### Scanned 2-level model initialised by random model
 
 Now let us conclude our discussion of the *models* by considering *model* 91. It is constructed from initial * 2-level model* 88, which in turn has *model* 86 as its *1-level underlying*, which in turn has a computed *substrate*. Here we wish to see if a random initial *model* followed by a scanned *model* can combine the benefits of both. That is, we hope for high growth and low multiplier and hence better representations and focus on interesting features. The idea is that initialising with a random *model* will find high actual *likelihood* features to form a base from where the scanning mode can build some arbitrary subset of the paths in order to avoid the duplication of small translations, and so obtain very long paths and detailed features.
 
@@ -4848,7 +4912,9 @@ Looking at the length and overmode maps for image 4 and 5 for model 90, it appea
 
 -->
 
-#### Diagonals
+<a name = "Diagonals"></a>
+
+### Diagonals
 
 For some of the *models* above we have noted the median *diagonal* implied by the *derived alignments* of the *induced fuds*. The *diagonals* are implied by the ratio of the *alignment* to the maximum *alignment*, `z(n-1)ln(d)`. That is, the implied *diagonal* as a percent of decremented *valency* is `100(exp(a/z/(n-1))-1)` where `a` is the *alignment*, `z` is the *size*, `n` is the *dimension* and `d` is the *regular valency*.  The median *diagonals* are usually in the range of 20% to 30%. The maximum *diagonal* of the *models* above is always less than 44%, but intuitively we would expect the maximum to be around 100% or even more (for example, if the *derived variables* were *tri-valent*). 
 
@@ -4888,15 +4954,19 @@ Scanning and filtering of *events* partly solves the issue - the small *slices* 
 
 <a name = "Conclusion"></a>
 
-### Conclusion
+## Conclusion
 
 `WBOT02` did not require any new functionality to be made to the base libaries, [AlignmentC](https://github.com/caiks/AlignmentC) and [AlignmentRepaC](https://github.com/caiks/AlignmentRepaC), but we have added spatial *underlying* (i.e. a shared *underlying model*), computed *variables*, and asynchronous processing to [AlignmentActive](https://github.com/caiks/AlignmentActive). The most promising *model* 90 has computed *variables* in its *substrate*. Computed *variables* will be important in later projects because they allow high effective *valency* but remove the requirement to have large induce thresholds. Also, we will not have to choose the bucketing of sensor *variables* that have no obvious metric, such as brightness gradients, but are merely centrally or symmetrically distributed.
 
-In order to move from the one dimensional lidar of Turtlebot to the two dimensional camera of Wotbot, we have actively *modelled* images grabbed from screen and extracted from video. The sources included children's television and Film Noir; there has been enough of these sources to initialise the *models* for vision before advancing to live streaming via a camera. In the future we should try to find video that is more like life e.g. from child psychology and behavioural studies or 'reality' television. For example, we do not wish to have sound *modelled* only from talking heads. 
+In order to move from the one dimensional lidar of Turtlebot to the two dimensional camera of Wotbot, we have actively *modelled* images grabbed from screen and extracted from video. The sources included children's television and Film Noir. There has been enough of these sources to initialise vision *models* before advancing to live streaming via a camera. In the future we should try to find video that is more like life, e.g. from child psychology and behavioural studies or 'reality' television - we do not wish, for example, to have sound *modelled* only from talking heads. 
 
 Although we have used video as a data source, we have not yet been focussed on *modelling* temporal or dynamical *alignments*. In fact, to obtain high *alignments* near the root of the *decompositions* (and also to maintain reproducibility) we have deliberately removed continuity by randomising some of the record sets in later *models*. In so far as we have used sequence, we have selected the centre that we hope will continue to have high *model likelihood* in subsequent frames. In `WBOT03` we will move on to *model* both spatial and temporal gradients such as edges and small movements. After that we will *model* higher *level* temporal *slice* sequences to group together saccade-like *alignments* which might represent objects in a scene. We will also consider audio which is intrinsically temporal.
 
-Our analysis of progress has been both quantitative and qualitative. For the former we have produced tables of various configurations, parameters and statistics of the *models*. *Model* growth and multiplier were especially important statistics. By comparing the results of incremental changes in the configurations of the *models* using common datasets, we have been able to roughly guage the contributions of each parameter and mode. On the qualitative side we have taken screenshots of the interactive actor applications, and generated image representations and contour maps. The  actors let us visualise representations of particular *slices* as we navigated around an image showing the *slice* ancestor and siblings, and examples of other *events* in the same *slice*. The *model* position and length contour maps and over-length maps have shown us where attention is distributed and how it varies as we move form place to place at different scales.  By using colour to show where any particular *slice* is in the sequence of leaf *slices* of the ordered paths of the *decomposition* tree, we have been able to indicate how closely related different locations in the image are within the *model*. These image analysis methods have enabled us to gain an idea of what the *model* 'sees' - where the hotspots are most concentrated and where the *likelihood* is highest for a given scene. We have also been able to show how the *underlying substrate variables* are grouped and the degree to which they cover the frame. Together these methods have helped us decide if the various modes and parameters produced *models* that pay attention to areas that are also interesting to humans, e.g. socially significant areas such as faces. We have also gained some idea of the completeness of the *models* by comparing the representations to the original images.
+In `WBOT02` have been concentrating on spatial *alignments*. We have *modelled* particular scales separately and together. There is little or no *aligment* in these *models* between the scale *variable* and  *variables derived* from the image *substrate*. That is, our *models* appear to be scale independent so far. This is what we might expect of a perspectival map from three dimensional reality to two dimensional images, although the directors and animators of the videos would probably have some preferred distances for foreground objects. We have also balanced the brightness of the frames by offsetting so that the brightness is centrally distributed around the middle *value*. This brightness independence (managed in the human eye by the pupil diameter) is analogous to scale independence. Another spatial method we have used is to restrict frames to have a minimum entropy of brightness distibution. This prevents us spending too much time *modelling* boring locations such as uniform backgrounds. Without this restriction we find that the *models* tend to have very long paths for frames with a variety of subtle but dull variations. Sometimes, however, delicately shaded areas such as faces have quite low entropy, so we must be careful not to set the minimum too high.
+
+Apart from the parameters required to encode the images (such as sequence, scale, centre, entropy, colour, brightness, and frame size, shape and granularity), we have had to consider many other parameters. *Modelling* parameters include active *history size*, overload, induce thresholds, minimum *diagonal*, and inducer parameters such as `WMAX` and `XMAX`. Engine and compute parameters include parallel induce threads, throttling of *events* and checkpointing. Some of these will be carried over to `WBOT03` but others may be dropped or modified. For example, instead of having a minimum *diagonal* we may instead have a minimum *alignment* per *size* - see the discussion on [*diagonals*](#Diagonals) above.
+
+Our analysis of progress has been both quantitative and qualitative. For the former we have produced tables of the *models* showing their various parameters and statistics. *Model* growth and multiplier were especially important statistics. By comparing the results of incremental changes in the configurations of the *models* using common datasets, we have been able to roughly guage the contributions of each parameter and mode. On the qualitative side we have taken screenshots of the interactive actor applications, and generated image representations and contour maps. The  actors let us visualise representations of particular *slices* as we navigated around an image showing the *slice* ancestor and siblings, and examples of other *events* in the same *slice*. The *model* position and length contour maps and over-length maps have shown us where attention is distributed and how it varies as we move form place to place at different scales.  By using colour to show where any particular *slice* is in the sequence of leaf *slices* of the ordered paths of the *decomposition* tree, we have been able to indicate how closely related different locations in the image are within the *model*. These image analysis methods have enabled us to gain an idea of what the *model* 'sees' - where the hotspots are most concentrated and where the *likelihood* is highest for a given scene. We have also been able to show how the *underlying substrate variables* are grouped and the degree to which they cover the frame. Together these methods have helped us decide if the various modes and parameters produced *models* that pay attention to areas that are also interesting to humans, e.g. socially significant areas such as faces. We have also gained some idea of the completeness of the *models* by comparing the representations to the original images.
 
 The conclusion of our analysis is that *2-level model* 90 is the most promising basis for further investigation. Single *level models* have little connectivity between regions. We can see many examples of unrelated foreground objects or backgrounds classified together simply because of the chance distribution of brightness. Nevertheless the single *level models*, especially those with *events* subject to a minimum entropy, often do have hotspots in the places that we find interesting, and so the representations are sometimes better than for the 2-*level*. For example, here is a representation for 1-*level* *model* 61 (showing only *slices* with at least 10 *events*) -
 
@@ -4906,15 +4976,15 @@ Compare this to 2-*level* *model* 90 -
 
 ![contour005_090_scale3_minent_representation](images/contour005_090_scale3_minent_representation.png) 
 
-However, we have shown that *2-level models* have more convolved than *1-level models*, i.e. nearby points in the image are nearby in the *model*. The reason is that the whole frame is *modelled* locally then globally so that the set of *underlying variables* covers a large part of the *substrate*. For example, this is the position map for paths of length 9 or more for 1-*level* *model* 61 -
+We have, however, shown that *2-level models* are more convolved than *1-level models*, i.e. nearby points in the image tend to be nearby in the *model*. The reason is that the whole frame is *modelled* locally then globally so that the set of *underlying variables* covers a large part of the *substrate*. For example, this is the position map for paths of length 9 or more for 1-*level* *model* 61 -
 
 ![contour005_061_minent_over9_show_image_position](images/contour005_061_minent_over9_show_image_position.png) 
 
-We can see that the *slices* that are near each other in the image are sometimes far apart in the *model*. Compare much greater degreee of convolution in 2-*level* *model* 90 (showing paths of length 12 or more) -
+We can see that the *slices* that are near each other in the image are sometimes far apart in the *model*. Compare the less kaleidoscopic position map for 2-*level* *model* 90 (showing paths of length 12 or more) demonstrating a higher greater degreee of convolution -
 
 ![contour005_090_scale3_minent_21_over12_show_image_position](images/contour005_090_scale3_minent_21_over12_show_image_position.png) 
 
-Although the convolution is greater for *2-level models*, we can still see boundaries where there are large jumps within the *model* for small changes in position in the image. So searching a *slice* topology, golf style, for the best guess for the next high *likelihood* *event* might easily miss important *slices*. We have instead used scanning and filtering for the top *likelihoods*. These methods have increased growth and lowered multipliers to create larger *models* with long mean *slice* lengths. 
+Although the convolution is greater for *2-level models*, we can still see boundaries where there are large jumps within the *model* for small changes in position in the image. So searching a *slice* topology in a sequence of decreasing jumps, golf style, for the best guess for the next high *likelihood* *event* might easily miss important *slices*. We have instead used scanning and filtering for the top *likelihoods*. These methods have increased growth and lowered multipliers to create larger *models* with long mean *slice* paths. 
 Scanning also seems to allow us to track slow moving objects in real time.
 
 Higher *level models* also require less memory to encode *events* (of the order of the square root of the *substrate* *dimension*) and so we can have more *history* for the given computation limits.
@@ -4926,26 +4996,6 @@ Static record sets are becoming unmanagably large, although randomising has been
 We will return to processing videos and *modelling* synchronously. [Qt](https://www.qt.io) has been a good framework for interactive applications, but the integration of the video processing into the event loop has posed difficulties. We will process videos frame by frame on demand instead of at some multiple of realtime. 
 
 After integration of both sound and vision modes, where the motor actions are restricted to directing attention, we will consider embodied agents in order to avoid the problem of the combinatorial explosion inherent in *specialising models*. That is, by experimenting on the environment to control unwanted noise - *events* in low *likelihood* parts of the *model* - the actor can grow the *model* with bursts of *events* in a small set of high *likelihood* *slices*. These concentrations of interesting *events* would be rare if left to chance and so have to be actively produced. Embodiment, real or virtual, will be challenging so we should aim to as close to our computational limits as we can before moving to this stage, necessary though it is.
-
-
-model and induce parameters -
-
-min diagonal
-
-
-substrate parameterisation -
-
-min entropy
-
-balanced valency
-
-multiple scales
-
-
-
-engine technqiues -
-
-Mention asynchronous and throttling of events. 
 
 
 
