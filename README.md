@@ -33,7 +33,7 @@ The wotbot [WBOT01 repository](https://github.com/caiks/WBOT01) was essentially 
 
 [Download, build and run in Ubuntu](#main_Ubuntu)
 
-[Actor node](#Actor)
+[Actors and models](#Actor)
 
 [Conclusion](#Conclusion)
 
@@ -174,7 +174,7 @@ which should produce something like
 
 <a name = "Actor"></a>
 
-## Actor node
+## Actors and models
 
 `WBOT02` has a `main` routine that examines the first command line argument and chooses its procedure accordingly. We discuss each of the procedures in the sections below -
 
@@ -4599,6 +4599,8 @@ Quantitatively, computed *model* 90 is very similar to non-computed *model* 89. 
 
 The median *diagonal* at 20.4 is slightly higher than the 20.0 of *model* 89, suggesting that either the higher *valency* or computed *substrate* has increased the number of *alignments* available. The average number of *underlying variables* per *fud* has decreased to 17.55 compared to 18.52 for *model* 89.
 
+<a name = "underlying_path_lengths"></a>
+
 These are the *underlying* path lengths -
 
 0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15|16|17|18|19|20|21|22|23
@@ -4980,7 +4982,7 @@ We have, however, shown that *2-level models* are more convolved than *1-level m
 
 ![contour005_061_minent_over9_show_image_position](images/contour005_061_minent_over9_show_image_position.png) 
 
-We can see that the *slices* that are near each other in the image are sometimes far apart in the *model*. Compare the less kaleidoscopic position map for 2-*level* *model* 90 (showing paths of length 12 or more) demonstrating a higher greater degreee of convolution -
+We can see that the *slices* that are near each other in the image are sometimes far apart in the *model*. Compare the less kaleidoscopic position map for 2-*level* *model* 90 (showing paths of length 12 or more) which demonstrates a greater degree of convolution -
 
 ![contour005_090_scale3_minent_21_over12_show_image_position](images/contour005_090_scale3_minent_21_over12_show_image_position.png) 
 
@@ -4988,6 +4990,10 @@ Although the convolution is greater for *2-level models*, we can still see bound
 Scanning also seems to allow us to track slow moving objects in real time.
 
 Higher *level models* also require less memory to encode *events* (of the order of the square root of the *substrate* *dimension*) and so we can have more *history* for the given computation limits.
+
+It seem reasonable to think that the *underlying dimension* of any *level* should be around 50 to 100 *variables*. The 25 *underlying* of *model* 90 at the second *level* is probably too few, but the 1600 *underlying* of *model* 61 at the first *level* is certainly too many. Also, the *substrate* itself should consist of computed *variables* in the case where the *values* are notionally continuous. In this way both *underlying* coverage and *model alignments* will be maximised. Note that this requires that `ZNMAX` be large enough that the set of selected *variables*, which have the highest *value* entropy within the *slice*, captures the best *alignments* available.
+
+The main objection to the use of higher *levels* would be that, as we can see from the [*underlying* path lengths](#underlying_path_lengths) of *model* 90, the *underlying* for the higher *level functional definition sets* are often near the root of the *underlying model*, so the *slices* of the *underlying model* at even the mode path length of 13 are rare. Perhaps the solution here will be to ensure that all *levels* are actively *modelled* simulataneously. The set of active *models* would include at least all *models* at the highest *level*, and all of the 'central' *underlyings* of every *overlying model*. By 'central' we mean the centre *underlying model* in the case of spatial lower *levels*, and the current *underlying model*, where the lower *level* is temporal. We can then act, search and filter to select the highest *likelihood events* for every *model* in this active set, thus acting upon the present state of the sensorium. Later, we can perhaps simulate at least the highest *level models* to maintain growth rates when the *models* become so large that interesting *events* are rare and even embodied actions are unforthcoming.
 
 It is hard to say how how much larger *model* 90 would need to be to attain animal-like or human-like vision. For example, *alignments* in facial features seem to be relatively weak and may require hints other than minimum entropy to enchance them. There is a huge number of possible configurations of hints, *substrates* and parameter-sets that we could select for further experiments. We will aim to use knowledge from neuro-physiology and computer vision to guide us in `WBOT03`. 
 
