@@ -55,6 +55,9 @@ Then use use [Github Desktop](https://desktop.github.com/), for example, to clon
 https://github.com/Tencent/rapidjson.git
 https://github.com/caiks/AlignmentC.git
 https://github.com/caiks/AlignmentRepaC.git
+```
+Clone the `AlignmentActive` repository. Note that it should be cloned with branch `v01` (which is incompatible with later versions) -
+```
 https://github.com/caiks/AlignmentActive.git
 ```
 Then clone the [WBOT02 repository](https://github.com/caiks/WBOT02) -
@@ -115,9 +118,11 @@ Now install the [AlignmentActive repository](https://github.com/caiks/AlignmentA
 git clone https://github.com/Tencent/rapidjson.git
 git clone https://github.com/caiks/AlignmentC.git
 git clone https://github.com/caiks/AlignmentRepaC.git
-git clone https://github.com/caiks/AlignmentActive.git
+git clone -b v01 --single-branch https://github.com/caiks/AlignmentActive.git
 
 ```
+Note that the `AlignmentActive` repository should be cloned at version `v01` (which is incompatible with later versions).
+
 Then clone the [WBOT02 repository](https://github.com/caiks/WBOT02) and the [WBOT02 workspace repository](https://github.com/caiks/WBOT02_ws) -
 ```
 git clone https://github.com/caiks/WBOT02.git
