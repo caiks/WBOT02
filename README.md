@@ -3824,7 +3824,7 @@ cd ~/WBOT02_ws
 9, 2, 85015, 85015, ok	45552		37642		788		303		223		153		117		112		81		27		17	
 ...
 ```
-The growth for *model* 84 is also very good for a non-scanning mode - this is probably due to the small *off-diagonal slices*. The mean length is 10.7, much higher than for *model* 80 at 8.4. The negative hyper-skew is much greater suggesting that uninteresting paths terminate quickly. The hyper-kurtosis is also greater, suggesting that the larger *on-diagoanl* *slices* are extending the paths where there are interesting locations with high *alignments*. The mean *underlying* has increased from 9.0 to 15.1, again because the tuples can hold more *variables* of smaller *valency*. We can view the *underlying* thus -
+The growth for *model* 84 is also very good for a non-scanning mode - this is probably due to the small *off-diagonal slices*. The mean length is 10.7, much higher than for *model* 80 at 8.4. The negative hyper-skew is much greater suggesting that uninteresting paths terminate quickly. The hyper-kurtosis is also greater, suggesting that the larger *on-diagonal* *slices* are extending the paths where there are interesting locations with high *alignments*. The mean *underlying* has increased from 9.0 to 15.1, again because the tuples can hold more *variables* of smaller *valency*. We can view the *underlying* thus -
 ```
 cd ~/WBOT02_ws
 ./WBOT02 view_underlying model084c
@@ -3841,7 +3841,7 @@ cd ~/WBOT02_ws
 10, 2, (2e302, 2e303, 2f302, 2f303, 36303, 37303, 3e303, 3f303, 46303, 47303, 4e302, 4e303, 4f302, 4f303, 70012)
 ...
 ```
-The third digit shows the number of steps along the computed *variable's decomposition*. The last two hexadeceimal digits show the *value* at that granularity. The first two hexadeceimal digits show the position in the frame. Use the following map to work out where the *variables* are -
+The third digit shows the number of steps along the computed *variable's decomposition*. The last two hexadecimal digits show the *value* at that granularity. The first two hexadecimal digits show the position in the frame. Use the following map to work out where the *variables* are -
 ```
 10	11	12	13	14	15	16	17
 18	19	1A	1B	1C	1D	1E	1F
